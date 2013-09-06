@@ -2,14 +2,23 @@
   <title>beatfn.com</title>
 </head>
 
+    <!--<h1> Songs: </h1>
+    {{> songs}}-->
 <body>
   <div class="container">
-    <h1> Songs: </h1>
-    {{> songs}}
+    {{> player}}
     <h1> Transitions: </h1>
     {{> transitions}}
   </div>
 </body>
+
+<!-- player -->
+<template name="player">
+  <input type="button" id="start" value="Start" />
+  <input type="button" id="changeTransition" value="Change Transition" />
+  <input type="button" id="transitionNow" value="Transition Now" />
+  <input type="button" id="stop" value="Stop" />
+</template>
 
 <!-- Songs -->
 <template name="songs">
@@ -36,7 +45,7 @@
 </template>
 
 <template name="transition">
-  <div id="transition">
+  <div class="transition {{selected}}">
     <span class="startSong">startSong: {{startSong}}</span>
     <br/>
     <span class="endSong">endSong: {{endSong}}</span>
