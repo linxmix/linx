@@ -8,29 +8,12 @@ Meteor.startup(function () {
   Songs.remove({});
   Transitions.remove({});
 
-  if (Songs.find().count() === 0) {
-
-    // inital songs TODO make this not hardcoded... use mixxx's db?
-    var songs = [
-    { name: "reach for me", type: "mp3" },
-    { name: "i could be the one", type: "mp3" },
-    { name: "alive", type: "mp3" },
-    { name: "torrent", type: "mp3"},
-    { name: "quasar", type: "mp3"},
-    { name: "without you", type: "mp3"},
-    { name: "miami", type: "mp3"},
-    ];
-
-    for (var i = 0; i < songs.length; i++) {
-      var song = songs[i];
-      Songs.insert(song);
-    }
-  }
+  var transitions = [], songs = {};
 
   if (Transitions.find().count() === 0) {
 
     // inital transitions TODO make this not hardcoded... use mixxx's db?
-    var transitions = [
+    transitions = [
     {
       startSong: "reach for me",
       startTime: 192.353714,
@@ -487,78 +470,29 @@ Meteor.startup(function () {
       endSong: "blank",
       endTime: 1000000,
       type: "wav"
-    },
-
-    {
-      startSong: "blank",
-      startTime: 1000000,
-      endSong: "blank",
-      endTime: 1000000,
-      type: "wav"
-    },
-
-    {
-      startSong: "blank",
-      startTime: 1000000,
-      endSong: "blank",
-      endTime: 1000000,
-      type: "wav"
-    },
-
-    {
-      startSong: "blank",
-      startTime: 1000000,
-      endSong: "blank",
-      endTime: 1000000,
-      type: "wav"
-    },
-
-    {
-      startSong: "blank",
-      startTime: 1000000,
-      endSong: "blank",
-      endTime: 1000000,
-      type: "wav"
-    },
-
-    {
-      startSong: "blank",
-      startTime: 1000000,
-      endSong: "blank",
-      endTime: 1000000,
-      type: "wav"
-    },
-
-    {
-      startSong: "blank",
-      startTime: 1000000,
-      endSong: "blank",
-      endTime: 1000000,
-      type: "wav"
-    },
-
-    {
-      startSong: "blank",
-      startTime: 1000000,
-      endSong: "blank",
-      endTime: 1000000,
-      type: "wav"
-    },
-
-    {
-      startSong: "blank",
-      startTime: 1000000,
-      endSong: "blank",
-      endTime: 1000000,
-      type: "wav"
     }
 
       ];
 
-    for (var j = 0; j < transitions.length; j++) {
-      var transition = transitions[j];
+    transitions.forEach(function (transition) {
       Transitions.insert(transition);
-    }
-    console.log("Transition Count: "+Transitions.find().count());
+    });
   }
+
+  if (Songs.find().count() === 0) {
+
+    // inital songs TODO make this not hardcoded... use mixxx's db?
+    Transitions.find().fetch().forEach(function (transition) {
+      songs[transition.startSong] || (songs[transition.startSong] = { name: transition.startSong, type: "mp3" });
+      songs[transition.endSong] || (songs[transition.endSong] = { name: transition.endSong, type: "mp3" });
+    });
+
+    for (var songName in songs) {
+      var song = songs[songName];
+      song['playCount'] = 0;
+      Songs.insert(song);
+    }
+  }
+  console.log("Transition Count: "+Transitions.find().count());
+  console.log("Song Count: "+Songs.find().count());
 });

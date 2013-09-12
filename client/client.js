@@ -4,6 +4,8 @@ Transitions = new Meteor.Collection("Transitions");
 //
 // load web audio api
 //
+
+// TODO: move the relevant variables into the session thing (ie currSong and currTransition)
 var context, currSong, offset = 0, lastMixTime = 0, BUFFERS = [], TIMERS = [], currTransition;
 
 try {
@@ -91,9 +93,9 @@ try {
   }
 
 
-  function playMix(transition) {
+  function playTransition(transition, now) {
     lastMixTime = context.currentTime;
-    if (transition) {
+    if (now) {
       console.log("scheduling transition for NOW");
     } else if (!currSong) {
       console.log("ERROR: cannot play mix when there is no currSong");
@@ -101,10 +103,12 @@ try {
     }
 
     // load songs and buffers
-    var now = !!transition;
     currTransition = transition = (typeof transition == 'object') ?
     transition : chooseTransition(currSong, offset);
-    var endSong = { name: transition.endSong, type: "mp3" };
+
+    if (!transition)
+      return console.log("ERROR: found no transitions for current song");
+    var endSong = Songs.findOne({ name: transition.endSong });
 
     // async
     makeTransitionBuffer(transition, function (transitionBuffer) {
@@ -128,16 +132,16 @@ try {
         }, songDuration, function() {
           // start the next song and continue the mix
           endSong.source = playSongBuffer(endBuffer, 0, transition.endTime);
-          currSong = endSong;
+          setCurrentSong(endSong);
           offset = transition.endTime;
-          playMix();
+          playTransition();
         }, transitionDuration);
 
       });
-});
-}
+    });
+  }
 
-function unscheduleTransition() {
+  function unscheduleTransition() {
     // cancel pending transition
     for (var i = 0; i < TIMERS.length; i++) {
       clearTimeout(TIMERS[i]);
@@ -148,17 +152,6 @@ function unscheduleTransition() {
     unscheduleTransition(); // in case there's already one queued
     TIMERS[0] = setTimeout(trans, transTime * 1000.0);
     TIMERS[1] = setTimeout(next, nextTime * 1000.0);
-  }
-
-  // TODO: make it so you can only do this (and transition now) during a song, not during a transition!
-  // ^ implemented by checking currSong to see if it's a transition
-  // TODO: make it so this changes to the already scheduled song (rather than reselecting)
-  function changeTransition() {
-    console.log("CHANGING TRANSITIONS!");
-    unscheduleTransition();
-    // make a new transition
-    offset += (context.currentTime - lastMixTime);
-    playMix();
   }
 
   function stopMix() {
@@ -178,12 +171,14 @@ function unscheduleTransition() {
       startSong: startSong.name,
       // TODO: formalize this concept of "5" - it's the buffer load time ("lag")
       startTime: { $gt: offset + 5 }
+    }, {
+      sort: { playCount: 1 }
     }).fetch();
 
     for (var i = 0; i < choices.length; i++) {
       console.log("found transition to: " + choices[i].endSong);
     }
-    var choice = shuffle(choices)[0];
+    var choice = choices[0];
 
     console.log("CHOOSING transition: " + choice.endSong);
 
@@ -191,17 +186,23 @@ function unscheduleTransition() {
     else return choice;
   }
 
-  function startMix(startSongName, startPos) {
+  function startMix(startSong, transition, startPos) {
     startPos = startPos || 60;
-    startSongName = startSongName || "dont you worry child";
+    startSong = startSong || Songs.findOne({ name: "dont you worry child" });
 
-    var startSong = { name: startSongName, type: "mp3" };
+    console.log(startSong);
     makeSongBuffer(startSong, function (startBuffer) {
       startSong.source = playSongBuffer(startBuffer, 0, startPos);
-      currSong = startSong;
-      playMix();
+      setCurrentSong(startSong);
+      playTransition(transition);
     });
   }
+
+  function setCurrentSong(song) {
+    Songs.update(song._id, { $inc: { playCount: 1 } });
+    currSong = song;
+  }
+
 /*
 makeBuffer("/songs/alive.mp3", function() {
     makeBuffer("/transitions/alive-torrent.wav", function() {
@@ -238,17 +239,25 @@ Template.player.events({
 
   'click #start': function() {
     stopMix();
-    var transition = Transitions.findOne(Session.get("selected_transition"));
-    if (transition) playMix(transition);
-    else startMix();
+    var song, transition = Transitions.findOne(Session.get("selected_transition"));
+    if (transition) song = Songs.findOne({ name: transition.startSong });
+    startMix(song, transition);
   },
 
   'click #transitionNow': function() {
-    playMix(currTransition);
+    playTransition(currTransition, true);
   },
 
-  'click #changeTransition': changeTransition,
-  'click #stop': stopMix
+  'click #stop': stopMix,
+
+  // TODO: make it so you can only do this (and transition now) during a song, not during a transition!
+  // ^ implemented by checking currSong to see if it's a transition
+  // TODO: make it so this changes to the already scheduled song (rather than reselecting)
+  'click #selectTransition': function() {
+    unscheduleTransition();
+    offset += (context.currentTime - lastMixTime);
+    playTransition(Transitions.findOne(Session.get("selected_transition")));
+  }
 });
 
 Template.transition.events({
@@ -264,7 +273,13 @@ Template.songs.songs = function () {
 };
 
 Template.transitions.transitions = function () {
-  return Transitions.find();
+  return Transitions.find({
+      startSong: (currSong ? currSong.name : "dont you worry child"),
+      // TODO: formalize this concept of "5" - it's the buffer load time ("lag")
+      startTime: { $gt: offset + 5 }
+    }, {
+      sort: { playCount: 1 }
+    });
 };
 
 Template.transition.selected = function () {
@@ -287,7 +302,6 @@ Template.graph.rendered = function () {
       link.source = nodes[link.startSong] || (nodes[link.startSong] = { name: link.startSong });
       link.target = nodes[link.endSong] || (nodes[link.endSong] = { name: link.endSong });
     });
-    console.log(nodes);
 
     var width = 960,
     height = 500;
