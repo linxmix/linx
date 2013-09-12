@@ -1,23 +1,37 @@
+<!-- Page
+================================================== -->
 <head>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8">
   <title>beatfn.com</title>
 </head>
 
-    <!--<h1> Songs: </h1>
-    {{> songs}}-->
 <body>
+
   <div class="container">
     {{> player}}
+    {{> graph}}
     <h1> Transitions: </h1>
     {{> transitions}}
   </div>
 </body>
 
-<!-- player -->
+<!-- Templates
+================================================== -->
+
+<!-- Player -->
 <template name="player">
   <input type="button" id="start" value="Start" />
   <input type="button" id="changeTransition" value="Change Transition" />
   <input type="button" id="transitionNow" value="Transition Now" />
   <input type="button" id="stop" value="Stop" />
+</template>
+
+<!-- Graph -->
+<template name="graph">
+  <div id="graph-wrapper">
+    {{#constant}}
+    {{/constant}}
+  </div>
 </template>
 
 <!-- Songs -->

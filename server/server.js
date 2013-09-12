@@ -282,52 +282,276 @@ Meteor.startup(function () {
     },
 
     {
-      startSong: "blank",
-      startTime: 291.221283,
-      endSong: "blank",
-      endTime: 60.380409,
+      startSong: "language",
+      startTime: 328.101379,
+      endSong: "reach for me",
+      endTime: 124.436142,
+      type: "wav"
+    },
+
+    {
+      startSong: "everafter",
+      startTime: 265.026215,
+      endSong: "miami",
+      endTime: 113.713356,
+      type: "wav"
+    },
+
+    {
+      startSong: "language",
+      startTime: 318.478607,
+      endSong: "everafter",
+      endTime: 49.072037,
+      type: "wav"
+    },
+
+    {
+      startSong: "everafter",
+      startTime: 272.479156,
+      endSong: "babylon",
+      endTime: 71.089394,
+      type: "wav"
+    },
+
+    {
+      startSong: "ultraviolet",
+      startTime: 315.227356,
+      endSong: "everafter",
+      endTime: 66.223885,
+      type: "wav"
+    },
+
+    {
+      startSong: "ultraviolet",
+      startTime: 331.923798,
+      endSong: "skylarking",
+      endTime: 366.263641,
+      type: "wav"
+    },
+
+    {
+      startSong: "quasar",
+      startTime: 196.249542,
+      endSong: "lamour",
+      endTime: 41.658463,
+      type: "wav"
+    },
+
+    {
+      startSong: "without you",
+      startTime: 158.246216,
+      endSong: "lamour",
+      endTime: 42.087124,
+      type: "wav"
+    },
+
+    {
+      startSong: "lamour",
+      startTime: 234.897583,
+      endSong: "miami",
+      endTime: 80.305382,
+      type: "wav"
+    },
+
+    {
+      startSong: "lamour",
+      startTime: 238.838669,
+      endSong: "torrent",
+      endTime: 69.051605,
+      type: "wav"
+    },
+
+    {
+      startSong: "torrent",
+      startTime: 142.898361,
+      endSong: "every teardrop",
+      endTime: 11.174557,
+      type: "wav"
+    },
+
+    {
+      startSong: "every teardrop",
+      startTime: 222.706573,
+      endSong: "language",
+      endTime: 196.782166,
+      type: "wav"
+    },
+
+    {
+      startSong: "every teardrop",
+      startTime: 333.936188,
+      endSong: "torrent",
+      endTime: 64.156013,
+      type: "wav"
+    },
+
+    {
+      startSong: "apollo",
+      startTime: 265.420898,
+      endSong: "every teardrop",
+      endTime: 74.284897,
+      type: "wav"
+    },
+
+    {
+      startSong: "easy",
+      startTime: 357.774994,
+      endSong: "quasar",
+      endTime: 63.398247,
+      type: "wav"
+    },
+
+    {
+      startSong: "easy",
+      startTime: 355.803040,
+      endSong: "baker street",
+      endTime: 64.683037,
+      type: "wav"
+    },
+
+    {
+      startSong: "miami",
+      startTime: 223.972519,
+      endSong: "baker street",
+      endTime: 128.925186,
+      type: "wav"
+    },
+
+    {
+      startSong: "baker street",
+      startTime: 293.230835,
+      endSong: "babylon",
+      endTime: 66.717758,
+      type: "wav"
+    },
+
+    {
+      startSong: "baker street",
+      startTime: 292.745270,
+      endSong: "miami",
+      endTime: 78.651230,
+      type: "wav"
+    },
+
+    {
+      startSong: "babylon",
+      startTime: 234.398346,
+      endSong: "quasar",
+      endTime: 53.055809,
+      type: "wav"
+    },
+
+    {
+      startSong: "quasar",
+      startTime: 197.797333,
+      endSong: "skylarking",
+      endTime: 207.232025,
+      type: "wav"
+    },
+
+    {
+      startSong: "quasar",
+      startTime: 190.835098,
+      endSong: "torrent",
+      endTime: 166.534515,
+      type: "wav"
+    },
+
+    {
+      startSong: "quasar",
+      startTime: 340.086792,
+      endSong: "baker street",
+      endTime: 64.889488,
+      type: "wav"
+    },
+
+    {
+      startSong: "lamour",
+      startTime: 234.202515,
+      endSong: "apollo",
+      endTime: 37.440605,
+      type: "wav"
+    },
+
+    {
+      startSong: "torrent",
+      startTime: 277.748840,
+      endSong: "lamour",
+      endTime: 35.708584,
       type: "wav"
     },
 
     {
       startSong: "blank",
-      startTime: 291.221283,
+      startTime: 1000000,
       endSong: "blank",
-      endTime: 60.380409,
+      endTime: 1000000,
       type: "wav"
     },
 
     {
       startSong: "blank",
-      startTime: 291.221283,
+      startTime: 1000000,
       endSong: "blank",
-      endTime: 60.380409,
+      endTime: 1000000,
       type: "wav"
     },
 
     {
       startSong: "blank",
-      startTime: 291.221283,
+      startTime: 1000000,
       endSong: "blank",
-      endTime: 60.380409,
+      endTime: 1000000,
       type: "wav"
     },
 
     {
       startSong: "blank",
-      startTime: 291.221283,
+      startTime: 1000000,
       endSong: "blank",
-      endTime: 60.380409,
+      endTime: 1000000,
       type: "wav"
     },
 
     {
       startSong: "blank",
-      startTime: 291.221283,
+      startTime: 1000000,
       endSong: "blank",
-      endTime: 60.380409,
+      endTime: 1000000,
       type: "wav"
     },
+
+    {
+      startSong: "blank",
+      startTime: 1000000,
+      endSong: "blank",
+      endTime: 1000000,
+      type: "wav"
+    },
+
+    {
+      startSong: "blank",
+      startTime: 1000000,
+      endSong: "blank",
+      endTime: 1000000,
+      type: "wav"
+    },
+
+    {
+      startSong: "blank",
+      startTime: 1000000,
+      endSong: "blank",
+      endTime: 1000000,
+      type: "wav"
+    },
+
+    {
+      startSong: "blank",
+      startTime: 1000000,
+      endSong: "blank",
+      endTime: 1000000,
+      type: "wav"
+    }
 
       ];
 
@@ -335,5 +559,6 @@ Meteor.startup(function () {
       var transition = transitions[j];
       Transitions.insert(transition);
     }
+    console.log("Transition Count: "+Transitions.find().count());
   }
 });
