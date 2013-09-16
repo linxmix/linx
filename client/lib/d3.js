@@ -33,13 +33,11 @@ Template.graph.rendered = function () {
     });
 
     // define next song as next node
-    // TODO: make this recursive for all scheduled transitions. that means storing the list of upcoming songs and transitions...
     var currTransition = Transitions.findOne(Session.get("current_transition")),
         nextSong = Songs.findOne({ name: currTransition.endSong });
     nextSong["color"] = 1;
     nodes[nextSong.name] = nextSong;
     // get all nodes adjacent to nextSong
-    // TODO: don't include links back to original song
     links = links.concat(Transitions.find( { startSong: nextSong.name })
     .fetch()
     .map(function (transition) {
@@ -56,7 +54,6 @@ Template.graph.rendered = function () {
       link.color = link.color || 0;
     });
 
-    // TODO: turn distance and charge into sliders
     var force = d3.layout.force()
     .nodes(d3.values(nodes))
     .links(links)

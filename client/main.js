@@ -16,8 +16,6 @@ Template.player.events({
 
   'click #stop': stopMix,
 
-  // TODO: make it so you can only do this (and transition now) during a song, not during a transition!
-  // ^ implemented by checking currSong to see if it's a transition
   'click #selectTransition': function() {
     Transitions.findOne(Session.get("selected_transition"));
   }
@@ -43,8 +41,6 @@ Template.song.events({
   }
 });
 
-// TODO: sliders for volume and offset. maybe a skip 30sec button?
-
 Template.songs.songs = function () {
   return Songs.find({}, { sort: { name: 1 }});
 };
@@ -54,7 +50,6 @@ Template.transitions.transitions = function () {
   if (currSong) {
     return Transitions.find({
         startSong: currSong.name,
-        // TODO: formalize this concept of "5" - it's the buffer load time ("lag")
         startTime: { $gt: Session.get("offset") + 5 }
       }, {
         sort: { name: 1 }

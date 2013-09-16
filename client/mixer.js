@@ -2,10 +2,7 @@
 // load web audio api
 //
 
-// TODO: move the relevant variables into the session thing
-var context, lastMixTime = 0, BUFFERS = [], TIMERS = [];
-
-var currSource;
+var currSource, context, lastMixTime = 0, BUFFERS = [], TIMERS = [];
 
 try {
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -66,7 +63,6 @@ try {
     //var compressor = context.createDynamicsCompressor();
     var gain = context.createGain();
     source.buffer = buffer;
-    // TODO: make gain a variable
     gain.gain.value = 0.55;
 
     // route source
@@ -99,7 +95,6 @@ try {
   function stopCurrSource(when) {
     when = when || 0;
     (currSource && currSource.stop(when));
-    // TODO: make it so pauses are possible? remember that start cannot be called after start.
     currSource = undefined;
   }
 
@@ -171,7 +166,6 @@ try {
     TIMERS = [];
   }
 
-  // TODO: make this a volume fade
   stopMix = function() {
     console.log("STOPPING EVERYTHING!");
     clearTimers();
@@ -184,11 +178,9 @@ try {
   }
 
   // algorithm to decide which transition comes next.
-  // TODO: make it so that this can do "soft" transitions
   function chooseTransition(startSong, offset, callback) {
     var choices = Transitions.find({
       startSong: startSong.name,
-      // TODO: formalize this concept of "5" - it's the buffer load time ("lag")
       startTime: { $gt: offset + 5 }
     }, {
       sort: { playCount: 1 }
