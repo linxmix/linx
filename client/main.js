@@ -1,5 +1,6 @@
 // init
 Session.set("offset", 0);
+Session.set("queued_transitions", []);
 
 //
 // do meteor stuff
@@ -11,13 +12,13 @@ Template.player.events({
   },
 
   'click #transitionNow': function() {
-    scheduleTransition(Transitions.findOne(Session.get("current_transition")), true);
+    scheduleTransition(true);
   },
 
   'click #stop': stopMix,
 
-  'click #selectTransition': function() {
-    Transitions.findOne(Session.get("selected_transition"));
+  'click #queueTransition': function() {
+    queueTransition(Transitions.findOne(Session.get("selected_transition")), 0);
   }
 });
 
@@ -27,7 +28,7 @@ Template.transition.events({
   },
   'dblclick': function() {
     Session.set("selected_transition", this._id);
-    selectTransition(Transitions.findOne(this._id));
+    queueTransition(Transitions.findOne(this._id), 0);
   }
 });
 
@@ -62,6 +63,7 @@ Template.transition.selected = function () {
 };
 
 Template.transition.current = function () {
+
   return Session.equals("current_transition", this._id) ? "current" : "";
 };
 

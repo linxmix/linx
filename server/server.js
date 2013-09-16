@@ -474,7 +474,6 @@ Meteor.startup(function () {
 
   if (Songs.find().count() === 0) {
 
-    // inital songs TODO make this not hardcoded... use mixxx's db?
     Transitions.find().fetch().forEach(function (transition) {
       songs[transition.startSong] || (songs[transition.startSong] = { name: transition.startSong, type: "mp3" });
       songs[transition.endSong] || (songs[transition.endSong] = { name: transition.endSong, type: "mp3" });

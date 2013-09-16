@@ -85,11 +85,13 @@ try {
 
   function playSource(source, when, offset, duration) {
     // start source, set it as currSource, then return it
-    TIMERS.push(setTimeout(function () {
-      stopCurrSource();
-      source.start(0, offset, duration);
-      currSource = source;
-    }, when * 1000.0));
+    if (false) {
+      TIMERS.push(setTimeout(function () {
+        stopCurrSource();
+        source.start(0, offset, duration);
+        currSource = source;
+      }, when * 1000.0));
+    }
   }
 
   function stopCurrSource(when) {
@@ -98,32 +100,25 @@ try {
     currSource = undefined;
   }
 
-  scheduleTransition = function(transition, now) {
+  scheduleTransition = function(now) {
     var offset = Session.get("offset");
     lastMixTime = context.currentTime;
-    currSong = Songs.findOne(Session.get("current_song"));
-    if (now) {
-      console.log("TRANSITIONING NOW");
-    } else if (!currSong) {
-      console.log("ERROR: cannot play mix when there is no current_song");
-      return;
+
+    // figure out which transition to schedule, set that as current
+    var queuedTransitions = Session.get("queued_transitions");
+    // TODO: make sure the following does NOT change session's queuedTransitions!
+    var transition = queuedTransitions.shift() || chooseTransition();
+    if (transition && (transition.startTime <= offset + 5)) {
+      console.log("WARNING: chosen transition wasn't possible; retrying");
+      transition = chooseTransition();
     }
-
-    // load songs and buffers
-    transition = (transition && transition.startTime > offset + 5) ?
-      transition : chooseTransition(currSong, offset);
-    setCurrentTransition(transition);
-
     if (!transition) {
       return console.log("ERROR: found no transitions for current song");
     }
-    if (transition.startTime <= offset + 5) {
-      console.log("WARNING: chosen transition wasn't possible; reselecting");
-    }
-
+    Session.set("current_transition", transition._id);
     var endSong = Songs.findOne({ name: transition.endSong });
 
-    // async
+    // async load buffers
     makeTransitionBuffer(transition, function (transitionBuffer) {
       makeSongBuffer(endSong, function (endBuffer) {
 
@@ -134,8 +129,8 @@ try {
         }
 
         var lag = context.currentTime - lastMixTime;
-        var songDuration = transition.startTime - offset - lag;
-        songDuration = now ? 0 : songDuration; // play immediately if scheduled now
+        // play immediately if scheduled now
+        var songDuration = now ? 0 : (transition.startTime - offset - lag);
         var transitionDuration = songDuration + transitionBuffer.duration;
 
         console.log("transition in: "+songDuration);
@@ -155,6 +150,7 @@ try {
           endSong.source = playSongBuffer(endBuffer, 0, transition.endTime);
           setCurrentSong(endSong);
           Session.set("offset", transition.endTime);
+          Session.set("queued_transitions", queuedTransitions);
           scheduleTransition();
         }, transitionDuration * 1000.0));
       });
@@ -169,6 +165,8 @@ try {
   stopMix = function() {
     console.log("STOPPING EVERYTHING!");
     clearTimers();
+    Session.set("queued_transitions", []);
+    Session.set("current_transition", undefined);
     stopCurrSource();
   };
 
@@ -178,9 +176,12 @@ try {
   }
 
   // algorithm to decide which transition comes next.
-  function chooseTransition(startSong, offset, callback) {
+  function chooseTransition(callback) {
+    var currSong = Songs.findOne(Session.get("current_song"));
+    var offset = Session.get("offset");
+
     var choices = Transitions.find({
-      startSong: startSong.name,
+      startSong: currSong.name,
       startTime: { $gt: offset + 5 }
     }, {
       sort: { playCount: 1 }
@@ -189,33 +190,58 @@ try {
     for (var i = 0; i < choices.length; i++) {
       console.log("found transition to: " + choices[i].endSong);
     }
-    var choice = choices[0];
+    var transition = choices[0];
 
-    console.log("CHOOSING transition: " + choice.endSong);
+    console.log("CHOOSING transition: " + transition.endSong);
 
-    if (callback) { return callback(choice); }
-    else return choice;
+    if (callback) { return callback(transition); }
+    else return transition;
   }
 
-  startMix = function(startSong, transition, startPos) {
+  startMix = function(startSong, startPos) {
     Session.set("offset", startPos = startPos || 60);
     if (!startSong) {
-      console.log("ERROR: select a song in order to start the mix");
-      return;
+      return console.log("ERROR: select a song in order to start the mix");
     }
 
     makeSongBuffer(startSong, function (startBuffer) {
       startSong.source = playSongBuffer(startBuffer, 0, startPos);
       setCurrentSong(startSong);
-      scheduleTransition(transition);
+      scheduleTransition();
     });
   };
 
-  selectTransition = function(transition) {
-    if (transition && (transition._id !== Session.get("current_transition"))) {
-      var newOffset = Session.get("offset") + context.currentTime - lastMixTime;
-      Session.set("offset", newOffset);
-      scheduleTransition(transition);
+  getValidTransition = function(song) {
+    // TO WRITE: returns a valid transition to song such that queued_transitions
+    //           retains maximum possible length. 
+    // TODO: what if none exist? add a soft transition to the end? or maybe find a path such that one exists?
+    return { 'transition': undefined, 'index': 0 };
+  };
+
+  queueTransition = function(transition, index) {
+    var queuedTransitions = Session.get("queued_transitions");
+    index = index || queuedTransitions.length;
+    if (!transition) {
+      return console.log("WARNING: queueTransition called without a transition");
+    } else if (queuedTransitions.indexOf(transition._id) > -1) {
+      console.log("WARNING: given transition to "+transition.endSong+" is already queued");
+    }
+
+    // make sure this transition fits at this index
+    var prevTransition = queuedTransitions[index - 1];
+    if (prevTransition && (transition.startSong != prevTransition.endSong)) {
+      return console.log("ERROR: given transition does not fit prevTransition");
+    }
+
+    // update queuedTransitions with this transition
+    queuedTransitions.splice(index, queuedTransitions.length - index, transition);
+    Session.set("queued_transitions", queuedTransitions);
+
+    // if index is 0, we are replacing the current transition
+    if (index === 0) {
+      Session.set("offset",
+        Session.get("offset") + context.currentTime - lastMixTime);
+      scheduleTransition();
     }
   };
 
@@ -224,11 +250,7 @@ try {
     Session.set("current_song", song._id);
   }
 
-  function setCurrentTransition(transition) {
-    Session.set("current_transition", transition._id);
-  }
-
 }
 catch(e) {
-  console.log('Web Audio API is not supported in this browser');
+  alert('Web Audio API is not supported in this browser');
 }

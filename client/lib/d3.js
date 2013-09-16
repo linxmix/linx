@@ -27,7 +27,7 @@ Template.graph.rendered = function () {
     links = Transitions.find( { startSong: currSong.name }).fetch()
     .map(function (transition) {
       if (transition._id === Session.get("current_transition")) {
-        transition.color = 1;
+        transition.color = 2;
       }
       return transition;
     });
@@ -38,14 +38,7 @@ Template.graph.rendered = function () {
     nextSong["color"] = 1;
     nodes[nextSong.name] = nextSong;
     // get all nodes adjacent to nextSong
-    links = links.concat(Transitions.find( { startSong: nextSong.name })
-    .fetch()
-    .map(function (transition) {
-      if (transition._id === Session.get("current_transition")) {
-        transition.color = 1;
-      }
-      return transition;
-    }));
+    links = links.concat(Transitions.find( { startSong: nextSong.name }).fetch());
 
     // compute distinct nodes from links
     links.forEach(function (link) {
@@ -53,6 +46,12 @@ Template.graph.rendered = function () {
       link.target = nodes[link.endSong] || (nodes[link.endSong] = { name: link.endSong, color: 0 });
       link.color = link.color || 0;
     });
+
+    // compute appropriate link for each node
+    for (var nodeName in nodes) {
+      var song = nodes[nodeName];
+      song.transition_info = getValidTransition(song);
+    }
 
     var force = d3.layout.force()
     .nodes(d3.values(nodes))
@@ -92,39 +91,39 @@ Template.graph.rendered = function () {
     .enter().append("svg:path")
     .attr("class", "link")
     .attr("marker-end", "url(#end)")
-    .style("stroke", function(d) { return colorLink(d.color); });
+    .attr("id", function(d) { return d._id; })
+    .style("stroke", colorLink);
 
     // define the nodes
     var node = svg.selectAll(".node")
     .data(force.nodes())
     .enter().append("g")
     .attr("class", "node")
-    .on("dblclick", function (d) {
-      if (d._id !== currSong._id) {
-        selectTransition(Transitions.findOne({
-          startSong: currSong.name,
-          endSong: d.name
-        }));
-      }
-    })
+    .attr("id", function(d) { return d._id; })
     .call(force.drag);
 
-    // add the nodes
+    // add nodes's circles
     node.append("circle")
     .attr("r", 10)
-    .style("fill", function(d) { return colorNode(d.color); })
+    .style("fill", colorNode)
+    .on("dblclick", function (d) {
+      // TODO: this should make sure this node is not queued at all
+      if (d._id !== currSong._id) {
+        queueTransition(d.transition_info['transition'], d.transition_info['index']);
+      }
+    })
     .on("mouseover", function(d) {
       var color = (d._id !== currSong._id) ? 1 : 2;
       d3.select(this).transition()
       .duration(300)
       .attr("r", 15)
-      .style("fill", function (d) { return colorNode(color); });
+      .style("fill", function(d) { return colorNode({ color: color }); });
     })
     .on("mouseout", function(d) {
       d3.select(this).transition()
       .duration(300)
       .attr("r", 10)
-      .style("fill", function (d) { return colorNode(d.color); });
+      .style("fill", colorNode);
     });
 
     // add the text 
@@ -133,19 +132,32 @@ Template.graph.rendered = function () {
     .attr("dy", ".35em")
     .text(function(d) { return d.name; });
 
-    function colorNode(n) {
+    function colorNode(d) {
       var colors = ["#ff0000", "#00ff00", "#0000ff"]; // red, green, blue
-      return colors[n];
+      return colors[d.color];
     }
 
-    function colorLink(n) {
+    function colorLink(d) {
       var colors = ["#c62728", "#2ca02c", "#1f77b4"]; // red, green, blue
-      return colors[n];
+      return colors[d.color];
     }
 
     // add the curvy lines
     function tick() {
       path.attr("d", function(d) {
+
+        /*// recenter path's circle
+        var pathSel = d3.select(this);
+        var pathEl = d3.select(this).node();
+        var midPoint = pathEl.getPointAtLength(pathEl.getTotalLength()/2.0);
+        pathSel.select("circle")
+        .attr("r", 50)
+        .attr("cx", midPoint.x)
+        .attr("cy", midPoint.y);
+        console.log(pathSel.select("circle").node());
+        */
+
+        // redraw path
         var dx = d.target.x - d.source.x,
         dy = d.target.y - d.source.y,
         dr = Math.sqrt(dx * dx + dy * dy);
@@ -155,13 +167,13 @@ Template.graph.rendered = function () {
         dr + "," + dr + " 0 0,1 " +
         d.target.x + "," +
         d.target.y;
-    });
+      });
 
-      node
-      .attr("transform", function(d) {
-        return "translate(" + d.x + "," + d.y + ")"; });
-  }
-});
+      node.attr("transform", function(d) {
+        return "translate(" + d.x + "," + d.y + ")";
+      });
+    }
+  });
 };
 
 //

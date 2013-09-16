@@ -11,7 +11,7 @@ body {
 }
 
 .container {
-    width: 600px;
+    width: 640px;
     margin: 0 auto;    
 }
 
@@ -35,6 +35,7 @@ path.link {
   fill: none;
   stroke: #666;
   stroke-width: 2px;
+  cursor: pointer;
 }
 
 circle {
