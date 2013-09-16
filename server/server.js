@@ -449,14 +449,6 @@ Meteor.startup(function () {
     },
 
     {
-      startSong: "lamour",
-      startTime: 234.202515,
-      endSong: "apollo",
-      endTime: 37.440605,
-      type: "wav"
-    },
-
-    {
       startSong: "torrent",
       startTime: 277.748840,
       endSong: "lamour",
@@ -475,6 +467,7 @@ Meteor.startup(function () {
       ];
 
     transitions.forEach(function (transition) {
+      transition['playCount'] = 0;
       Transitions.insert(transition);
     });
   }

@@ -15,7 +15,7 @@ body {
     margin: 0 auto;    
 }
 
-.transition {
+.transition, .song {
     cursor: pointer;
     padding: 5px;
 }
@@ -25,16 +25,23 @@ body {
     background-color: yellow;
 }
 
+.current {
+    font-size: 20px;
+    color: white;
+    background-color: blue;
+}
+
 path.link {
   fill: none;
   stroke: #666;
-  stroke-width: 1.5px;
+  stroke-width: 2px;
 }
 
 circle {
   fill: #ccc;
-  stroke: #fff;
+  stroke: #888;
   stroke-width: 1.5px;
+  cursor: pointer;
 }
 
 text {

@@ -6,10 +6,11 @@
 </head>
 
 <body>
-
   <div class="container">
     {{> player}}
-    <h3> Available Transitions: </h3>
+    <h3>Choose A Song: </h3>
+    {{> songs}}
+    <h3>Choose A Transition: </h3>
     {{> transitions}}
     {{> graph}}
   </div>
@@ -44,14 +45,16 @@
 </template>
 
 <template name="song">
-  <div id="song">
-    <span class="name">{{name}}</span>
+  <div class="song {{selected}} {{current}}">
+    <span class="name">name: {{name}}</span>
+    <br>
+    <span class="playCount">playCount: {{playCount}}</span>
   </div>
 </template>
 
 <!-- Transitions -->
 <template name="transitions">
-  <ul id="transitions">
+  <ul class="transitions">
     {{#each transitions}}
       {{> transition}}
     {{/each}}
@@ -59,9 +62,13 @@
 </template>
 
 <template name="transition">
-  <div class="transition {{selected}}">
+  <div class="transition {{selected}} {{current}}">
     <span class="startSong">startSong: {{startSong}}</span>
-    <br/>
+    <br>
+    <span class="startTime">startTime: {{startTime}}</span>
+    <br>
     <span class="endSong">endSong: {{endSong}}</span>
+    <br>
+    <span class="playCount">playCount: {{playCount}}</span>
   </div>
 </template>
