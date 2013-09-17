@@ -51,7 +51,7 @@ Template.transitions.transitions = function () {
   if (currSong) {
     return Transitions.find({
         startSong: currSong.name,
-        startTime: { $gt: Session.get("offset") + 5 }
+        startTime: { $gt: Session.get("offset") + BUFFER_LOAD_TIME }
       }, {
         sort: { name: 1 }
       });

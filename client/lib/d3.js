@@ -32,13 +32,18 @@ Template.graph.rendered = function () {
       return transition;
     });
 
-    // define next song as next node
-    var currTransition = Transitions.findOne(Session.get("current_transition")),
-        nextSong = Songs.findOne({ name: currTransition.endSong });
-    nextSong["color"] = 1;
-    nodes[nextSong.name] = nextSong;
-    // get all nodes adjacent to nextSong
-    links = links.concat(Transitions.find( { startSong: nextSong.name }).fetch());
+    // color queued transitions
+    console.log("queued transitions:");
+    var queuedTransitions = Session.get("queued_transitions");
+    console.log(queuedTransitions);
+    for (var i = 0; i < queuedTransitions.length; i++) {
+      var transition = queuedTransitions[i];
+          endSong = Songs.findOne({ name: transition.endSong });
+      endSong["color"] = 1;
+      nodes[endSong.name] = endSong;
+      // get all nodes adjacent to endSong
+      links = links.concat(Transitions.find( { startSong: endSong.name }).fetch());
+    }
 
     // compute distinct nodes from links
     links.forEach(function (link) {
@@ -50,7 +55,7 @@ Template.graph.rendered = function () {
     // compute appropriate link for each node
     for (var nodeName in nodes) {
       var song = nodes[nodeName];
-      song.transition_info = getValidTransition(song);
+      song.transition_info = getNearestValidTransition(song);
     }
 
     var force = d3.layout.force()
