@@ -11,51 +11,69 @@ Template.graph.rendered = function () {
 
     var nodes = {},
         links = [],
-        width = 640,
-        height = 480;
-    
+        charge = $('#chargeSlider').slider('getValue'),
+        width = $("#graph-wrapper").width(),
+        height = width / 1.9;
+
+    console.log("CHARGE: "+charge);
+
+    console.log("width: "+$("#graph-wrapper").width());
+    console.log("height: "+$("#graph-wrapper").height());
+
+    //
+    // preprocess nodes and links if we are playing a mix
+    //
     var currSong = Songs.findOne(Session.get("current_song"));
-    if (!currSong) { return console.log("NOT DRAWING GRAPH"); }
-
-    // define current song as center node
-    currSong["fixed"] = true;
-    currSong["px"] = width/2;
-    currSong["py"] = height/2;
-    currSong["color"] = 2;
-    nodes[currSong.name] = currSong;
-    // get all nodes adjacent to currSong
-    links = Transitions.find( { startSong: currSong.name }).fetch()
-    .map(function (transition) {
-      if (transition._id === Session.get("current_transition")) {
-        transition.color = 2;
-      }
-      return transition;
-    });
-
-    // color queued transitions
-    console.log("queued transitions:");
     var queuedTransitions = Session.get("queued_transitions");
-    console.log(queuedTransitions);
-    for (var i = 0; i < queuedTransitions.length; i++) {
-      var transition = queuedTransitions[i];
-          endSong = Songs.findOne({ name: transition.endSong });
-      endSong["color"] = 1;
-      nodes[endSong.name] = endSong;
-      // get all nodes adjacent to endSong
-      links = links.concat(Transitions.find( { startSong: endSong.name }).fetch());
+    if (currSong) {
+
+      // define current song as center node
+      currSong["fixed"] = true;
+      currSong["px"] = width/2;
+      currSong["py"] = height/2;
+      currSong["color"] = 2;
+      nodes[currSong.name] = currSong;
+      // get all nodes coming from currSong
+      links = Transitions.find( { startSong: currSong.name }).fetch();
+
+      // color queued transitions
+      console.log("queued transitions:");
+      console.log(queuedTransitions);
+      for (var i = 0; i < queuedTransitions.length; i++) {
+        var transition = queuedTransitions[i];
+            endSong = Songs.findOne({ name: transition.endSong });
+        endSong["color"] = 1;
+        nodes[endSong.name] = endSong;
+        // get all nodes coming from endSong
+        links = links.concat(Transitions.find( { startSong: endSong.name }).fetch());
+      }
+    } else {
+      links = Transitions.find().fetch();
     }
+    //
+    // end preprocess
+    //
 
     // compute distinct nodes from links
     links.forEach(function (link) {
-      link.source = nodes[link.startSong] || (nodes[link.startSong] = { name: link.startSong, color: 0 });
-      link.target = nodes[link.endSong] || (nodes[link.endSong] = { name: link.endSong, color: 0 });
+      link.source = nodes[link.startSong] || (nodes[link.startSong] = { name: link.startSong, color: 0, type: "mp3" });
+      link.target = nodes[link.endSong] || (nodes[link.endSong] = { name: link.endSong, color: 0, type: "mp3" });
+      if (link._id == Session.get("current_transition")) {
+        link.color = 2;
+      } else {
+        queuedTransitions.forEach(function (transition) {
+          if (link._id == transition._id) {
+            link.color = 1;
+          }
+        });
+      }
       link.color = link.color || 0;
     });
 
     // compute appropriate link for each node
     for (var nodeName in nodes) {
       var song = nodes[nodeName];
-      song.transition_info = getNearestValidTransition(song);
+      song.transition_info = currSong ? getNearestValidTransition(song) : undefined;
     }
 
     var force = d3.layout.force()
@@ -113,12 +131,14 @@ Template.graph.rendered = function () {
     .style("fill", colorNode)
     .on("dblclick", function (d) {
       // TODO: this should make sure this node is not queued at all
-      if (d._id !== currSong._id) {
+      if (currSong && (d._id !== currSong._id)) {
         queueTransition(d.transition_info['transition'], d.transition_info['index']);
+      } else {
+        startMix(d);
       }
     })
     .on("mouseover", function(d) {
-      var color = (d._id !== currSong._id) ? 1 : 2;
+      var color = (currSong && (d._id == currSong._id)) ? 2 : 1;
       d3.select(this).transition()
       .duration(300)
       .attr("r", 15)

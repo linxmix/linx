@@ -1,0 +1,21 @@
+{
+  "meteor": {},
+  "dependencies": {
+    "basePackages": {
+      "bootstrap-3": {},
+      "bootstrap-slider-touch": {}
+    },
+    "packages": {
+      "bootstrap-3": {
+        "git": "https://github.com/mangasocial/meteor-bootstrap-3.git",
+        "tag": "v0.3.4",
+        "commit": "680c056e849d079a1b669247f347da2b443aad91"
+      },
+      "bootstrap-slider-touch": {
+        "git": "https://github.com/Dsyko/meteor-bootstrap-slider-touch.git",
+        "tag": "v2.0.1",
+        "commit": "c0b20f7851728ac5e265ecaef496a1d756ca1686"
+      }
+    }
+  }
+}

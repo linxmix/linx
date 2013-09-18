@@ -15,11 +15,7 @@ Template.player.events({
     scheduleTransition(true);
   },
 
-  'click #stop': stopMix,
-
-  'click #queueTransition': function() {
-    queueTransition(Transitions.findOne(Session.get("selected_transition")), 0);
-  }
+  'click #stop': stopMix
 });
 
 Template.transition.events({
@@ -42,8 +38,17 @@ Template.song.events({
   }
 });
 
+Template.player.events({
+  'keyup .search-query': function () {
+    Session.set("search_query", $(".search-query").val());
+  }
+});
+
 Template.songs.songs = function () {
-  return Songs.find({}, { sort: { name: 1 }});
+  return Songs.find(
+    { name: { $regex: Session.get("search_query") } },
+    { sort: { name: 1 } }
+  );
 };
 
 Template.transitions.transitions = function () {

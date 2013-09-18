@@ -1,18 +1,28 @@
 body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
     font-weight: 300;
-    margin: 50px 0;
-    padding: 0;
+    padding-top: 70px;
     -webkit-user-select: none;
     -khtml-user-select: none;
     -moz-user-select: none;
     -o-user-select: none;
     user-select: none;
+    /*background-image:url('http://freebestwallpaper.files.wordpress.com/2012/02/amazing-background-1.png');
+    background-repeat: repeat;*/
 }
 
-.container {
-    width: 640px;
-    margin: 0 auto;    
+
+.well {
+  opacity: 1.0;
+  background-color: #bbb;
+}
+
+
+.container-full {
+  padding-left: 15px;
+  padding-right: 15px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 .transition, .song {
@@ -29,23 +39,4 @@ body {
     font-size: 20px;
     color: white;
     background-color: blue;
-}
-
-path.link {
-  fill: none;
-  stroke: #666;
-  stroke-width: 2px;
-}
-
-circle {
-  fill: #ccc;
-  stroke: #888;
-  stroke-width: 1.5px;
-  cursor: pointer;
-}
-
-text {
-  fill: #000;
-  font: 12px sans-serif;
-  pointer-events: none;
 }

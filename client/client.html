@@ -2,17 +2,27 @@
 ================================================== -->
 <head>
   <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>beatfn.com</title>
 </head>
 
 <body>
-  <div class="container">
-    {{> player}}
-    <h3>Choose A Song: </h3>
-    {{> songs}}
-    <h3>Choose A Transition: </h3>
-    {{> transitions}}
-    {{> graph}}
+  <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+      <div class="container-full">
+        {{> player}}
+      </div>
+    </div>
+  </div>
+  <div class="container-full">
+    <div class="row">
+      <div class="col-md-10 col-lg-9">
+        {{> graph}}
+      </div>
+      <div class="col-md-2 col-lg-3">
+        {{> songs}}
+      </div>
+    </div>
   </div>
 </body>
 
@@ -21,15 +31,20 @@
 
 <!-- Player -->
 <template name="player">
-  <input type="button" id="start" value="Start" />
-  <input type="button" id="queueTransition" value="Queue Transition" />
-  <input type="button" id="transitionNow" value="Transition Now" />
-  <input type="button" id="stop" value="Stop" />
+  <span class="navbar-brand">Beatfn.com</span>
+  <ul class="nav navbar-left">
+    <button class="navbar-btn btn-success" id="start">Start</button>
+    <button class="navbar-btn btn-primary" id="transitionNow">Transition Now</button>
+    <button class="navbar-btn btn-danger" id="stop">Stop</button>
+  </ul>
+  <form class="navbar-form navbar-search navbar-right">
+    <input type="text" class="search-query" placeholder="Find Songs...">
+  </form>
 </template>
 
 <!-- Graph -->
 <template name="graph">
-  <div id="graph-wrapper">
+  <div id="graph-wrapper" class="well">
     {{#constant}}
     {{/constant}}
   </div>
@@ -39,16 +54,16 @@
 <template name="songs">
   <ul id="songs">
     {{#each songs}}
-      {{> song}}
+    {{> song}}
     {{/each}}
   </ul>
 </template>
 
 <template name="song">
-  <div class="song {{selected}} {{current}}">
-    <span class="name">name: {{name}}</span>
+  <div class="song {{selected}} {{current}} well well-sm">
+    <span class="name">Song: {{name}}</span>
     <br>
-    <span class="playCount">playCount: {{playCount}}</span>
+    <span class="playCount"># Plays: {{playCount}}</span>
   </div>
 </template>
 
@@ -56,7 +71,7 @@
 <template name="transitions">
   <ul class="transitions">
     {{#each transitions}}
-      {{> transition}}
+    {{> transition}}
     {{/each}}
   </ul>
 </template>
