@@ -21,11 +21,17 @@ Template.graph.rendered = function () {
     //console.log("height: "+$("#graph-wrapper").height());
 
     //
-    // preprocess nodes and links if we are playing a mix
+    // preprocess nodes and links
     //
     var currSong = Songs.findOne(Session.get("current_song"));
     var queuedTransitions = Session.get("queued_transitions");
+
+    // if we have a currSong, draw graph in mix mode
     if (currSong) {
+
+      console.log("GRAPH: MIX MODE");
+      console.log(queuedTransitions);
+      console.log(currSong);
 
       // define current song as center node
       currSong["fixed"] = true;
@@ -33,33 +39,23 @@ Template.graph.rendered = function () {
       currSong["py"] = 50;
       currSong["color"] = 2;
       nodes[currSong._id] = currSong;
-      // get all nodes coming from currSong
-      links = Transitions.find( { startSong: currSong._id }).fetch();
 
-      // color nodes of queued transitions
-      console.log("queued transitions:");
-      console.log(queuedTransitions);
-      for (var i = 0; i < queuedTransitions.length; i++) {
-        var transition = queuedTransitions[i];
-            endSong = Songs.findOne(transition.endSong);
+      // process nodes of queued transitions
+      queuedTransitions.forEach(function (transition) {
+        var endSong = Songs.findOne(transition.endSong);
         endSong["color"] = 1;
         nodes[endSong._id] = endSong;
-        // get all nodes coming from endSong
-        links = links.concat(Transitions.find( { startSong: endSong._id }).fetch());
-      }
+      });
+
+      // get all links in queue + all links coming from last song in queue
+      var lastTransition = queuedTransitions[queuedTransitions.length - 1],
+          endSong_id = (lastTransition && lastTransition.endSong) || currSong._id;
+      links = queuedTransitions.concat(Transitions.find( { startSong: endSong_id }).fetch());
+
+    // no currSong, so draw graph in view all mode
     } else {
       links = Transitions.find().fetch();
     }
-
-    // add "soft" transitions to links
-    queuedTransitions.forEach(function (transition) {
-      if (!transition._id) {
-        links.push(transition);
-      }
-    });
-    //
-    // end preprocess
-    //
 
     // compute distinct nodes from links
     links.forEach(function (link) {
@@ -67,7 +63,6 @@ Template.graph.rendered = function () {
       link.target = nodes[link.endSong] || (nodes[link.endSong] = Songs.findOne(link.endSong));
 
       // color links
-      link.color = 0;
       if (link._id == Session.get("current_transition")) {
         link.color = 2;
       } else {
@@ -80,11 +75,15 @@ Template.graph.rendered = function () {
     });
 
     // compute appropriate link for each node
-    for (var node_id in nodes) {
-      var node = nodes[node_id];
-      node.transition_info = currSong ? getNearestValidTransition(node) : undefined;
-      node.color = node.color || 0;
+    if (currSong) {
+      for (var node_id in nodes) {
+        var node = nodes[node_id];
+        node.transition_info = getNearestValidTransition(node);
+      }
     }
+    //
+    // end preprocess
+    //
 
     var force = d3.layout.force()
     .nodes(d3.values(nodes))
@@ -143,21 +142,20 @@ Template.graph.rendered = function () {
     .attr("r", 10)
     .style("fill", colorNode)
     .on("dblclick", function (d) {
-      // TODO: this should make sure this node is not queued at all
-      if (currSong && (d._id !== currSong._id)) {
+      if (d.transition_info) {
         queueTransition(d.transition_info['transition'], d.transition_info['index']);
       } else {
         startMix(d);
       }
     })
-    .on("mouseover", function(d) {
+    .on("mouseover", function (d) {
       var color = (currSong && (d._id == currSong._id)) ? 2 : 1;
       d3.select(this).transition()
       .duration(300)
       .attr("r", 15)
-      .style("fill", function(d) { return colorNode({ color: color }); });
+      .style("fill", function (d) { return colorNode({ color: color }); });
     })
-    .on("mouseout", function(d) {
+    .on("mouseout", function (d) {
       d3.select(this).transition()
       .duration(300)
       .attr("r", 10)
@@ -171,13 +169,15 @@ Template.graph.rendered = function () {
     .text(function(d) { return d.name; });
 
     function colorNode(d) {
-      var colors = ["#ff0000", "#00ff00", "#0000ff"]; // red, green, blue
-      return colors[d.color];
+      var colors = ["#ff0000", "#00ff00", "#0000ff"], // red, green, blue
+          color = (d && d.color) || 0;
+      return colors[color];
     }
 
     function colorLink(d) {
-      var colors = ["#666", "#2ca02c", "#1f77b4"]; // red, green, blue
-      return colors[d.color];
+      var colors = ["#666", "#2ca02c", "#1f77b4"], // red, green, blue
+          color = (d && d.color) || 0;
+      return colors[color];
     }
 
     // add the curvy lines

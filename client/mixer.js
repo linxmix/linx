@@ -85,11 +85,13 @@ try {
 
   function playSource(source, when, offset, duration) {
     // start source, set it as currSource, then return it
+    /*
     TIMERS.push(setTimeout(function () {
       stopCurrSource();
       source.start(0, offset, duration);
       currSource = source;
     }, when * 1000.0));
+*/
   }
 
   function stopCurrSource(when) {
@@ -308,15 +310,15 @@ try {
   // TODO: what if none exist? add a soft transition to the end? or maybe find a path such that one exists?
   getNearestValidTransition = function(song) {
     var queuedTransitions = Session.get("queued_transitions"),
-        nextTransition;
+        transition;
 
     var transitions = Transitions.find({ endSong: song._id }).fetch();
     for (var i = 0; i < transitions.length; i++) {
-      nextTransition = transitions[i];
+      transition = transitions[i];
       for (index = queuedTransitions.length - 1; index >= -1; index--) {
-        if (isValidTransition(queuedTransitions[index], nextTransition)) {
+        if (isValidTransition(queuedTransitions[index], transition)) {
           //console.log("returning index: "+(index+1)+" for song: "+song.name);
-          return { 'transition': nextTransition, 'index': ++index };
+          return { 'transition': transition, 'index': ++index };
         }
       }
     }
