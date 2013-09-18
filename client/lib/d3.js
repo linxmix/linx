@@ -1,6 +1,7 @@
 //
 // d3 stuff
 //
+
 Template.graph.destroyed = function () {
   console.log("GRAPH DESTROYED! this.drawGraph: "+this.drawGraph);
   this.drawGraph.stop();
@@ -16,9 +17,8 @@ Template.graph.rendered = function () {
         height = width / 1.9;
 
     //console.log("CHARGE: "+charge);
-
-    console.log("width: "+$("#graph-wrapper").width());
-    console.log("height: "+$("#graph-wrapper").height());
+    //console.log("width: "+$("#graph-wrapper").width());
+    //console.log("height: "+$("#graph-wrapper").height());
 
     //
     // preprocess nodes and links if we are playing a mix
@@ -36,7 +36,7 @@ Template.graph.rendered = function () {
       // get all nodes coming from currSong
       links = Transitions.find( { startSong: currSong._id }).fetch();
 
-      // color queued transitions
+      // color nodes of queued transitions
       console.log("queued transitions:");
       console.log(queuedTransitions);
       for (var i = 0; i < queuedTransitions.length; i++) {
@@ -50,6 +50,13 @@ Template.graph.rendered = function () {
     } else {
       links = Transitions.find().fetch();
     }
+
+    // add "soft" transitions to links
+    queuedTransitions.forEach(function (transition) {
+      if (!transition._id) {
+        links.push(transition);
+      }
+    });
     //
     // end preprocess
     //
@@ -58,6 +65,9 @@ Template.graph.rendered = function () {
     links.forEach(function (link) {
       link.source = nodes[link.startSong] || (nodes[link.startSong] = Songs.findOne(link.startSong));
       link.target = nodes[link.endSong] || (nodes[link.endSong] = Songs.findOne(link.endSong));
+
+      // color links
+      link.color = 0;
       if (link._id == Session.get("current_transition")) {
         link.color = 2;
       } else {
@@ -67,7 +77,6 @@ Template.graph.rendered = function () {
           }
         });
       }
-      link.color = link.color || 0;
     });
 
     // compute appropriate link for each node
@@ -114,7 +123,10 @@ Template.graph.rendered = function () {
     .data(force.links())
     .enter().append("svg:path")
     .attr("class", "link")
+    // make soft transitions dashed
+    .style("stroke-dasharray", function (d) { return (d._id ? "" : ("3,3")); })
     .attr("marker-end", "url(#end)")
+    // TODO: will the following be a problem for soft transitions w/out ids?
     .attr("id", function(d) { return d._id; })
     .style("stroke", colorLink);
 

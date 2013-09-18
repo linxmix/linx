@@ -1,4 +1,4 @@
-path.link {
+.link {
   fill: none;
   stroke: #666;
   stroke-width: 2px;
@@ -12,7 +12,7 @@ circle {
 }
 
 text {
-  fill: #222;
+  fill: #00345E;
   font: sans-serif;
   font-size: 18px;
   pointer-events: none;

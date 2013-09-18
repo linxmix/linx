@@ -2,7 +2,6 @@
 // load web audio api
 //
 
-BUFFER_LOAD_TIME = 5.0;
 var currSource, context, lastMixTime = 0, BUFFERS = [], TIMERS = [];
 
 try {
@@ -86,11 +85,11 @@ try {
 
   function playSource(source, when, offset, duration) {
     // start source, set it as currSource, then return it
-    /*TIMERS.push(setTimeout(function () {
+    TIMERS.push(setTimeout(function () {
       stopCurrSource();
       source.start(0, offset, duration);
       currSource = source;
-    }, when * 1000.0));*/
+    }, when * 1000.0));
   }
 
   function stopCurrSource(when) {
@@ -99,17 +98,57 @@ try {
     currSource = undefined;
   }
 
+  function scheduleSoftTransition(endSong, now) {
+    var offset = Session.get("offset");
+    // set current transition to this song's ID to signify a "soft" transition
+    Session.set("current_transition", endSong._id);
+
+    // async load buffer
+    makeSongBuffer(endSong, function (endBuffer) {
+
+      // make sure the transition wasn't changed while we were loading buffers        
+      if (endSong._id !== Session.get("current_transition")) {
+        console.log("WARNING: Transition changed while loading buffers.");
+        return;
+      }
+        
+      var lag = context.currentTime - lastMixTime;
+      // play immediately if scheduled now
+      var songDuration = now ? 0 : (currSource.buffer.duration - offset - lag);
+
+      // schedule the transition
+      clearTimers(); // in case another transition was already scheduled
+      TIMERS.push(setTimeout(function() {
+        // start the next song and continue the mix
+        stopCurrSource();
+        endSong.source = playSongBuffer(endBuffer);
+        setCurrentSong(endSong);
+        Session.set("offset", 0.0);
+        queuedTransitions = Session.get("queued_transitions");
+        queuedTransitions.shift();
+        console.log("setting queued_transitions from scheduleMix");
+        console.log(queuedTransitions);
+        Session.set("queued_transitions", queuedTransitions);
+        scheduleTransition();
+      }, songDuration * 1000.0));
+    });
+  }
+
   scheduleTransition = function(now) {
     var offset = Session.get("offset");
     lastMixTime = context.currentTime;
 
     // figure out which transition to schedule, set that as current
     var queuedTransitions = Session.get("queued_transitions");
-    // TODO: make sure the following does NOT change sessions's queuedTransitions!
     var transition = queuedTransitions[0] || chooseTransition();
     if (!transition) {
       return console.log("ERROR: found no transitions for current song");
+
+    // if there's no ID, this is a "soft" transition
+    } else if (!transition._id) {
+      return scheduleSoftTransition(Songs.findOne(transition.endSong), now);
     }
+
     Session.set("current_transition", transition._id);
     var endSong = Songs.findOne(transition.endSong);
 
@@ -168,7 +207,6 @@ try {
     Session.set("current_transition", undefined);
     Session.set("current_song", undefined);
     stopCurrSource();
-    console.log(Transitions.find().fetch());
   };
 
   function shuffle(o){
@@ -204,7 +242,8 @@ try {
   }
 
   startMix = function(startSong, startPos) {
-    Session.set("offset", startPos = startPos || 60);
+    Session.set("offset", startPos = startPos || 0);
+    Session.set("queued_transitions", []);
     if (!startSong) {
       return console.log("ERROR: select a song in order to start the mix");
     }
@@ -223,30 +262,45 @@ try {
   }
 
   function isValidTransition(prevTransition, transition, debug) {
-    var currSong = Songs.findOne(Session.get("current_song"));
 
+    // if not given a transition, immediate gg
     if (!transition) {
       if (debug) console.log("ERROR: transition undefined");
       return false;
     }
 
-    // first check against prevTransition
-    if (prevTransition &&
-      ((transition.startSong != prevTransition.endSong) ||
-      (prevTransition.endTime > transition.startTime - BUFFER_LOAD_TIME))) {
-      if (debug) console.log("ERROR: given transition does not fit prevTransition");
-      return false;
+    // if given transition is "soft", it's definitely fine
+    if (!transition._id) {
+      return true;
+    }
+
+    // if given a prevTransition
+    if (prevTransition) {
+
+      // check to make sure transition fits with prevTransition
+      if (prevTransition.endSong != transition.startSong) {
+        if (debug) console.log("ERROR: given transition does not fit prevTransition");
+        return false;
+      }
+
+      // if prevTransition is not soft, also make sure transition isn't too soon
+      if (prevTransition._id &&
+        (prevTransition.endTime > transition.startTime - BUFFER_LOAD_TIME)) {
+        if (debug) console.log("ERROR: given transition starts too soon after prevTransition");
+        return false;
+      }
+    }
 
     // if no prevTransition, make sure we aren't too far in the current song
-    } else if (!prevTransition &&
-      ((transition.startSong != currSong._id) ||
+    if (!prevTransition &&
+      ((transition.startSong != Session.get("current_song")) ||
       (getCurrentOffset() > transition.startTime - BUFFER_LOAD_TIME))) {
       if (debug) console.log("ERROR: too far in currSong to queue given transition");
       return false;
-
-    } else {
-      return true;
     }
+
+    // if we get here, we've passed all our validation checks
+    return true;
   }
 
   // returns a valid transition to song such that queued_transitions
@@ -272,15 +326,29 @@ try {
   queueTransition = function(transition, index) {
     var queuedTransitions = Session.get("queued_transitions");
     if (index === undefined) index = queuedTransitions.length;
+    var prevTransition = queuedTransitions[index - 1];
+
+    console.log("queueTransition called with below at index: "+index);
+    console.log(transition);
 
     // make sure this transition fits at this index
-    console.log("queueing below transition at index: "+index);
-    console.log(transition);
-    if (!isValidTransition(queuedTransitions[index - 1], transition, true)) {
+    if (!isValidTransition(prevTransition, transition, true)) {
       return console.log("ERROR: Invalid Transition given to queueTransition");
     }
+
+    // TODO: is this check necessary?
+    /*
     if (queuedTransitions.indexOf(transition._id) > -1) {
       console.log("WARNING: given transition to "+transition.endSong+" is already queued");
+    }
+    */
+
+    // if this transition is "soft", fill in its startSong
+    if (!transition._id) {
+      console.log("queueing soft transition");
+      transition.startSong =
+        (prevTransition && prevTransition.endSong) ||
+        Sessions.get("current_song");
     }
 
     // update queuedTransitions with this transition
@@ -289,10 +357,9 @@ try {
     console.log(queuedTransitions);
     Session.set("queued_transitions", queuedTransitions);
 
-    // if index is 0, we are replacing the current transition
+    // if index is 0, we are replacing the current transition and must schedule it now
     if (index === 0) {
       Session.set("offset", getCurrentOffset());
-      Session.set("current_transition", transition._id);
       scheduleTransition();
     }
   };

@@ -1,10 +1,7 @@
-// init
-Session.set("offset", 0);
-Session.set("queued_transitions", []);
-
 //
 // do meteor stuff
 //
+
 Template.player.events({
 
   'click #start': function() {
@@ -34,7 +31,15 @@ Template.song.events({
   },
   'dblclick': function() {
     Session.set("selected_song", this._id);
-    startMix(Songs.findOne(this._id));
+
+    // if we're currently playing, queue a "soft" transition to this song
+    if (Session.get("current_song")) {
+      queueTransition({ endSong: this._id });
+      
+    // if we aren't playing, start the mix with this song
+    } else {
+      startMix(Songs.findOne(this._id));
+    }
   }
 });
 

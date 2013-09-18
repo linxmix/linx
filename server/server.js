@@ -247,14 +247,15 @@ Meteor.startup(function () {
       type: "wav"
     },
 */
-
+/*
     {
       startSong: "language",
-      startTime: 146.066269,
+      startTime: 318.223175,
       endSong: "apollo",
-      endTime: 318.223175,
+      endTime: 146.066269,
       type: "wav"
     },
+    */
 
     {
       startSong: "kawaii",
