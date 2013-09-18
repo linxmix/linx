@@ -85,13 +85,11 @@ try {
 
   function playSource(source, when, offset, duration) {
     // start source, set it as currSource, then return it
-    /*
     TIMERS.push(setTimeout(function () {
       stopCurrSource();
       source.start(0, offset, duration);
       currSource = source;
     }, when * 1000.0));
-*/
   }
 
   function stopCurrSource(when) {
@@ -218,23 +216,36 @@ try {
 
   // algorithm to decide which transition comes next.
   function chooseTransition(callback) {
-    var currSong = Songs.findOne(Session.get("current_song"));
+    var currSong_id = Session.get("current_song");
     var offset = Session.get("offset");
 
     var choices = Transitions.find({
-      startSong: currSong._id,
+      startSong: currSong_id,
       startTime: { $gt: offset + BUFFER_LOAD_TIME }
-    }, {
-      sort: { playCount: -1 }
     }).fetch();
 
+    // find choice with endSong that has least number of plays amongst choices
+    var transition = choices[0],
+        endSong = Songs.findOne(transition.endSong);
     for (var i = 0; i < choices.length; i++) {
-      console.log("found transition to: " + choices[i].endSong);
+      var _transition = choices[i];
+      var _endSong = Songs.findOne(_transition.endSong);
+      if (_endSong.playCount < endSong.playCount) {
+        transition = _transition;
+        endSong = _endSong;
+      }
     }
-    var transition = choices[0];
-    console.log("CHOOSING transition: " + transition.endSong);
 
-    // TODO: should this be here?
+    // if there is a song with a lower playCount than endSong, soft transition to it
+    var song = Songs.findOne({ playCount: { $lt: endSong.playCount } });
+    if (song) {
+      transition = { startSong: currSong_id, endSong: song._id };
+    }
+
+    console.log("CHOOSING transition: ");
+    console.log(transition);
+
+    // TODO: should this be here? shouldnt we be calling queueTransition?
     console.log("setting queued_transitions from chooseTransition");
     console.log([transition]);
     Session.set("queued_transitions", [transition]);

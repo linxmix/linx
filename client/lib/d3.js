@@ -26,12 +26,8 @@ Template.graph.rendered = function () {
     var currSong = Songs.findOne(Session.get("current_song"));
     var queuedTransitions = Session.get("queued_transitions");
 
-    // if we have a currSong, draw graph in mix mode
+    // if we have a currSong, draw graph in view mix mode
     if (currSong) {
-
-      console.log("GRAPH: MIX MODE");
-      console.log(queuedTransitions);
-      console.log(currSong);
 
       // define current song as center node
       currSong["fixed"] = true;
@@ -144,7 +140,7 @@ Template.graph.rendered = function () {
     .on("dblclick", function (d) {
       if (d.transition_info) {
         queueTransition(d.transition_info['transition'], d.transition_info['index']);
-      } else {
+      } else if (!currSong) {
         startMix(d);
       }
     })
