@@ -52,10 +52,10 @@ Template.songs.songs = function () {
 };
 
 Template.transitions.transitions = function () {
-  var currSong = Songs.findOne(Session.get("current_song"));
+  var currSong_id = Session.get("current_song");
   if (currSong) {
     return Transitions.find({
-        startSong: currSong.name,
+        startSong: currSong_id,
         startTime: { $gt: Session.get("offset") + BUFFER_LOAD_TIME }
       }, {
         sort: { name: 1 }

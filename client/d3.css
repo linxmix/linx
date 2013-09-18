@@ -12,7 +12,8 @@ circle {
 }
 
 text {
-  fill: #000;
-  font: 12px sans-serif;
+  fill: #222;
+  font: sans-serif;
+  font-size: 18px;
   pointer-events: none;
 }

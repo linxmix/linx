@@ -15,7 +15,7 @@ Template.graph.rendered = function () {
         width = $("#graph-wrapper").width(),
         height = width / 1.9;
 
-    console.log("CHARGE: "+charge);
+    //console.log("CHARGE: "+charge);
 
     console.log("width: "+$("#graph-wrapper").width());
     console.log("height: "+$("#graph-wrapper").height());
@@ -29,23 +29,23 @@ Template.graph.rendered = function () {
 
       // define current song as center node
       currSong["fixed"] = true;
-      currSong["px"] = width/2;
-      currSong["py"] = height/2;
+      currSong["px"] = 50;
+      currSong["py"] = 50;
       currSong["color"] = 2;
-      nodes[currSong.name] = currSong;
+      nodes[currSong._id] = currSong;
       // get all nodes coming from currSong
-      links = Transitions.find( { startSong: currSong.name }).fetch();
+      links = Transitions.find( { startSong: currSong._id }).fetch();
 
       // color queued transitions
       console.log("queued transitions:");
       console.log(queuedTransitions);
       for (var i = 0; i < queuedTransitions.length; i++) {
         var transition = queuedTransitions[i];
-            endSong = Songs.findOne({ name: transition.endSong });
+            endSong = Songs.findOne(transition.endSong);
         endSong["color"] = 1;
-        nodes[endSong.name] = endSong;
+        nodes[endSong._id] = endSong;
         // get all nodes coming from endSong
-        links = links.concat(Transitions.find( { startSong: endSong.name }).fetch());
+        links = links.concat(Transitions.find( { startSong: endSong._id }).fetch());
       }
     } else {
       links = Transitions.find().fetch();
@@ -56,8 +56,8 @@ Template.graph.rendered = function () {
 
     // compute distinct nodes from links
     links.forEach(function (link) {
-      link.source = nodes[link.startSong] || (nodes[link.startSong] = { name: link.startSong, color: 0, type: "mp3" });
-      link.target = nodes[link.endSong] || (nodes[link.endSong] = { name: link.endSong, color: 0, type: "mp3" });
+      link.source = nodes[link.startSong] || (nodes[link.startSong] = Songs.findOne(link.startSong));
+      link.target = nodes[link.endSong] || (nodes[link.endSong] = Songs.findOne(link.endSong));
       if (link._id == Session.get("current_transition")) {
         link.color = 2;
       } else {
@@ -71,16 +71,17 @@ Template.graph.rendered = function () {
     });
 
     // compute appropriate link for each node
-    for (var nodeName in nodes) {
-      var song = nodes[nodeName];
-      song.transition_info = currSong ? getNearestValidTransition(song) : undefined;
+    for (var node_id in nodes) {
+      var node = nodes[node_id];
+      node.transition_info = currSong ? getNearestValidTransition(node) : undefined;
+      node.color = node.color || 0;
     }
 
     var force = d3.layout.force()
     .nodes(d3.values(nodes))
     .links(links)
     .size([width, height])
-    .gravity(0.01)
+    .gravity(0.05)
     .linkDistance(100)
     .charge(-350)
     .on("tick", tick)
@@ -163,7 +164,7 @@ Template.graph.rendered = function () {
     }
 
     function colorLink(d) {
-      var colors = ["#c62728", "#2ca02c", "#1f77b4"]; // red, green, blue
+      var colors = ["#666", "#2ca02c", "#1f77b4"]; // red, green, blue
       return colors[d.color];
     }
 

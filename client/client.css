@@ -27,16 +27,19 @@ body {
 
 .transition, .song {
     cursor: pointer;
-    padding: 5px;
 }
 
 .selected {
-    font-size: 20px;
+    font-size: 24px;
     background-color: yellow;
 }
 
 .current {
-    font-size: 20px;
+    font-size: 24px;
     color: white;
     background-color: blue;
+}
+
+.song {
+  font-size: 18px;
 }

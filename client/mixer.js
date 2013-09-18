@@ -50,8 +50,8 @@ try {
 
   function makeTransitionBuffer(transition, callback) {
     return makeBuffer('/transitions/' +
-      transition.startSong + '-' +
-      transition.endSong + '.' + transition.type, callback);
+      Songs.findOne(transition.startSong).name + '-' +
+      Songs.findOne(transition.endSong).name + '.' + transition.type, callback);
   }
 
   function playSongBuffer(buffer, when, offset, duration) {
@@ -111,7 +111,7 @@ try {
       return console.log("ERROR: found no transitions for current song");
     }
     Session.set("current_transition", transition._id);
-    var endSong = Songs.findOne({ name: transition.endSong });
+    var endSong = Songs.findOne(transition.endSong);
 
     // async load buffers
     makeTransitionBuffer(transition, function (transitionBuffer) {
@@ -168,6 +168,7 @@ try {
     Session.set("current_transition", undefined);
     Session.set("current_song", undefined);
     stopCurrSource();
+    console.log(Transitions.find().fetch());
   };
 
   function shuffle(o){
@@ -181,10 +182,10 @@ try {
     var offset = Session.get("offset");
 
     var choices = Transitions.find({
-      startSong: currSong.name,
+      startSong: currSong._id,
       startTime: { $gt: offset + BUFFER_LOAD_TIME }
     }, {
-      sort: { playCount: 1 }
+      sort: { playCount: -1 }
     }).fetch();
 
     for (var i = 0; i < choices.length; i++) {
@@ -238,7 +239,7 @@ try {
 
     // if no prevTransition, make sure we aren't too far in the current song
     } else if (!prevTransition &&
-      ((transition.startSong != currSong.name) ||
+      ((transition.startSong != currSong._id) ||
       (getCurrentOffset() > transition.startTime - BUFFER_LOAD_TIME))) {
       if (debug) console.log("ERROR: too far in currSong to queue given transition");
       return false;
@@ -255,7 +256,7 @@ try {
     var queuedTransitions = Session.get("queued_transitions"),
         nextTransition;
 
-    var transitions = Transitions.find({ endSong: song.name }).fetch();
+    var transitions = Transitions.find({ endSong: song._id }).fetch();
     for (var i = 0; i < transitions.length; i++) {
       nextTransition = transitions[i];
       for (index = queuedTransitions.length - 1; index >= -1; index--) {

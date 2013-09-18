@@ -474,17 +474,39 @@ Meteor.startup(function () {
 
   if (Songs.find().count() === 0) {
 
+    // accumulate songs from transitions
     Transitions.find().fetch().forEach(function (transition) {
       songs[transition.startSong] || (songs[transition.startSong] = { name: transition.startSong, type: "mp3" });
       songs[transition.endSong] || (songs[transition.endSong] = { name: transition.endSong, type: "mp3" });
     });
 
+    // insert songs
     for (var songName in songs) {
       var song = songs[songName];
       song['playCount'] = 0;
       Songs.insert(song);
     }
-  }
+
+    // link songs ids back to transitions
+    Songs.find().fetch().forEach(function (song) {
+      Transitions.update(
+        { startSong: song.name },
+        { $set: { startSong: song._id } },
+        { multi: true });
+      Transitions.update(
+        { endSong: song.name },
+        { $set: { endSong: song._id } },
+        { multi: true });
+    });
+    /*
+    songs = Songs.find().fetch();
+    for (var i = 0; i < songs.length; i++) {
+      var song = songs[i];
+      Transitions.update({ startSong: song.name }, { $set: { startSong: song._id } });
+      Transitions.update({ endSong: song.name }, { $set: { endSong: song._id } });
+    }
+    */
   console.log("Transition Count: "+Transitions.find().count());
   console.log("Song Count: "+Songs.find().count());
+  }
 });
