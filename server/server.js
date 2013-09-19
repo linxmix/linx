@@ -458,12 +458,236 @@ Meteor.startup(function () {
     },
 
     {
-      startSong: "blank",
-      startTime: 1000000,
-      endSong: "blank",
-      endTime: 1000000,
+      startSong: "quasar",
+      startTime: 339.779938,
+      endSong: "koala",
+      endTime: 63.960140,
       type: "wav"
-    }
+    },
+
+    {
+      startSong: "easy",
+      startTime: 175.871902,
+      endSong: "koala",
+      endTime: 228.093292,
+      type: "wav"
+    },
+
+    {
+      startSong: "koala",
+      startTime: 171.136215,
+      endSong: "till tonight",
+      endTime: 51.011158,
+      type: "wav"
+    },
+
+    {
+      startSong: "till tonight",
+      startTime: 211.654068,
+      endSong: "baker street",
+      endTime: 63.335033,
+      type: "wav"
+    },
+
+    {
+      startSong: "till tonight",
+      startTime: 112.070610,
+      endSong: "miami",
+      endTime: 80.823990,
+      type: "wav"
+    },
+
+    {
+      startSong: "without you",
+      startTime: 276.263092,
+      endSong: "till tonight",
+      endTime: 38.603760,
+      type: "wav"
+    },
+
+    {
+      startSong: "quasar",
+      startTime: 195.384933,
+      endSong: "lightspeed",
+      endTime: 6.788352,
+      type: "wav"
+    },
+
+    {
+      startSong: "koala",
+      startTime: 309.461517,
+      endSong: "lightspeed",
+      endTime: 36.182682,
+      type: "wav"
+    },
+
+    {
+      startSong: "lightspeed",
+      startTime: 174.878281,
+      endSong: "torrent",
+      endTime: 66.282288,
+      type: "wav"
+    },
+
+    {
+      startSong: "lightspeed",
+      startTime: 173.392654,
+      endSong: "cal state anthem",
+      endTime: 49.116543,
+      type: "wav"
+    },
+
+    {
+      startSong: "cal state anthem",
+      startTime: 251.290787,
+      endSong: "animal rights",
+      endTime: 80.356789,
+      type: "wav"
+    },
+
+    {
+      startSong: "cal state anthem",
+      startTime: 159.571121,
+      endSong: "lightspeed",
+      endTime: 12.004528,
+      type: "wav"
+    },
+
+    {
+      startSong: "years",
+      startTime: 202.542404,
+      endSong: "cal state anthem",
+      endTime: 47.239288,
+      type: "wav"
+    },
+
+    {
+      startSong: "cal state anthem",
+      startTime: 160.770905,
+      endSong: "quasar",
+      endTime: 212.906494,
+      type: "wav"
+    },
+
+    {
+      startSong: "animal rights",
+      startTime: 268.768951,
+      endSong: "ill be ok",
+      endTime: 130.884521,
+      type: "wav"
+    },
+
+    {
+      startSong: "ill be ok",
+      startTime: 349.016205,
+      endSong: "lightspeed",
+      endTime: 35.852310,
+      type: "wav"
+    },
+
+    {
+      startSong: "animal rights",
+      startTime: 268.606445,
+      endSong: "till tonight",
+      endTime: 63.212818,
+      type: "wav"
+    },
+
+    {
+      startSong: "animal rights",
+      startTime: 297.347626,
+      endSong: "quasar",
+      endTime: 62.352673,
+      type: "wav"
+    },
+
+    {
+      startSong: "easy",
+      startTime: 359.329315,
+      endSong: "animal rights",
+      endTime: 63.426117,
+      type: "wav"
+    },
+
+    {
+      startSong: "without you",
+      startTime: 162.727097,
+      endSong: "one more time",
+      endTime: 7.186939,
+      type: "wav"
+    },
+
+    {
+      startSong: "one more time",
+      startTime: 136.920074,
+      endSong: "baker street",
+      endTime: 75.443390,
+      type: "wav"
+    },
+
+    {
+      startSong: "skylarking",
+      startTime: 242.751053,
+      endSong: "one more time",
+      endTime: 13.798616,
+      type: "wav"
+    },
+
+    {
+      startSong: "years",
+      startTime: 201.731400,
+      endSong: "one more time",
+      endTime: 58.026669,
+      type: "wav"
+    },
+
+    {
+      startSong: "one more time",
+      startTime: 141.210754,
+      endSong: "jaded",
+      endTime: 276.148254,
+      type: "wav"
+    },
+
+    {
+      startSong: "skylarking",
+      startTime: 396.657471,
+      endSong: "jaded",
+      endTime: 126.761658,
+      type: "wav"
+    },
+
+    {
+      startSong: "jaded",
+      startTime: 453.885284,
+      endSong: "the sky",
+      endTime: 107.451714,
+      type: "wav"
+    },
+
+    {
+      startSong: "the sky",
+      startTime: 442.278534,
+      endSong: "lightspeed",
+      endTime: 63.172398,
+      type: "wav"
+    },
+
+    {
+      startSong: "the sky",
+      startTime: 152.850098,
+      endSong: "easy",
+      endTime: 46.121857,
+      type: "wav"
+    },
+
+    {
+      startSong: "easy",
+      startTime: 360.146362,
+      endSong: "the sky",
+      endTime: 72.216476,
+      type: "wav"
+    },
 
       ];
 

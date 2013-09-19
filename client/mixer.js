@@ -63,7 +63,7 @@ try {
     //var compressor = context.createDynamicsCompressor();
     var gain = context.createGain();
     source.buffer = buffer;
-    gain.gain.value = 0.55;
+    gain.gain.value = 0.6;
 
     // route source
     source.connect(gain);
@@ -85,6 +85,7 @@ try {
 
   function playSource(source, when, offset, duration) {
     // start source, set it as currSource, then return it
+    console.log("playSource offset: "+offset);
     TIMERS.push(setTimeout(function () {
       stopCurrSource();
       source.start(0, offset, duration);
@@ -146,6 +147,7 @@ try {
 
     // if there's no ID, this is a "soft" transition
     } else if (!transition._id) {
+      console.log("SOFT transition");
       return scheduleSoftTransition(Songs.findOne(transition.endSong), now);
     }
 
@@ -181,6 +183,8 @@ try {
         }, songDuration * 1000.0));
         TIMERS.push(setTimeout(function() {
           // start the next song and continue the mix
+          console.log("currSong: "+endSong.name);
+          console.log(transition.endTime);
           endSong.source = playSongBuffer(endBuffer, 0, transition.endTime);
           setCurrentSong(endSong);
           Session.set("offset", transition.endTime);
@@ -226,7 +230,9 @@ try {
 
     // find choice with endSong that has least number of plays amongst choices
     var transition = choices[0],
-        endSong = Songs.findOne(transition.endSong);
+        endSong = (transition && Songs.findOne(transition.endSong)) ||
+          Songs.findOne();
+    // TODO: make this a slick database query
     for (var i = 0; i < choices.length; i++) {
       var _transition = choices[i];
       var _endSong = Songs.findOne(_transition.endSong);
