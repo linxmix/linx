@@ -8,7 +8,7 @@ try {
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
   context = new AudioContext();
 
-  function makeBuffer (url, callback) {
+  function makeBuffer(url, callback) {
 
     console.log("making buffer with url: "+url);
 
@@ -183,14 +183,12 @@ try {
         }, songDuration * 1000.0));
         TIMERS.push(setTimeout(function() {
           // start the next song and continue the mix
-          console.log("currSong: "+endSong.name);
-          console.log(transition.endTime);
           endSong.source = playSongBuffer(endBuffer, 0, transition.endTime);
           setCurrentSong(endSong);
           Session.set("offset", transition.endTime);
-          console.log("setting queued_transitions from scheduleMix");
           queuedTransitions = Session.get("queued_transitions");
           queuedTransitions.shift();
+          console.log("setting queued_transitions from scheduleMix");
           console.log(queuedTransitions);
           Session.set("queued_transitions", queuedTransitions);
           scheduleTransition();
@@ -268,8 +266,6 @@ try {
     }
 
     makeSongBuffer(startSong, function (startBuffer) {
-      console.log("startSong");
-      console.log(startSong);
       setCurrentSong(startSong);
       startSong.source = playSongBuffer(startBuffer, 0, startPos);
       scheduleTransition();

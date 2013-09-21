@@ -3,7 +3,8 @@
   "dependencies": {
     "basePackages": {
       "bootstrap-3": {},
-      "bootstrap-slider-touch": {}
+      "bootstrap-slider-touch": {},
+      "knox": {}
     },
     "packages": {
       "bootstrap-3": {
@@ -15,6 +16,11 @@
         "git": "https://github.com/Dsyko/meteor-bootstrap-slider-touch.git",
         "tag": "v2.0.1",
         "commit": "c0b20f7851728ac5e265ecaef496a1d756ca1686"
+      },
+      "knox": {
+        "git": "https://github.com/ewindso/meteor-knox.git",
+        "tag": "v0.8.5.2",
+        "commit": "62c778c40f89884cb10cfd2097e614e01ca8b8cc"
       }
     }
   }

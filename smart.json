@@ -1,6 +1,7 @@
 {
   "packages": {
     "bootstrap-3": {},
-    "bootstrap-slider-touch": {}
+    "bootstrap-slider-touch": {},
+    "knox": {}
   }
 }
