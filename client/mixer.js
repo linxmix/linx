@@ -363,7 +363,7 @@ try {
       console.log("queueing soft transition");
       transition.startSong =
         (prevTransition && prevTransition.endSong) ||
-        Sessions.get("current_song");
+        Session.get("current_song");
     }
 
     // update queuedTransitions with this transition
