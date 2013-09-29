@@ -56,18 +56,6 @@ Template.songs.songs = function () {
   );
 };
 
-Template.transitions.transitions = function () {
-  var currSong_id = Session.get("current_song");
-  if (currSong) {
-    return Transitions.find({
-        startSong: currSong_id,
-        startTime: { $gt: Session.get("offset") + BUFFER_LOAD_TIME }
-      }, {
-        sort: { name: 1 }
-      });
-  }
-};
-
 Template.transition.selected = function () {
   return Session.equals("selected_transition", this._id) ? "selected" : "";
 };

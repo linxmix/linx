@@ -8,57 +8,40 @@ try {
   window.AudioContext = window.AudioContext || window.webkitAudioContext;
   context = new AudioContext();
 
-  function makeBuffer(url, callback) {
+  function makeBuffer(path, callback) {
+    Meteor.call('getFileUrl', path, function (err, url) {
+      if (err) { return console.error("getFileUrl error: ", err); }
+      console.log("making buffer with url: "+url);
 
-    console.log("making buffer with url: "+url);
+      // Load buffer asynchronously
+      var request = new XMLHttpRequest();
+      request.open("GET", url, true);
+      request.responseType = "arraybuffer";
 
-    // Load buffer asynchronously
-    var request = new XMLHttpRequest();
-    request.open("GET", url, true);
-    request.responseType = "arraybuffer";
-
-    request.onload = function() {
-      // Asynchronously decode the audio file data in request.response
-      context.decodeAudioData(
-        request.response,
-        function(buffer) {
-          if (!buffer) {
-            alert('error decoding file data: ' + url);
-            return;
+      request.onload = function() {
+        // Asynchronously decode the audio file data in request.response
+        context.decodeAudioData(
+          request.response,
+          function(buffer) {
+            if (!buffer) {
+              alert('error decoding file data: ' + url);
+              return;
+            }
+            BUFFERS.push(buffer);
+            if (callback) return callback(buffer);
+            else return buffer;
+          },
+          function(err) {
+            console.error('decodeAudioData error', err);
           }
-          BUFFERS.push(buffer);
-          if (callback) return callback(buffer);
-          else return buffer;
-        },
-        function(err) {
-          console.error('decodeAudioData error', err);
-        }
-        );
-    };
+          );
+      };
 
-    request.onerror = function() {
-      alert('makeBuffer: XHR error');
-    };
+      request.onerror = function() {
+        alert('makeBuffer: XHR error');
+      };
 
-    request.send();
-  }
-
-  function makeSongBuffer(song, callback) {
-    var url = '/songs/' + song.name + '.' + song.type;
-    Meteor.call('getFileUrl', url, function (err, fileUrl) {
-      if (err) { return console.error("getFileUrl error: ", err); }
-      return makeBuffer(fileUrl, callback);
-    });
-  }
-
-  function makeTransitionBuffer(transition, callback) {
-    var url = '/transitions/' +
-      Songs.findOne(transition.startSong).name + '-' +
-      Songs.findOne(transition.endSong).name + '.' + transition.type;
-
-    Meteor.call('getFileUrl', url, function (err, fileUrl) {
-      if (err) { return console.error("getFileUrl error: ", err); }
-      return makeBuffer(fileUrl, callback);
+      request.send();
     });
   }
 
@@ -66,8 +49,6 @@ try {
     when = when || 0;
     offset = offset || 0;
     duration = duration || buffer.duration - offset;
-
-    console.log("PLAYING SONG BUFFER: "+buffer);
 
     // make source, make/set filters
     var source = context.createBufferSource();
@@ -97,7 +78,7 @@ try {
   function playSource(source, when, offset, duration) {
     // start source, set it as currSource, then return it
     //console.log("playSource offset: "+offset);
-    if (when != 0) { console.log("WARNING: playSource's when is nonzero: "+when); }
+    if (when !== 0) { console.log("WARNING: playSource's when is nonzero: "+when); }
     //TIMERS.push(setTimeout(function () {
     //}, when * 1000.0));
     stopCurrSource();
@@ -112,15 +93,19 @@ try {
   }
 
   function scheduleSong(_id, endSong, when, offset) {
+    when = when || 0;
+    offset = offset || 0;
     var currTime = context.currentTime;
-    makeSongBuffer(endSong, function (endBuffer) {
+    var songPath = getSongPath(endSong);
+    makeBuffer(songPath, function (endBuffer) {
 
       // calculate lag
       var lag = context.currentTime - currTime;
       when -= lag;
+      updateBufferLoadSpeed(songPath, lag);
 
       // validation
-      if (when <= 0) {
+      if (when < 0) {
         console.log("WARNING: scheduled song: "+endSong.name+" started late by: "+when);
         when = 0;
       }
@@ -128,17 +113,14 @@ try {
         return console.log("WARNING: Transition changed while loading song buffer.");
       }
       console.log("next song in: "+when);
-      console.log("song load lag: "+lag);
 
       // start the next song and continue the mix
       TIMERS.push(setTimeout(function() {
         endSong.source = playSongBuffer(endBuffer, 0, offset);
         setCurrentSong(endSong);
-        Session.set("offset", offset);
+        setOffset(offset);
         queuedTransitions = Session.get("queued_transitions");
         queuedTransitions.shift();
-        console.log("setting queued_transitions from scheduleSong");
-        console.log(queuedTransitions);
         Session.set("queued_transitions", queuedTransitions);
         doNextTransition();
       }, when * 1000.0));
@@ -146,13 +128,16 @@ try {
   }
 
   function scheduleTransition(transition, endSong, when, callback) {
+    when = when || 0;
     clearTimers(); // in case any others were already scheduled
     var currTime = context.currentTime;
-    makeTransitionBuffer(transition, function (transitionBuffer) {
+    var transitionPath = getTransitionPath(transition);
+    makeBuffer(transitionPath, function (transitionBuffer) {
 
       // calculate load lag
       var lag = context.currentTime - currTime;
       when -= lag;
+      //updateBufferLoadSpeed(transitionPath, lag);
 
       // validation
       if (when <= 0) {
@@ -165,7 +150,6 @@ try {
           "WARNING: Transition changed while loading transition buffer.");
       }
       console.log("transition in: "+when);
-      console.log("transition load lag: "+lag);
 
       // schedule the transition
       TIMERS.push(setTimeout(function() {
@@ -180,32 +164,32 @@ try {
   }
 
   doNextTransition = function (now) {
-    var offset = Session.get("offset");
-    lastMixTime = context.currentTime;
+    var offset = getOffset();
     // figure out which transition to schedule, set that as current
     var queuedTransitions = Session.get("queued_transitions");
-    var transition = queuedTransitions[0] || chooseTransition();
-    var endSong = Songs.findOne(transition.endSong);
+    var transition = queuedTransitions[0] || chooseTransition(offset),
+        endSong, when;
 
     if (!transition) {
       return console.log("ERROR: found no transitions for current song");
 
     // if there's no ID, this is a "soft" transition
     } else if (!transition._id) {
+      endSong = Songs.findOne(transition.endSong);
       console.log("SOFT transition");
       // set current transition to this song's ID to signify a "soft" transition
       Session.set("current_transition", endSong._id);
-      var when = (now || !currSource) ? 0 : (currSource.buffer.duration - offset);
+      when = (now || !currSource) ? 0 : (currSource.buffer.duration - offset);
       scheduleSong(endSong._id, endSong, when, 0);
 
     // this is a regular transition
     } else {
+      endSong = Songs.findOne(transition.endSong);
       Session.set("current_transition", transition._id);
-
       // TODO: make these faster by being completely asynchronous,
       //       knowing transition duration ahead of time and handling lag appropriately
       // load transition buffer
-      var when = now ? 0 : (transition.startTime - offset);
+      when = now ? 0 : (transition.startTime - offset);
       scheduleTransition(transition, endSong, when, function (transitionEnd) {
         scheduleSong(transition._id, endSong, transitionEnd, transition.endTime);
       });
@@ -232,13 +216,11 @@ try {
   }
 
   // algorithm to decide which transition comes next.
-  function chooseTransition(callback) {
+  function chooseTransition(offset) {
     var currSong_id = Session.get("current_song");
-    var offset = Session.get("offset");
-
     var choices = Transitions.find({
       startSong: currSong_id,
-      startTime: { $gt: offset + BUFFER_LOAD_TIME }
+      startTime: { $gt: offset + Session.get("load_time") }
     }).fetch();
 
     // find choice with endSong that has least number of plays amongst choices
@@ -258,40 +240,43 @@ try {
     // if there is a song with a lower playCount than endSong, soft transition to it
     var song = Songs.findOne({ playCount: { $lt: endSong.playCount } });
     if (song) {
-      transition = { startSong: currSong_id, endSong: song._id };
+      transition = {
+        startSong: currSong_id,
+        endSong: song._id,
+        startTime: 0,
+        endTime: 0
+      };
     }
 
     console.log("CHOOSING transition: ");
     console.log(transition);
 
     // TODO: should this be here? shouldnt we be calling queueTransition?
-    console.log("setting queued_transitions from chooseTransition");
-    console.log([transition]);
     Session.set("queued_transitions", [transition]);
 
-    if (callback) { return callback(transition); }
-    else return transition;
+    return transition;
   }
 
   startMix = function(startSong, startPos) {
-    Session.set("offset", startPos = startPos || 0);
-    Session.set("queued_transitions", []);
+    startPos = startPos || 0;
     if (!startSong) {
       return console.log("ERROR: select a song in order to start the mix");
     }
-
-    makeSongBuffer(startSong, function (startBuffer) {
-      setCurrentSong(startSong);
-      startSong.source = playSongBuffer(startBuffer, 0, startPos);
-      doNextTransition();
-    });
+    Session.set("current_transition", startSong._id);
+    scheduleSong(startSong._id, startSong, 0, startPos);
   };
 
-  function getCurrentOffset() {
-    return Session.get("offset") + context.currentTime - lastMixTime;
+  function getOffset() {
+    var offset = Session.get("offset");
+    return offset.value + (context.currentTime - offset.time);
+  }
+
+  function setOffset(offset) {
+    Session.set("offset", { value: offset, time: context.currentTime });
   }
 
   function isValidTransition(prevTransition, transition, debug) {
+    if (debug) console.log(transition);
 
     // if not given a transition, immediate gg
     if (!transition) {
@@ -315,18 +300,26 @@ try {
 
       // if prevTransition is not soft, also make sure transition isn't too soon
       if (prevTransition._id &&
-        (prevTransition.endTime > transition.startTime - BUFFER_LOAD_TIME)) {
+        (prevTransition.endTime > transition.startTime - Session.get("load_time"))) {
         if (debug) console.log("ERROR: given transition starts too soon after prevTransition");
         return false;
       }
     }
 
-    // if no prevTransition, make sure we aren't too far in the current song
-    if (!prevTransition &&
-      ((transition.startSong != Session.get("current_song")) ||
-      (getCurrentOffset() > transition.startTime - BUFFER_LOAD_TIME))) {
-      if (debug) console.log("ERROR: too far in currSong to queue given transition");
-      return false;
+    // if no prevTransition
+    if (!prevTransition) {
+
+      // check to make sure this transition fits with the current song
+      if (transition.startSong != Session.get("current_song")) {
+        if (debug) console.log("ERROR: given transition does not fit currSong");
+        return false;
+      }
+
+      // make sure we aren't too far in the current song
+      if (getOffset() > transition.startTime - Session.get("load_time")) {
+        if (debug) console.log("ERROR: too far in currSong to queue given transition");
+        return false;
+      }
     }
 
     // if we get here, we've passed all our validation checks
@@ -338,14 +331,11 @@ try {
   // TODO: what if none exist? add a soft transition to the end? or maybe find a path such that one exists?
   getNearestValidTransition = function(song) {
     var queuedTransitions = Session.get("queued_transitions"),
-        transition;
-
-    var transitions = Transitions.find({ endSong: song._id }).fetch();
-    for (var i = 0; i < transitions.length; i++) {
-      transition = transitions[i];
-      for (index = queuedTransitions.length - 1; index >= -1; index--) {
+        transitions = Transitions.find({ endSong: song._id }).fetch();
+    for (index = queuedTransitions.length - 1; index >= -1; index--) {
+      for (var i = 0; i < transitions.length; i++) {
+        var transition = transitions[i];
         if (isValidTransition(queuedTransitions[index], transition)) {
-          //console.log("returning index: "+(index+1)+" for song: "+song.name);
           return { 'transition': transition, 'index': ++index };
         }
       }
@@ -383,13 +373,10 @@ try {
 
     // update queuedTransitions with this transition
     queuedTransitions.splice(index, queuedTransitions.length - index, transition);
-    console.log("setting queued_transitions from queueTransition");
-    console.log(queuedTransitions);
     Session.set("queued_transitions", queuedTransitions);
 
-    // if index is 0, we are replacing the current transition and must schedule it now
+    // if index is 0, we are replacing the current transition
     if (index === 0) {
-      Session.set("offset", getCurrentOffset());
       doNextTransition();
     }
   };

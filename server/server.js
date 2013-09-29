@@ -1,6 +1,7 @@
 Songs = new Meteor.Collection("Songs");
 Transitions = new Meteor.Collection("Transitions");
 
+
 //
 // server
 //
@@ -16,7 +17,6 @@ Meteor.startup(function () {
     secret: 'STZGuN01VcKvWwL4rsCxsAmTTiSYtUqAzU70iRKl',
     bucket: 'beatfn.com'
   });
-  console.log(client);
 
   //
   // meteor methods
@@ -24,7 +24,7 @@ Meteor.startup(function () {
   Meteor.methods({
 
     getFileUrl: function (path) {
-      var local = false;
+      var local = true;
       if (local) {
         console.log("Serving File Locally: "+path);
         return path;
@@ -32,7 +32,8 @@ Meteor.startup(function () {
         console.log("Getting File Externally: "+path);
         return client.http(path);
       }
-    }
+    },
+
   });
 
 
@@ -739,7 +740,7 @@ Meteor.startup(function () {
       songs[transition.endSong] || (songs[transition.endSong] = { name: transition.endSong, type: "mp3" });
     });
 
-    // insert songs
+    // insert songs with sizes
     for (var songName in songs) {
       var song = songs[songName];
       song['playCount'] = 0;
@@ -757,16 +758,9 @@ Meteor.startup(function () {
         { $set: { endSong: song._id } },
         { multi: true });
     });
-    /*
-    songs = Songs.find().fetch();
-    for (var i = 0; i < songs.length; i++) {
-      var song = songs[i];
-      Transitions.update({ startSong: song.name }, { $set: { startSong: song._id } });
-      Transitions.update({ endSong: song.name }, { $set: { endSong: song._id } });
-    }
-    */
-  console.log("Transition Count: "+Transitions.find().count());
-  console.log("Song Count: "+Songs.find().count());
+
+    console.log("Transition Count: "+Transitions.find().count());
+    console.log("Song Count: "+Songs.find().count());
   }
 
 });

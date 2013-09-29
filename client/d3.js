@@ -8,7 +8,7 @@ Template.graph.destroyed = function () {
 };
 
 Template.graph.rendered = function () {
-  this.drawGraph = Meteor.autorun(function () {
+  Meteor.autorun(function () {
 
     var nodes = {},
         links = [],
@@ -38,15 +38,26 @@ Template.graph.rendered = function () {
 
       // process nodes of queued transitions
       queuedTransitions.forEach(function (transition) {
-        var endSong = Songs.findOne(transition.endSong);
-        endSong["color"] = 1;
-        nodes[endSong._id] = endSong;
+        if (transition) {
+          var endSong = Songs.findOne(transition.endSong);
+          endSong["color"] = 1;
+          nodes[endSong._id] = endSong;
+        }
       });
 
       // get all links in queue + all links coming from last song in queue
-      var lastTransition = queuedTransitions[queuedTransitions.length - 1],
-          endSong_id = (lastTransition && lastTransition.endSong) || currSong._id;
-      links = queuedTransitions.concat(Transitions.find( { startSong: endSong_id }).fetch());
+      var lastTransition = queuedTransitions[queuedTransitions.length - 1];
+      if (lastTransition) {
+        var endSong_id = lastTransition.endSong;
+        links = queuedTransitions.concat(Transitions.find({
+          startSong: endSong_id,
+          startTime: { $gt: lastTransition.endTime + Session.get("load_time") }
+        }).fetch());
+      } else {
+        links = Transitions.find({
+          startSong: currSong._id
+        }).fetch();
+      }
 
     // no currSong, so draw graph in view all mode
     } else {
