@@ -2,6 +2,7 @@
   "packages": {
     "bootstrap-3": {},
     "bootstrap-slider-touch": {},
-    "knox": {}
+    "knox": {},
+    "accounts-ui-bootstrap-dropdown": {}
   }
 }

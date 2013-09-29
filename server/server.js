@@ -7,6 +7,16 @@ Transitions = new Meteor.Collection("Transitions");
 //
 Meteor.startup(function () {
 
+  try {
+    Accounts.createUser({
+      username: "test",
+      email: "wolfbiter@gmail.com",
+      password: "fairuse",
+      profile: { name: "welcome" }
+    });
+  } catch (e) {
+    console.log("test account already exists");
+  }
 
   //
   // s3 stuff

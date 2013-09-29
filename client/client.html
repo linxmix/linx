@@ -40,6 +40,9 @@
   <form class="navbar-form navbar-search navbar-right">
     <input type="text" class="search-query" placeholder="Find Songs...">
   </form>
+  <div class="navbar-right">
+    <button class="navbar-btn btn-primary">{{loginButtons}}</button>
+  </div>
 </template>
 
 <!-- Graph -->
@@ -54,7 +57,7 @@
 <template name="songs">
   <ul id="songs">
     {{#each songs}}
-    {{> song}}
+      {{> song}}
     {{/each}}
   </ul>
 </template>

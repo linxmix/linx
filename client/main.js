@@ -1,4 +1,17 @@
 //
+// startup
+//
+Meteor.startup(function() {
+  // accounts
+  Accounts.config({
+    forbidClientAccountCreation: true
+  });
+  Accounts.ui.config({
+    passwordSignupFields: "USERNAME_ONLY"
+  });
+});
+
+//
 // do meteor stuff
 //
 

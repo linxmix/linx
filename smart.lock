@@ -4,7 +4,8 @@
     "basePackages": {
       "bootstrap-3": {},
       "bootstrap-slider-touch": {},
-      "knox": {}
+      "knox": {},
+      "accounts-ui-bootstrap-dropdown": {}
     },
     "packages": {
       "bootstrap-3": {
@@ -21,6 +22,11 @@
         "git": "https://github.com/ewindso/meteor-knox.git",
         "tag": "v0.8.5.2",
         "commit": "62c778c40f89884cb10cfd2097e614e01ca8b8cc"
+      },
+      "accounts-ui-bootstrap-dropdown": {
+        "git": "https://github.com/erobit/meteor-accounts-ui-bootstrap-dropdown.git",
+        "tag": "v0.6.5.1",
+        "commit": "c8b29d2e7f8611d6dec9d6d23c1c2b94e000b0fb"
       }
     }
   }

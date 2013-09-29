@@ -258,6 +258,9 @@ try {
   }
 
   startMix = function(startSong, startPos) {
+    if (Meteor.userId() != Meteor.users.findOne({ username: 'test' })._id) {
+      return alert("Sorry, but you cannot stream music unless you're logged into an account that owns it. If you'd like to help test this app, contact wolfbiter@gmail.com.");
+    }
     startPos = startPos || 0;
     if (!startSong) {
       return console.log("ERROR: select a song in order to start the mix");

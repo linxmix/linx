@@ -11,6 +11,15 @@ body {
     background-repeat: repeat;*/
 }
 
+/* copy bootstrap css */
+.login-link-text {
+  color: #ffffff;
+  line-height: 20px;
+}
+#login-buttons a {
+  text-decoration: none;
+}
+/*******************/
 
 .well {
   opacity: 1.0;
