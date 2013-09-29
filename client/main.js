@@ -9,7 +9,7 @@ Template.player.events({
   },
 
   'click #transitionNow': function() {
-    scheduleTransition(true);
+    doNextTransition(true);
   },
 
   'click #stop': stopMix

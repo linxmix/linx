@@ -30,8 +30,8 @@ try {
           if (callback) return callback(buffer);
           else return buffer;
         },
-        function(error) {
-          console.error('decodeAudioData error', error);
+        function(err) {
+          console.error('decodeAudioData error', err);
         }
         );
     };
@@ -44,19 +44,30 @@ try {
   }
 
   function makeSongBuffer(song, callback) {
-    return makeBuffer('/songs/' + song.name + '.' + song.type, callback);
+    var url = '/songs/' + song.name + '.' + song.type;
+    Meteor.call('getFileUrl', url, function (err, fileUrl) {
+      if (err) { return console.error("getFileUrl error: ", err); }
+      return makeBuffer(fileUrl, callback);
+    });
   }
 
   function makeTransitionBuffer(transition, callback) {
-    return makeBuffer('/transitions/' +
+    var url = '/transitions/' +
       Songs.findOne(transition.startSong).name + '-' +
-      Songs.findOne(transition.endSong).name + '.' + transition.type, callback);
+      Songs.findOne(transition.endSong).name + '.' + transition.type;
+
+    Meteor.call('getFileUrl', url, function (err, fileUrl) {
+      if (err) { return console.error("getFileUrl error: ", err); }
+      return makeBuffer(fileUrl, callback);
+    });
   }
 
   function playSongBuffer(buffer, when, offset, duration) {
     when = when || 0;
     offset = offset || 0;
     duration = duration || buffer.duration - offset;
+
+    console.log("PLAYING SONG BUFFER: "+buffer);
 
     // make source, make/set filters
     var source = context.createBufferSource();
@@ -85,12 +96,13 @@ try {
 
   function playSource(source, when, offset, duration) {
     // start source, set it as currSource, then return it
-    console.log("playSource offset: "+offset);
-    TIMERS.push(setTimeout(function () {
-      stopCurrSource();
-      source.start(0, offset, duration);
-      currSource = source;
-    }, when * 1000.0));
+    //console.log("playSource offset: "+offset);
+    if (when != 0) { console.log("WARNING: playSource's when is nonzero: "+when); }
+    //TIMERS.push(setTimeout(function () {
+    //}, when * 1000.0));
+    stopCurrSource();
+    source.start(0, offset, duration);
+    currSource = source;
   }
 
   function stopCurrSource(when) {
@@ -99,102 +111,105 @@ try {
     currSource = undefined;
   }
 
-  function scheduleSoftTransition(endSong, now) {
-    var offset = Session.get("offset");
-    // set current transition to this song's ID to signify a "soft" transition
-    Session.set("current_transition", endSong._id);
-
-    // async load buffer
+  function scheduleSong(_id, endSong, when, offset) {
+    var currTime = context.currentTime;
     makeSongBuffer(endSong, function (endBuffer) {
 
-      // make sure the transition wasn't changed while we were loading buffers        
-      if (endSong._id !== Session.get("current_transition")) {
-        console.log("WARNING: Transition changed while loading buffers.");
-        return;
-      }
-        
-      var lag = context.currentTime - lastMixTime;
-      // play immediately if scheduled now
-      var songDuration = now ? 0 : (currSource.buffer.duration - offset - lag);
+      // calculate lag
+      var lag = context.currentTime - currTime;
+      when -= lag;
 
-      // schedule the transition
-      clearTimers(); // in case another transition was already scheduled
+      // validation
+      if (when <= 0) {
+        console.log("WARNING: scheduled song: "+endSong.name+" started late by: "+when);
+        when = 0;
+      }
+      if (_id != Session.get("current_transition")) {
+        return console.log("WARNING: Transition changed while loading song buffer.");
+      }
+      console.log("next song in: "+when);
+      console.log("song load lag: "+lag);
+
+      // start the next song and continue the mix
       TIMERS.push(setTimeout(function() {
-        // start the next song and continue the mix
-        stopCurrSource();
-        endSong.source = playSongBuffer(endBuffer);
+        endSong.source = playSongBuffer(endBuffer, 0, offset);
         setCurrentSong(endSong);
-        Session.set("offset", 0.0);
+        Session.set("offset", offset);
         queuedTransitions = Session.get("queued_transitions");
         queuedTransitions.shift();
-        console.log("setting queued_transitions from scheduleMix");
+        console.log("setting queued_transitions from scheduleSong");
         console.log(queuedTransitions);
         Session.set("queued_transitions", queuedTransitions);
-        scheduleTransition();
-      }, songDuration * 1000.0));
+        doNextTransition();
+      }, when * 1000.0));
     });
   }
 
-  scheduleTransition = function(now) {
+  function scheduleTransition(transition, endSong, when, callback) {
+    clearTimers(); // in case any others were already scheduled
+    var currTime = context.currentTime;
+    makeTransitionBuffer(transition, function (transitionBuffer) {
+
+      // calculate load lag
+      var lag = context.currentTime - currTime;
+      when -= lag;
+
+      // validation
+      if (when <= 0) {
+        console.log(
+          "WARNING: scheduled transition w endSong: "+endSong.name+" started late by: "+when);
+        when = 0;
+      }
+      if (transition._id !== Session.get("current_transition")) {
+        return console.log(
+          "WARNING: Transition changed while loading transition buffer.");
+      }
+      console.log("transition in: "+when);
+      console.log("transition load lag: "+lag);
+
+      // schedule the transition
+      TIMERS.push(setTimeout(function() {
+        // start the transition
+        stopCurrSource();
+        transition.source = playBuffer(transitionBuffer);
+        Transitions.update(transition._id, { $inc: { playCount: 1 } });
+      }, when * 1000.0));
+
+      callback(when + transitionBuffer.duration);
+    });
+  }
+
+  doNextTransition = function (now) {
     var offset = Session.get("offset");
     lastMixTime = context.currentTime;
-
     // figure out which transition to schedule, set that as current
     var queuedTransitions = Session.get("queued_transitions");
     var transition = queuedTransitions[0] || chooseTransition();
+    var endSong = Songs.findOne(transition.endSong);
+
     if (!transition) {
       return console.log("ERROR: found no transitions for current song");
 
     // if there's no ID, this is a "soft" transition
     } else if (!transition._id) {
       console.log("SOFT transition");
-      return scheduleSoftTransition(Songs.findOne(transition.endSong), now);
-    }
+      // set current transition to this song's ID to signify a "soft" transition
+      Session.set("current_transition", endSong._id);
+      var when = (now || !currSource) ? 0 : (currSource.buffer.duration - offset);
+      scheduleSong(endSong._id, endSong, when, 0);
 
-    Session.set("current_transition", transition._id);
-    var endSong = Songs.findOne(transition.endSong);
+    // this is a regular transition
+    } else {
+      Session.set("current_transition", transition._id);
 
-    // async load buffers
-    makeTransitionBuffer(transition, function (transitionBuffer) {
-      makeSongBuffer(endSong, function (endBuffer) {
-
-        // make sure the transition wasn't changed while we were loading buffers        
-        if (transition._id !== Session.get("current_transition")) {
-          console.log("WARNING: Transition changed while loading buffers.");
-          return;
-        }
-
-        var lag = context.currentTime - lastMixTime;
-        // play immediately if scheduled now
-        var songDuration = now ? 0 : (transition.startTime - offset - lag);
-        var transitionDuration = songDuration + transitionBuffer.duration;
-
-        console.log("transition in: "+songDuration);
-        console.log("next song in: "+transitionDuration);
-        console.log("buffer load lag: "+lag);
-
-        // schedule the transition
-        clearTimers(); // in case another transition was already scheduled
-        TIMERS.push(setTimeout(function() {
-          // start the transition
-          stopCurrSource();
-          transition.source = playBuffer(transitionBuffer);
-          Transitions.update(transition._id, { $inc: { playCount: 1 } });
-        }, songDuration * 1000.0));
-        TIMERS.push(setTimeout(function() {
-          // start the next song and continue the mix
-          endSong.source = playSongBuffer(endBuffer, 0, transition.endTime);
-          setCurrentSong(endSong);
-          Session.set("offset", transition.endTime);
-          queuedTransitions = Session.get("queued_transitions");
-          queuedTransitions.shift();
-          console.log("setting queued_transitions from scheduleMix");
-          console.log(queuedTransitions);
-          Session.set("queued_transitions", queuedTransitions);
-          scheduleTransition();
-        }, transitionDuration * 1000.0));
+      // TODO: make these faster by being completely asynchronous,
+      //       knowing transition duration ahead of time and handling lag appropriately
+      // load transition buffer
+      var when = now ? 0 : (transition.startTime - offset);
+      scheduleTransition(transition, endSong, when, function (transitionEnd) {
+        scheduleSong(transition._id, endSong, transitionEnd, transition.endTime);
       });
-    });
+    }
   };
 
   function clearTimers() {
@@ -268,7 +283,7 @@ try {
     makeSongBuffer(startSong, function (startBuffer) {
       setCurrentSong(startSong);
       startSong.source = playSongBuffer(startBuffer, 0, startPos);
-      scheduleTransition();
+      doNextTransition();
     });
   };
 
@@ -375,7 +390,7 @@ try {
     // if index is 0, we are replacing the current transition and must schedule it now
     if (index === 0) {
       Session.set("offset", getCurrentOffset());
-      scheduleTransition();
+      doNextTransition();
     }
   };
 

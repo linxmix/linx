@@ -8,30 +8,8 @@ Meteor.startup(function () {
 
 
   //
-  // amazon s3 stuff
+  // s3 stuff
   //
-  /*
-  var knoxInterval = Meteor.setInterval(function(){
-    if (knox) {
-      Meteor.clearInterval(knoxInterval);
-      console.log("creating client!");
-      client = knox.createClient({
-        key: 'AKIAIYJQCD622ZS3OMLA',
-        secret: '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',
-        bucket: 'beatfn.com'
-      });
-      console.log(client);
-      console.log("client created!");
-    }
-  }, 1000);
-
-  Meteor.methods({
-    'knox': function() {
-      console.log(knox);
-    }
-  });
-  */
-
   var client = Knox.createClient({
     region: 'us-west-2', // NOTE: this must be changed when the bucket goes US-Standard!
     key: 'AKIAIYJQCD622ZS3OMLA',
@@ -39,9 +17,22 @@ Meteor.startup(function () {
     bucket: 'beatfn.com'
   });
   console.log(client);
-  client.list({}, function(err, data) {
-    if (err) return console.log(err);
-    console.log(data);
+
+  //
+  // meteor methods
+  //
+  Meteor.methods({
+
+    getFileUrl: function (path) {
+      var local = false;
+      if (local) {
+        console.log("Serving File Locally: "+path);
+        return path;
+      } else {
+        console.log("Getting File Externally: "+path);
+        return client.http(path);
+      }
+    }
   });
 
 
@@ -777,4 +768,5 @@ Meteor.startup(function () {
   console.log("Transition Count: "+Transitions.find().count());
   console.log("Song Count: "+Songs.find().count());
   }
+
 });
