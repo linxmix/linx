@@ -24,7 +24,7 @@ Meteor.startup(function () {
   Meteor.methods({
 
     getFileUrl: function (path) {
-      var local = true;
+      var local = false;
       if (local) {
         console.log("Serving File Locally: "+path);
         return path;
@@ -681,14 +681,6 @@ Meteor.startup(function () {
       startTime: 141.210754,
       endSong: "jaded",
       endTime: 276.148254,
-      type: "mp3"
-    },
-
-    {
-      startSong: "skylarking",
-      startTime: 396.657471,
-      endSong: "jaded",
-      endTime: 126.761658,
       type: "mp3"
     },
 
