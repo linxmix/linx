@@ -3,6 +3,7 @@
     "bootstrap-3": {},
     "bootstrap-slider-touch": {},
     "knox": {},
-    "accounts-ui-bootstrap-dropdown": {}
+    "accounts-ui-bootstrap-dropdown": {},
+    "mini-pages": {}
   }
 }

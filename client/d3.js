@@ -8,7 +8,7 @@ Template.graph.destroyed = function () {
 };
 
 Template.graph.rendered = function () {
-  Meteor.autorun(function () {
+  this.drawGraph = Meteor.autorun(function () {
 
     var nodes = {},
         links = [],

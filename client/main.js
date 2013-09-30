@@ -9,6 +9,16 @@ Meteor.startup(function() {
   Accounts.ui.config({
     passwordSignupFields: "USERNAME_ONLY"
   });
+
+  Meteor.pages({
+    '/': { to: 'graphPage', nav: 'graphPage' },
+    '/uploader': { to: 'uploaderPage', nav: 'uploaderPage' }
+  });
+
+  Handlebars.registerHelper("navClassFor", function (nav, options) {
+    return Meteor.router.navEquals(nav) ? "active" : "";
+  });
+
 });
 
 //
@@ -25,9 +35,6 @@ Template.uploader.rendered = function () {
     progressColor: 'purple'
   });
 
-  wavesurfer.on('ready', function () {
-    wavesurfer.play();
-  });
   wavesurfer.load('songs/the sky.mp3');
 };
 
