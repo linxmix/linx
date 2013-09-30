@@ -15,6 +15,22 @@ Meteor.startup(function() {
 // do meteor stuff
 //
 
+Template.uploader.rendered = function () {
+
+  var wavesurfer = Object.create(WaveSurfer);
+
+  wavesurfer.init({
+    container: document.querySelector('#waveform'),
+    waveColor: 'violet',
+    progressColor: 'purple'
+  });
+
+  wavesurfer.on('ready', function () {
+    wavesurfer.play();
+  });
+  wavesurfer.load('songs/the sky.mp3');
+};
+
 Template.player.events({
 
   'click #start': function() {
