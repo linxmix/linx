@@ -30,5 +30,6 @@ the test account is only to be used for testing purposes.
 - the arrows indicate possible transitions
 
 - this is all very experimental so you might run into bugs, and also sometimes the audio skips and/or decreases/increases in volume... you have been warned 
-if something confuses you or you do something that breaks it, please tell me! and screen shot it
+
+- if something confuses you or you do something that breaks it, please tell me! and screen shot it
 you won't break the server side (well i dont THINK you will, lol), so if you get a bug all you have to do is refresh the page and it should reset
