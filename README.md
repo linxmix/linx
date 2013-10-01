@@ -14,8 +14,9 @@
 
 - since it's illegal to stream music for which i'm not paying royalties, i prevent streaming unless logged into the test account.
 
-**uname**: test
-**pword**: fairuse
+  + *uname*: test
+
+  + *pword*: fairuse
 
 - double click either a song name (on the right) or a song in the graph (one of the red circles) to play a song
 - it takes a bit to load, so be somewhat patient
