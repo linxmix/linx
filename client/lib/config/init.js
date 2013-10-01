@@ -1,8 +1,12 @@
 //
 // init
 //
+try {
+  audioContext = new(window.AudioContext || window.webkitAudioContext);
+} catch (e) {
+  alert("This browser does not support Web Audio API. Try the lastest version of Chrome!");
+}
 BUFFER_LOAD_SPEED = 1000000; // bytes/sec
 Session.set("load_time", 50.0); // safety net for load times
-Session.set("offset", { value: 0, time: 0 });
-Session.set("queued_transitions", []);
+Session.set("queue", []);
 Session.set("nav", 'graphPage');

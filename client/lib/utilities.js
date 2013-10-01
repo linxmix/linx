@@ -1,13 +1,17 @@
 //
 // utility functions
 //
+local = true;
+part = 'http://s3-us-west-2.amazonaws.com/beatfn.com/';
 
-getSongPath = function(song) {
-  return 'songs/' + song.name + '.' + song.type;
+getSongUrl = function(song) {
+  if (local) part = "";
+  return part + 'songs/' + song.name + '.' + song.type;
 };
 
-getTransitionPath = function(transition) {
-  return 'transitions/' +
+getTransitionUrl = function(transition) {
+  if (local) part = "";
+  return part + 'transitions/' +
     Songs.findOne(transition.startSong).name + '-' +
     Songs.findOne(transition.endSong).name + '.' + transition.type;
 };

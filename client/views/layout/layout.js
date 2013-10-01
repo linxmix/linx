@@ -8,7 +8,7 @@ Template.player.events({
     transitionNow();
   },
 
-  'click #stop': stopMix
+  'click #pause': pauseMix
 });
 
 Template.songNav.events({

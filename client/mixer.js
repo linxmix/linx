@@ -1,8 +1,11 @@
-currWave = null;
+// private variable
+queuedWaves = [];
 
 //
-// exported functions
+// exported methods
 //
+
+// TODO: fix this
 startMix = function(startSong, startPos) {
   if (Meteor.userId() != Meteor.users.findOne({ username: 'test' })._id) {
     return alert("Sorry, but you cannot stream music unless you're logged into an account that owns it. If you'd like to help test this app, contact wolfbiter@gmail.com.");
@@ -15,201 +18,112 @@ startMix = function(startSong, startPos) {
   scheduleSong(startSong._id, startSong, 0, startPos);
 };
 
-stopMix = function() {
-  console.log("STOPPING EVERYTHING!");
-  clearTimers();
-  Session.set("queued_transitions", []);
-  Session.set("current_transition", undefined);
-  Session.set("current_song", undefined);
-  stopCurrSource();
-};
-
-transitionNow = function() {
-  doNextTransition(true);
-};
-
-queueTransition = function(transition, index) {
-  var queuedTransitions = Session.get("queued_transitions");
-  if (index === undefined) index = queuedTransitions.length;
-  var prevTransition = queuedTransitions[index - 1];
-
-  console.log("queueTransition called with below at index: "+index);
-  console.log(transition);
-
-  // make sure this transition fits at this index
-  if (!isValidTransition(prevTransition, transition, true)) {
-    return console.log("ERROR: Invalid Transition given to queueTransition");
-  }
-
-  // TODO: is this check necessary?
-  /*
-  if (queuedTransitions.indexOf(transition._id) > -1) {
-    console.log("WARNING: given transition to "+transition.endSong+" is already queued");
-  }
-  */
-
-  // if this transition is "soft", fill in its startSong
-  if (!transition._id) {
-    console.log("queueing soft transition");
-    transition.startSong =
-      (prevTransition && prevTransition.endSong) ||
-      Session.get("current_song");
-  }
-
-  // update queuedTransitions with this transition
-  queuedTransitions.splice(index, queuedTransitions.length - index, transition);
-  Session.set("queued_transitions", queuedTransitions);
-
-  // if index is 0, we are replacing the current transition
-  if (index === 0) {
-    doNextTransition();
-  }
-};
-
-doNextTransition = function (now) {
-  var offset = getOffset();
-  // figure out which transition to schedule, set that as current
-  var queuedTransitions = Session.get("queued_transitions");
-  var transition = queuedTransitions[0] || chooseTransition(offset),
-      endSong, when;
-
-  if (!transition) {
-    return console.log("ERROR: found no transitions for current song");
-
-  // if there's no ID, this is a "soft" transition
-  } else if (!transition._id) {
-    endSong = Songs.findOne(transition.endSong);
-    console.log("SOFT transition");
-    // set current transition to this song's ID to signify a "soft" transition
-    Session.set("current_transition", endSong._id);
-    when = (now || !currSource) ? 0 : (currSource.buffer.duration - offset);
-    scheduleSong(endSong._id, endSong, when, 0);
-
-  // this is a regular transition
+// TODO: fix this
+pauseMix = function() {
+  console.log("PAUSING EVERYTHING!");
+  var currWave = queuedWaves[0];
+  if (currWave) {
+    currWave.pause();
   } else {
-    endSong = Songs.findOne(transition.endSong);
-    Session.set("current_transition", transition._id);
-    // TODO: make these faster by being completely asynchronous,
-    //       knowing transition duration ahead of time and handling lag appropriately
-    // load transition buffer
-    when = now ? 0 : (transition.startTime - offset);
-    scheduleTransition(transition, endSong, when, function (transitionEnd) {
-      scheduleSong(transition._id, endSong, transitionEnd, transition.endTime);
-    });
+    // TODO: cancel any loading songs here
   }
 };
 
-// returns a valid transition to song such that queued_transitions
+// TODO: fix this. isn't this just cycleQueue?
+transitionNow = function() {
+  loadTransition(true);
+};
+
+// returns a valid transition to song such that the queue
 // retains maximum possible length. 
 // TODO: what if none exist? add a soft transition to the end? or maybe find a path such that one exists?
 getNearestValidTransition = function(song) {
-  var queuedTransitions = Session.get("queued_transitions"),
+  var queue = Session.get("queue"),
       transitions = Transitions.find({ endSong: song._id }).fetch();
-  for (index = queuedTransitions.length - 1; index >= -1; index--) {
+  for (index = queue.length - 1; index >= -1; index--) {
     for (var i = 0; i < transitions.length; i++) {
       var transition = transitions[i];
-      if (isValidTransition(queuedTransitions[index], transition)) {
+      if (isValidTransition(queue[index], transition)) {
         return { 'transition': transition, 'index': ++index };
       }
     }
   }
   return console.log("ERROR: found no valid transitions for: "+song.name);
 };
+
+queueSong = function(id, index, startTime, endTime) {
+  startTime = startTime || 0;
+  endTime = endTime || 0;
+  if (index === undefined) index = queue.length;
+  // coerce id into id
+  if (typeof id === 'object') {
+    id = id._id;
+  }
+  queueSample({
+    'type': "song",
+    '_id': id,
+    'startTime': startTime,
+    'endTime': endTime
+  }, index);
+  assertQueue();
+};
+
+// TODO: transition objects need start and end times for themselves too
+queueTransition = function(transition, index, startTime, endTime) {
+  startTime = startTime || 0;
+  endTime = endTime || 0;
+  if (index === undefined) index = queue.length;
+  // coerce transition into object
+  if (typeof transition !== 'object') {
+    transition = Transitions.findOne(transition);
+  }
+
+  console.log("queueTransition called with below at index: "+index);
+  console.log(transition);
+
+  // if queueing transition at front, queue its song first
+  if (index === 0) {
+    queueSong(transition.startSong, index++, 0, transition.startTime);
+  }
+
+  // if transition fits at this index, queue it and endSong
+  if (isValidTransition(transition, index)) {
+    // set prevSample's endTime
+    queueSong(transition.endSong, index++, transition.endTime);
+    queueSample({
+      'type': "transition",
+      '_id': transition._id,
+      'startTime': startTime,
+      'endTime': endTime
+    }, index++);
+    queueSong(transition.endSong, index++, transition.endTime);
+  } else {
+    return console.log("ERROR: Invalid Transition given to queueTransition");
+  }
+
+  assertQueue();
+};
+
+function queueSample(sample, index) {
+  var queue = Session.get("queue");
+  queue.splice(index, queue.length - index, sample);
+  Session.set("queue", queue);
+}
 //
-// /exported functions
+// /exported methods
 //
 
 
 //
 // private methods
 //
-function scheduleSong(_id, endSong, when, offset) {
-  when = when || 0;
-  offset = offset || 0;
-  var currTime = context.currentTime;
-  var songPath = getSongPath(endSong);
-  makeBuffer(songPath, function (endBuffer) {
-
-    // calculate lag
-    var lag = context.currentTime - currTime;
-    when -= lag;
-    updateBufferLoadSpeed(songPath, lag);
-
-    // validation
-    if (when < 0) {
-      console.log("WARNING: scheduled song: "+endSong.name+" started late by: "+when);
-      when = 0;
-    }
-    if (_id != Session.get("current_transition")) {
-      return console.log("WARNING: Transition changed while loading song buffer.");
-    }
-    console.log("next song in: "+when);
-
-    // start the next song and continue the mix
-    TIMERS.push(setTimeout(function() {
-      endSong.source = playSongBuffer(endBuffer, 0, offset);
-      setCurrentSong(endSong);
-      setOffset(offset);
-      queuedTransitions = Session.get("queued_transitions");
-      queuedTransitions.shift();
-      Session.set("queued_transitions", queuedTransitions);
-      doNextTransition();
-    }, when * 1000.0));
-  });
-}
-
-function scheduleTransition(transition, endSong, when, callback) {
-  when = when || 0;
-  clearTimers(); // in case any others were already scheduled
-  var currTime = context.currentTime;
-  var transitionPath = getTransitionPath(transition);
-  makeBuffer(transitionPath, function (transitionBuffer) {
-
-    // calculate load lag
-    var lag = context.currentTime - currTime;
-    when -= lag;
-    //updateBufferLoadSpeed(transitionPath, lag);
-
-    // validation
-    if (when <= 0) {
-      console.log(
-        "WARNING: scheduled transition w endSong: "+endSong.name+" started late by: "+when);
-      when = 0;
-    }
-    if (transition._id !== Session.get("current_transition")) {
-      return console.log(
-        "WARNING: Transition changed while loading transition buffer.");
-    }
-    console.log("transition in: "+when);
-
-    // schedule the transition
-    TIMERS.push(setTimeout(function() {
-      // start the transition
-      stopCurrSource();
-      transition.source = playBuffer(transitionBuffer);
-      Transitions.update(transition._id, { $inc: { playCount: 1 } });
-    }, when * 1000.0));
-
-    callback(when + transitionBuffer.duration);
-  });
-}
-
-function clearTimers() {
-  TIMERS.forEach(clearTimeout);
-  TIMERS = [];
-}
-
-function shuffle(o){
-  for(var j, x, i = o.length; i; j = Math.floor(Math.random() * i), x = o[--i], o[i] = o[j], o[j] = x);
-    return o;
-}
 
 // algorithm to decide which transition comes next.
-function chooseTransition(offset) {
-  var currSong_id = Session.get("current_song");
+function chooseTransition() {
+  var currSample_id = Session.get("current_sample");
   var choices = Transitions.find({
-    startSong: currSong_id,
-    startTime: { $gt: offset + Session.get("load_time") }
+    startSong: currSample_id,
+    startTime: { $gt: queuedTransitions[0] + Session.get("load_time") }
   }).fetch();
 
   // find choice with endSong that has least number of plays amongst choices
@@ -230,7 +144,7 @@ function chooseTransition(offset) {
   var song = Songs.findOne({ playCount: { $lt: endSong.playCount } });
   if (song) {
     transition = {
-      startSong: currSong_id,
+      startSong: currSample_id,
       endSong: song._id,
       startTime: 0,
       endTime: 0
@@ -240,22 +154,10 @@ function chooseTransition(offset) {
   console.log("CHOOSING transition: ");
   console.log(transition);
 
-  // TODO: should this be here? shouldnt we be calling queueTransition?
-  Session.set("queued_transitions", [transition]);
-
-  return transition;
+  queueTransition(transition);
 }
 
-function getOffset() {
-  var offset = Session.get("offset");
-  return offset.value + (context.currentTime - offset.time);
-}
-
-function setOffset(offset) {
-  Session.set("offset", { value: offset, time: context.currentTime });
-}
-
-function isValidTransition(prevTransition, transition, debug) {
+function isValidTransition(prevSample, transition, debug) {
   if (debug) console.log(transition);
 
   // if not given a transition, immediate gg
@@ -264,40 +166,28 @@ function isValidTransition(prevTransition, transition, debug) {
     return false;
   }
 
-  // if given transition is "soft", it's definitely fine
-  if (!transition._id) {
-    return true;
-  }
+  // if given a prevSample
+  if (prevSample) {
 
-  // if given a prevTransition
-  if (prevTransition) {
-
-    // check to make sure transition fits with prevTransition
-    if (prevTransition.endSong != transition.startSong) {
-      if (debug) console.log("ERROR: given transition does not fit prevTransition");
+    // check to make sure transition fits with prevSample
+    if (prevSample._id !== transition.startSong) {
+      if (debug) console.log("ERROR: given transition does not fit prevSample");
       return false;
     }
 
-    // if prevTransition is not soft, also make sure transition isn't too soon
-    if (prevTransition._id &&
-      (prevTransition.endTime > transition.startTime - Session.get("load_time"))) {
-      if (debug) console.log("ERROR: given transition starts too soon after prevTransition");
-      return false;
-    }
-  }
-
-  // if no prevTransition
-  if (!prevTransition) {
-
-    // check to make sure this transition fits with the current song
-    if (transition.startSong != Session.get("current_song")) {
-      if (debug) console.log("ERROR: given transition does not fit currSong");
-      return false;
+    // TODO: make sure current_sample is undefined if there are no waves loaded!
+    // if prevSample is the current sample, make sure transition isn't too soon
+    if (prevSample._id === Session.get("current_sample")) {
+      if (currentPosition() >
+        transition.startTime - Session.get("load_time")) {
+        if (debug) console.log("ERROR: too far in currSample to queue given transition");
+        return false;
+      }
     }
 
-    // make sure we aren't too far in the current song
-    if (getOffset() > transition.startTime - Session.get("load_time")) {
-      if (debug) console.log("ERROR: too far in currSong to queue given transition");
+    // if prevSample is not the current sample, make sure transition isn't too soon
+    else if (prevSample.startTime > transition.startTime - Session.get("load_time")) {
+      if (debug) console.log("ERROR: given transition starts too soon after prevSample");
       return false;
     }
   }
@@ -306,9 +196,146 @@ function isValidTransition(prevTransition, transition, debug) {
   return true;
 }
 
-function setCurrentSong(song) {
-  Songs.update(song._id, { $inc: { playCount: 1 } });
-  Session.set("current_song", song._id);
+// load samples as they are queued
+function assertQueue() {
+  var queue = Session.get("queue"),
+      queueLength = queue.length;
+
+  // TODO: make it understand what to do while still loading songs and queue is changed.
+  //       for example: what to do if song we are currently loading is no longer needed?
+
+  // TODO: should we remove queuedWaves when queue is cut to 0?
+  if (queueLength > 0) {
+
+    // find out where our sample queue and wave queue diverge
+    // TODO: what if wave queue is longer than sample queue?
+    var index;
+    for (index = 0; index <= queueLength; index++) {
+      if (queuedWaves[index]._id !== queue[index]._id) {
+        break;
+      }
+    }
+
+    // load the unloaded transitions, if there are any
+    if (index < queueLength) {
+      return loadSample(index);
+    }
+  }
+}
+
+// synchronously load samples starting from index
+function loadSample(index) {
+  var queue = Session.get("queue"),
+      sample = queue[index],
+      sampleUrl = getSampleUrl(sample);
+
+  // make and prep wave, then add it to the queue
+  makeWave(sampleUrl, function (wave) {
+    wave = prepWave(wave, sample);
+    queuedWaves[index] = wave;
+
+    // if prevWave, schedule this wave to start after it
+    var prevWave = queuedWaves[index - 1];
+    if (prevWave) {
+      // make sure prevWave has end marker
+      if (!prevWave.markers.end) {
+        prevWave.mark({
+          'id': 'end',
+          'position': queue[index - 1].endTime
+        });
+      }
+      prevWave.on('mark', function (mark) {
+        if (mark.id === 'end') {
+          prevWave.pause();
+          cycleQueue();
+        }
+      });
+
+    // else no prevWave, cycle now
+    } else {
+      cycleQueue();
+    }
+
+    // load next transition if this is not the last
+    if (++index < queue.length) {
+      loadSample(index);
+    }
+
+  });
+}
+
+function prepWave(wave, sample) {
+  wave._id = sample._id;
+  wave.skip(sample.startTime);
+  // if wave hits end of track, cycle the queue
+  wave.mark({
+    'id': 'track_end',
+    'position': getWaveDuration(wave)
+  });
+  wave.on('mark', function (mark) {
+    if (mark.id === 'track_end') {
+      cycleQueue();
+    }
+  });
+}
+
+function currentPosition() {
+  return (queuedWaves[0] && getWavePosition(queuedWaves[0]));
+}
+
+function getWavePosition(wave) {
+  return wave.timings[0];
+}
+
+function getWaveDuration(wave) {
+  return wave.timings[1];
+}
+
+function cycleQueue() {
+
+  // update wave queue
+  queuedWaves[0].pause();
+  queuedWaves.shift();
+
+  // update sample queue
+  var queue = Session.get("queue");
+  queue.shift();
+  Session.set("queue", queue);
+
+  // TODO: how to handle if sample queue is empty?
+  if (queuedWaves[0]) {
+    queuedWaves[0].play();
+    Session.set("current_sample", queuedWaves[0]._id);
+  }
+  else {
+    Session.set("current_sample", undefined);
+  }
+}
+
+function getSampleUrl(sample) {
+  if (sample.type === 'song') {
+    return getSongUrl(Songs.findOne(sample._id));
+  }
+  else if (sample.type === 'transition') {
+    return getTransitionUrl(Transitions.findOne(sample._id));
+  }
+}
+
+// make wave from url, return new wave to callback
+function makeWave(url, callback) {
+
+  // init new wave
+  var wave = Object.create(WaveSurfer);
+  wave.init({
+    audioContext: context
+  });
+
+  // load url
+  // TODO: make this a progress bar
+  wave.load(url);
+  wave.on('ready', function () {
+    callback(wave);
+  });
 }
 //
 // /private methods
