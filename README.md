@@ -13,6 +13,7 @@
 - you have to use it in chrome - i'm using web audio api, and i've only made sure chrome works
 
 - since it's illegal to stream music for which i'm not paying royalties, i prevent streaming unless logged into the test account.
+the test account is only to be used for testing purposes.
 
   + *uname*: test
 
