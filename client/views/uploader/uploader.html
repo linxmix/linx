@@ -1,0 +1,40 @@
+<!-- Uploader Page -->
+<template name="uploaderPage">
+  <div class="row" style="margin-left: 4px;">
+    {{> uploaderWelcome}}
+    {{> uploaderControls}}
+  </div>
+  {{> uploader}}
+</template>
+
+<!-- Uploader -->
+<template name="uploader">
+  <div class="uploader">
+    {{#each waves}}
+      {{> wave}}
+    {{/each}}
+  </div>
+</template>
+
+<template name="wave">  
+  {{> wavePlayer}}
+  <div class="row col-md-12 waveform" id="{{id}}">
+    <p class="text-center" style="font-size: 30px; margin-top: 64px;">{{loadText}}</p>
+    <!-- Here be waveform -->
+  </div>
+</template>
+
+<!-- Player -->
+<template name="wavePlayer">
+  <div class="row col-md-12 text-center">
+    <button class="btn btn-success markBeginning">Mark Start</button>
+    <button class="btn btn-primary playPause">Play/Pause</button>
+    <button class="btn btn-danger markEnd">Mark End</button>
+  </div>
+</template>
+
+<!-- Controls -->
+<template name="uploaderControls">
+  <div class="col-md-5 col-md-offset-5">
+  </div>
+</template>

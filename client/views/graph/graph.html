@@ -1,0 +1,59 @@
+<!-- Graph Page -->
+<template name="graphPage">
+  <div class="container-full">
+    <div class="row">
+      <div class="col-md-9">
+        {{> graph}}
+      </div>
+      <div class="col-md-3">
+        {{> songs}}
+      </div>
+    </div>
+  </div>
+</template>
+
+<!-- Graph -->
+<template name="graph">
+  <div id="graph-wrapper" class="well" style="margin-left: 20px;">
+    {{#constant}}
+    {{/constant}}
+  </div>
+</template>
+
+<!-- Songs -->
+<template name="songs">
+  <ul id="songs">
+    {{#each songs}}
+      {{> song}}
+    {{/each}}
+  </ul>
+</template>
+
+<template name="song">
+  <div class="song {{selected}} {{current}} well well-sm">
+    <span class="name">Song: {{name}}</span>
+    <br>
+    <span class="playCount"># Plays: {{playCount}}</span>
+  </div>
+</template>
+
+<!-- Transitions -->
+<template name="transitions">
+  <ul class="transitions">
+    {{#each transitions}}
+    {{> transition}}
+    {{/each}}
+  </ul>
+</template>
+
+<template name="transition">
+  <div class="transition {{selected}} {{current}}">
+    <span class="startSong">startSong: {{startSong}}</span>
+    <br>
+    <span class="startTime">startTime: {{startTime}}</span>
+    <br>
+    <span class="endSong">endSong: {{endSong}}</span>
+    <br>
+    <span class="playCount">playCount: {{playCount}}</span>
+  </div>
+</template>

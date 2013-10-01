@@ -34,7 +34,7 @@ Meteor.startup(function () {
   Meteor.methods({
 
     getFileUrl: function (path) {
-      var local = false;
+      var local = true;
       if (local) {
         console.log("Serving File Locally: "+path);
         return path;

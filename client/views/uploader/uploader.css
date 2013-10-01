@@ -1,0 +1,17 @@
+.waveforms {
+  padding-top: 30px;
+}
+
+.waveform {
+  color: #ddd;
+  text-decoration: bold;
+  background-color: #444;
+  border: 2px solid #222;
+  margin-bottom: 15px;
+  height: 150px;
+  width: 1950px;
+}
+
+.wavePlayer {
+  margin-top: 20px;
+}

@@ -1,0 +1,52 @@
+<!-- Layout -->
+<template name="layout">
+  <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner" role="navigation">
+      <div class="container-full">
+        {{> nav}}
+      </div>
+    </div>
+  </div>
+  {{{yield}}}
+</template>
+
+<template name="nav">
+  <span class="navbar-brand">Beatfn.com</span>
+  {{> player}}
+  {{> pageNav}}
+  {{> songNav}}
+  {{> loginNav}}
+</template>
+
+<!-- Player -->
+<template name="player">
+  <ul class="nav navbar-left">
+    <button class="navbar-btn btn-success" id="start">Start</button>
+    <button class="navbar-btn btn-primary" id="transitionNow">Transition Now</button>
+    <button class="navbar-btn btn-danger" id="stop">Stop</button>
+  </ul>
+</template>
+
+<!-- Nav -->
+<template name="pageNav">
+  <ul class="nav nav-pills">
+    <li class="{{navClassFor 'graphPage'}}">
+      <a href="{{graphPagePath}}">Graph</a>
+    </li>
+    <li class="{{navClassFor 'uploaderPage'}}">
+      <a href="{{uploaderPagePath}}">Uploader</a>
+    </li>
+  </ul>
+</template>
+
+<template name="loginNav">
+  <div class="navbar-right">
+    <button class="navbar-btn btn-primary">{{loginButtons}}</button>
+  </div>
+</template>
+
+<template name="songNav">
+  <form class="navbar-form navbar-search navbar-right">
+    <input type="text" class="search-query" placeholder="Find Songs...">
+  </form>
+</template>
