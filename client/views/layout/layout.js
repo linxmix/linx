@@ -5,7 +5,7 @@ Template.player.events({
   },
 
   'click #transitionNow': function() {
-    doNextTransition(true);
+    transitionNow();
   },
 
   'click #stop': stopMix
