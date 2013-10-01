@@ -6,13 +6,14 @@
       "bootstrap-slider-touch": {},
       "knox": {},
       "accounts-ui-bootstrap-dropdown": {},
-      "mini-pages": {}
+      "mini-pages": {},
+      "jquery-mousewheel": {}
     },
     "packages": {
       "bootstrap-3": {
         "git": "https://github.com/mangasocial/meteor-bootstrap-3.git",
-        "tag": "v0.3.4",
-        "commit": "680c056e849d079a1b669247f347da2b443aad91"
+        "tag": "v0.3.5",
+        "commit": "47996f67f3987c9f82117394effcbe1586a4fe29"
       },
       "bootstrap-slider-touch": {
         "git": "https://github.com/Dsyko/meteor-bootstrap-slider-touch.git",
@@ -33,6 +34,11 @@
         "git": "https://github.com/cmather/meteor-mini-pages.git",
         "tag": "v0.3.2",
         "commit": "4d885ffb6d0108ee2e47a13a6296c98a2f7b5059"
+      },
+      "jquery-mousewheel": {
+        "git": "https://github.com/sslotsky/meteor-jquery-mousewheel.git",
+        "tag": "v0.1.0",
+        "commit": "357e12cbe3bdcec1c3d1bff4b13b191d75acc973"
       },
       "HTML5-History-API": {
         "git": "https://github.com/tmeasday/meteor-HTML5-History-API.git",

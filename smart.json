@@ -4,6 +4,7 @@
     "bootstrap-slider-touch": {},
     "knox": {},
     "accounts-ui-bootstrap-dropdown": {},
-    "mini-pages": {}
+    "mini-pages": {},
+    "jquery-mousewheel": {}
   }
 }
