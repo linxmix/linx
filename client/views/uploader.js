@@ -1,18 +1,20 @@
 Session.set("waves", []);
 
-var startWave = makeWave("startWave",'songs/the sky.mp3', "Drop starting song here."),
-    transitionWave = makeWave("transitionWave",'transitions/the sky-lightspeed.mp3', "Drop transition here."),
-    endWave = makeWave("endWave",'songs/lightspeed.mp3', "Drop ending song here.");
+Meteor.startup(function () {
+  var startWave = makeWave("startWave",'songs/the sky.mp3', "Drop starting song here."),
+      transitionWave = makeWave("transitionWave",'transitions/the sky-lightspeed.mp3', "Drop transition here."),
+      endWave = makeWave("endWave",'songs/lightspeed.mp3', "Drop ending song here.");
 
-function makeWave(id, url, loadText) {
-  var wave = Object.create(WaveSurfer);
+  function makeWave(id, url, loadText) {
+    var wave = Object.create(WaveSurfer);
 
-  // update session object to render new template
-  var waves = Session.get("waves");
-  waves.push({ id: id, loadText: loadText });
-  Session.set("waves", waves);
-  return wave;
-}
+    // update session object to render new template
+    var waves = Session.get("waves");
+    waves.push({ id: id, loadText: loadText });
+    Session.set("waves", waves);
+    return wave;
+  }
+});
 
 Template.wave.rendered = function () {
   var wave, id = this.data.id;
