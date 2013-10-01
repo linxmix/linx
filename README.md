@@ -1,9 +1,10 @@
 #beatfn
+
+####A music player that plays like a dj mix.
 ======
 
-#####music player which plays like a dj mix that you control
 
-### *here's some quick info, transcribed from an email*:
+##### *here's some quick info, transcribed from an email*:
 
 it's basically an app that plays a live dj mix, except that you choose the songs
 
