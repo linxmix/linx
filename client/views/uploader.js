@@ -55,13 +55,15 @@ Meteor.startup(function () {
             var position = marker.position.toPrecision(3);
             var time = my.backend.getCurrentTime().toPrecision(3);
             if (position == time) {
+
               firing = true;
               var diff = marker.position - my.backend.getCurrentTime();
+              console.log("firing with diff: "+diff);
               Meteor.setTimeout(function () {
                 firing = false;
                 my.fireEvent('mark', marker);
                 marker.fireEvent('reached');
-              }, diff);
+              }, (diff * 1000) - 2); // subtract 2ms to improve accuracy
             }
           });
         }
@@ -110,7 +112,6 @@ Template.wave.rendered = function () {
     case 'startWave':
     wave.on('mark', function(mark) {
       if (mark.id === 'end') {
-        console.log("marker diff:"+mark['diff']);
         var transitionWave = waves['transitionWave'];
         var transitionStart =
           (transitionWave.markers['start'].position) /
@@ -135,8 +136,8 @@ Template.wave.rendered = function () {
 
   }
 
-  var selector = '#'+id;
   // init wave
+  var selector = '#'+id;
   wave.init({
     'container': $(selector+' .waveform')[0],
     'waveColor': waveColors[id],
@@ -148,6 +149,7 @@ Template.wave.rendered = function () {
     'audioContext': audioContext
   });
   wave.bindDragNDrop($(selector+' .waveform')[0]);
+  wave.bindMarks();
 
   // TODO: progress bar after wavesurfer issue is fixed
   wave.on('ready', function() {
@@ -327,7 +329,6 @@ function addKeyBindings() {
         id: 'start',
         color: 'rgba(0, 255, 0, 0.8)'
       });
-      waves[lastWaveClicked].bindMarks();
     },
 
     'down': function(e) {
@@ -336,7 +337,6 @@ function addKeyBindings() {
         id: 'end',
         color: 'rgba(255, 0, 0, 0.8)'
       });
-      waves[lastWaveClicked].bindMarks();
     },
 
     'left/shift+left': function(e) {
