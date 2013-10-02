@@ -5,6 +5,7 @@
     "knox": {},
     "accounts-ui-bootstrap-dropdown": {},
     "mini-pages": {},
-    "jquery-mousewheel": {}
+    "jquery-mousewheel": {},
+    "keybindings": {}
   }
 }

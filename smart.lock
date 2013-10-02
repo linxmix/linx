@@ -7,7 +7,8 @@
       "knox": {},
       "accounts-ui-bootstrap-dropdown": {},
       "mini-pages": {},
-      "jquery-mousewheel": {}
+      "jquery-mousewheel": {},
+      "keybindings": {}
     },
     "packages": {
       "bootstrap-3": {
@@ -39,6 +40,11 @@
         "git": "https://github.com/sslotsky/meteor-jquery-mousewheel.git",
         "tag": "v0.1.0",
         "commit": "357e12cbe3bdcec1c3d1bff4b13b191d75acc973"
+      },
+      "keybindings": {
+        "git": "https://github.com/matteodem/meteor-keybindings.git",
+        "tag": "v0.3.8",
+        "commit": "7102c7329453c18c63846d74d0b51ef35a23e945"
       },
       "HTML5-History-API": {
         "git": "https://github.com/tmeasday/meteor-HTML5-History-API.git",

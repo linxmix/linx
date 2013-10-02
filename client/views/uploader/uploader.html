@@ -16,11 +16,13 @@
   </div>
 </template>
 
-<template name="wave">  
-  {{> wavePlayer}}
-  <div class="row col-md-12 waveform" id="{{id}}">
-    <p class="text-center" style="font-size: 30px; margin-top: 64px;">{{loadText}}</p>
-    <!-- Here be waveform -->
+<template name="wave">
+  <div id="{{id}}">
+    <!--{{> wavePlayer}}-->
+    <div class="row col-md-12 waveform">
+      <p class="text-center loadText" style="font-size: 30px; margin-top: 64px;">{{loadText}}</p>
+      <!-- Here be waveform -->
+    </div>
   </div>
 </template>
 

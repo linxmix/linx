@@ -327,7 +327,7 @@ function makeWave(url, callback) {
   // init new wave
   var wave = Object.create(WaveSurfer);
   wave.init({
-    audioContext: context
+    'audioContext': audioContext
   });
 
   // load url
