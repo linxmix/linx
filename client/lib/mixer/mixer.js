@@ -1,37 +1,25 @@
 // private variable
-queuedWaves = [];
+var queuedWaves = [];
+
+// make sure we're ready for play and pause events
+Meteor.autorun(assertPlayStatus);
 
 //
 // exported methods
 //
-
-// TODO: fix this
-startMix = function(startSong, startPos) {
+playMix = function() {
   if (Meteor.userId() != Meteor.users.findOne({ username: 'test' })._id) {
     return alert("Sorry, but you cannot stream music unless you're logged into an account that owns it. If you'd like to help test this app, contact wolfbiter@gmail.com.");
   }
-  startPos = startPos || 0;
-  if (!startSong) {
-    return console.log("ERROR: select a song in order to start the mix");
-  }
-  Session.set("current_transition", startSong._id);
-  scheduleSong(startSong._id, startSong, 0, startPos);
+  Session.set("playing", true);
 };
 
-// TODO: fix this
 pauseMix = function() {
-  console.log("PAUSING EVERYTHING!");
-  var currWave = queuedWaves[0];
-  if (currWave) {
-    currWave.pause();
-  } else {
-    // TODO: cancel any loading songs here
-  }
+  Session.set("playing", false);
 };
 
-// TODO: fix this. isn't this just cycleQueue?
-transitionNow = function() {
-  loadTransition(true);
+skipMix = function() {
+  cycleQueue();
 };
 
 // returns a valid transition to song such that the queue
@@ -144,10 +132,10 @@ function chooseTransition() {
   var song = Songs.findOne({ playCount: { $lt: endSong.playCount } });
   if (song) {
     transition = {
-      startSong: currSample_id,
-      endSong: song._id,
-      startTime: 0,
-      endTime: 0
+      'startSong': currSample_id,
+      'endSong': song._id,
+      'startTime': 0,
+      'endTime': 0
     };
   }
 
@@ -175,7 +163,6 @@ function isValidTransition(prevSample, transition, debug) {
       return false;
     }
 
-    // TODO: make sure current_sample is undefined if there are no waves loaded!
     // if prevSample is the current sample, make sure transition isn't too soon
     if (prevSample._id === Session.get("current_sample")) {
       if (currentPosition() >
@@ -208,7 +195,7 @@ function assertQueue() {
   if (queueLength > 0) {
 
     // find out where our sample queue and wave queue diverge
-    // TODO: what if wave queue is longer than sample queue?
+    // TODO: what if wave queue is longer than sample queue? handle in queueSample?
     var index;
     for (index = 0; index <= queueLength; index++) {
       if (queuedWaves[index]._id !== queue[index]._id) {
@@ -233,10 +220,13 @@ function loadSample(index) {
   makeWave(sampleUrl, function (wave) {
     wave = prepWave(wave, sample);
     queuedWaves[index] = wave;
+    // play if we were waiting for load to complete
+    assertPlayStatus();
 
     // if prevWave, schedule this wave to start after it
     var prevWave = queuedWaves[index - 1];
     if (prevWave) {
+
       // make sure prevWave has end marker
       if (!prevWave.markers.end) {
         prevWave.mark({
@@ -246,14 +236,9 @@ function loadSample(index) {
       }
       prevWave.on('mark', function (mark) {
         if (mark.id === 'end') {
-          prevWave.pause();
           cycleQueue();
         }
       });
-
-    // else no prevWave, cycle now
-    } else {
-      cycleQueue();
     }
 
     // load next transition if this is not the last
@@ -279,35 +264,58 @@ function prepWave(wave, sample) {
   });
 }
 
+// NOTE: position is in seconds, progress is in percent
 function currentPosition() {
   return (queuedWaves[0] && getWavePosition(queuedWaves[0]));
 }
 
+function currentProgress() {
+  var wave = queuedWaves[0];
+  return (wave &&
+    (getWavePosition(wave) / getWaveDuration(wave)));
+}
+
 function getWavePosition(wave) {
-  return wave.timings[0];
+  return wave.timings()[0];
 }
 
 function getWaveDuration(wave) {
-  return wave.timings[1];
+  return wave.timings()[1];
 }
 
 function cycleQueue() {
 
   // update wave queue
-  queuedWaves[0].pause();
-  queuedWaves.shift();
+  pauseWave();
+  var newWave = queuedWaves.shift();
 
   // update sample queue
   var queue = Session.get("queue");
   queue.shift();
   Session.set("queue", queue);
+  assertPlayStatus();
+}
 
-  // TODO: how to handle if sample queue is empty?
-  if (queuedWaves[0]) {
-    queuedWaves[0].play();
-    Session.set("current_sample", queuedWaves[0]._id);
+function assertPlayStatus() {
+  if (Session.get("playing")) {
+    playWave();
+  } else {
+    pauseWave();
   }
-  else {
+}
+
+function pauseWave() {
+  if (queuedWaves[0]) {
+    queuedWaves[0].pause();
+  }
+}
+
+function playWave() {
+  var wave = queuedWaves[0];
+  if (wave) {
+    wave.play();
+    Session.set("current_sample", wave._id);
+  } else {
     Session.set("current_sample", undefined);
   }
 }

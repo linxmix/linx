@@ -3,10 +3,7 @@
   <div class="col-md-8 col-md-offset-2">
     <div class="panel-group">
       <div class="panel panel-info">
-        <div class="panel-heading">
-          <h3 class="text-center">Welcome to the uploader!</h3>
-        </div>
-        <div class="panel-body text-center">
+        <div class="panel-heading text-center">
           {{> tips}}
         </div>
       </div>
@@ -16,13 +13,13 @@
 
 <!-- Tips -->
 <template name="tips">
-  <button type="button" class="btn btn-info helptip" data-toggle="tooltip" data-placement="top" title=""
+  <button type="button" class="btn btn-info helptip" data-toggle="tooltip" data-placement="bottom" title=""
   data-original-title="Drag-and-drop your starting song, transition, and ending song files into the labeled regions.">
   <strong>Step 1:</strong> Load Files</button>
   <button type="button" class="btn btn-info helptip" data-toggle="tooltip" data-placement="bottom" title=""
   data-original-title="2">
   <strong>Step 2:</strong> Align Transition</button>
-  <button type="button" class="btn btn-info helptip" data-toggle="tooltip" data-placement="top" title=""
+  <button type="button" class="btn btn-info helptip" data-toggle="tooltip" data-placement="bottom" title=""
   data-original-title="3">
   <strong>Step 3:</strong> Place Markers</button>
   <button type="button" class="btn btn-info helptip" data-toggle="tooltip" data-placement="bottom" title="" id="upload"

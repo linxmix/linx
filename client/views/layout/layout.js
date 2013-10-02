@@ -1,12 +1,8 @@
 Template.player.events({
 
-  'click #start': function() {
-    startMix(Songs.findOne(Session.get("selected_song")));
-  },
+  'click #play': playMix,
 
-  'click #transitionNow': function() {
-    transitionNow();
-  },
+  'click #skip': skipMix,
 
   'click #pause': pauseMix
 });
