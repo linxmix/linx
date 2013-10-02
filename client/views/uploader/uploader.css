@@ -1,14 +1,25 @@
 .waveform {
-  color: #fff;
+  color: #111;
   text-decoration: bold;
-  background-color: #656565;
-  border: 2px solid #333;
-  height: 150px;
-  width: 1900px;
-  padding-right: 0;
+  background-color: #aaa;
+  border: 2px solid #666;
+  height: 200px;
   margin-top: 30px;
+}
+
+.waveform.wavesurfer-dragover {
+  color: #fff;
+  background-color: #555;
+  border-color: #000;
 }
 
 .wavePlayer {
   margin-bottom: 20px;
+}
+
+.loadText {
+  margin-bottom: 0px;
+  border-color: #333;
+  font-size: 30px;
+  padding: 85px;
 }

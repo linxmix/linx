@@ -6,7 +6,7 @@ var lastWaveClicked, lastMarkMade;
 var waveColors = {
   'startWave': 'mediumorchid',
   'transitionWave': 'steelblue',
-  'endWave': 'salmon'
+  'endWave': 'coral'
 };
 
 var progressColors = {
@@ -58,8 +58,8 @@ Meteor.startup(function () {
 
               firing = true;
               var diff = marker.position - my.backend.getCurrentTime();
-              console.log("firing with diff: "+diff);
               Meteor.setTimeout(function () {
+                console.log("firing with diff: "+diff);
                 firing = false;
                 my.fireEvent('mark', marker);
                 marker.fireEvent('reached');
@@ -143,6 +143,9 @@ Template.wave.rendered = function () {
     'waveColor': waveColors[id],
     'progressColor': progressColors[id],
     'cursorColor': cursorColors[id],
+    'minPxPerSec': 10,
+    'fillParent': false,
+    'scrollParent': true,
     'cursorWidth': 2,
     'markerWidth': 2,
     'renderer': 'Canvas',
@@ -167,10 +170,25 @@ Template.uploader.waves = function () {
   return Session.get("waves");
 };
 
+function validZoom(px) {
+  return (px < 60 && px > 1)
+}
+
+function clampZoom(zoom) {
+  if (zoom >= 59) {
+    return 59;
+  } else if (zoom <= 1) {
+    return 1;
+  } else {
+    return zoom;
+  }
+}
+
 function zoomWave(id, zoom) {
-  var node = $('#'+id+' .waveform');
-  var width = parseInt(node.css('width')) + zoom;
-  node.css('width', width+'px');
+  var wave = waves[id];
+  zoom = clampZoom(zoom + wave.params['minPxPerSec']);
+  wave.params['minPxPerSec'] = zoom;
+  wave.drawer.params['minPxPerSec'] = zoom;
   redrawWave(id);
 }
 
@@ -257,7 +275,7 @@ Template.wave.events({
     mouseClickHeld = false;
   },
 
-  'mousemove .waveform': function (e) {
+  'mousemove canvas': function (e) {
     // click and drag
     if (mouseClickHeld) {
       // move track
@@ -274,7 +292,7 @@ Template.wave.events({
       e.preventDefault();
       e.stopPropagation();
       var direction = e.wheelDelta >= 0 ? 1 : -1;
-      var zoom = 100;
+      var zoom = 1;
       if (e.shiftKey) {
         zoom *= 10;
       }
@@ -285,7 +303,7 @@ Template.wave.events({
   'dblclick .waveform': function (e) {
     playWave(this.id);
     e.preventDefault();
-  }
+  },
 
 });
 
@@ -323,7 +341,7 @@ function addKeyBindings() {
       }
     },
 
-    'up': function(e) {
+    'left': function(e) {
       e.preventDefault();
       lastMarkMade = waves[lastWaveClicked].mark({
         id: 'start',
@@ -331,7 +349,7 @@ function addKeyBindings() {
       });
     },
 
-    'down': function(e) {
+    'right': function(e) {
       e.preventDefault();
       lastMarkMade = waves[lastWaveClicked].mark({
         id: 'end',
@@ -339,7 +357,7 @@ function addKeyBindings() {
       });
     },
 
-    'left/shift+left': function(e) {
+    'down/shift+down': function(e) {
       e.preventDefault();
       var dist = -0.005;
       if (e.shiftKey) {
@@ -348,7 +366,7 @@ function addKeyBindings() {
       waves[lastWaveClicked].skip(dist);
     },
 
-    'right/shift+right': function(e) {
+    'up/shift+up': function(e) {
       e.preventDefault();
       var dist = 0.005;
       if (e.shiftKey) {

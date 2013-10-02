@@ -1,6 +1,6 @@
 <!-- Uploader Page -->
 <template name="uploaderPage">
-  <div class="row" style="margin-left: 4px;">
+  <div class="row">
     {{> uploaderWelcome}}
     {{> uploaderControls}}
   </div>
@@ -17,9 +17,9 @@
 </template>
 
 <template name="wave">
-  <div id="{{id}}">
-    <div class="row col-md-12 waveform">
-      <p class="text-center loadText" style="font-size: 30px; margin-top: 64px;">{{loadText}}</p>
+  <div class ="row" id="{{id}}">
+    <div class="col-md-12 waveform">
+      <p class="lead text-center loadText">{{loadText}}</p>
       <!-- Here be waveform -->
     </div>
   </div>
