@@ -70,7 +70,9 @@ Meteor.startup(function () {
       });
     };
 
+    //
     // flash when reaching a mark
+    //
     var flashInterval;
     wave.on('mark', function (marker) {
       var markerColor = marker.color;
@@ -170,28 +172,6 @@ Template.uploader.waves = function () {
   return Session.get("waves");
 };
 
-function validZoom(px) {
-  return (px < 60 && px > 1)
-}
-
-function clampZoom(zoom) {
-  if (zoom >= 59) {
-    return 59;
-  } else if (zoom <= 1) {
-    return 1;
-  } else {
-    return zoom;
-  }
-}
-
-function zoomWave(id, zoom) {
-  var wave = waves[id];
-  zoom = clampZoom(zoom + wave.params['minPxPerSec']);
-  wave.params['minPxPerSec'] = zoom;
-  wave.drawer.params['minPxPerSec'] = zoom;
-  redrawWave(id);
-}
-
 // position is in seconds
 function getWavePosition(wave) {
   return wave.timings()[0];
@@ -221,20 +201,39 @@ function redrawWave(id) {
   }
 }
 
+function clampZoom(zoom) {
+  if (zoom >= 59) {
+    return 59;
+  } else if (zoom <= 1) {
+    return 1;
+  } else {
+    return zoom;
+  }
+}
+
+function zoomWave(id, zoom) {
+  var wave = waves[id];
+  zoom = clampZoom(zoom + wave.params['minPxPerSec']);
+  wave.params['minPxPerSec'] = zoom;
+  wave.drawer.params['minPxPerSec'] = zoom;
+  redrawWave(id);
+}
+
+
+//
+// Play and Pause
+//
 var playingWave;
 
-function playWave(wave) {
+function playWave(newWave) {
   // curry arg
-  if (typeof wave !== 'object') { wave = waves[wave]; }
-  // if already playing this wave, pause it
-  if ((playingWave && playingWave.id) === wave.id) {
-    pause();
-  // else, pause then play new
-  } else {
-    pause();
-    // play new wave
-    playingWave = wave;
-    (wave && wave.play());
+  if (typeof newWave !== 'object') { newWave = waves[newWave]; }
+  var prevWave = playingWave;
+  pause();
+  // play given wave if it wasnt the one playing
+  if ((prevWave && prevWave.id) !== newWave.id) {
+    playingWave = newWave;
+    (newWave && newWave.play());
   }
 }
 
@@ -244,29 +243,17 @@ function pause() {
     playingWave = undefined;
   }
 }
-/*
-// drag event
-var flag = 0;
-var element = xxxx;
-element.addEventListener("mousedown", function(){
-    flag = 0;
-}, false);
-element.addEventListener("mousemove", function(){
-    flag = 1;
-}, false);
-element.addEventListener("mouseup", function(){
-    if(flag === 0){
-        console.log("click");
-    }
-    else if(flag === 1){
-        console.log("drag");
-    }
-}, false);
-*/
 
+
+//
+// mouse events
+//
 var mouseClickHeld = false;
 Template.wave.events({
 
+  //
+  // click and drag
+  //
   'mousedown': function (e) {
     mouseClickHeld = true;
   },
@@ -279,6 +266,16 @@ Template.wave.events({
     // click and drag
     if (mouseClickHeld) {
       // move track
+    }
+  },
+
+  //
+  // mouse
+  //
+  'click button': function (e) {
+    var action = e.target.dataset && e.target.dataset.action;
+    if (action && action in eventHandlers) {
+      eventHandlers[action](e);
     }
   },
 
@@ -309,17 +306,12 @@ Template.wave.events({
 
 Template.uploaderPage.events({
   'click #upload': function(e) {
-    // TODO: popup form for transition and song metadata?
-    // TODO: think about when an audio file already exists on the server. maybe have it so
-    //       the guy making the upload can choose files already there?
-
-    // TODO: implement this to store the backend.buffer onto the s3 server
     console.log(startWave.backend);
   }
 });
 
 //
-// add key event handlers
+// key events
 //
 var keyBindingsInterval = Meteor.setInterval(function(){
    if (Meteor.Keybindings) {
@@ -330,50 +322,60 @@ var keyBindingsInterval = Meteor.setInterval(function(){
 
 function addKeyBindings() {
   Meteor.Keybindings.add({
-
-   'space': function(e) {
-      e.preventDefault();
-      // we want spacebar to be a universal pause
-      if (playingWave) {
-        pause();
-      } else {
-        playWave(lastWaveClicked);
-      }
-    },
-
-    'left': function(e) {
-      e.preventDefault();
-      lastMarkMade = waves[lastWaveClicked].mark({
-        id: 'start',
-        color: 'rgba(0, 255, 0, 0.8)'
-      });
-    },
-
-    'right': function(e) {
-      e.preventDefault();
-      lastMarkMade = waves[lastWaveClicked].mark({
-        id: 'end',
-        color: 'rgba(255, 0, 0, 0.8)'
-      });
-    },
-
-    'down/shift+down': function(e) {
-      e.preventDefault();
-      var dist = -0.005;
-      if (e.shiftKey) {
-         dist *= 50;
-      }
-      waves[lastWaveClicked].skip(dist);
-    },
-
-    'up/shift+up': function(e) {
-      e.preventDefault();
-      var dist = 0.005;
-      if (e.shiftKey) {
-         dist *= 50;
-      }
-      waves[lastWaveClicked].skip(dist);
-    }
-
+    'space': eventHandlers['playPause'],
+    'left': eventHandlers['markStart'],
+    'right': eventHandlers['markEnd'],
+    'down/shift+down': eventHandlers['back'],
+    'up/shift+up': eventHandlers['forth']
   });
 }
+
+//
+// event functions
+//
+var eventHandlers = {
+
+  'playPause': function(e) {
+    e.preventDefault();
+    // we want spacebar to be a universal pause
+    if (playingWave) {
+      pause();
+    } else {
+      playWave(lastWaveClicked);
+    }
+  },
+
+  'markStart': function(e) {
+    e.preventDefault();
+    lastMarkMade = waves[lastWaveClicked].mark({
+      id: 'start',
+      color: 'rgba(0, 255, 0, 0.8)'
+    });
+  },
+
+  'markEnd': function(e) {
+    e.preventDefault();
+    lastMarkMade = waves[lastWaveClicked].mark({
+      id: 'end',
+      color: 'rgba(255, 0, 0, 0.8)'
+    });
+  },
+
+  'back': function(e) {
+    e.preventDefault();
+    var dist = -0.005;
+    if (e.shiftKey) {
+       dist *= 50;
+    }
+    waves[lastWaveClicked].skip(dist);
+  },
+
+  'forth': function(e) {
+    e.preventDefault();
+    var dist = 0.005;
+    if (e.shiftKey) {
+       dist *= 50;
+    }
+    waves[lastWaveClicked].skip(dist);
+  }
+ };

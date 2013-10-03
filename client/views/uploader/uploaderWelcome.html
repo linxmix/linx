@@ -13,16 +13,51 @@
 
 <!-- Tips -->
 <template name="tips">
-  <button type="button" class="btn btn-info helptip" data-toggle="tooltip" data-placement="bottom" title=""
-  data-original-title="Drag-and-drop your starting song, transition, and ending song files into the labeled regions.">
-  <strong>Step 1:</strong> Load Files</button>
-  <button type="button" class="btn btn-info helptip" data-toggle="tooltip" data-placement="bottom" title=""
-  data-original-title="2">
-  <strong>Step 2:</strong> Align Transition</button>
-  <button type="button" class="btn btn-info helptip" data-toggle="tooltip" data-placement="bottom" title=""
-  data-original-title="3">
-  <strong>Step 3:</strong> Place Markers</button>
-  <button type="button" class="btn btn-info helptip" data-toggle="tooltip" data-placement="bottom" title="" id="upload"
-  data-original-title="Click here to submit your transition!">
-  <strong>Step 4:</strong> Upload</button>
+
+  <button
+  type="button"
+  class="btn btn-info helptip"
+  data-toggle="tooltip"
+  data-placement="bottom"
+  data-original-title="First, drag-and-drop your starting song, transition, and ending song files into the labeled regions.">
+    <strong>Step 1:</strong> Load Files
+  </button>
+
+  <button
+    type="button"
+    class="btn btn-info helptip"
+    data-toggle="tooltip"
+    data-placement="bottom"
+    data-original-title="Now we're going to figure out how to play these files as a continuous mix. To this end, you must find locations where the waveforms overlap seamlessly.">
+    <strong>Step 2:</strong> Find Overlap
+  </button>
+
+  <button
+    type="button"
+    class="btn btn-info helptip"
+    data-toggle="tooltip"
+    data-placement="bottom"
+    data-original-title="Tell the app where those locations are by placing start and end markers on each waveform. When a waveform hits an end marker, playback will automatically seek to the next waveform's start marker.">
+    <strong>Step 3:</strong> Place Markers
+  </button>
+
+  <button
+    type="button"
+    class="btn btn-info helptip"
+    data-toggle="tooltip"
+    data-placement="bottom"
+    data-original-title="Make sure the app can successfully execute your transition by playing the start song and listening through to the end song. Adjust start and end markers accordingly.">
+    <strong>Step 4:</strong> Align Transition
+  </button>
+
+  <button
+    type="button"
+    class="btn btn-info helptip"
+    data-action="upload"
+    data-toggle="tooltip"
+    data-placement="bottom"
+    data-original-title="Click here to submit your transition!">
+    <strong>Step 5:</strong> Upload
+  </button>
+
 </template>

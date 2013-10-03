@@ -1,0 +1,60 @@
+<!-- Player -->
+<template name="wavePlayer">
+  <div class="row col-md-12 text-center">
+
+    <button
+      type="button"
+      class="btn btn-xs btn-success helptip"
+      data-toggle="tooltip"
+      data-placement="top"
+      data-action="markStart"
+      data-original-title="[Left Arrow]">
+      <span class="glyphicon glyphicon-share-alt"></span>
+      Mark Start
+    </button>
+    {{> playbackButtons}}
+    <button
+      type="button"
+      class="btn btn-xs btn-danger helptip"
+      data-toggle="tooltip"
+      data-placement="top"
+      data-action="markEnd"
+      data-original-title="[Right Arrow]">
+      Mark End
+      <span class="glyphicon glyphicon-share-alt"></span>
+    </button>
+  </div>
+</template>
+
+<template name="playbackButtons">
+  <div class="btn-group">
+    <button
+      type="button"
+      class="btn btn-xs btn-info helptip"
+      data-toggle="tooltip"
+      data-placement="top"
+      data-action="back"
+      data-original-title="[Down / Shift+Down]">
+      <span class="glyphicon glyphicon-step-backward"></span>
+    </button>
+    <button
+      type="button"
+      class="btn btn-xs btn-primary helptip"
+      data-toggle="tooltip"
+      data-placement="top"
+      data-action="playPause"
+      data-original-title="[SpaceBar / DoubleClick]">
+      <span class="glyphicon glyphicon-play"></span> / <span class="glyphicon glyphicon-pause"></span>
+    </button>
+    <button
+      type="button"
+      class="btn btn-xs btn-info helptip"
+      data-toggle="tooltip"
+      data-placement="top"
+      data-action="forth"
+      data-original-title="[Up / Shift+Up]">
+      <span class="glyphicon glyphicon-step-forward"></span>
+    </button>
+
+  </div>
+</template>

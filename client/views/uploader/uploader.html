@@ -16,21 +16,14 @@
   </div>
 </template>
 
+<!-- Wave -->
 <template name="wave">
   <div class ="row" id="{{id}}">
     <div class="col-md-12 waveform">
       <p class="lead text-center loadText">{{loadText}}</p>
       <!-- Here be waveform -->
     </div>
-  </div>
-</template>
-
-<!-- Player -->
-<template name="wavePlayer">
-  <div class="row col-md-12 text-center">
-    <button class="btn btn-success markBeginning">Mark Start</button>
-    <button class="btn btn-primary playPause">Play/Pause</button>
-    <button class="btn btn-danger markEnd">Mark End</button>
+    {{> wavePlayer}}
   </div>
 </template>
 
