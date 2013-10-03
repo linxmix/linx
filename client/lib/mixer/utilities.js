@@ -1,21 +1,6 @@
 //
 // utility functions
 //
-local = true;
-part = 'http://s3-us-west-2.amazonaws.com/beatfn.com/';
-
-getSongUrl = function(song) {
-  if (local) part = "";
-  return part + 'songs/' + song.name + '.' + song.fileType;
-};
-
-getTransitionUrl = function(transition) {
-  if (local) part = "";
-  return part + 'transitions/' +
-    Songs.findOne(transition.startSong).name + '-' +
-    Songs.findOne(transition.endSong).name + '.' + transition.fileType;
-};
-
 // TODO: finish this once i get song and transition durations
 // TODO: write function to get calculated load time (based on song to load)
 var bufferLoadSpeedSet = false;

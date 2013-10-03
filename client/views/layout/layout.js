@@ -1,10 +1,10 @@
 Template.player.events({
 
-  'click #play': playMix,
+  'click #play': Mixer.play,
 
-  'click #skip': skipMix,
+  'click #skip': Mixer.skip,
 
-  'click #pause': pauseMix
+  'click #pause': Mixer.pause
 });
 
 Template.songNav.events({

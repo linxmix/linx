@@ -1,110 +1,137 @@
+//
+// init
+//
+Session.set("load_time", 50.0); // safety net for load times
+Session.set("queue", []);
+Session.set("playing", false);
+var BUFFER_LOAD_SPEED = 1000000; // bytes/sec
+
+Mixer = {
+
+  //
+  // vars
+  //
+  'local': true,
+  'part': 'http://s3-us-west-2.amazonaws.com/beatfn.com/',
+  'audioContext': audioContext,
+
+  //
+  // functions
+  // 
+  'play': function() {
+    if (Meteor.userId() != Meteor.users.findOne({ username: 'test' })._id) {
+      return alert("Sorry, but you cannot stream music unless you're logged into an account that owns it. If you'd like to help test this app, contact wolfbiter@gmail.com.");
+    }
+    Session.set("playing", true);
+  },
+
+  'pause': function() {
+    Session.set("playing", false);
+  },
+
+  'skip': function() {
+    cycleQueue();
+  },
+
+  // returns a valid transition to song such that the queue
+  // retains maximum possible length. 
+  // TODO: what if none exist? add a soft transition to the end? or maybe find a path such that one exists?
+  'getNearestValidTransition': function(song) {
+    var queue = Session.get("queue"),
+        transitions = Transitions.find({ endSong: song._id }).fetch();
+    for (index = queue.length - 1; index >= -1; index--) {
+      for (var i = 0; i < transitions.length; i++) {
+        var transition = transitions[i];
+        if (isValidTransition(queue[index], transition)) {
+          return { 'transition': transition, 'index': ++index };
+        }
+      }
+    }
+    return console.log("ERROR: found no valid transitions for: "+song.name);
+  },
+
+  'queueSong': function(id, index, startTime, endTime) {
+    startTime = startTime || 0;
+    endTime = endTime || 0;
+    if (index === undefined) index = queue.length;
+    // coerce id into id
+    if (typeof id === 'object') {
+      id = id._id;
+    }
+    queueSample({
+      'type': "song",
+      '_id': id,
+      'startTime': startTime,
+      'endTime': endTime
+    }, index);
+    assertQueue();
+  },
+
+  // TODO: transition objects need start and end times for themselves too
+  'queueTransition': function(transition, index, startTime, endTime) {
+    startTime = startTime || 0;
+    endTime = endTime || 0;
+    if (index === undefined) index = queue.length;
+    // coerce transition into object
+    if (typeof transition !== 'object') {
+      transition = Transitions.findOne(transition);
+    }
+
+    console.log("queueTransition called with below at index: "+index);
+    console.log(transition);
+
+    // if queueing transition at front, queue its song first
+    if (index === 0) {
+      Mixer.queueSong(transition.startSong, index++, 0, transition.startTime);
+    }
+
+    // if transition fits at this index, queue it and endSong
+    if (isValidTransition(transition, index)) {
+      // set prevSample's endTime
+      Mixer.queueSong(transition.endSong, index++, transition.endTime);
+      queueSample({
+        'type': "transition",
+        '_id': transition._id,
+        'startTime': startTime,
+        'endTime': endTime
+      }, index++);
+      Mixer.queueSong(transition.endSong, index++, transition.endTime);
+    } else {
+      return console.log("ERROR: Invalid Transition given to queueTransition");
+    }
+
+    assertQueue();
+  },
+
+  'getSongUrl': function(song) {
+    if (local) part = "";
+    return part + 'songs/' + song.name + '.' + song.fileType;
+  },
+
+  'getTransitionUrl': function(transition) {
+    if (local) part = "";
+    return part + 'transitions/' +
+      Songs.findOne(transition.startSong).name + '-' +
+      Songs.findOne(transition.endSong).name + '.' + transition.fileType;
+  }
+
+};
+
 // private variable
 var queuedWaves = [];
 
 // make sure we're ready for play and pause events
 Meteor.autorun(assertPlayStatus);
 
+
 //
-// exported methods
+// private methods
 //
-playMix = function() {
-  if (Meteor.userId() != Meteor.users.findOne({ username: 'test' })._id) {
-    return alert("Sorry, but you cannot stream music unless you're logged into an account that owns it. If you'd like to help test this app, contact wolfbiter@gmail.com.");
-  }
-  Session.set("playing", true);
-};
-
-pauseMix = function() {
-  Session.set("playing", false);
-};
-
-skipMix = function() {
-  cycleQueue();
-};
-
-// returns a valid transition to song such that the queue
-// retains maximum possible length. 
-// TODO: what if none exist? add a soft transition to the end? or maybe find a path such that one exists?
-getNearestValidTransition = function(song) {
-  var queue = Session.get("queue"),
-      transitions = Transitions.find({ endSong: song._id }).fetch();
-  for (index = queue.length - 1; index >= -1; index--) {
-    for (var i = 0; i < transitions.length; i++) {
-      var transition = transitions[i];
-      if (isValidTransition(queue[index], transition)) {
-        return { 'transition': transition, 'index': ++index };
-      }
-    }
-  }
-  return console.log("ERROR: found no valid transitions for: "+song.name);
-};
-
-queueSong = function(id, index, startTime, endTime) {
-  startTime = startTime || 0;
-  endTime = endTime || 0;
-  if (index === undefined) index = queue.length;
-  // coerce id into id
-  if (typeof id === 'object') {
-    id = id._id;
-  }
-  queueSample({
-    'type': "song",
-    '_id': id,
-    'startTime': startTime,
-    'endTime': endTime
-  }, index);
-  assertQueue();
-};
-
-// TODO: transition objects need start and end times for themselves too
-queueTransition = function(transition, index, startTime, endTime) {
-  startTime = startTime || 0;
-  endTime = endTime || 0;
-  if (index === undefined) index = queue.length;
-  // coerce transition into object
-  if (typeof transition !== 'object') {
-    transition = Transitions.findOne(transition);
-  }
-
-  console.log("queueTransition called with below at index: "+index);
-  console.log(transition);
-
-  // if queueing transition at front, queue its song first
-  if (index === 0) {
-    queueSong(transition.startSong, index++, 0, transition.startTime);
-  }
-
-  // if transition fits at this index, queue it and endSong
-  if (isValidTransition(transition, index)) {
-    // set prevSample's endTime
-    queueSong(transition.endSong, index++, transition.endTime);
-    queueSample({
-      'type': "transition",
-      '_id': transition._id,
-      'startTime': startTime,
-      'endTime': endTime
-    }, index++);
-    queueSong(transition.endSong, index++, transition.endTime);
-  } else {
-    return console.log("ERROR: Invalid Transition given to queueTransition");
-  }
-
-  assertQueue();
-};
-
 function queueSample(sample, index) {
   var queue = Session.get("queue");
   queue.splice(index, queue.length - index, sample);
   Session.set("queue", queue);
 }
-//
-// /exported methods
-//
-
-
-//
-// private methods
-//
 
 // algorithm to decide which transition comes next.
 function chooseTransition() {
@@ -335,7 +362,7 @@ function makeWave(url, callback) {
   // init new wave
   var wave = Object.create(WaveSurfer);
   wave.init({
-    'audioContext': audioContext
+    'audioContext': Mixer.audioContext
   });
 
   // load url
