@@ -23,8 +23,9 @@ Template.graph.rendered = function () {
     //
     // preprocess nodes and links
     //
-    var currSong = Songs.findOne(Session.get("current_song"));
-    var queuedTransitions = Session.get("queued_transitions");
+    var queuedTransitions = Mixer.getQueue('transition');
+
+    var currSong = Songs.findOne();
 
     // if we have a currSong, draw graph in view mix mode
     if (currSong) {

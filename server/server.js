@@ -65,6 +65,7 @@ Meteor.startup(function () {
       endSong: "i could be the one",
       endTime: 107.620399,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -74,6 +75,7 @@ Meteor.startup(function () {
       endSong: "alive",
       endTime: 34.396709,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -83,6 +85,7 @@ Meteor.startup(function () {
       endSong: "torrent",
       endTime: 62.447994,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -92,6 +95,7 @@ Meteor.startup(function () {
       endSong: "without you",
       endTime: 171.131622,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -101,6 +105,7 @@ Meteor.startup(function () {
       endSong: "quasar",
       endTime: 209.397522,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -110,6 +115,7 @@ Meteor.startup(function () {
       endSong: "miami",
       endTime: 77.067917,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -119,6 +125,7 @@ Meteor.startup(function () {
       endSong: "baker street",
       endTime: 88.610138,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -128,6 +135,7 @@ Meteor.startup(function () {
       endSong: "ultraviolet",
       endTime: 220.827164,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -137,6 +145,7 @@ Meteor.startup(function () {
       endSong: "without you",
       endTime: 137.536957,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -146,6 +155,7 @@ Meteor.startup(function () {
       endSong: "babylon",
       endTime: 109.693863,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -155,6 +165,7 @@ Meteor.startup(function () {
       endSong: "dont you worry child",
       endTime: 89.395668,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -164,6 +175,7 @@ Meteor.startup(function () {
       endSong: "alive",
       endTime: 144.281357,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -173,6 +185,7 @@ Meteor.startup(function () {
       endSong: "without you",
       endTime: 42.679478,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -182,6 +195,7 @@ Meteor.startup(function () {
       endSong: "years",
       endTime: 34.668739,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -191,6 +205,7 @@ Meteor.startup(function () {
       endSong: "years",
       endTime: 47.861614,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -200,6 +215,7 @@ Meteor.startup(function () {
       endSong: "easy",
       endTime: 35.244785,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -209,6 +225,7 @@ Meteor.startup(function () {
       endSong: "dont you worry child",
       endTime: 63.690960,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -218,6 +235,7 @@ Meteor.startup(function () {
       endSong: "skylarking",
       endTime: 153.944778,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -227,6 +245,7 @@ Meteor.startup(function () {
       endSong: "skylarking",
       endTime: 257.211761,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -236,6 +255,7 @@ Meteor.startup(function () {
       endSong: "ultraviolet",
       endTime: 126.058815,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -245,6 +265,7 @@ Meteor.startup(function () {
       endSong: "language",
       endTime: 65.866142,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -254,6 +275,7 @@ Meteor.startup(function () {
       endSong: "language",
       endTime: 184.109070,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -263,6 +285,7 @@ Meteor.startup(function () {
       endSong: "language",
       endTime: 285.191101,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -272,6 +295,7 @@ Meteor.startup(function () {
       endSong: "kawaii",
       endTime: 113.981590,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -281,6 +305,7 @@ Meteor.startup(function () {
       endSong: "reach for me",
       endTime: 60.380409,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -290,6 +315,7 @@ Meteor.startup(function () {
       endSong: "apollo",
       endTime: 164.703293,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -299,6 +325,7 @@ Meteor.startup(function () {
       endSong: "apollo",
       endTime: 36.821423,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -308,6 +335,7 @@ Meteor.startup(function () {
       endSong: "alive",
       endTime: 32.706635,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -318,6 +346,7 @@ Meteor.startup(function () {
       endSong: "alive",
       endTime: 142.088867,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 */
@@ -328,6 +357,7 @@ Meteor.startup(function () {
       endSong: "apollo",
       endTime: 146.066269,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
     */
@@ -338,6 +368,7 @@ Meteor.startup(function () {
       endSong: "lamour",
       endTime: 59.626980,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -347,6 +378,7 @@ Meteor.startup(function () {
       endSong: "reach for me",
       endTime: 124.436142,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -356,6 +388,7 @@ Meteor.startup(function () {
       endSong: "miami",
       endTime: 113.713356,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -365,6 +398,7 @@ Meteor.startup(function () {
       endSong: "everafter",
       endTime: 49.072037,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -374,6 +408,7 @@ Meteor.startup(function () {
       endSong: "babylon",
       endTime: 71.089394,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -383,6 +418,7 @@ Meteor.startup(function () {
       endSong: "everafter",
       endTime: 66.223885,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -392,6 +428,7 @@ Meteor.startup(function () {
       endSong: "skylarking",
       endTime: 366.263641,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -401,6 +438,7 @@ Meteor.startup(function () {
       endSong: "lamour",
       endTime: 41.658463,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -410,6 +448,7 @@ Meteor.startup(function () {
       endSong: "lamour",
       endTime: 42.087124,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -419,6 +458,7 @@ Meteor.startup(function () {
       endSong: "miami",
       endTime: 80.305382,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -428,6 +468,7 @@ Meteor.startup(function () {
       endSong: "torrent",
       endTime: 69.051605,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -437,6 +478,7 @@ Meteor.startup(function () {
       endSong: "every teardrop",
       endTime: 11.174557,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -446,6 +488,7 @@ Meteor.startup(function () {
       endSong: "language",
       endTime: 196.782166,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -455,6 +498,7 @@ Meteor.startup(function () {
       endSong: "torrent",
       endTime: 64.156013,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -464,6 +508,7 @@ Meteor.startup(function () {
       endSong: "every teardrop",
       endTime: 74.284897,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -473,6 +518,7 @@ Meteor.startup(function () {
       endSong: "quasar",
       endTime: 63.398247,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -482,6 +528,7 @@ Meteor.startup(function () {
       endSong: "baker street",
       endTime: 64.683037,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -491,6 +538,7 @@ Meteor.startup(function () {
       endSong: "baker street",
       endTime: 128.925186,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -500,6 +548,7 @@ Meteor.startup(function () {
       endSong: "babylon",
       endTime: 66.717758,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -509,6 +558,7 @@ Meteor.startup(function () {
       endSong: "miami",
       endTime: 78.651230,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -518,6 +568,7 @@ Meteor.startup(function () {
       endSong: "quasar",
       endTime: 53.055809,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -527,6 +578,7 @@ Meteor.startup(function () {
       endSong: "skylarking",
       endTime: 207.232025,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -536,6 +588,7 @@ Meteor.startup(function () {
       endSong: "torrent",
       endTime: 166.534515,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -545,6 +598,7 @@ Meteor.startup(function () {
       endSong: "baker street",
       endTime: 64.889488,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -554,6 +608,7 @@ Meteor.startup(function () {
       endSong: "lamour",
       endTime: 35.708584,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -563,6 +618,7 @@ Meteor.startup(function () {
       endSong: "koala",
       endTime: 63.960140,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -572,6 +628,7 @@ Meteor.startup(function () {
       endSong: "koala",
       endTime: 228.093292,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -581,6 +638,7 @@ Meteor.startup(function () {
       endSong: "till tonight",
       endTime: 51.011158,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -590,6 +648,7 @@ Meteor.startup(function () {
       endSong: "baker street",
       endTime: 63.335033,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -599,6 +658,7 @@ Meteor.startup(function () {
       endSong: "miami",
       endTime: 80.823990,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -608,6 +668,7 @@ Meteor.startup(function () {
       endSong: "till tonight",
       endTime: 38.603760,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -617,6 +678,7 @@ Meteor.startup(function () {
       endSong: "lightspeed",
       endTime: 6.788352,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -626,6 +688,7 @@ Meteor.startup(function () {
       endSong: "lightspeed",
       endTime: 36.182682,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -635,6 +698,7 @@ Meteor.startup(function () {
       endSong: "torrent",
       endTime: 66.282288,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
@@ -644,6 +708,7 @@ Meteor.startup(function () {
       endSong: "cal state anthem",
       endTime: 49.116543,
       fileType: "mp3",
+      transitionType: "active",
       type: "transition"
     },
 
