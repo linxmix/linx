@@ -1,0 +1,20 @@
+<template name="songSelectDialog">
+  <div class="modal modal-lg fade" id ="songSelectDialog">
+
+    <div class="modal-header">
+      <button type="button" class="close">&times;</button>
+      <h4 class="modal-title">Select a Song {{> songNav}}</h4>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+      {{> songs}}
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+      <button type="button" class="btn btn-primary" data-dismiss="modal" id="loadSong">Load Song</button>
+    </div>
+
+  </div><!-- /.modal -->
+</template>

@@ -1,5 +1,8 @@
 <!-- Uploader Page -->
 <template name="uploaderPage">
+
+  {{> songSelectDialog}}
+
   <div class="row">
     {{> uploaderWelcome}}
     {{> uploaderControls}}
@@ -20,10 +23,32 @@
 <template name="wave">
   <div class ="row" id="{{id}}">
     <div class="col-md-12 waveform">
-      <p class="lead text-center loadText">{{loadText}}</p>
-      <!-- Here be waveform -->
+      <div class="loadText text-center lead">
+        {{#if isSongWave}}
+          {{> songLoadText}}
+        {{else}}
+          {{> transitionLoadText}}
+        {{/if}}
+        <!-- Here be waveform -->
+      </div>
     </div>
     {{> wavePlayer}}
+  </div>
+</template>
+
+<!-- Song Load Text -->
+<template name="songLoadText">
+  <div class="songLoadText">
+    <p>Click to select a song</p>
+    <p style="color: #eee">-OR-</p>
+    <p>{{loadText}}</p>
+  </div>
+</template>
+
+<!-- Transition Load Text -->
+<template name="transitionLoadText">
+  <div class="transitionLoadText">
+    {{loadText}}
   </div>
 </template>
 

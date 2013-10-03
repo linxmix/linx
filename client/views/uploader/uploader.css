@@ -5,21 +5,26 @@
   border: 2px solid #666;
   height: 200px;
   margin-top: 30px;
+  padding: 0;
 }
 
-.waveform.wavesurfer-dragover {
+.waveform.wavesurfer-dragover, .songLoadText:hover {
   color: #fff;
   background-color: #555;
   border-color: #000;
 }
 
-.wavePlayer {
-  margin-top: 0px;
-}
-
 .loadText {
-  margin-bottom: 0px;
+  margin-bottom: 0;
   border-color: #333;
   font-size: 30px;
+}
+
+.transitionLoadText {
   padding: 85px;
+}
+
+.songLoadText {
+  padding: 40px;
+  cursor: pointer;
 }

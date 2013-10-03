@@ -1,7 +1,7 @@
 Session.set("waves", []);
 
 var waves = {};
-var lastWaveClicked, lastMarkMade;
+var lastWaveClicked, lastMarkMade, modalWaveOpen;
 
 var waveColors = {
   'startWave': 'mediumorchid',
@@ -26,11 +26,11 @@ Meteor.startup(function () {
   //
   // make waves
   //
-  makeWave("startWave", "Drop starting song here.");
-  makeWave("transitionWave", "Drop transition here.");
-  makeWave("endWave", "Drop ending song here.");
+  makeWave("startWave", "Drop starting song here.", true);
+  makeWave("transitionWave", "Drop transition here.", false);
+  makeWave("endWave", "Drop ending song here.", true);
 
-  function makeWave(id, loadText) {
+  function makeWave(id, loadText, isSongWave) {
     var wave = Object.create(WaveSurfer);
     wave.id = id;
 
@@ -38,7 +38,8 @@ Meteor.startup(function () {
     var sessionWaves = Session.get("waves");
     sessionWaves.push({
       'id': id,
-      'loadText': loadText
+      'loadText': loadText,
+      'isSongWave': isSongWave
     });
     Session.set("waves", sessionWaves);
     waves[id] = wave;
@@ -165,7 +166,6 @@ Template.wave.rendered = function () {
 Template.uploaderPage.rendered = function () {
   // initialize tooltips
   $('.helptip').tooltip();
-
 };
 
 Template.uploader.waves = function () {
@@ -244,10 +244,35 @@ function pause() {
   }
 }
 
+// TODO: fix this global hack
+uploaderLoadSong = function (e) {
+  var wave = modalWaveOpen;
+  $('.close').click();
+  var song = Songs.findOne(Session.get("selected_song"));
+
+  if (wave && song) {
+    console.log("loading song from url:"+getSongUrl(song));
+    wave.load(getSongUrl(song));
+  }
+};
 
 //
 // mouse events
 //
+Template.songSelectDialog.events({
+
+  'click #loadSong': function (e) {
+    uploaderLoadSong(e);
+  },
+
+  'click .close': function (e) {
+    Session.set("song_select_dialog", false);
+    $('#songSelectDialog').modal('hide');
+    modalWaveOpen = undefined;
+  }
+
+});
+
 var mouseClickHeld = false;
 Template.wave.events({
 
@@ -270,19 +295,29 @@ Template.wave.events({
   },
 
   //
-  // mouse
+  // click
   //
   'click button': function (e) {
     var action = e.target.dataset && e.target.dataset.action;
+    // pass click to event handlers
     if (action && action in eventHandlers) {
       eventHandlers[action](e);
     }
+  },
+
+  'click .songLoadText': function (e) {
+    Session.set("song_select_dialog", true);
+    $('#songSelectDialog').modal('show');
+    modalWaveOpen = waves[this.id];
   },
 
   'click .waveform': function (e) {
     lastWaveClicked = this.id;
   },
 
+  //
+  // scroll
+  //
   'mousewheel .waveform': function (e) {
     // only do this if we have a file buffer loaded
     if (waves[this.id].backend.buffer) {
@@ -297,17 +332,14 @@ Template.wave.events({
     }
   },
 
+  //
+  // double click
+  //
   'dblclick .waveform': function (e) {
     playWave(this.id);
     e.preventDefault();
   },
 
-});
-
-Template.uploaderPage.events({
-  'click #upload': function(e) {
-    console.log(startWave.backend);
-  }
 });
 
 //
@@ -331,7 +363,7 @@ function addKeyBindings() {
 }
 
 //
-// event functions
+// event handlers
 //
 var eventHandlers = {
 

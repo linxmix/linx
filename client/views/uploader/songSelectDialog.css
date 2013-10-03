@@ -1,0 +1,9 @@
+.modal-lg {
+  width: 1000px;
+  margin-left: -500px;
+  height: 600px;
+}
+
+.modal-body {
+  max-height: 476px;
+}

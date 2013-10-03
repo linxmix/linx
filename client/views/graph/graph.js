@@ -9,18 +9,22 @@ Template.transition.events({
 });
 
 Template.song.events({
-  'click': function() {
+  'click': function(e) {
     Session.set("selected_song", this._id);
   },
-  'dblclick': function() {
+  'dblclick': function(e) {
     Session.set("selected_song", this._id);
 
+    // if song select modal is active, this serves as a click to the load song button
+    if (Session.get("song_select_dialog")) {
+      uploaderLoadSong(e);
+    }
     // if we're currently playing, queue a "soft" transition to this song
-    if (Session.get("current_song")) {
+    else if (Session.get("current_song")) {
       queueTransition({ endSong: this._id });
-      
+    }  
     // if we aren't playing, start the mix with this song
-    } else {
+    else {
       startMix(Songs.findOne(this._id));
     }
   }
