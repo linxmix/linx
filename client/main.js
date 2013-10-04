@@ -14,8 +14,4 @@ Meteor.startup(function() {
     '/': { to: 'graphPage', nav: 'graphPage' },
     '/uploader': { to: 'uploaderPage', nav: 'uploaderPage' }
   });
-
-  Handlebars.registerHelper("navClassFor", function (nav, options) {
-    return Meteor.router.navEquals(nav) ? "active" : "";
-  });
 });

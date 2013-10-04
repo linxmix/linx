@@ -1,8 +1,3 @@
-//
-// init
-//
-
-// TODO: put this into mixer when mixer is an actual separate package
 try {
   audioContext = new(window.AudioContext || window.webkitAudioContext);
 } catch (e) {

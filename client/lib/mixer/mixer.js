@@ -29,10 +29,6 @@ Mixer = {
   // 
 
   'play': function(sample) {
-    // access control TODO: move this
-    //if (Meteor.userId() != Meteor.users.findOne({ username: 'test' })._id) {
-    //  return alert("Sorry, but you cannot stream music unless you're logged into an account that owns it. If you'd like to help test this app, contact wolfbiter@gmail.com.");
-    //}
     // if given a sample, place it at start of queue
     if (sample) {
       Mixer.queue(sample, 0);
