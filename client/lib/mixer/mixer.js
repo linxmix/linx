@@ -391,7 +391,12 @@ function makeWave(sample, callback) {
 
   // load url
   // TODO: make this a progress bar
-  wave.load(Mixer.getSampleUrl(sample));
+  // access control TODO: move this
+  if (Mixer.local || Meteor.userId()) {
+    wave.load(Mixer.getSampleUrl(sample));
+  } else {
+    return alert("Sorry, but you cannot stream music unless you're logged into an account that owns it. If you'd like to help test this app, contact wolfbiter@gmail.com.");
+  }
 
   // cancel if loadingWave changes out from under us
   wave.on('loading', function (percent, xhr) {

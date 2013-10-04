@@ -2,11 +2,7 @@ Songs = new Meteor.Collection("Songs");
 Songs.allow({
 
   insert: function (userId, song) {
-    var bool = (userId === Meteor.users.findOne({ username: 'test'})._id);
-    if (!bool) {
-      alert("Sorry, but you cannot stream music unless you're logged into an account that owns it. If you'd like to help test this app, contact wolfbiter@gmail.com.");
-    }
-    return bool;
+    return (userId === Meteor.users.findOne({ username: 'test'})._id);
   },
 
   update: function (userId, songs, fields, modifier) {

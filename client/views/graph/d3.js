@@ -24,11 +24,11 @@ Template.graph.rendered = function () {
     // preprocess nodes and links
     //
     var queuedTransitions = Mixer.getQueue('transition');
-    var queuedSongs = Mixer.getQueue('song');
-    var currSong = queuedSongs[0] &&
-      Songs.findOne(queuedSongs[0]._id);
     var currTransition = queuedTransitions[0] &&
       Transitions.findOne(queuedTransitions[0]._id);
+    var queuedSongs = Mixer.getQueue('song');
+    var currSong = (currTransition && Songs.findOne(currTransition.startSong)) ||
+      (queuedSongs[0] && Songs.findOne(queuedSongs[0]._id));
 
     // if we have a currSong, draw graph in view mix mode
     if (currSong) {
