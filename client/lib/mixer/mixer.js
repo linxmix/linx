@@ -173,6 +173,11 @@ function queueTransition(transition, index, startTime, endTime) {
     // if queueing transition at front, queue startSong first
     if (index === 0) {
       Mixer.queueSong(transition.startSong, index++, 0, transition.startSongEnd);
+
+    // otherwise, make sure to update previous index's endTime
+    } else {
+      queue[index - 1].endTime = transition.startSongEnd;
+      Session.set("queue", queue);
     }
 
     // queue transition
@@ -201,40 +206,6 @@ function addToQueue(sample, index) {
   Session.set("queue", queue);
   assertPlayStatus();
   assertQueue();
-}
-
-// algorithm to decide which transition comes next.
-function chooseTransition() {
-  var currSample_id = Session.get("current_sample");
-  var choices = Transitions.find({
-    startSong: currSample_id,
-    startTime: { $gt: queuedTransitions[0] + Session.get("load_time") }
-  }).fetch();
-
-  // find choice with endSong that has least number of plays amongst choices
-  var transition = choices[0],
-      endSong = (transition && Songs.findOne(transition.endSong)) ||
-        Songs.findOne();
-  // TODO: make this a slick database query
-  for (var i = 0; i < choices.length; i++) {
-    var _transition = choices[i];
-    var _endSong = Songs.findOne(_transition.endSong);
-    if (_endSong.playCount < endSong.playCount) {
-      transition = _transition;
-      endSong = _endSong;
-    }
-  }
-
-  // if there is a song with a lower playCount than endSong, soft transition to it
-  var song = Songs.findOne({ playCount: { $lt: endSong.playCount } });
-  if (song) {
-    transition = makeSoftTransition(currSample_id, song._id);
-  }
-
-  console.log("CHOOSING transition: ");
-  console.log(transition);
-
-  queueTransition(transition);
 }
 
 function isValidTransition(prevSample, transition, debug) {
@@ -291,7 +262,7 @@ function assertQueue() {
     // find out where our sample queue and wave queue diverge
     var index;
     for (index = 0; index <= queueLength; index++) {
-      if (queuedWaves[index]._id !== queue[index]._id) {
+      if (queuedWaves[index].sample !== queue[index]) {
         break;
       }
     }
@@ -309,7 +280,7 @@ function loadSample(index) {
       sample = queue[index];
 
   // only load the sample if not already loading this one
-  if (!loadingWave || (loadingWave._id !== sample._id)) {
+  if (!loadingWave || (loadingWave.sample !== sample)) {
 
     // make wave, then add it to the queue
     makeWave(sample, function (wave) {
@@ -318,11 +289,6 @@ function loadSample(index) {
       queuedWaves[index] = wave;
       if (index === 0) {
         assertPlayStatus();
-      }
-      
-      // set up the scheduling between this wave and the previous
-      if (wave._id !== 'soft') {
-        scheduleWave(queuedWaves[index - 1], wave);
       }
 
       // load next transition if this is not the last
@@ -334,52 +300,12 @@ function loadSample(index) {
   }
 }
 
-// sets markers for prevWave and wave such that they will transition smoothly
-function scheduleWave(prevWave, wave) {
-
-  // (possibly) change times based on prevWave
-  if (prevWave) {
-    wave.startTime = prevWave['endSongStart'] || wave.startTime;
-    prevWave.endTime = wave['startSongEnd'] || prevWave.endTime;
-
-    // mark prevWave end
-    prevWave.mark({
-      'id': 'end',
-      'position': prevWave.endTime
-    });
-  }
-
-  // mark wave start
-  wave.mark({
-    'id': 'start',
-    'position': wave.startTime
-  });
-
-  // mark wave end
-  if (wave.endTime) {
-    wave.mark({
-      'id': 'end',
-      'position': wave.endTime
-    });
-  }
-
-  // mark wave's track_end
-  wave.mark({
-    'id': 'track_end',
-    'position': getWaveDuration(wave)
-  });
-}
-
 // make wave from url, return new wave to callback
 function makeWave(sample, callback) {
   var wave = Object.create(WaveSurfer);
 
   // sync wave with sample
-  wave['_id'] = sample['_id'];
-  wave['startTime'] = sample['startTime'];
-  wave['endTime'] = sample['endTime'];
-  wave['startSongEnd'] = sample['startSongEnd'];
-  wave['endSongStart'] = sample['endSongStart'];
+  wave.sample = sample;
 
   // if given sample is a soft transition, this is a dummy wave, so end
   if (sample.transitionType === 'soft') {
@@ -420,6 +346,7 @@ function makeWave(sample, callback) {
     'audioContext': Mixer.audioContext
   });
   wave.bindMarks();
+  setWaveMarks(wave);
 
   // set loadingWave
   loadingWave = wave;
@@ -438,7 +365,7 @@ function makeWave(sample, callback) {
 
   // cancel if loadingWave changes out from under us
   wave.on('loading', function (percent, xhr) {
-    if (wave._id !== loadingWave._id) {
+    if (wave.sample !== loadingWave.sample) {
       console.log("canceling wave load");
       xhr.abort();
     }
@@ -451,6 +378,29 @@ function makeWave(sample, callback) {
   });
 }
 
+// sets markers for prevWave and wave such that they will transition smoothly
+function setWaveMarks(wave) {
+
+  // mark wave start
+  wave.mark({
+    'id': 'start',
+    'position': wave.startTime || 0
+  });
+
+  // mark wave end
+  if (wave.endTime) {
+    wave.mark({
+      'id': 'end',
+      'position': wave.endTime
+    });
+  }
+
+  // mark wave's track_end
+  wave.mark({
+    'id': 'track_end',
+    'position': getWaveDuration(wave)
+  });
+}
 
 // NOTE: position is in seconds, progress is in percent
 function currentPosition() {
@@ -502,13 +452,13 @@ function playWave() {
   if (wave) {
 
     // if this is a dummy 'soft' transition wave, cycle now
-    if (wave._id === 'soft') {
+    if (wave.sample.type === 'soft') {
       cycleQueue();
 
     // otherwise, play it and set it as playing
     } else {
     wave.play();
-    Session.set("current_sample", wave._id);
+    Session.set("current_sample", wave.sample._id);
     }
 
   // no waves queued, so say no waves are playing
@@ -529,6 +479,40 @@ function getTransitionUrl(transition) {
   return part + 'transitions/' +
     Songs.findOne(transition.startSong).name + '-' +
     Songs.findOne(transition.endSong).name + '.' + transition.fileType;
+}
+
+// algorithm to decide which transition comes next.
+function chooseTransition() {
+  var currSample_id = Session.get("current_sample");
+  var choices = Transitions.find({
+    startSong: currSample_id,
+    startTime: { $gt: queuedTransitions[0] + Session.get("load_time") }
+  }).fetch();
+
+  // find choice with endSong that has least number of plays amongst choices
+  var transition = choices[0],
+      endSong = (transition && Songs.findOne(transition.endSong)) ||
+        Songs.findOne();
+  // TODO: make this a slick database query
+  for (var i = 0; i < choices.length; i++) {
+    var _transition = choices[i];
+    var _endSong = Songs.findOne(_transition.endSong);
+    if (_endSong.playCount < endSong.playCount) {
+      transition = _transition;
+      endSong = _endSong;
+    }
+  }
+
+  // if there is a song with a lower playCount than endSong, soft transition to it
+  var song = Songs.findOne({ playCount: { $lt: endSong.playCount } });
+  if (song) {
+    transition = makeSoftTransition(currSample_id, song._id);
+  }
+
+  console.log("CHOOSING transition: ");
+  console.log(transition);
+
+  Mixer.queue(transition);
 }
 //
 // /private methods
