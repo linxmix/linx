@@ -3,11 +3,10 @@
 //
 
 Template.graph.destroyed = function () {
-  console.log("GRAPH DESTROYED! this.drawGraph: "+this.drawGraph);
-  this.drawGraph.stop();
+  //this.drawGraph.stop();
 };
 
-Template.graph.rendered = function () {
+/*Template.graph.rendered = function () {
   this.drawGraph = Meteor.autorun(function () {
 
     var nodes = {},
@@ -24,8 +23,9 @@ Template.graph.rendered = function () {
     // preprocess nodes and links
     //
     var queuedTransitions = Mixer.getQueue('transition');
+    var queuedSongs = Mixer.getQueue('song');
 
-    var currSong = Songs.findOne();
+    var currSong = Songs.findOne(queuedSongs[0]._id);
 
     // if we have a currSong, draw graph in view mix mode
     if (currSong) {
@@ -192,17 +192,6 @@ Template.graph.rendered = function () {
     function tick() {
       path.attr("d", function(d) {
 
-        /*// recenter path's circle
-        var pathSel = d3.select(this);
-        var pathEl = d3.select(this).node();
-        var midPoint = pathEl.getPointAtLength(pathEl.getTotalLength()/2.0);
-        pathSel.select("circle")
-        .attr("r", 50)
-        .attr("cx", midPoint.x)
-        .attr("cy", midPoint.y);
-        console.log(pathSel.select("circle").node());
-        */
-
         // redraw path
         var dx = d.target.x - d.source.x,
         dy = d.target.y - d.source.y,
@@ -221,66 +210,4 @@ Template.graph.rendered = function () {
     }
   });
 };
-
-//
-// graph algorithms
-//
-
-/*
- * dijkstra.js
- *
- * Dijkstra's single source shortest path algorithm in JavaScript.
- *
- * Cameron McCormack <cam (at) mcc.id.au>
- *
- * Permission is hereby granted to use, copy, modify and distribute this
- * code for any purpose, without fee.
- *
- * Initial version: October 21, 2004
- */
-
- function shortestPath(edges, numVertices, startVertex) {
-  var done = new Array(numVertices);
-  done[startVertex] = true;
-  var pathLengths = new Array(numVertices);
-  var predecessors = new Array(numVertices);
-  for (var i = 0; i < numVertices; i++) {
-    pathLengths[i] = edges[startVertex][i];
-    if (edges[startVertex][i] != Infinity) {
-      predecessors[i] = startVertex;
-  }
-}
-pathLengths[startVertex] = 0;
-for (var i = 0; i < numVertices - 1; i++) {
-    var closest = -1;
-    var closestDistance = Infinity;
-    for (var j = 0; j < numVertices; j++) {
-      if (!done[j] && pathLengths[j] < closestDistance) {
-        closestDistance = pathLengths[j];
-        closest = j;
-    }
-}
-done[closest] = true;
-for (var j = 0; j < numVertices; j++) {
-  if (!done[j]) {
-    var possiblyCloserDistance = pathLengths[closest] + edges[closest][j];
-    if (possiblyCloserDistance < pathLengths[j]) {
-      pathLengths[j] = possiblyCloserDistance;
-      predecessors[j] = closest;
-  }
-}
-}
-}
-return { "startVertex": startVertex,
-"pathLengths": pathLengths,
-"predecessors": predecessors };
-}
-
-function constructPath(shortestPathInfo, endVertex) {
-  var path = [];
-  while (endVertex != shortestPathInfo.startVertex) {
-    path.unshift(endVertex);
-    endVertex = shortestPathInfo.predecessors[endVertex];
-}
-return path;
-}
+*/
