@@ -49,6 +49,11 @@ Mixer = {
     cycleQueue();
   },
 
+  // NOTE: position is in seconds, progress is in percent
+  'getCurrentPosition': function() {
+    return (queuedWaves[0] && getWavePosition(queuedWaves[0])) || 0;
+  },
+
   // sifts through the queue to return only samples of type, or everything
   'getQueue': function(type) {
     var queue = Session.get("queue");
@@ -59,7 +64,7 @@ Mixer = {
       default: // filter by given type
       {
         var newQueue = [];
-        // inorder traversal
+        // inOrder traversal
         for (var i = 0; i < queue.length; i++) {
           var sample = queue[i];
           if (sample['type'] === type) {
@@ -96,11 +101,16 @@ Mixer = {
   },
 
   'getSampleUrl': function(sample) {
+
     if (sample.type === 'song') {
-      return getSongUrl(Songs.findOne(sample._id));
+      var ret = getSongUrl(Songs.findOne(sample._id));
+      console.log("getSampleUrl returning: "+ret);
+      return ret;
     }
     else if (sample.type === 'transition') {
-      return getTransitionUrl(Transitions.findOne(sample._id));
+      var ret = getTransitionUrl(Transitions.findOne(sample._id));
+      console.log("getSampleUrl returning: "+ret);
+      return ret;
     }
   },
 
@@ -129,29 +139,23 @@ Mixer = {
 //
 
 function queueSong(song, index, startTime, endTime) {
+  var queue = Mixer.getQueue();
   if (index === undefined) index = queue.length;
-  // coerce song into id
-  var id = song;
-  if (typeof id === 'object') {
-    id = song._id;
+  // coerce song into object
+  if (typeof song !== 'object') {
+    song = Songs.findOne(song);
   }
 
   // if the last sample in the queue is a song,
   // make a soft transition and queue it (implicitly queueing this song)
-  var queue = Mixer.getQueue();
-  var lastSample = queue[queue.length];
+  var lastSample = queue[queue.length - 1];
   if ((lastSample && lastSample.type) === 'song') {
-    var softTransition = Mixer.makeSoftTransition(lastSample._id, id);
+    var softTransition = Mixer.makeSoftTransition(lastSample._id, song._id);
     queueTransition(softTransition, index);
 
   // otherwise, queue this song
   } else {
-    addToQueue({
-      'type': "song",
-      '_id': id,
-      'startTime': startTime,
-      'endTime': endTime
-    }, index);
+    addToQueue(song, startTime, endTime, index);
   }
 }
 
@@ -166,30 +170,26 @@ function queueTransition(transition, index, startTime, endTime) {
   console.log("queueTransition called with below at index: "+index);
   console.log(transition);
 
+  // if queueing transition at front, queue startSong first
+  if (index === 0) {
+    queueSong(transition.startSong, index++, undefined, transition.startSongEnd);
+  }
 
   // if transition fits at this index
-  if (isValidTransition(transition, index)) {
+  var prevSample = queue[index - 1];
+  if (isValidTransition(prevSample, transition)) {
 
-    // if queueing transition at front, queue startSong first
-    if (index === 0) {
-      Mixer.queueSong(transition.startSong, index++, 0, transition.startSongEnd);
-
-    // otherwise, make sure to update previous index's endTime
-    } else {
-      queue[index - 1].endTime = transition.startSongEnd;
+    // otherwise, make sure to update previous sample's endTime
+    if (prevSample) {
+      prevSample.endTime = transition.startSongEnd;
       Session.set("queue", queue);
     }
 
     // queue transition
-    addToQueue({
-      'type': "transition",
-      '_id': transition._id,
-      'startTime': startTime,
-      'endTime': endTime
-    }, index++);
+    addToQueue(transition, startTime, endTime, index++);
 
     // queue endSong
-    Mixer.queueSong(transition.endSong, index++, transition.endSongStart);
+    queueSong(transition.endSong, index++, transition.endSongStart);
 
   } else {
     return console.log("ERROR: Invalid Transition given to queueTransition");
@@ -197,15 +197,19 @@ function queueTransition(transition, index, startTime, endTime) {
 }
 
 // insert sample at index
-function addToQueue(sample, index) {
+function addToQueue(sample, startTime, endTime, index) {
+  startTime = startTime || 0;
+  // add start and end time to given sample
+  $.extend(sample, {
+      'startTime': startTime,
+      'endTime': endTime
+  });
   var queue = Mixer.getQueue();
   // remove stuff after this index from queue and queuedWaves
   var chopIndex = queue.length - index;
   queue.splice(index, chopIndex, sample);
   queuedWaves.splice(index, chopIndex);
   Session.set("queue", queue);
-  assertPlayStatus();
-  assertQueue();
 }
 
 function isValidTransition(prevSample, transition, debug) {
@@ -234,7 +238,7 @@ function isValidTransition(prevSample, transition, debug) {
 
     // if prevSample is the current sample, make sure transition isn't too soon
     if (prevSample._id === Session.get("current_sample")) {
-      if (currentPosition() >
+      if (Mixer.getCurrentPosition() >
         transition.startSongEnd - Session.get("load_time")) {
         if (debug) console.log("ERROR: too far in currSample to queue given transition");
         return false;
@@ -257,12 +261,17 @@ function assertQueue() {
   var queue = Mixer.getQueue(),
       queueLength = queue.length;
 
+  console.log("asserting queue with queues: ");
+  console.log(queue);
+  console.log(queuedWaves);
+
   if (queueLength > 0) {
 
     // find out where our sample queue and wave queue diverge
     var index;
     for (index = 0; index <= queueLength; index++) {
-      if (queuedWaves[index].sample !== queue[index]) {
+      var wave = queuedWaves[index];
+      if (JSON.stringify(wave && wave.sample) !== JSON.stringify(queue[index])) {
         break;
       }
     }
@@ -279,21 +288,48 @@ function loadSample(index) {
   var queue = Mixer.getQueue(),
       sample = queue[index];
 
-  // only load the sample if not already loading this one
-  if (!loadingWave || (loadingWave.sample !== sample)) {
+  console.log("loading sample at index: "+index);
+  //console.log(sample);
+
+  // if scheduling this as first and we're already playing a sample
+  var currSample_id = Session.get("current_sample");
+  if (currSample_id && (index === 0)) {
+
+    // and that sample is this one, update sample and wave scheduling, then continue
+    if (currSample_id === sample._id) {
+      queuedWaves[0].sample = sample;
+      setWaveEndMark(queuedWaves[0]);
+      // load next transition if this is not the last
+      if (++index < queue.length) {
+        return loadSample(index);
+      }
+
+    // if playing wave is not this one, pause that wave since it's now old
+    } else {
+      pauseWave();
+    }
+  }
+
+  // if already loading this sample, update loadingWave with new sample info
+  if (loadingWave && (loadingWave.sample._id === sample._id)) {
+    loadingWave.sample = sample;
+
+  // otherwise, load the given sample
+  } else {
 
     // make wave, then add it to the queue
     makeWave(sample, function (wave) {
 
       // assert play status in case play was waiting on load to complete
+      // NOTE: queuedWaves may have changed, so calculate new index
+      index = Math.min(index, queuedWaves.length);
       queuedWaves[index] = wave;
-      if (index === 0) {
-        assertPlayStatus();
-      }
+      assertPlayStatus();
 
       // load next transition if this is not the last
-      if (++index < queue.length) {
-        loadSample(index);
+      // NOTE: queue length may have changed, so take that into account
+      if (++index < Mixer.getQueue().length) {
+        return loadSample(index);
       }
 
     });
@@ -343,10 +379,9 @@ function makeWave(sample, callback) {
   // init new wave
   //
   wave.init({
+    'container': $('#mixerWave')[0],
     'audioContext': Mixer.audioContext
   });
-  wave.bindMarks();
-  setWaveMarks(wave);
 
   // set loadingWave
   loadingWave = wave;
@@ -361,11 +396,11 @@ function makeWave(sample, callback) {
 
   // load url
   // TODO: make this a progress bar
-  wave.load(getSampleUrl(sample));
+  wave.load(Mixer.getSampleUrl(sample));
 
   // cancel if loadingWave changes out from under us
   wave.on('loading', function (percent, xhr) {
-    if (wave.sample !== loadingWave.sample) {
+    if (wave.sample._id !== loadingWave.sample._id) {
       console.log("canceling wave load");
       xhr.abort();
     }
@@ -373,27 +408,31 @@ function makeWave(sample, callback) {
 
   // call callback when loaded
   wave.on('ready', function () {
-    loadingWave = undefined;
-    return callback(wave);
+    // make sure this was the right wave to be loading
+    if (wave.sample._id === loadingWave.sample._id) {
+      setWaveMarks(wave);
+      wave.bindMarks();
+      loadingWave = undefined;
+      console.log("wave ready");
+      return callback(wave);
+    }
   });
 }
 
-// sets markers for prevWave and wave such that they will transition smoothly
+// sets markers for wave such that it will transition smoothly
 function setWaveMarks(wave) {
 
   // mark wave start
+  var startTime = wave.sample.startTime || 0;
   wave.mark({
     'id': 'start',
-    'position': wave.startTime || 0
+    'position': startTime
   });
+  // set this wave to start at its startTime
+  wave.skip(startTime);
 
-  // mark wave end
-  if (wave.endTime) {
-    wave.mark({
-      'id': 'end',
-      'position': wave.endTime
-    });
-  }
+  // separate function so it can be called alone
+  setWaveEndMark(wave);
 
   // mark wave's track_end
   wave.mark({
@@ -402,9 +441,15 @@ function setWaveMarks(wave) {
   });
 }
 
-// NOTE: position is in seconds, progress is in percent
-function currentPosition() {
-  return (queuedWaves[0] && getWavePosition(queuedWaves[0]));
+function setWaveEndMark(wave) {
+  var endTime = wave.sample.endTime;
+  // mark wave end
+  if (endTime) {
+    wave.mark({
+      'id': 'end',
+      'position': endTime
+    });
+  }
 }
 
 function currentProgress() {
@@ -424,12 +469,16 @@ function getWaveDuration(wave) {
 function cycleQueue() {
   // update wave queue
   pauseWave();
-  var newWave = queuedWaves.shift();
+  queuedWaves.shift();
 
   // update sample queue
   var queue = Mixer.getQueue();
   queue.shift();
+  // if cycling to the last song, pick new transition to continue the mix
+  // TODO: implement this
   Session.set("queue", queue);
+
+  // confirm play status
   assertPlayStatus();
 }
 
@@ -442,8 +491,10 @@ function assertPlayStatus() {
 }
 
 function pauseWave() {
-  if (queuedWaves[0]) {
-    queuedWaves[0].pause();
+  var currWave = queuedWaves[0];
+  // if currWave and currWave is not a soft transition, pause it
+  if (currWave && (currWave.sample.transitionType !== 'soft')) {
+    currWave.pause();
   }
 }
 
@@ -452,13 +503,13 @@ function playWave() {
   if (wave) {
 
     // if this is a dummy 'soft' transition wave, cycle now
-    if (wave.sample.type === 'soft') {
+    if (wave.sample.transitionType === 'soft') {
       cycleQueue();
 
     // otherwise, play it and set it as playing
     } else {
-    wave.play();
-    Session.set("current_sample", wave.sample._id);
+      wave.play();
+      Session.set("current_sample", wave.sample._id);
     }
 
   // no waves queued, so say no waves are playing
@@ -482,11 +533,16 @@ function getTransitionUrl(transition) {
 }
 
 // algorithm to decide which transition comes next.
-function chooseTransition() {
-  var currSample_id = Session.get("current_sample");
+// TODO: make this work when still loading the first song
+function pickTransition() {
+  var queue = Mixer.getQueue();
+  var lastSample = queue[queue.length - 1];
+  // if last sample is currently playing, startTime is currSample's currTime
+  var startTime = (queue.length === 1) ?
+    Mixer.getCurrentPosition() : lastSample.startTime;
   var choices = Transitions.find({
-    startSong: currSample_id,
-    startTime: { $gt: queuedTransitions[0] + Session.get("load_time") }
+    'startSong': lastSample._id,
+    'startTime': { $gt: startTime + Session.get("load_time") }
   }).fetch();
 
   // find choice with endSong that has least number of plays amongst choices
@@ -504,15 +560,15 @@ function chooseTransition() {
   }
 
   // if there is a song with a lower playCount than endSong, soft transition to it
-  var song = Songs.findOne({ playCount: { $lt: endSong.playCount } });
+  var song = Songs.findOne({ 'playCount': { $lt: endSong.playCount } });
   if (song) {
-    transition = makeSoftTransition(currSample_id, song._id);
+    transition = makeSoftTransition(lastSample._id, song._id);
   }
 
   console.log("CHOOSING transition: ");
   console.log(transition);
 
-  Mixer.queue(transition);
+  return transition;
 }
 //
 // /private methods
@@ -521,4 +577,5 @@ function chooseTransition() {
 //
 // Session variable listeners
 //
+Meteor.autorun(assertQueue);
 Meteor.autorun(assertPlayStatus);

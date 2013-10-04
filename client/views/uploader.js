@@ -251,8 +251,8 @@ uploaderLoadSong = function (e) {
   var song = Songs.findOne(Session.get("selected_song"));
 
   if (wave && song) {
-    console.log("loading song from url:"+Mixer.getSongUrl(song));
-    wave.load(Mixer.getSongUrl(song));
+    console.log("loading song from url:"+Mixer.getSampleUrl(song));
+    wave.load(Mixer.getSampleUrl(song));
   }
 };
 

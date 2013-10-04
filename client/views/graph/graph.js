@@ -4,7 +4,7 @@ Template.transition.events({
   },
   'dblclick': function() {
     Session.set("selected_transition", this._id);
-    queueTransition(Transitions.findOne(this._id), 0);
+    Mixer.queue(Transitions.findOne(this._id));
   }
 });
 
@@ -19,16 +19,20 @@ Template.song.events({
     if (Session.get("song_select_dialog")) {
       uploaderLoadSong(e);
     }
-    // if we're currently playing, queue a "soft" transition to this song
-    else if (Session.get("current_song")) {
-      queueTransition({ endSong: this._id });
-    }  
-    // if we aren't playing, start the mix with this song
+    // queue a "soft" transition to this song if we already have a queue
+    else if (Mixer.getQueue().length > 0) {
+      Mixer.queue(Songs.findOne(this._id));
+    }
+    // if we have no queue, start the mix with this song
     else {
-      startMix(Songs.findOne(this._id));
+      Mixer.play(Songs.findOne(this._id));
     }
   }
 });
+
+Template.transitions.transitions = function () {
+  return Transitions.find();
+}
 
 Template.songs.songs = function () {
   return Songs.find(

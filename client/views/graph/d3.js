@@ -3,10 +3,11 @@
 //
 
 Template.graph.destroyed = function () {
-  //this.drawGraph.stop();
+  console.log("GRAPH DESTROYED! this.drawGraph: "+this.drawGraph);
+  this.drawGraph.stop();
 };
 
-/*Template.graph.rendered = function () {
+Template.graph.rendered = function () {
   this.drawGraph = Meteor.autorun(function () {
 
     var nodes = {},
@@ -24,8 +25,10 @@ Template.graph.destroyed = function () {
     //
     var queuedTransitions = Mixer.getQueue('transition');
     var queuedSongs = Mixer.getQueue('song');
-
-    var currSong = Songs.findOne(queuedSongs[0]._id);
+    var currSong = queuedSongs[0] &&
+      Songs.findOne(queuedSongs[0]._id);
+    var currTransition = queuedTransitions[0] &&
+      Transitions.findOne(queuedTransitions[0]._id);
 
     // if we have a currSong, draw graph in view mix mode
     if (currSong) {
@@ -46,19 +49,16 @@ Template.graph.destroyed = function () {
         }
       });
 
-      // get all links in queue + all links coming from last song in queue
-      var lastTransition = queuedTransitions[queuedTransitions.length - 1];
-      if (lastTransition) {
-        var endSong_id = lastTransition.endSong;
-        links = queuedTransitions.concat(Transitions.find({
-          startSong: endSong_id,
-          startTime: { $gt: lastTransition.endTime + Session.get("load_time") }
-        }).fetch());
-      } else {
-        links = Transitions.find({
-          startSong: currSong._id
-        }).fetch();
-      }
+      // get all links in queue + all possible links coming from last song in queue
+      var lastSong = queuedSongs[queuedSongs.length - 1];
+      var startTime = (lastSong._id === currSong._id) ?
+        Mixer.getCurrentPosition() : lastSong.startTime;
+      links = queuedTransitions.concat(Transitions.find({
+        'startSong': lastSong._id,
+        'startSongEnd': {
+          $gt: startTime + Session.get("load_time")
+        }
+      }).fetch());
 
     // no currSong, so draw graph in view all mode
     } else {
@@ -71,7 +71,7 @@ Template.graph.destroyed = function () {
       link.target = nodes[link.endSong] || (nodes[link.endSong] = Songs.findOne(link.endSong));
 
       // color links
-      if (link._id == Session.get("current_transition")) {
+      if (link._id == (currTransition && currTransition._id)) {
         link.color = 2;
       } else {
         queuedTransitions.forEach(function (transition) {
@@ -86,7 +86,7 @@ Template.graph.destroyed = function () {
     if (currSong) {
       for (var node_id in nodes) {
         var node = nodes[node_id];
-        node.transition_info = getNearestValidTransition(node);
+        node.transition_info = Mixer.getNearestValidTransition(node);
       }
     }
     //
@@ -131,9 +131,11 @@ Template.graph.destroyed = function () {
     .enter().append("svg:path")
     .attr("class", "link")
     // make soft transitions dashed
-    .style("stroke-dasharray", function (d) { return (d._id ? "" : ("3,3")); })
+    .style("stroke-dasharray", function (d) {
+      return ((d.transitionType !== 'soft') ? "" : ("3,3"));
+    })
     .attr("marker-end", "url(#end)")
-    // TODO: will the following be a problem for soft transitions w/out ids?
+    // TODO: will the following be a problem for soft transitions w/ dupe ids?
     .attr("id", function(d) { return d._id; })
     .style("stroke", colorLink);
 
@@ -151,9 +153,9 @@ Template.graph.destroyed = function () {
     .style("fill", colorNode)
     .on("dblclick", function (d) {
       if (d.transition_info) {
-        queueTransition(d.transition_info['transition'], d.transition_info['index']);
+        Mixer.queue(d.transition_info['transition'], d.transition_info['index']);
       } else if (!currSong) {
-        startMix(d);
+        Mixer.play(d);
       }
     })
     .on("mouseover", function (d) {
@@ -192,6 +194,18 @@ Template.graph.destroyed = function () {
     function tick() {
       path.attr("d", function(d) {
 
+        /*
+        // recenter path's circle
+        var pathSel = d3.select(this);
+        var pathEl = d3.select(this).node();
+        var midPoint = pathEl.getPointAtLength(pathEl.getTotalLength()/2.0);
+        pathSel.select("circle")
+        .attr("r", 50)
+        .attr("cx", midPoint.x)
+        .attr("cy", midPoint.y);
+        console.log(pathSel.select("circle").node());
+        */        
+
         // redraw path
         var dx = d.target.x - d.source.x,
         dy = d.target.y - d.source.y,
@@ -210,4 +224,3 @@ Template.graph.destroyed = function () {
     }
   });
 };
-*/
