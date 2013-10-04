@@ -5,7 +5,6 @@ Session.set("load_time", 50.0); // safety net for load times
 Session.set("queue", []);
 Session.set("mixer_playing", false);
 
-
 // private variables
 var loadingWave;
 var queuedWaves = [];
