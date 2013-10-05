@@ -1,0 +1,9 @@
+.modal-sm {
+  width: 800px;
+  margin-left: -400px;
+  height: 500px;
+}
+
+.modal-sm .body {
+  max-height: 450px;
+}

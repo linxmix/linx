@@ -98,12 +98,12 @@ Mixer = {
   'getSampleUrl': function(sample) {
 
     if (sample.type === 'song') {
-      var ret = getSongUrl(Songs.findOne(sample._id));
+      var ret = getSongUrl(sample);
       console.log("getSampleUrl returning: "+ret);
       return ret;
     }
     else if (sample.type === 'transition') {
-      var ret = getTransitionUrl(Transitions.findOne(sample._id));
+      var ret = getTransitionUrl(sample);
       console.log("getSampleUrl returning: "+ret);
       return ret;
     }
@@ -181,7 +181,7 @@ function queueTransition(transition, index, startTime, endTime) {
     }
 
     // queue transition
-    addToQueue(transition, startTime, endTime, index++);
+    addToQueue(transition, transition.startTime, transition.endTime, index++);
 
     // queue endSong
     queueSong(transition.endSong, index++, transition.endSongStart);

@@ -70,6 +70,7 @@ Meteor.startup(function () {
         }
       });
     };
+    // /hack
 
     //
     // flash when reaching a mark
@@ -160,6 +161,14 @@ Template.wave.rendered = function () {
   // TODO: progress bar after wavesurfer issue is fixed
   wave.on('ready', function() {
     $(selector+' .loadText').hide();
+
+    // if wave has no song, it must been drag and drop
+    // => so prompt the user to get the metadata
+    if (!wave.song && (id !== 'transitionWave')) {
+      $('#songInfoDialog').modal('show');
+      modalWaveOpen = waves[id];
+    }
+
   });
 };
 
@@ -244,14 +253,14 @@ function pause() {
   }
 }
 
-// TODO: fix this global hack
+// TODO: fix this global hack, it exists so double click on song can load that song
 uploaderLoadSong = function (e) {
   var wave = modalWaveOpen;
-  $('.close').click();
+  $('.close').click(); // click is here so double click on song will close modal
   var song = Songs.findOne(Session.get("selected_song"));
 
   if (wave && song) {
-    console.log("loading song from url:"+Mixer.getSampleUrl(song));
+    wave.song = song;
     wave.load(Mixer.getSampleUrl(song));
   }
 };
@@ -259,16 +268,56 @@ uploaderLoadSong = function (e) {
 //
 // mouse events
 //
-Template.songSelectDialog.events({
+Template.uploaderPage.events({
+
+  // TODO: move these into button click event handler
+
+  'drop': function(e) {
+    // store raw data of any dropped files
+    waves[this.id].data = e.dataTransfer.files[0];
+    console.log(waves[this.id].data);
+  },
 
   'click #loadSong': function (e) {
     uploaderLoadSong(e);
   },
 
+  'click #submitSongInfo': function (e) {
+    var wave = modalWaveOpen;
+    var serial = $('#songInfoDialog form').serializeArray();
+    var name = serial[0]['value'];
+    // hack to not accept empty names
+    if (!name) {
+      setTimeout(function () {
+        $('#songInfoDialog').modal('show');
+        modalWaveOpen = wave;
+      }, 1500);
+    }
+    wave.song = {
+      'isNew': true,
+      'type': 'song',
+      // TODO: make this based on given buffer's file name extension
+      'fileType': 'mp3',
+      'name': name,
+      'playCount': 0
+    };
+  },
+
   'click .close': function (e) {
     Session.set("song_select_dialog", false);
     $('#songSelectDialog').modal('hide');
-    modalWaveOpen = undefined;
+    $('#songInfoDialog').modal('hide');
+    setTimeout(function () {
+      modalWaveOpen = undefined;
+    }, 1000);
+  },
+
+  'click button': function (e) {
+    var action = e.target.dataset && e.target.dataset.action;
+    // pass click to event handlers
+    if (action && action in eventHandlers) {
+      eventHandlers[action](e);
+    }
   }
 
 });
@@ -297,14 +346,6 @@ Template.wave.events({
   //
   // click
   //
-  'click button': function (e) {
-    var action = e.target.dataset && e.target.dataset.action;
-    // pass click to event handlers
-    if (action && action in eventHandlers) {
-      eventHandlers[action](e);
-    }
-  },
-
   'click .songLoadText': function (e) {
     Session.set("song_select_dialog", true);
     $('#songSelectDialog').modal('show');
@@ -368,12 +409,14 @@ function addKeyBindings() {
 var eventHandlers = {
 
   'playPause': function(e) {
-    e.preventDefault();
-    // we want spacebar to be a universal pause
-    if (playingWave) {
-      pause();
-    } else {
-      playWave(lastWaveClicked);
+    if (!modalWaveOpen) {
+      e.preventDefault();
+      // we want spacebar to be a universal pause
+      if (playingWave) {
+        pause();
+      } else {
+        playWave(lastWaveClicked);
+      }
     }
   },
 
@@ -409,5 +452,77 @@ var eventHandlers = {
        dist *= 50;
     }
     waves[lastWaveClicked].skip(dist);
+  },
+
+  'upload': function(e) {
+
+    // userId check
+    if (!Meteor.userId()) {
+      return alert("Sorry, but you must be logged in to submit a transition!");
+    }
+
+    // validation check
+    // TODO: add marker checks to this validation!
+    //for (var waveId in waves) {
+    //  if (!waves[waveId].backend.buffer) {
+    //    return alert("All three waves must be loaded and marked before submitting.");
+    //  }
+    //}
+
+    // upload any new songs and upload transition
+    var startWave = waves['startWave'];
+    var transitionWave = waves['transitionWave'];
+    var endWave = waves['endWave'];
+    if (startWave.song.isNew) {
+      uploadSongWave(startWave);
+    }
+    if (endWave.song.isNew) {
+      uploadSongWave(endWave);
+    }
+    uploadTransitionWave(transitionWave, startWave, endWave);
   }
- };
+};
+
+function uploadTransitionWave(transitionWave, startWave, endWave) {
+  var startSongEnd = startWave.markers['end'].position;
+  var endSongStart = endWave.markers['start'].position;
+
+  var startTime = transitionWave.markers['start'].position;
+  var endTime = transitionWave.markers['end'].position;
+
+  var startSong = Songs.findOne({ 'name': startWave.song.name });
+  var endSong = Songs.findOne({ 'name': endWave.song.name });
+
+  // add transition to database
+  var transition = {
+    'type': 'transition',
+    'transitionType': 'active',
+    // TODO: make this based on given buffer's file name extension
+    'fileType': 'mp3',
+    'startSong': startSong._id,
+    'startSongEnd': startSongEnd,
+    'endSong': endSong._id,
+    'endSongStart': endSongStart,
+    'startTime': startTime,
+    'endTime': endTime
+  };
+  //Transitions.insert(transition);
+
+  // upload transition to s3 server
+  var url = Mixer.getSampleUrl(transition);
+  uploadWave(transitionWave, url);
+}
+
+function uploadSongWave(wave) {
+  // add song to database
+  //Songs.insert(wave.song);
+  // upload song to s3 server
+  var url = Mixer.getSampleUrl(wave.song);
+  uploadWave(wave, url);
+}
+
+// uploads buffer of given wave to given s3 url
+function uploadWave(wave, url) {
+  console.log(wave.bufferData);
+  //Meteor.call('putStream', wave.bufferData, 'test.mp3');
+}
