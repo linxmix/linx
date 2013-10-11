@@ -2,16 +2,16 @@
 // startup
 //
 Meteor.startup(function() {
-  // accounts
-  Accounts.config({
-    forbidClientAccountCreation: true
-  });
+
+  // account ui button
   Accounts.ui.config({
     passwordSignupFields: "USERNAME_ONLY"
   });
 
+  // mini pages
   Meteor.pages({
     '/': { to: 'graphPage', nav: 'graphPage' },
     '/uploader': { to: 'uploaderPage', nav: 'uploaderPage' }
   });
+  
 });
