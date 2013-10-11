@@ -1,4 +1,4 @@
 packages
 public
-.meteor
+.meteor/local
 rootkey.csv

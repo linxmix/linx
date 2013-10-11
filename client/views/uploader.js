@@ -210,9 +210,11 @@ function redrawWave(id) {
   }
 }
 
-function clampZoom(zoom) {
-  if (zoom >= 59) {
-    return 59;
+function clampZoom(wave, zoom) {
+  var MAX_CANVAS_WIDTH = 32767; // current limit i found in google chrome
+  var maxZoom = Math.floor(MAX_CANVAS_WIDTH / getWaveDuration(wave));
+  if (zoom >= maxZoom) {
+    return maxZoom;
   } else if (zoom <= 1) {
     return 1;
   } else {
@@ -222,9 +224,8 @@ function clampZoom(zoom) {
 
 function zoomWave(id, zoom) {
   var wave = waves[id];
-  zoom = clampZoom(zoom + wave.params['minPxPerSec']);
-  wave.params['minPxPerSec'] = zoom;
-  wave.drawer.params['minPxPerSec'] = zoom;
+  wave.params['minPxPerSec'] = wave.drawer.params['minPxPerSec'] =
+    clampZoom(wave, zoom + wave.params['minPxPerSec']);
   redrawWave(id);
 }
 
