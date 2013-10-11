@@ -1,7 +1,7 @@
 Session.set("waves", []);
 
 var waves = {};
-var lastWaveClicked, lastMarkMade, modalWaveOpen;
+var lastWaveClicked, modalWaveOpen;
 
 var waveColors = {
   'startWave': 'mediumorchid',
@@ -314,6 +314,7 @@ Template.uploaderPage.events({
   },
 
   'click button': function (e) {
+    console.log("button clicked");
     var action = e.target.dataset && e.target.dataset.action;
     // pass click to event handlers
     if (action && action in eventHandlers) {
@@ -410,6 +411,8 @@ function addKeyBindings() {
 var eventHandlers = {
 
   'playPause': function(e) {
+    console.log("playpause id: "+e);
+    console.log("modalWaveOpen: "+modalWaveOpen);
     if (!modalWaveOpen) {
       e.preventDefault();
       // we want spacebar to be a universal pause
@@ -423,7 +426,7 @@ var eventHandlers = {
 
   'markStart': function(e) {
     e.preventDefault();
-    lastMarkMade = waves[lastWaveClicked].mark({
+    waves[lastWaveClicked].mark({
       id: 'start',
       color: 'rgba(0, 255, 0, 0.8)'
     });
@@ -431,7 +434,7 @@ var eventHandlers = {
 
   'markEnd': function(e) {
     e.preventDefault();
-    lastMarkMade = waves[lastWaveClicked].mark({
+    waves[lastWaveClicked].mark({
       id: 'end',
       color: 'rgba(255, 0, 0, 0.8)'
     });
