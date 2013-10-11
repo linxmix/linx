@@ -7,8 +7,8 @@
       data-toggle="tooltip"
       data-placement="top"
       data-action="markStart"
+      data-id="{{id}}"
       data-original-title="[Left Arrow]">
-      <span class="glyphicon glyphicon-share-alt"></span>
       Mark Start
     </button>
     {{> playbackButtons}}
@@ -18,9 +18,9 @@
       data-toggle="tooltip"
       data-placement="top"
       data-action="markEnd"
+      data-id="{{id}}"
       data-original-title="[Right Arrow]">
       Mark End
-      <span class="glyphicon glyphicon-share-alt"></span>
     </button>
   </div>
 </template>
@@ -34,8 +34,9 @@
       data-toggle="tooltip"
       data-placement="top"
       data-action="back"
+      data-id="{{id}}"
       data-original-title="[Down / Shift+Down]">
-      <span class="glyphicon glyphicon-step-backward"></span>
+      Back
     </button>
     <button
       type="button"
@@ -43,17 +44,18 @@
       data-toggle="tooltip"
       data-placement="top"
       data-action="playPause"
+      data-id="{{id}}"
       data-original-title="[SpaceBar / DoubleClick]">
-      <span class="glyphicon glyphicon-play"></span> / <span class="glyphicon glyphicon-pause"></span>
-    </button>
+      Play/Pause
     <button
       type="button"
       class="btn btn-xs btn-info helptip"
       data-toggle="tooltip"
       data-placement="top"
       data-action="forth"
+      data-id="{{id}}"
       data-original-title="[Up / Shift+Up]">
-      <span class="glyphicon glyphicon-step-forward"></span>
+      Forth
     </button>
   </div>
 </template>
