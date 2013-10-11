@@ -1,6 +1,10 @@
 <!-- Player -->
 <template name="wavePlayer">
-  <div class="col-md-12 text-center">
+  <div class="col-md-4 text-right">
+    Zoom:
+    <div class="zoomSlider"></div>
+  </div>
+  <div class="col-md-4 text-center">
     <button
       type="button"
       class="btn btn-xs btn-success helptip"
@@ -22,6 +26,10 @@
       data-original-title="[Right Arrow]">
       Mark End
     </button>
+  </div>
+  <div class="col-md-4 text-left">
+    Volume:
+    <div class="slider"></div>
   </div>
 </template>
 

@@ -153,6 +153,7 @@ Template.wave.rendered = function () {
     'waveColor': waveColors[id],
     'progressColor': progressColors[id],
     'cursorColor': cursorColors[id],
+    // get zoom slider init value
     'minPxPerSec': 10,
     'fillParent': false,
     'scrollParent': true,
@@ -166,6 +167,7 @@ Template.wave.rendered = function () {
 
   // TODO: progress bar after wavesurfer issue is fixed
   wave.on('ready', function() {
+    // hide load text
     $(selector+' .loadText').hide();
 
     // if wave has no song, it must been drag and drop
@@ -214,7 +216,7 @@ Uploader = {
 
   // progress is in percent
   'getWaveProgress': function(wave) {
-    return getWavePosition(wave) / getWaveDuration(wave);
+    return Uploader.getWavePosition(wave) / Uploader.getWaveDuration(wave);
   },
 
   'playWave': function(wave) {

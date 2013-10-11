@@ -47,7 +47,7 @@ Template.wave.events({
   //
   // click and drag
   //
-  'mousedown': function (e) {
+  'mousedown canvas': function (e) {
     mouseClickHeld = true;
   },
 
@@ -71,7 +71,7 @@ Template.wave.events({
     Uploader.waves['modalWaveOpen'] = Uploader.waves[this.id];
   },
 
-  'click .waveform': function (e) {
+  'click .wave': function (e) {
     Uploader.waves['lastWaveClicked'] = this.id;
   },
 
@@ -92,48 +92,15 @@ Template.wave.events({
       e.preventDefault();
       e.stopPropagation();
       var direction = e.wheelDelta >= 0 ? 1 : -1;
-      var zoom = 1;
+      var zoom = 0.5;
       if (e.shiftKey) {
         zoom *= 10;
       }
-      zoomWave(this.id, zoom * direction);
+      zoomWave(this.id, zoom * direction, true);
     }
   },
 
 });
-
-function redrawWave(id) {
-  var wave = Uploader.waves[id];
-  // redraw wave
-  wave.drawBuffer();
-  // update with and center screen on progress
-  var progress = getWaveProgress(wave);
-  wave.drawer.updateProgress(progress);
-  wave.drawer.recenter(progress);
-  // update markers
-  for (var waveId in wave.markers) {
-    wave.drawer.addMark(wave.markers[waveId]);
-  }
-}
-
-function clampZoom(wave, zoom) {
-  var MAX_CANVAS_WIDTH = 32767; // current limit i found in google chrome
-  var maxZoom = Math.floor(MAX_CANVAS_WIDTH / getWaveDuration(wave));
-  if (zoom >= maxZoom) {
-    return maxZoom;
-  } else if (zoom <= 1) {
-    return 1;
-  } else {
-    return zoom;
-  }
-}
-
-function zoomWave(id, zoom) {
-  var wave = Uploader.waves[id];
-  wave.params['minPxPerSec'] = wave.drawer.params['minPxPerSec'] =
-    clampZoom(wave, zoom + wave.params['minPxPerSec']);
-  redrawWave(id);
-}
 
 // TODO: fix this global hack, it exists so double click on song can load that song
 uploaderLoadSong = function (e) {
@@ -146,3 +113,76 @@ uploaderLoadSong = function (e) {
     wave.load(Mixer.getSampleUrl(song));
   }
 };
+
+//
+// zoom stuff
+//
+
+Template.wavePlayer.rendered = function () {
+
+  // set up volume slider
+  var sliders = $(this.find('.slider'));
+  sliders.slider({
+    'min': 1,
+    'max': 100,
+    'step': 1,
+  });
+
+  // set up zoom slider
+  var zoomSlider = $(this.find('.zoomSlider'));
+  var id = this.data.id;
+  zoomSlider.slider({
+    'min': 1,
+    'max': 100,
+    'step': 1,
+  })
+  .on('slide', function(ev) {
+    zoomWave(id, ev.value);
+  });
+};
+
+function zoomWave(id, percent, additive) {
+  var wave = Uploader.waves[id];
+  var lastPercent = wave.lastPercent || 5;
+  if (additive) {
+    percent += lastPercent;
+  }
+
+  if (percent !== lastPercent) {
+    wave.lastPercent = percent;
+    // zoom and draw wave
+    wave.params['minPxPerSec'] = wave.drawer.params['minPxPerSec'] =
+      getZoomPx(wave, percent);
+    redrawWave(id);
+    // update zoomSlider
+    $('#'+id+' .zoomSlider').slider('setValue', percent);
+  }
+}
+
+function getZoomPx(wave, percent) {
+  // find max zoom
+  var MAX_CANVAS_WIDTH = 32767; // current limit in google chrome
+  var maxZoom = Math.floor(MAX_CANVAS_WIDTH / Uploader.getWaveDuration(wave));
+  // set bounds on zoom %
+  if (percent > 100) {
+    percent = 100;
+  } else if (percent < 1) {
+    percent = 1;
+  }
+  // calculate px and return
+  return (percent / 100.0) * maxZoom;
+}
+
+function redrawWave(id) {
+  var wave = Uploader.waves[id];
+  // redraw wave
+  wave.drawBuffer();
+  // update with and center screen on progress
+  var progress = Uploader.getWaveProgress(wave);
+  wave.drawer.updateProgress(progress);
+  wave.drawer.recenter(progress);
+  // update markers
+  for (var waveId in wave.markers) {
+    wave.drawer.addMark(wave.markers[waveId]);
+  }
+}
