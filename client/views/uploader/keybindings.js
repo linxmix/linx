@@ -41,9 +41,6 @@ var eventHandlers = {
   'playPause': function(e) {
     var id = (e.target.dataset && e.target.dataset.id) ||
       Uploader.waves['lastWaveClicked'];
-    console.log("id: "+id);
-    console.log(Uploader.waves['modalWaveOpen']);
-    console.log(Uploader.waves['playingWave']);
     if (!Uploader.waves['modalWaveOpen']) {
       e.preventDefault();
       // we want this to be a universal pause
@@ -106,6 +103,7 @@ var eventHandlers = {
 
     // validation check
     // TODO: add marker checks to this validation!
+    // TODO: also check file types, volumes, and song metadata
     //for (var waveId in waves) {
     //  if (!waves[waveId].backend.buffer) {
     //    return alert("All three waves must be loaded and marked before submitting.");
@@ -117,9 +115,11 @@ var eventHandlers = {
     var transitionWave = Uploader.waves['transitionWave'];
     var endWave = Uploader.waves['endWave'];
     if (startWave.song.isNew) {
+      startWave.song.volume = $('#startWave .volumeSlider').data('slider').getValue();
       uploadSongWave(startWave);
     }
     if (endWave.song.isNew) {
+      endWave.song.volume = $('#endWave .volumeSlider').data('slider').getValue();
       uploadSongWave(endWave);
     }
     uploadTransitionWave(transitionWave, startWave, endWave);
@@ -147,7 +147,8 @@ function uploadTransitionWave(transitionWave, startWave, endWave) {
     'endSong': endSong._id,
     'endSongStart': endSongStart,
     'startTime': startTime,
-    'endTime': endTime
+    'endTime': endTime,
+    'volume': $('#transitionWave .volumeSlider').data('slider').getValue()
   };
   //Transitions.insert(transition);
 

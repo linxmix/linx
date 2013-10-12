@@ -26,8 +26,10 @@ Template.uploaderPage.events({
       // TODO: make this based on given buffer's file name extension
       'fileType': 'mp3',
       'name': name,
-      'playCount': 0
+      'playCount': 0,
+      'volume': 0.8
     };
+    $('.close').click(); // click is here so that close is triggered
   },
 
   'click .close': function (e) {
@@ -71,7 +73,11 @@ Template.wave.events({
     Uploader.waves['modalWaveOpen'] = Uploader.waves[this.id];
   },
 
-  'click .wave': function (e) {
+  'click .waveform': function (e) {
+    Uploader.waves['lastWaveClicked'] = this.id;
+  },
+
+  'click .wavePlayer': function (e) {
     Uploader.waves['lastWaveClicked'] = this.id;
   },
 
@@ -119,18 +125,22 @@ uploaderLoadSong = function (e) {
 //
 
 Template.wavePlayer.rendered = function () {
+  var id = this.data.id;
 
   // set up volume slider
-  var sliders = $(this.find('.slider'));
-  sliders.slider({
-    'min': 1,
-    'max': 100,
-    'step': 1,
+  var volumeSlider = $(this.find('.volumeSlider'));
+  volumeSlider.slider({
+    'min': 0,
+    'max': 1,
+    'step': 0.01,
+    'value': this.data.isSongWave ? 0.8 : 1.0
+  })
+  .on('slide', function(ev) {
+    Uploader.waves[id].setVolume(ev.value);
   });
 
   // set up zoom slider
   var zoomSlider = $(this.find('.zoomSlider'));
-  var id = this.data.id;
   zoomSlider.slider({
     'min': 1,
     'max': 100,

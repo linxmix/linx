@@ -33,7 +33,8 @@ Meteor.startup(function () {
       endSongStart: 107.620399,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -43,7 +44,8 @@ Meteor.startup(function () {
       endSongStart: 34.396709,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -53,7 +55,8 @@ Meteor.startup(function () {
       endSongStart: 62.447994,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -63,7 +66,8 @@ Meteor.startup(function () {
       endSongStart: 171.131622,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -73,7 +77,8 @@ Meteor.startup(function () {
       endSongStart: 209.397522,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -83,7 +88,8 @@ Meteor.startup(function () {
       endSongStart: 77.067917,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -93,7 +99,8 @@ Meteor.startup(function () {
       endSongStart: 88.610138,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -103,7 +110,8 @@ Meteor.startup(function () {
       endSongStart: 220.827164,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -113,7 +121,8 @@ Meteor.startup(function () {
       endSongStart: 137.536957,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -123,7 +132,8 @@ Meteor.startup(function () {
       endSongStart: 109.693863,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -133,7 +143,8 @@ Meteor.startup(function () {
       endSongStart: 89.395668,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -143,7 +154,8 @@ Meteor.startup(function () {
       endSongStart: 144.281357,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -153,7 +165,8 @@ Meteor.startup(function () {
       endSongStart: 42.679478,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -163,7 +176,8 @@ Meteor.startup(function () {
       endSongStart: 34.668739,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -173,7 +187,8 @@ Meteor.startup(function () {
       endSongStart: 47.861614,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -183,7 +198,8 @@ Meteor.startup(function () {
       endSongStart: 35.244785,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -193,7 +209,8 @@ Meteor.startup(function () {
       endSongStart: 63.690960,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -203,7 +220,8 @@ Meteor.startup(function () {
       endSongStart: 153.944778,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -213,7 +231,8 @@ Meteor.startup(function () {
       endSongStart: 257.211761,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -223,7 +242,8 @@ Meteor.startup(function () {
       endSongStart: 126.058815,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -233,7 +253,8 @@ Meteor.startup(function () {
       endSongStart: 65.866142,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -243,7 +264,8 @@ Meteor.startup(function () {
       endSongStart: 184.109070,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -253,7 +275,8 @@ Meteor.startup(function () {
       endSongStart: 285.191101,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -263,7 +286,8 @@ Meteor.startup(function () {
       endSongStart: 113.981590,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -273,7 +297,8 @@ Meteor.startup(function () {
       endSongStart: 60.380409,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -283,7 +308,8 @@ Meteor.startup(function () {
       endSongStart: 164.703293,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -293,7 +319,8 @@ Meteor.startup(function () {
       endSongStart: 36.821423,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -303,7 +330,8 @@ Meteor.startup(function () {
       endSongStart: 32.706635,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
 /*  TODO: can't currently have a multi-edge. need to fix this!
@@ -314,7 +342,8 @@ Meteor.startup(function () {
       endSongStart: 142.088867,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 */
 /*
@@ -325,7 +354,8 @@ Meteor.startup(function () {
       endSongStart: 146.066269,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
     */
 
@@ -336,7 +366,8 @@ Meteor.startup(function () {
       endSongStart: 59.626980,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -346,7 +377,8 @@ Meteor.startup(function () {
       endSongStart: 124.436142,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -356,7 +388,8 @@ Meteor.startup(function () {
       endSongStart: 113.713356,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -366,7 +399,8 @@ Meteor.startup(function () {
       endSongStart: 49.072037,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -376,7 +410,8 @@ Meteor.startup(function () {
       endSongStart: 71.089394,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -386,7 +421,8 @@ Meteor.startup(function () {
       endSongStart: 66.223885,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -396,7 +432,8 @@ Meteor.startup(function () {
       endSongStart: 366.263641,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -406,7 +443,8 @@ Meteor.startup(function () {
       endSongStart: 41.658463,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -416,7 +454,8 @@ Meteor.startup(function () {
       endSongStart: 42.087124,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -426,7 +465,8 @@ Meteor.startup(function () {
       endSongStart: 80.305382,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -436,7 +476,8 @@ Meteor.startup(function () {
       endSongStart: 69.051605,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -446,7 +487,8 @@ Meteor.startup(function () {
       endSongStart: 11.174557,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -456,7 +498,8 @@ Meteor.startup(function () {
       endSongStart: 196.782166,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -466,7 +509,8 @@ Meteor.startup(function () {
       endSongStart: 64.156013,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -476,7 +520,8 @@ Meteor.startup(function () {
       endSongStart: 74.284897,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -486,7 +531,8 @@ Meteor.startup(function () {
       endSongStart: 63.398247,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -496,7 +542,8 @@ Meteor.startup(function () {
       endSongStart: 64.683037,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -506,7 +553,8 @@ Meteor.startup(function () {
       endSongStart: 128.925186,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -516,7 +564,8 @@ Meteor.startup(function () {
       endSongStart: 66.717758,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -526,7 +575,8 @@ Meteor.startup(function () {
       endSongStart: 78.651230,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -536,7 +586,8 @@ Meteor.startup(function () {
       endSongStart: 53.055809,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -546,7 +597,8 @@ Meteor.startup(function () {
       endSongStart: 207.232025,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -556,7 +608,8 @@ Meteor.startup(function () {
       endSongStart: 166.534515,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -566,7 +619,8 @@ Meteor.startup(function () {
       endSongStart: 64.889488,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -576,7 +630,8 @@ Meteor.startup(function () {
       endSongStart: 35.708584,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -586,7 +641,8 @@ Meteor.startup(function () {
       endSongStart: 63.960140,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -596,7 +652,8 @@ Meteor.startup(function () {
       endSongStart: 228.093292,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -606,7 +663,8 @@ Meteor.startup(function () {
       endSongStart: 51.011158,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -616,7 +674,8 @@ Meteor.startup(function () {
       endSongStart: 63.335033,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -626,7 +685,8 @@ Meteor.startup(function () {
       endSongStart: 80.823990,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -636,7 +696,8 @@ Meteor.startup(function () {
       endSongStart: 38.603760,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -646,7 +707,8 @@ Meteor.startup(function () {
       endSongStart: 6.788352,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -656,7 +718,8 @@ Meteor.startup(function () {
       endSongStart: 36.182682,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -666,7 +729,8 @@ Meteor.startup(function () {
       endSongStart: 66.282288,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -676,7 +740,8 @@ Meteor.startup(function () {
       endSongStart: 49.116543,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -686,7 +751,8 @@ Meteor.startup(function () {
       endSongStart: 80.356789,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -696,7 +762,8 @@ Meteor.startup(function () {
       endSongStart: 12.004528,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -706,7 +773,8 @@ Meteor.startup(function () {
       endSongStart: 47.239288,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -716,7 +784,8 @@ Meteor.startup(function () {
       endSongStart: 212.906494,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -726,7 +795,8 @@ Meteor.startup(function () {
       endSongStart: 130.884521,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -736,7 +806,8 @@ Meteor.startup(function () {
       endSongStart: 35.852310,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -746,7 +817,8 @@ Meteor.startup(function () {
       endSongStart: 63.212818,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -756,7 +828,8 @@ Meteor.startup(function () {
       endSongStart: 62.352673,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -766,7 +839,8 @@ Meteor.startup(function () {
       endSongStart: 63.426117,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -776,7 +850,8 @@ Meteor.startup(function () {
       endSongStart: 7.186939,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -786,7 +861,8 @@ Meteor.startup(function () {
       endSongStart: 75.443390,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -796,7 +872,8 @@ Meteor.startup(function () {
       endSongStart: 13.798616,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -806,7 +883,8 @@ Meteor.startup(function () {
       endSongStart: 58.026669,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -816,7 +894,8 @@ Meteor.startup(function () {
       endSongStart: 276.148254,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -826,7 +905,8 @@ Meteor.startup(function () {
       endSongStart: 107.451714,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -836,7 +916,8 @@ Meteor.startup(function () {
       endSongStart: 63.172398,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -846,7 +927,8 @@ Meteor.startup(function () {
       endSongStart: 46.121857,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
     {
@@ -856,7 +938,8 @@ Meteor.startup(function () {
       endSongStart: 72.216476,
       fileType: "mp3",
       transitionType: "active",
-      type: "transition"
+      type: "transition",
+      volume: 1.0
     },
 
       ];
@@ -874,12 +957,14 @@ Meteor.startup(function () {
       songs[transition.startSong] || (songs[transition.startSong] = {
         name: transition.startSong,
         fileType: "mp3",
-        type: "song"
+        type: "song",
+        volume: 0.8
       });
       songs[transition.endSong] || (songs[transition.endSong] = {
         name: transition.endSong,
         fileType: "mp3",
-        type: "song"
+        type: "song",
+        volume: 0.8
       });
     });
 

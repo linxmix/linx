@@ -153,7 +153,6 @@ Template.wave.rendered = function () {
     'waveColor': waveColors[id],
     'progressColor': progressColors[id],
     'cursorColor': cursorColors[id],
-    // get zoom slider init value
     'minPxPerSec': 10,
     'fillParent': false,
     'scrollParent': true,
@@ -223,7 +222,7 @@ Uploader = {
     // curry arg
     if (typeof wave !== 'object') { wave = Uploader.waves[wave]; }
     Uploader.pause();
-    if (wave) {
+    if (wave && wave.backend.buffer) {
       Uploader.waves['playingWave'] = wave;
       wave.play();
     }

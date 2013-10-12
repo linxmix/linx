@@ -79,6 +79,7 @@ Mixer = {
       'startSong': startSong,
       'endSong': endSong,
       'transitionType': 'soft',
+      'volume': 1.0
     };
   },
 
@@ -410,9 +411,10 @@ function makeWave(sample, callback) {
   wave.on('ready', function () {
     // make sure this was the right wave to be loading
     if (wave.sample._id === loadingWave.sample._id) {
+      loadingWave = undefined;
+      wave.setVolume(wave.volume);
       setWaveMarks(wave);
       wave.bindMarks();
-      loadingWave = undefined;
       console.log("wave ready");
       return callback(wave);
     }
