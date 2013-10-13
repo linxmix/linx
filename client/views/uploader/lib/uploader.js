@@ -125,9 +125,9 @@ Template.wave.rendered = function () {
         var transitionWave = Uploader.waves['transitionWave'];
         var transitionStart =
           (transitionWave.markers['start'].position) /
-          getWaveDuration(transitionWave);
+          Uploader.getWaveDuration(transitionWave);
         transitionWave.seekTo(transitionStart);
-        playWave(transitionWave);
+        Uploader.playWave(transitionWave);
       }
     }); break;
 
@@ -138,9 +138,9 @@ Template.wave.rendered = function () {
         var endWave = Uploader.waves['endWave'];
         var endStart =
           (endWave.markers['start'].position) /
-          getWaveDuration(endWave);
+          Uploader.getWaveDuration(endWave);
         endWave.seekTo(endStart);
-        playWave(endWave);
+        Uploader.playWave(endWave);
       }
     }); break;
 
@@ -242,6 +242,22 @@ Uploader = {
       playingWave.pause();
       Uploader.waves['playingWave'] = undefined;
     }
-  }
+  },
+
+  'markWaveStart': function(wave, position) {
+    wave.mark({
+      'id': 'start',
+      'position': position || Uploader.getWavePosition(wave),
+      'color': 'rgba(0, 255, 0, 0.8)'
+    });
+  },
+
+  'markWaveEnd': function(wave, position) {
+    wave.mark({
+      'id': 'end',
+      'position': position || Uploader.getWavePosition(wave),
+      'color': 'rgba(255, 0, 0, 0.8)'
+    });
+  },
 
 };

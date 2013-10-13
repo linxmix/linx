@@ -39,23 +39,26 @@ Template.song.events({
 });
 
 Template.transitions.transitions = function () {
-  var query = Session.get("transition_search_query");
-  // if no query, just return all transitions
+  var transitions, query = Session.get("transition_search_query");
+
+  // if no query, get all transitions
   if (!query || query === "") {
-    return Transitions.find();
-  }
+    transitions = Transitions.find();
+
   // else, query matches symbols in starting song
-  var startSongIds = Songs.find(
-    { name: { $regex: Session.get("transition_search_query") } },
-    { sort: { name: 1 } }
-  ).map(function (song) {
-    return song._id;
-  });
-  return Transitions.find(
-    { startSong: { $in: startSongIds } },
-    { sort: { name: 1 } }
+  } else {
+    var startSongIds = Songs.find(
+      { 'name': { $regex: Session.get("transition_search_query"), $options: 'i' } }
+    ).map(function (song) {
+      return song._id;
+    });
+    transitions = Transitions.find(
+      { 'startSong': { $in: startSongIds } }
+    );
+  }
+
   // get names for human-readable start and end songs
-  ).map(function (transition) {
+  return transitions.map(function (transition) {
     transition.startSongName = Songs.findOne(transition.startSong).name;
     transition.endSongName = Songs.findOne(transition.endSong).name;
     return transition;
@@ -64,8 +67,8 @@ Template.transitions.transitions = function () {
 
 Template.songs.songs = function () {
   return Songs.find(
-    { name: { $regex: Session.get("song_search_query") } },
-    { sort: { name: 1 } }
+    { 'name': { $regex: Session.get("song_search_query"), $options: 'i' } },
+    { 'sort': { 'name': 1 } }
   );
 };
 

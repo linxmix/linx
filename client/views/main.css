@@ -26,6 +26,10 @@ body {
   background-color: #bbb;
 }
 
+.row {
+  margin-left: 0;
+  margin-right: 0;
+}
 
 .container-full {
   padding-left: 15px;

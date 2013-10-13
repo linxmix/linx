@@ -25,13 +25,12 @@ Template.uploaderPage.events({
       }, 1500);
     }
     wave.song = {
-      'isNew': true,
       'type': 'song',
       // TODO: make this based on given buffer's file name extension
       'fileType': 'mp3',
       'name': name,
       'playCount': 0,
-      'volume': 0.8
+      'volume': 0.9
     };
     $('.close').click(); // click is here so that close is triggered
   },
@@ -75,12 +74,14 @@ Template.wave.events({
   //
   'click .songLoadText': function (e) {
     Session.set("song_select_dialog", true);
+    Session.set("song_search_query", "");
     $('#songSelectDialog').modal('show');
     Uploader.waves['modalWaveOpen'] = Uploader.waves[this.id];
   },
 
   'click .transitionLoadText': function (e) {
     Session.set("transition_select_dialog", true);
+    Session.set("transition_search_query", "");
     $('#transitionSelectDialog').modal('show');
     Uploader.waves['modalWaveOpen'] = Uploader.waves[this.id];
   },
@@ -151,6 +152,19 @@ uploaderLoadTransition = function (e) {
     var endWave = Uploader.waves['endWave'];
     endWave.song = endSong;
     endWave.load(Mixer.getSampleUrl(endSong));
+    // mark waves
+    startWave.on('ready', function () {
+      Uploader.markWaveEnd(startWave, transition.startSongEnd);
+    });
+    transitionWave.on('ready', function () {
+      var startTime = transition.startTime || 0;
+      var endTime = transition.endTime || Uploader.getWaveDuration(transitionWave);
+      Uploader.markWaveStart(transitionWave, startTime);
+      Uploader.markWaveEnd(transitionWave, endTime);
+    });
+    endWave.on('ready', function () {
+      Uploader.markWaveStart(endWave, transition.endSongStart);
+    });
   }
 };
 
@@ -167,7 +181,7 @@ Template.wavePlayer.rendered = function () {
     'min': 0,
     'max': 1,
     'step': 0.01,
-    'value': this.data.isSongWave ? 0.8 : 1.0
+    'value': this.data.isSongWave ? 0.9 : 1.0
   })
   .on('slide', function(ev) {
     Uploader.waves[id].setVolume(ev.value);

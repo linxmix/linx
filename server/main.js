@@ -958,13 +958,13 @@ Meteor.startup(function () {
         name: transition.startSong,
         fileType: "mp3",
         type: "song",
-        volume: 0.8
+        volume: 0.9
       });
       songs[transition.endSong] || (songs[transition.endSong] = {
         name: transition.endSong,
         fileType: "mp3",
         type: "song",
-        volume: 0.8
+        volume: 0.9
       });
     });
 

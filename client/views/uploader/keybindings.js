@@ -58,20 +58,14 @@ var eventHandlers = {
     var id = (e.target.dataset && e.target.dataset.id) ||
       Uploader.waves['lastWaveClicked'];
     e.preventDefault();
-    Uploader.waves[id].mark({
-      id: 'start',
-      color: 'rgba(0, 255, 0, 0.8)'
-    });
+    Uploader.markWaveStart(Uploader.waves[id]);
   },
 
   'markEnd': function(e) {
     var id = (e.target.dataset && e.target.dataset.id) ||
       Uploader.waves['lastWaveClicked'];
     e.preventDefault();
-    Uploader.waves[id].mark({
-      id: 'end',
-      color: 'rgba(255, 0, 0, 0.8)'
-    });
+    Uploader.markWaveEnd(Uploader.waves[id]);
   },
 
   'back': function(e) {
@@ -106,29 +100,28 @@ var eventHandlers = {
     // validation check
     // TODO: add marker checks to this validation!
     // TODO: also check file types, volumes, and song metadata
-    //for (var waveId in waves) {
-    //  if (!waves[waveId].backend.buffer) {
-    //    return alert("All three waves must be loaded and marked before submitting.");
-    //  }
-    //}
+    for (var waveId in waves) {
+      if (!waves[waveId].backend.buffer) {
+        return alert("All three waves must be loaded and marked before submitting.");
+      }
+    }
 
-    // upload any new songs and upload transition
+    // update volumes
     var startWave = Uploader.waves['startWave'];
     var transitionWave = Uploader.waves['transitionWave'];
     var endWave = Uploader.waves['endWave'];
-    if (startWave.song.isNew) {
-      startWave.song.volume = $('#startWave .volumeSlider').data('slider').getValue();
-      uploadSongWave(startWave);
-    }
-    if (endWave.song.isNew) {
-      endWave.song.volume = $('#endWave .volumeSlider').data('slider').getValue();
-      uploadSongWave(endWave);
-    }
-    uploadTransitionWave(transitionWave, startWave, endWave);
+    startWave.song.volume = $('#startWave .volumeSlider').data('slider').getValue();
+    endWave.song.volume = $('#endWave .volumeSlider').data('slider').getValue();
+
+    // upload samples
+    uploadSong(startWave);
+    uploadSong(endWave);
+    uploadTransition(startWave, transitionWave, endWave);
+    alert("Transition successfully uploaded!");
   }
 };
 
-function uploadTransitionWave(transitionWave, startWave, endWave) {
+function uploadTransition(startWave, transitionWave, endWave) {
   var startSongEnd = startWave.markers['end'].position;
   var endSongStart = endWave.markers['start'].position;
 
@@ -138,33 +131,50 @@ function uploadTransitionWave(transitionWave, startWave, endWave) {
   var startSong = Songs.findOne({ 'name': startWave.song.name });
   var endSong = Songs.findOne({ 'name': endWave.song.name });
 
-  // add transition to database
-  var transition = {
+  // get transition metadata, or make if wave doesn't have it
+  var transition = transitionWave.transition || {
     'type': 'transition',
     'transitionType': 'active',
     // TODO: make this based on given buffer's file name extension
     'fileType': 'mp3',
     'startSong': startSong._id,
-    'startSongEnd': startSongEnd,
-    'endSong': endSong._id,
-    'endSongStart': endSongStart,
-    'startTime': startTime,
-    'endTime': endTime,
-    'volume': $('#transitionWave .volumeSlider').data('slider').getValue()
+    'endSong': endSong._id
   };
-  //Transitions.insert(transition);
-
-  // upload transition to s3 server
-  var url = Mixer.getSampleUrl(transition);
-  uploadWave(transitionWave, url);
+  // add transition to database and s3 server if doesnt already exist
+  if (!transition._id) {
+    transition._id = Transitions.insert(transition);
+    // upload transition to s3 server
+    var url = Mixer.getSampleUrl(transition);
+    uploadWave(transitionWave, url);
+  }
+  // update transition with timings and volume
+  Transitions.update({ '_id': transition._id }, { $set:
+    {
+      'startSongEnd': startSongEnd,
+      'endSongStart': endSongStart,
+      'startTime': startTime,
+      'endTime': endTime,
+      'volume': $('#transitionWave .volumeSlider').data('slider').getValue()
+    }
+  });
 }
 
-function uploadSongWave(wave) {
-  // add song to database
-  //Songs.insert(wave.song);
-  // upload song to s3 server
-  var url = Mixer.getSampleUrl(wave.song);
-  uploadWave(wave, url);
+function uploadSong(wave) {
+  var song = wave.song;
+  // if song is new, add to database and upload wave
+  if (!song._id) {
+    song._id = Songs.insert(song);
+    // upload song to s3 server
+    var url = Mixer.getSampleUrl(wave.song);
+    uploadWave(wave, url);
+  }
+  // otherwise, just update song volume
+  else {
+    Songs.update(
+      { '_id': song._id },
+      { $set: { 'volume': song.volume } }
+    );
+  }
 }
 
 // uploads buffer of given wave to given s3 url
