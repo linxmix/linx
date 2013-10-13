@@ -28,9 +28,9 @@ Meteor.startup(function () {
   //
   // make waves
   //
-  makeWave("startWave", "Drop starting song here.", true);
-  makeWave("transitionWave", "Drop transition here.", false);
-  makeWave("endWave", "Drop ending song here.", true);
+  makeWave("startWave", "Drop starting song here", true);
+  makeWave("transitionWave", "Drop new transition here", false);
+  makeWave("endWave", "Drop ending song here", true);
 
 });
 
@@ -174,6 +174,14 @@ Template.wave.rendered = function () {
     if (!wave.song && (id !== 'transitionWave')) {
       $('#songInfoDialog').modal('show');
       Uploader.waves['modalWaveOpen'] = Uploader.waves[id];
+    }
+
+    // set volume and volume slider
+    var sample = wave.song || wave.transition;
+    if (sample && sample.volume) {
+      wave.setVolume(sample.volume);
+      // update volumeSlider
+      $(selector+' .volumeSlider').slider('setValue', sample.volume);
     }
 
   });

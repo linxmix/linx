@@ -1,10 +1,18 @@
 Template.transition.events({
-  'click': function() {
+  'click': function(e) {
     Session.set("selected_transition", this._id);
   },
-  'dblclick': function() {
+  'dblclick': function(e) {
     Session.set("selected_transition", this._id);
-    Mixer.queue(Transitions.findOne(this._id));
+    // if transition select modal is active,
+    // this serves as a click to the load transition button
+    if (Session.get("transition_select_dialog")) {
+      uploaderLoadTransition(e);
+    }
+    // otherwise, queue this transition
+    else {
+      Mixer.queue(Transitions.findOne(this._id));
+    }
   }
 });
 
@@ -31,12 +39,32 @@ Template.song.events({
 });
 
 Template.transitions.transitions = function () {
-  return Transitions.find();
-}
+  var query = Session.get("transition_search_query");
+  // if no query, just return all transitions
+  if (!query || query === "") {
+    return Transitions.find();
+  }
+  // else, query matches symbols in starting song
+  var startSongIds = Songs.find(
+    { name: { $regex: Session.get("transition_search_query") } },
+    { sort: { name: 1 } }
+  ).map(function (song) {
+    return song._id;
+  });
+  return Transitions.find(
+    { startSong: { $in: startSongIds } },
+    { sort: { name: 1 } }
+  // get names for human-readable start and end songs
+  ).map(function (transition) {
+    transition.startSongName = Songs.findOne(transition.startSong).name;
+    transition.endSongName = Songs.findOne(transition.endSong).name;
+    return transition;
+  });
+};
 
 Template.songs.songs = function () {
   return Songs.find(
-    { name: { $regex: Session.get("search_query") } },
+    { name: { $regex: Session.get("song_search_query") } },
     { sort: { name: 1 } }
   );
 };
@@ -46,7 +74,6 @@ Template.transition.selected = function () {
 };
 
 Template.transition.current = function () {
-
   return Session.equals("current_transition", this._id) ? "current" : "";
 };
 

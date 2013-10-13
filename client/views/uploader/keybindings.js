@@ -43,8 +43,10 @@ var eventHandlers = {
       Uploader.waves['lastWaveClicked'];
     if (!Uploader.waves['modalWaveOpen']) {
       e.preventDefault();
-      // we want this to be a universal pause
-      if (Uploader.waves['playingWave']) {
+      var playingId =
+        Uploader.waves['playingWave'] && Uploader.waves['playingWave'].id;
+      if (playingId === id) {
+        // we want this to be a universal pause
         Uploader.pause();
       } else {
         Uploader.playWave(id);

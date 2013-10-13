@@ -9,6 +9,10 @@ Template.uploaderPage.events({
     uploaderLoadSong(e);
   },
 
+  'click #loadTransition': function (e) {
+    uploaderLoadTransition(e);
+  },
+
   'click #submitSongInfo': function (e) {
     var wave = Uploader.waves['modalWaveOpen'];
     var serial = $('#songInfoDialog form').serializeArray();
@@ -34,7 +38,9 @@ Template.uploaderPage.events({
 
   'click .close': function (e) {
     Session.set("song_select_dialog", false);
+    Session.set("transition_select_dialog", false);
     $('#songSelectDialog').modal('hide');
+    $('#transitionSelectDialog').modal('hide');
     $('#songInfoDialog').modal('hide');
     setTimeout(function () {
       Uploader.waves['modalWaveOpen'] = undefined;
@@ -73,6 +79,12 @@ Template.wave.events({
     Uploader.waves['modalWaveOpen'] = Uploader.waves[this.id];
   },
 
+  'click .transitionLoadText': function (e) {
+    Session.set("transition_select_dialog", true);
+    $('#transitionSelectDialog').modal('show');
+    Uploader.waves['modalWaveOpen'] = Uploader.waves[this.id];
+  },
+
   'click .waveform': function (e) {
     Uploader.waves['lastWaveClicked'] = this.id;
   },
@@ -108,7 +120,7 @@ Template.wave.events({
 
 });
 
-// TODO: fix this global hack, it exists so double click on song can load that song
+// TODO: fix these global hacks, it exists so double click on song can load that song
 uploaderLoadSong = function (e) {
   var wave = Uploader.waves['modalWaveOpen'];
   $('.close').click(); // click is here so double click on song will close modal
@@ -117,6 +129,28 @@ uploaderLoadSong = function (e) {
   if (wave && song) {
     wave.song = song;
     wave.load(Mixer.getSampleUrl(song));
+  }
+};
+
+uploaderLoadTransition = function (e) {
+  var transitionWave = Uploader.waves['modalWaveOpen'];
+  $('.close').click(); // click is here so double click on transition will close modal
+  var transition = Transitions.findOne(Session.get("selected_transition"));
+
+  if (transitionWave && transition) {
+    // load transition
+    transitionWave.transition = transition;
+    transitionWave.load(Mixer.getSampleUrl(transition));
+    // load startWave
+    var startSong = Songs.findOne(transition.startSong);
+    var startWave = Uploader.waves['startWave'];
+    startWave.song = startSong;
+    startWave.load(Mixer.getSampleUrl(startSong));
+    // load endWave
+    var endSong = Songs.findOne(transition.endSong);
+    var endWave = Uploader.waves['endWave'];
+    endWave.song = endSong;
+    endWave.load(Mixer.getSampleUrl(endSong));
   }
 };
 

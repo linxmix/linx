@@ -8,7 +8,7 @@
   padding: 0;
 }
 
-.waveform.wavesurfer-dragover, .songLoadText:hover {
+.waveform.wavesurfer-dragover, .loadText:hover {
   color: #fff;
   background-color: #555;
   border-color: #000;
@@ -18,13 +18,6 @@
   margin-bottom: 0;
   border-color: #333;
   font-size: 30px;
-}
-
-.transitionLoadText {
-  padding: 85px;
-}
-
-.songLoadText {
   padding: 40px;
   cursor: pointer;
 }

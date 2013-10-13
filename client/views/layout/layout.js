@@ -8,11 +8,19 @@ Template.player.events({
 });
 
 Template.songNav.events({
-  'keyup .search-query': function () {
+  'keyup .song-search-query': function () {
     // use modal query if there is one
     var query = Session.get("song_select_dialog") ?
-      $(".modal .search-query").val() : $(".search-query").val();
-    Session.set("search_query", query);
-    console.log(query);
+      $(".modal .song-search-query").val() : $(".song-search-query").val();
+    Session.set("song_search_query", query);
+  }
+});
+
+Template.transitionNav.events({
+  'keyup .transition-search-query': function () {
+    // use modal query if there is one
+    var query = Session.get("transition_select_dialog") ?
+      $(".modal .transition-search-query").val() : $(".transition-search-query").val();
+    Session.set("transition_search_query", query);
   }
 });

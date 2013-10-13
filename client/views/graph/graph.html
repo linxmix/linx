@@ -42,19 +42,15 @@
 <template name="transitions">
   <ul class="transitions">
     {{#each transitions}}
-    {{> transition}}
+      {{> transition}}
     {{/each}}
   </ul>
 </template>
 
 <template name="transition">
-  <div class="transition {{selected}} {{current}}">
-    <span class="startSong">startSong: {{startSong}}</span>
-    <br>
-    <span class="startTime">startTime: {{startTime}}</span>
-    <br>
-    <span class="endSong">endSong: {{endSong}}</span>
-    <br>
-    <span class="playCount">playCount: {{playCount}}</span>
+  <div class="transition {{selected}} {{current}} well well-sm">
+    <p class="startSong">startSong: {{startSongName}}</p>
+    <p class="endSong">endSong: {{endSongName}}</p>
+    <p class="playCount">playCount: {{playCount}}</p>
   </div>
 </template>
