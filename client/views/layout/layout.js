@@ -18,7 +18,11 @@ Template.player.events({
 
   'click #stop': function(e) {
     Mixer.stop();
-  }
+  },
+
+  'click #clearQueue': function(e) {
+    Mixer.clearQueue();
+  },
 
 });
 

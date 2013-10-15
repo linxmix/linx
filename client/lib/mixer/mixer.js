@@ -52,6 +52,13 @@ Mixer = {
     Session.set("queue", []);
   },
 
+  'clearQueue': function() {
+    var queue = Mixer.getQueue();
+    queue.splice(1, queue.length);
+    queuedWaves.splice(1, queuedWaves.length);
+    Session.set("queue", queue);
+  },
+
   'pickTransition': pickTransition,
 
   // NOTE: position is in seconds, progress is in percent
