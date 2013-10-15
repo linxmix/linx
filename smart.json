@@ -1,11 +1,11 @@
 {
   "packages": {
-    "bootstrap-3": {},
     "bootstrap-slider-touch": {},
     "knox": {},
     "accounts-ui-bootstrap-dropdown": {},
     "mini-pages": {},
     "jquery-mousewheel": {},
-    "keybindings": {}
+    "keybindings": {},
+    "bootstrap3-less": {}
   }
 }

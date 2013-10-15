@@ -25,10 +25,10 @@
 
 <!-- Wave -->
 <template name="wave">
-  <div class ="row wave" id="{{id}}">
-    <div class="col-md-12 waveform">
+  <div class ="wave" id="{{id}}">
+    <div class="waveform">
       <!-- Here be waveform -->
-      <div class="loadText text-center lead">
+      <div class="loadText">
         {{#if isSongWave}}
           {{> songLoadText}}
         {{else}}
@@ -60,6 +60,6 @@
 
 <!-- Controls -->
 <template name="uploaderControls">
-  <div class="col-md-5 col-md-offset-5">
+  <div class="uploaderControls">
   </div>
 </template>

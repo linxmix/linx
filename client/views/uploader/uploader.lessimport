@@ -20,4 +20,18 @@
   font-size: 30px;
   padding: 40px;
   cursor: pointer;
+  .text-center;
+}
+
+.wave {
+  .make-row();
+
+  .waveform {
+    .make-md-column(12);
+  }
+}
+
+.uploaderControls {
+  .make-md-column(5);
+  .make-md-column-offset(5);
 }
