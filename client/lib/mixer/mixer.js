@@ -1,7 +1,6 @@
 //
 // init
 //
-Session.set("load_time", 50.0); // safety net for load times
 Session.set("queue", []);
 Session.set("mixer_playing", false);
 
@@ -28,9 +27,10 @@ Mixer = {
   // 
 
   'play': function(sample) {
-    // if given a sample, place it at start of queue
+    // if given a sample, place it at start of queue and pick a first transition
     if (sample) {
       Mixer.queue(sample, 0);
+      pickTransition();
     }
     // update play status
     Session.set("mixer_playing", true);
@@ -235,14 +235,14 @@ function isValidTransition(prevSample, transition, debug) {
     // if prevSample is the current sample, make sure transition isn't too soon
     if (prevSample._id === Session.get("current_sample")) {
       if (Mixer.getCurrentPosition() >
-        transition.startSongEnd - Session.get("load_time")) {
+        transition.startSongEnd) {
         if (debug) console.log("ERROR: too far in currSample to queue given transition");
         return false;
       }
     }
 
     // if prevSample is not the current sample, make sure transition isn't too soon
-    else if (prevSample.startTime > transition.startSongEnd - Session.get("load_time")) {
+    else if (prevSample.startTime > transition.startSongEnd) {
       if (debug) console.log("ERROR: given transition starts too soon after prevSample");
       return false;
     }
@@ -412,7 +412,6 @@ function makeWave(sample, callback) {
     // make sure this was the right wave to be loading
     if (wave.sample._id === loadingWave.sample._id) {
       loadingWave = undefined;
-      wave.setVolume(wave.volume);
       setWaveMarks(wave);
       wave.bindMarks();
       console.log("wave ready");
@@ -476,9 +475,12 @@ function cycleQueue() {
   // update sample queue
   var queue = Mixer.getQueue();
   queue.shift();
+  Session.set("queue", queue);
   // if cycling to the last song, pick new transition to continue the mix
   // TODO: implement this
-  Session.set("queue", queue);
+  if (queue.length === 1) {
+    pickTransition();
+  }
 
   // confirm play status
   assertPlayStatus();
@@ -510,6 +512,7 @@ function playWave() {
 
     // otherwise, play it and set it as playing
     } else {
+      wave.setVolume(wave.sample.volume);
       wave.play();
       Session.set("current_sample", wave.sample._id);
     }
@@ -540,19 +543,19 @@ function pickTransition() {
   var queue = Mixer.getQueue();
   var lastSample = queue[queue.length - 1];
   // if last sample is currently playing, startTime is currSample's currTime
-  var startTime = (queue.length === 1) ?
+  var startTime = (queue.length <= 1) ?
     Mixer.getCurrentPosition() : lastSample.startTime;
   var choices = Transitions.find({
     'startSong': lastSample._id,
-    'startTime': { $gt: startTime + Session.get("load_time") }
-  }).fetch();
+    'startTime': { $gt: startTime }
+  });
 
   // find choice with endSong that has least number of plays amongst choices
   var transition = choices[0],
       endSong = (transition && Songs.findOne(transition.endSong)) ||
         Songs.findOne();
   // TODO: make this a slick database query
-  for (var i = 0; i < choices.length; i++) {
+  for (var i = 1; i < choices.length; i++) {
     var _transition = choices[i];
     var _endSong = Songs.findOne(_transition.endSong);
     if (_endSong.playCount < endSong.playCount) {
@@ -570,7 +573,7 @@ function pickTransition() {
   console.log("CHOOSING transition: ");
   console.log(transition);
 
-  return transition;
+  Mixer.queue(transition);
 }
 //
 // /private methods

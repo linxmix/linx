@@ -100,11 +100,11 @@ var eventHandlers = {
     // validation check
     // TODO: add marker checks to this validation!
     // TODO: also check file types, volumes, and song metadata
-    for (var waveId in waves) {
-      if (!waves[waveId].backend.buffer) {
-        return alert("All three waves must be loaded and marked before submitting.");
-      }
-    }
+    //for (var waveId in waves) {
+    //  if (!waves[waveId].backend.buffer) {
+    //    return alert("All three waves must be loaded and marked before submitting.");
+    //  }
+    //}
 
     // update volumes
     var startWave = Uploader.waves['startWave'];
@@ -179,7 +179,7 @@ function uploadSong(wave) {
 
 // uploads buffer of given wave to given s3 url
 function uploadWave(wave, url) {
-  console.log("fake call to upload wave with url: "+url);
+  console.log("uploading wave to url: "+url);
   console.log(wave);
-  //Meteor.call('putStream', wave.bufferData, 'test.mp3');
+  Meteor.call('putArray', wave.array, url);
 }

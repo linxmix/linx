@@ -56,7 +56,7 @@ Template.graph.rendered = function () {
       links = queuedTransitions.concat(Transitions.find({
         'startSong': lastSong._id,
         'startSongEnd': {
-          $gt: startTime + Session.get("load_time")
+          $gt: startTime
         }
       }).fetch());
 

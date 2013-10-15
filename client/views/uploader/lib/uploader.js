@@ -80,6 +80,21 @@ function makeWave(id, loadText, isSongWave) {
   };
   // /hack
 
+  // hack to access the ArrayBuffer of audio data as it's read
+  wave.loadBuffer = function (data) {
+    var my = wave;
+    wave.array = new Uint8Array(data);
+    wave.pause();
+    wave.backend.loadBuffer(data, function () {
+      my.clearMarks();
+      my.drawBuffer();
+      my.fireEvent('ready');
+    }, function () {
+      my.fireEvent('error', 'Error decoding audio');
+    });
+  };
+  // /hack
+
   //
   // flash when reaching a mark
   //

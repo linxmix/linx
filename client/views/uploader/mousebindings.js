@@ -30,7 +30,7 @@ Template.uploaderPage.events({
       'fileType': 'mp3',
       'name': name,
       'playCount': 0,
-      'volume': 0.9
+      'volume': 0.8
     };
     $('.close').click(); // click is here so that close is triggered
   },
@@ -181,7 +181,7 @@ Template.wavePlayer.rendered = function () {
     'min': 0,
     'max': 1,
     'step': 0.01,
-    'value': this.data.isSongWave ? 0.9 : 1.0
+    'value': this.data.isSongWave ? 0.8 : 1.0
   })
   .on('slide', function(ev) {
     Uploader.waves[id].setVolume(ev.value);
