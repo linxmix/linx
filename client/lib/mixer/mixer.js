@@ -36,13 +36,23 @@ Mixer = {
     Session.set("mixer_playing", true);
   },
 
+  'skip': function() {
+    cycleQueue();
+  },
+
   'pause': function() {
     Session.set("mixer_playing", false);
   },
 
-  'skip': function() {
-    cycleQueue();
+  'stop': function() {
+    Session.set("mixer_playing", false);
+    assertPlayStatus(); // called to ensure this happens before wave queue is removed
+    Session.set("current_sample", undefined);
+    queuedWaves = [];
+    Session.set("queue", []);
   },
+
+  'pickTransition': pickTransition,
 
   // NOTE: position is in seconds, progress is in percent
   'getCurrentPosition': function() {
@@ -71,6 +81,15 @@ Mixer = {
     }
   },
   
+  // get a random entry from given collection
+  // TODO: make this true random and not need to get every doc
+  'getRandom': function(coll) {
+    var found = coll.find();
+    var count = found.count() - 1; // -1 for array indexing
+    var rand = Math.round(Math.random() * count);
+    return found.fetch()[rand];
+  },
+
   // creates a soft transition object from startSong to endSong
   'makeSoftTransition': function(startSong, endSong) {
     return {
@@ -86,7 +105,7 @@ Mixer = {
   // adds given sample to the queue
   'queue': function(sample, index, startTime, endTime) {
     if (!sample) {
-      return console.log("WARNING: queueSample called without a sample");
+      return console.log("WARNING: Mixer.queue called without a sample");
     }
     else if (sample.type === 'song') {
       queueSong(sample, index, startTime, endTime);
@@ -541,19 +560,19 @@ function getTransitionUrl(transition) {
 // TODO: make this work when still loading the first song
 function pickTransition() {
   var queue = Mixer.getQueue();
-  var lastSample = queue[queue.length - 1];
+  var lastSample = queue[queue.length - 1] || Mixer.getRandom(Songs);
   // if last sample is currently playing, startTime is currSample's currTime
   var startTime = (queue.length <= 1) ?
     Mixer.getCurrentPosition() : lastSample.startTime;
   var choices = Transitions.find({
     'startSong': lastSample._id,
-    'startTime': { $gt: startTime }
-  });
+    'startSongEnd': { $gt: startTime }
+  }).fetch();
 
   // find choice with endSong that has least number of plays amongst choices
   var transition = choices[0],
       endSong = (transition && Songs.findOne(transition.endSong)) ||
-        Songs.findOne();
+        Mixer.getRandom(Songs);
   // TODO: make this a slick database query
   for (var i = 1; i < choices.length; i++) {
     var _transition = choices[i];
@@ -565,9 +584,14 @@ function pickTransition() {
   }
 
   // if there is a song with a lower playCount than endSong, soft transition to it
-  var song = Songs.findOne({ 'playCount': { $lt: endSong.playCount } });
-  if (song) {
-    transition = makeSoftTransition(lastSample._id, song._id);
+  //var song = Songs.findOne({ 'playCount': { $lt: endSong.playCount } });
+  //if (song) {
+  //  transition = Mixer.makeSoftTransition(lastSample._id, song._id);
+  //}
+
+  // if no transition has yet been chosen, make one up
+  if (!transition) {
+    transition = Mixer.makeSoftTransition(lastSample._id, endSong._id);
   }
 
   console.log("CHOOSING transition: ");

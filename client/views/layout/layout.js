@@ -1,14 +1,29 @@
 Template.player.events({
 
-  'click #play': Mixer.play,
+  'click #play': function(e) {
+    Mixer.play();
+  },
 
-  'click #skip': Mixer.skip,
+  'click #skip': function(e) {
+    Mixer.skip();
+  },
 
-  'click #pause': Mixer.pause
+  'click #pause': function(e) {
+    Mixer.pause();
+  },
+
+  'click #pickTransition': function(e) {
+    Mixer.pickTransition();
+  },
+
+  'click #stop': function(e) {
+    Mixer.stop();
+  }
+
 });
 
 Template.songNav.events({
-  'keyup .song-search-query': function () {
+  'keyup .song-search-query': function (e) {
     // use modal query if there is one
     var query = Session.get("song_select_dialog") ?
       $(".modal .song-search-query").val() : $(".song-search-query").val();
@@ -17,7 +32,7 @@ Template.songNav.events({
 });
 
 Template.transitionNav.events({
-  'keyup .transition-search-query': function () {
+  'keyup .transition-search-query': function (e) {
     // use modal query if there is one
     var query = Session.get("transition_select_dialog") ?
       $(".modal .transition-search-query").val() : $(".transition-search-query").val();
