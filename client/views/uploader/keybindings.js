@@ -30,7 +30,7 @@ function addKeyBindings() {
     'right': eventHandlers['markEnd'],
     'down/shift+down': eventHandlers['back'],
     'up/shift+up': eventHandlers['forth']
-  });
+  }, '#uploaderPage');
 }
 
 //

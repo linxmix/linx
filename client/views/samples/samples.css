@@ -1,0 +1,19 @@
+.transition, .song {
+  font-size: 18px;
+  cursor: pointer;
+}
+
+.transitions, .songs {
+  margin: 0;
+}
+
+.selected {
+  font-size: 24px;
+  background-color: yellow;
+}
+
+.current {
+  font-size: 24px;
+  color: white;
+  background-color: blue;
+}

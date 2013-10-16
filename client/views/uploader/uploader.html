@@ -1,17 +1,19 @@
 <!-- Uploader Page -->
 <template name="uploaderPage">
+  <div id="uploaderPage">
 
-  {{> songSelectDialog}}
-  {{> transitionSelectDialog}}
-  {{> songInfoDialog}}
+    {{> songSelectDialog}}
+    {{> transitionSelectDialog}}
+    {{> songInfoDialog}}
 
-  <div class="row">
-    {{> uploaderWelcome}}
-    {{> uploaderControls}}
-  </div>
-  
-  {{> uploader}}
+    <div class="row">
+      {{> uploaderWelcome}}
+      {{> uploaderControls}}
+    </div>
     
+    {{> uploader}}
+    
+  </div>
 </template>
 
 <!-- Uploader -->
@@ -28,7 +30,7 @@
   <div class ="row wave" id="{{id}}">
     <div class="col-md-12 waveform">
       <!-- Here be waveform -->
-      <div class="loadText text-center lead">
+      <div class="loadText text-center">
         {{#if isSongWave}}
           {{> songLoadText}}
         {{else}}

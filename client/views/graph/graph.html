@@ -20,37 +20,3 @@
     {{/constant}}
   </div>
 </template>
-
-<!-- Songs -->
-<template name="songs">
-  <ul id="songs">
-    {{#each songs}}
-      {{> song}}
-    {{/each}}
-  </ul>
-</template>
-
-<template name="song">
-  <div class="song {{selected}} {{current}} well well-sm">
-    <span class="name">Song: {{name}}</span>
-    <br>
-    <span class="playCount"># Plays: {{playCount}}</span>
-  </div>
-</template>
-
-<!-- Transitions -->
-<template name="transitions">
-  <ul class="transitions">
-    {{#each transitions}}
-      {{> transition}}
-    {{/each}}
-  </ul>
-</template>
-
-<template name="transition">
-  <div class="transition {{selected}} {{current}} well well-sm">
-    <p class="startSong">startSong: {{startSongName}}</p>
-    <p class="endSong">endSong: {{endSongName}}</p>
-    <p class="playCount">playCount: {{playCount}}</p>
-  </div>
-</template>

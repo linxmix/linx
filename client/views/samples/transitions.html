@@ -1,0 +1,17 @@
+<!-- Transitions -->
+<template name="transitions">
+  <ul class="transitions">
+    {{#each transitions}}
+      {{> transition}}
+    {{/each}}
+  </ul>
+</template>
+
+<!-- Transition -->
+<template name="transition">
+  <div class="transition {{selected}} {{current}} well well-sm">
+    <p class="startSong">startSong: {{startSongName}}</p>
+    <p class="endSong">endSong: {{endSongName}}</p>
+    <p class="playCount">playCount: {{playCount}}</p>
+  </div>
+</template>

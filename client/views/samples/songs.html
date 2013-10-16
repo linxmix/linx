@@ -1,0 +1,17 @@
+<!-- Songs -->
+<template name="songs">
+  <ul class="songs">
+    {{#each songs}}
+      {{> song}}
+    {{/each}}
+  </ul>
+</template>
+
+<!-- Song -->
+<template name="song">
+  <div class="song {{selected}} {{current}} well well-sm">
+    <span class="name">Song: {{name}}</span>
+    <br>
+    <span class="playCount"># Plays: {{playCount}}</span>
+  </div>
+</template>

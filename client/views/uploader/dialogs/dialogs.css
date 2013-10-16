@@ -1,19 +1,18 @@
-.modal-lg {
-  width: 1000px;
-  margin-left: -500px;
-  height: 600px;
+.modal {
+  width: auto;
+  margin-left: 25%;
+  margin-right: 25%;
 }
 
-.modal-lg .modal-body {
-  max-height: 476px;
+.modal-body {
+  width: 100%;
+  max-height: 78.5%;
+}
+
+.modal-lg {
+  height: 700px;
 }
 
 .modal-sm {
-  width: 800px;
-  margin-left: -400px;
   height: 500px;
-}
-
-.modal-sm .body {
-  max-height: 450px;
 }
