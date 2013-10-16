@@ -1,53 +1,6 @@
 //
 // mouse events
 //
-Template.uploaderPage.events({
-
-  // TODO: move these into button click event handler
-
-  'click #loadSong': function (e) {
-    uploaderLoadSong(e);
-  },
-
-  'click #loadTransition': function (e) {
-    uploaderLoadTransition(e);
-  },
-
-  'click #submitSongInfo': function (e) {
-    var wave = Uploader.waves['modalWaveOpen'];
-    var serial = $('#songInfoDialog form').serializeArray();
-    var name = serial[0]['value'];
-    // hack to not accept empty names
-    if (!name) {
-      setTimeout(function () {
-        $('#songInfoDialog').modal('show');
-        Uploader.waves['modalWaveOpen'] = wave;
-      }, 1500);
-    }
-    wave.song = {
-      'type': 'song',
-      // TODO: make this based on given buffer's file name extension
-      'fileType': 'mp3',
-      'name': name,
-      'playCount': 0,
-      'volume': 0.8
-    };
-    $('.close').click(); // click is here so that close is triggered
-  },
-
-  'click .close': function (e) {
-    Session.set("song_select_dialog", false);
-    Session.set("transition_select_dialog", false);
-    $('#songSelectDialog').modal('hide');
-    $('#transitionSelectDialog').modal('hide');
-    $('#songInfoDialog').modal('hide');
-    setTimeout(function () {
-      Uploader.waves['modalWaveOpen'] = undefined;
-    }, 1000);
-  },
-
-});
-
 var mouseClickHeld = false;
 Template.wave.events({
 
@@ -171,7 +124,6 @@ uploaderLoadTransition = function (e) {
 //
 // zoom stuff
 //
-
 Template.wavePlayer.rendered = function () {
   var id = this.data.id;
 

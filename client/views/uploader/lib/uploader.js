@@ -191,6 +191,13 @@ Template.wave.rendered = function () {
       Uploader.waves['modalWaveOpen'] = Uploader.waves[id];
     }
 
+    // if transition has no sample, it must be new
+    // => so prompt the user to get the metadata
+    if (!wave.transition && (id === 'transitionWave')) {
+      $('#transitionInfoDialog').modal('show');
+      Uploader.waves['modalWaveOpen'] = Uploader.waves[id];
+    }
+
     // set volume and volume slider
     var sample = wave.song || wave.transition;
     if (sample && sample.volume) {

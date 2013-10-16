@@ -7,7 +7,7 @@ Template.uploaderPage.events({
     var action = e.target.dataset && e.target.dataset.action;
     // pass click to event handlers
     if (action && action in eventHandlers) {
-      eventHandlers[action](e, e.target.dataset.id);
+      handleEvent(e, action);
     }
   }
 
@@ -25,52 +25,55 @@ var keyBindingsInterval = Meteor.setInterval(function(){
 
 function addKeyBindings() {
   Meteor.Keybindings.add({
-    'space': eventHandlers['playPause'],
-    'left': eventHandlers['markStart'],
-    'right': eventHandlers['markEnd'],
-    'down/shift+down': eventHandlers['back'],
-    'up/shift+up': eventHandlers['forth']
-  }, '#uploaderPage');
+    'space': function (e) { handleEvent(e, 'playPause'); },
+    'left': function(e) { handleEvent(e, 'markStart'); },
+    'right': function(e) { handleEvent(e, 'markEnd'); },
+    'down/shift+down': function(e) { handleEvent(e, 'back'); },
+    'up/shift+up': function(e) { handleEvent(e, 'forth'); },
+  });
 }
 
 //
 // event handlers
 //
+
+function handleEvent(e, action) {
+  // make sure we are on uploader page and no modals are open
+  if ((Meteor.router.nav() === 'uploaderPage') &&
+    !(Uploader.waves['modalWaveOpen'])) {
+    // figure out the id of this wave
+    var id = (e.target && e.target.dataset && e.target.dataset.id) ||
+      Uploader.waves['lastWaveClicked'];
+    // call appropriate event handler
+    eventHandlers[action](e, id);
+  }
+}
+
 var eventHandlers = {
 
-  'playPause': function(e) {
-    var id = (e.target.dataset && e.target.dataset.id) ||
-      Uploader.waves['lastWaveClicked'];
-    if (!Uploader.waves['modalWaveOpen']) {
-      e.preventDefault();
-      var playingId =
-        Uploader.waves['playingWave'] && Uploader.waves['playingWave'].id;
-      if (playingId === id) {
-        // we want this to be a universal pause
-        Uploader.pause();
-      } else {
-        Uploader.playWave(id);
-      }
+  'playPause': function(e, id) {
+    e.preventDefault();
+    var playingId =
+      (Uploader.waves['playingWave'] && Uploader.waves['playingWave'].id);
+    if (playingId === id) {
+      // we want this to be a universal pause
+      Uploader.pause();
+    } else {
+      Uploader.playWave(id);
     }
   },
 
-  'markStart': function(e) {
-    var id = (e.target.dataset && e.target.dataset.id) ||
-      Uploader.waves['lastWaveClicked'];
+  'markStart': function(e, id) {
     e.preventDefault();
     Uploader.markWaveStart(Uploader.waves[id]);
   },
 
-  'markEnd': function(e) {
-    var id = (e.target.dataset && e.target.dataset.id) ||
-      Uploader.waves['lastWaveClicked'];
+  'markEnd': function(e, id) {
     e.preventDefault();
     Uploader.markWaveEnd(Uploader.waves[id]);
   },
 
-  'back': function(e) {
-    var id = (e.target.dataset && e.target.dataset.id) ||
-      Uploader.waves['lastWaveClicked'];
+  'back': function(e, id) {
     e.preventDefault();
     var dist = -0.005;
     if (e.shiftKey) {
@@ -79,9 +82,7 @@ var eventHandlers = {
     Uploader.waves[id].skip(dist);
   },
 
-  'forth': function(e) {
-    var id = (e.target.dataset && e.target.dataset.id) ||
-      Uploader.waves['lastWaveClicked'];
+  'forth': function(e, id) {
     e.preventDefault();
     var dist = 0.005;
     if (e.shiftKey) {
@@ -90,6 +91,7 @@ var eventHandlers = {
     Uploader.waves[id].skip(dist);
   },
 
+  // TODO: move this into uploader itself, it doesn't belong here!
   'upload': function(e) {
 
     // userId check
@@ -138,7 +140,8 @@ function uploadTransition(startWave, transitionWave, endWave) {
     // TODO: make this based on given buffer's file name extension
     'fileType': 'mp3',
     'startSong': startSong._id,
-    'endSong': endSong._id
+    'endSong': endSong._id,
+    'dj': transition.dj
   };
   // add transition to database and s3 server if doesnt already exist
   if (!transition._id) {
