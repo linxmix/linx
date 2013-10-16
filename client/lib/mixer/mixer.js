@@ -18,7 +18,7 @@ Mixer = {
   //
   // vars
   //
-  'local': true,
+  'local': false,
   'part': 'http://s3-us-west-2.amazonaws.com/beatfn.com/',
   'audioContext': audioContext,
 

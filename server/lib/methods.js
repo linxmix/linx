@@ -33,8 +33,16 @@ Meteor.methods({
       'Content-Type': 'audio/mp3'
     };
     var buffer = new Buffer(array);
-    s3Client.putBuffer(buffer, url, headers, function(err, res) {
+    var ret = s3Client.putBuffer(buffer, url, headers, function(err, res) {
       if (err) { return console.log(err); }
+      /*res.on('progress', function (e) {
+        console.log("PROGRESS");
+        console.log(e);
+      });
+      res.on('response', function(e) {
+        console.log("RESPONSE");
+        console.log(e);
+      });*/
       res.resume();
     });
   }

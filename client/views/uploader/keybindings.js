@@ -93,25 +93,37 @@ var eventHandlers = {
 
   // TODO: move this into uploader itself, it doesn't belong here!
   'upload': function(e) {
-
-    // userId check
-    if (!Meteor.userId()) {
-      return alert("Sorry, but you must be logged in to submit a transition!");
-    }
-
-    // validation check
-    // TODO: add marker checks to this validation!
-    // TODO: also check file types, volumes, and song metadata
-    //for (var waveId in waves) {
-    //  if (!waves[waveId].backend.buffer) {
-    //    return alert("All three waves must be loaded and marked before submitting.");
-    //  }
-    //}
-
-    // update volumes
     var startWave = Uploader.waves['startWave'];
     var transitionWave = Uploader.waves['transitionWave'];
     var endWave = Uploader.waves['endWave'];
+
+    //
+    // validation check
+    // 
+    if (!Meteor.userId()) {
+      return alert("Sorry, but you must be logged in to submit a transition!");
+    }
+    var valid = true;
+    // check buffers are loaded
+    if (!(startWave.backend.buffer &&
+      transitionWave.backend.buffer &&
+      endWave.backend.buffer)) {
+      valid = false;
+    // check markers are present
+    } else if (!(startWave.markers['end'] &&
+      transitionWave.markers['start'] &&
+      transitionWave.markers['end'] &&
+      endWave.markers['start'])) {
+      valid = false;
+    }
+    if (!valid) {
+      return alert("All three waves must be loaded and marked before submission.");
+    }
+    //
+    // /validation
+    //
+
+    // update volumes
     startWave.song.volume = $('#startWave .volumeSlider').data('slider').getValue();
     endWave.song.volume = $('#endWave .volumeSlider').data('slider').getValue();
 
@@ -141,7 +153,7 @@ function uploadTransition(startWave, transitionWave, endWave) {
     'fileType': 'mp3',
     'startSong': startSong._id,
     'endSong': endSong._id,
-    'dj': transition.dj
+    'dj': transitionWave.dj
   };
   // add transition to database and s3 server if doesnt already exist
   if (!transition._id) {
