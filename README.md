@@ -1,4 +1,4 @@
-#beatfn
+#Linx
 
 ####A music player that plays like a dj mix.
 ======
