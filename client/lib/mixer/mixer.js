@@ -130,15 +130,16 @@ Mixer = {
     }
   },
 
-  'getSampleUrl': function(sample) {
-
+  'getSampleUrl': function(sample, local) {
+    var part = Mixer.part;
+    if (local || Mixer.local) part = "";
     if (sample.type === 'song') {
-      var ret = getSongUrl(sample);
+      var ret = getSongUrl(sample, part);
       console.log("getSampleUrl returning: "+ret);
       return ret;
     }
     else if (sample.type === 'transition') {
-      var ret = getTransitionUrl(sample);
+      var ret = getTransitionUrl(sample, part);
       console.log("getSampleUrl returning: "+ret);
       return ret;
     }
@@ -557,15 +558,11 @@ function playWave() {
   }
 }
 
-function getSongUrl(song) {
-  var part = Mixer.part;
-  if (Mixer.local) part = "";
+function getSongUrl(song, part) {
   return part + 'songs/' + song.name + '.' + song.fileType;
 }
 
-function getTransitionUrl(transition) {
-  var part = Mixer.part;
-  if (Mixer.local) part = "";
+function getTransitionUrl(transition, part) {
   return part + 'transitions/' +
     Songs.findOne(transition.startSong).name + '-' +
     Songs.findOne(transition.endSong).name + '.' + transition.fileType;
