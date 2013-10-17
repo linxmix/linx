@@ -175,8 +175,33 @@ Mixer = {
       }
     }
     return console.log("ERROR: found no valid transitions for: "+song.name);
-  }
+  },
 
+  // print all sample urls not present on s3 server
+  'checkExistingSamples': function(coll, prefix) {
+    var samples = coll.find().fetch();
+    Meteor.call('getList', prefix, function(err, data) {
+      if (err) { return console.log(err); }
+      var urlList = data.Contents.map(function (listItem) {
+        return listItem.Key;
+      });
+
+      // function to check to see if value exists in array
+      function isInArray(value, array) {
+        return array.indexOf(value) > -1 ? true : false;
+      }
+
+      // remove samples that are not on server
+      samples.filter(function (sample) {
+        var url = Mixer.getSampleUrl(sample, true);
+        var bool = isInArray(url, urlList);
+        if (!bool) {
+          console.log("s3 is missing sample: "+url);
+        }
+        return bool;
+      });
+    });
+  }
 };
 
 //

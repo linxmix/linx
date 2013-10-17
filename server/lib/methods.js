@@ -1,7 +1,11 @@
+Meteor.startup(function () {
+ Future = Npm.require('fibers/future');
+});
+
 //
 // s3 stuff
 //
-var s3Client = Knox.createClient({
+s3Client = Knox.createClient({
   region: 'us-west-2', // NOTE: this must be changed when the bucket goes US-Standard!
   key: 'AKIAIYJQCD622ZS3OMLA',
   secret: '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',
@@ -22,6 +26,16 @@ Meteor.methods({
       console.log("Getting File Externally: "+path);
       return s3Client.http(path);
     }
+  },
+
+  // TODO: will max-keys be an issue? check knox list api for reference
+  getList: function(prefix) {
+    var fut = new Future();
+    s3Client.list({ 'prefix': prefix}, function (err, data) {
+      if (err) { return err; }
+      fut['return'](data);
+    });
+    return fut.wait();
   },
 
   putArray: function (array, url) {

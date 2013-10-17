@@ -97,43 +97,85 @@ var eventHandlers = {
     var transitionWave = Uploader.waves['transitionWave'];
     var endWave = Uploader.waves['endWave'];
 
-    //
-    // validation check
-    // 
-    if (!Meteor.userId()) {
-      return alert("Sorry, but you must be logged in to submit a transition!");
-    }
-    var valid = true;
-    // check buffers are loaded
-    if (!(startWave.backend.buffer &&
-      transitionWave.backend.buffer &&
-      endWave.backend.buffer)) {
-      valid = false;
-    // check markers are present
-    } else if (!(startWave.markers['end'] &&
-      transitionWave.markers['start'] &&
-      transitionWave.markers['end'] &&
-      endWave.markers['start'])) {
-      valid = false;
-    }
-    if (!valid) {
-      return alert("All three waves must be loaded and marked before submission.");
-    }
-    //
-    // /validation
-    //
+    // make sure this transition is valid before uploading
+    validateUpload(startWave, transitionWave, endWave, function () {
 
-    // update volumes
-    startWave.song.volume = $('#startWave .volumeSlider').data('slider').getValue();
-    endWave.song.volume = $('#endWave .volumeSlider').data('slider').getValue();
+      // update volumes
+      startWave.song.volume = $('#startWave .volumeSlider').data('slider').getValue();
+      endWave.song.volume = $('#endWave .volumeSlider').data('slider').getValue();
 
-    // upload samples
-    uploadSong(startWave);
-    uploadSong(endWave);
-    uploadTransition(startWave, transitionWave, endWave);
-    alert("Transition successfully uploaded!");
+      // upload samples
+      uploadSong(startWave);
+      uploadSong(endWave);
+      uploadTransition(startWave, transitionWave, endWave);
+      alert("Transition successfully uploaded!");
+    });
   }
 };
+
+function validateUpload(startWave, transitionWave, endWave, callback) {
+
+  //
+  // validation check
+  // 
+  // check user is logged in
+  if (!Meteor.userId()) {
+    return alert("Sorry, but you must be logged in to submit a transition!");
+  }
+  var validWaves = true;
+  // check buffers are loaded
+  if (!(startWave.backend.buffer &&
+    transitionWave.backend.buffer &&
+    endWave.backend.buffer)) {
+    validWaves = false;
+  // check markers are present
+  } else if (!(startWave.markers['end'] &&
+    transitionWave.markers['start'] &&
+    transitionWave.markers['end'] &&
+    endWave.markers['start'])) {
+    validWaves = false;
+  }
+  if (!validWaves) {
+    return alert("All three waves must be loaded and marked before submission.");
+  }
+  //
+  // /validation
+  //
+
+  // finally, make sure songs don't already exist on s3
+ /* Meteor.call('getList', 'songs/', function (err, data) {
+    if (err) { return console.log(err); }
+    var startUrl = Mixer.getSampleUrl(startWave.song, true);
+    var endUrl = Mixer.getSampleUrl(endWave.song, true);
+    var urlList = data.Contents.map(function (listItem) {
+      return listItem.Key;
+    });
+
+    // function to check to see if value exists in array
+    function isInArray(value, array) {
+      return array.indexOf(value) > -1 ? true : false;
+    }
+
+    var alertStart = 'Hmmm... this ';
+    var alertMiddle;
+    var alertEnd = ' already exists on our cloud server! Please let Daniel (wolfbiter@gmail.com) know what you were uploading so he can help you sort out this issue!';
+    if (!startWave.song._id && isInArray(startUrl, urlList)) {
+      alertMiddle = "starting song";
+    }
+    else if (!endWave.song._id && isInArray(endUrl, urlList)) {
+      alertMiddle = "ending song";
+    }
+
+    if (alertMiddle) {
+      return alert(alertStart + alertMiddle + alertEnd);
+    } else {
+      return callback();
+    }
+
+  });*/
+  return callback();
+
+}
 
 function uploadTransition(startWave, transitionWave, endWave) {
   var startSongEnd = startWave.markers['end'].position;
@@ -196,5 +238,5 @@ function uploadWave(wave) {
   var url = Mixer.getSampleUrl(sample, true);
   console.log("uploading wave to url: "+url);
   console.log(wave);
-  Meteor.call('putArray', wave.array, url);
+  //Meteor.call('putArray', wave.array, url);
 }
