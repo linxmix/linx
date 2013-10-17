@@ -238,5 +238,5 @@ function uploadWave(wave) {
   var url = Mixer.getSampleUrl(sample, true);
   console.log("uploading wave to url: "+url);
   console.log(wave);
-  //Meteor.call('putArray', wave.array, url);
+  Meteor.call('putArray', wave.array, url);
 }
