@@ -146,7 +146,7 @@ function uploadTransition(startWave, transitionWave, endWave) {
   var endSong = Songs.findOne({ 'name': endWave.song.name });
 
   // get transition metadata, or make if wave doesn't have it
-  var transition = transitionWave.transition || {
+  var transition = transitionWave.transition = transitionWave.transition || {
     'type': 'transition',
     'transitionType': 'active',
     // TODO: make this based on given buffer's file name extension
@@ -159,8 +159,7 @@ function uploadTransition(startWave, transitionWave, endWave) {
   if (!transition._id) {
     transition._id = Transitions.insert(transition);
     // upload transition to s3 server
-    var url = Mixer.getSampleUrl(transition);
-    uploadWave(transitionWave, url);
+    uploadWave(transitionWave);
   }
   // update transition with timings and volume
   Transitions.update({ '_id': transition._id }, { $set:
@@ -180,8 +179,7 @@ function uploadSong(wave) {
   if (!song._id) {
     song._id = Songs.insert(song);
     // upload song to s3 server
-    var url = Mixer.getSampleUrl(wave.song);
-    uploadWave(wave, url);
+    uploadWave(wave);
   }
   // otherwise, just update song volume
   else {
@@ -192,8 +190,10 @@ function uploadSong(wave) {
   }
 }
 
-// uploads buffer of given wave to given s3 url
-function uploadWave(wave, url) {
+// uploads buffer of given wave to s3
+function uploadWave(wave) {
+  var sample = wave.song || wave.transition;
+  var url = Mixer.getSampleUrl(sample, true);
   console.log("uploading wave to url: "+url);
   console.log(wave);
   Meteor.call('putArray', wave.array, url);

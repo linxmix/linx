@@ -18,7 +18,7 @@ Mixer = {
   //
   // vars
   //
-  'local': true,
+  'local': false,
   'part': 'http://s3-us-west-2.amazonaws.com/beatfn.com/',
   'audioContext': audioContext,
 
@@ -85,7 +85,7 @@ Mixer = {
     var queue = Session.get("queue");
 
     switch (type) {
-      case undefined: return queue;
+      case undefined: case 'sample': return queue;
       case 'wave': return queuedWaves;
       default: // filter by given type
       {
