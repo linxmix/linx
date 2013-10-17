@@ -1,15 +1,11 @@
 Template.player.events({
 
-  'click #play': function(e) {
-    Mixer.play();
+  'click #playPause': function(e) {
+    Mixer.playPause();
   },
 
   'click #skip': function(e) {
     Mixer.skip();
-  },
-
-  'click #pause': function(e) {
-    Mixer.pause();
   },
 
   'click #pickTransition': function(e) {

@@ -36,12 +36,20 @@ Mixer = {
     Session.set("mixer_playing", true);
   },
 
-  'skip': function() {
-    cycleQueue();
-  },
-
   'pause': function() {
     Session.set("mixer_playing", false);
+  },
+
+  'playPause': function(sample) {
+    if (Session.get("mixer_playing")) {
+      Mixer.pause();
+    } else {
+      Mixer.play(sample);
+    }
+  },
+
+  'skip': function() {
+    cycleQueue();
   },
 
   'stop': function() {
