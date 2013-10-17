@@ -62,8 +62,13 @@ Mixer = {
 
   'clearQueue': function() {
     var queue = Mixer.getQueue();
-    queue.splice(1, queue.length);
-    queuedWaves.splice(1, queuedWaves.length);
+    var index = 1;
+    // if queue head is a transition, retain the endSong
+    if ((queue[0] && queue[0].type) === 'transition') {
+      index++;
+    }
+    queue.splice(index, queue.length);
+    queuedWaves.splice(index, queuedWaves.length);
     Session.set("queue", queue);
   },
 
@@ -71,7 +76,8 @@ Mixer = {
 
   // NOTE: position is in seconds, progress is in percent
   'getCurrentPosition': function() {
-    return (queuedWaves[0] && getWavePosition(queuedWaves[0])) || 0;
+    var wave = Mixer.getQueue('wave')[0];
+    return (wave && getWavePosition(wave)) || 0;
   },
 
   // sifts through the queue to return only samples of type, or everything
@@ -91,6 +97,14 @@ Mixer = {
             newQueue.push(sample);
           }
         }
+
+        // special case to make sure to include currTransition's startSong
+        var curr = Mixer.getQueue()[0];
+        if ((type === 'song') &&
+          ((curr && curr['type']) === 'transition')) {
+          newQueue.unshift(Songs.findOne(curr.startSong));
+        }
+
         return newQueue;
       }
     }
@@ -328,8 +342,8 @@ function loadSample(index) {
 
     // and that sample is this one, update sample and wave scheduling, then continue
     if (currSample_id === sample._id) {
-      queuedWaves[0].sample = sample;
-      setWaveEndMark(queuedWaves[0]);
+      Mixer.getQueue('wave')[0].sample = sample;
+      setWaveEndMark(Mixer.getQueue('wave')[0]);
       // load next transition if this is not the last
       if (++index < queue.length) {
         return loadSample(index);
@@ -489,7 +503,7 @@ function setWaveEndMark(wave) {
 }
 
 function currentProgress() {
-  var wave = queuedWaves[0];
+  var wave = Mixer.getQueue('wave')[0];
   return (wave &&
     (getWavePosition(wave) / getWaveDuration(wave)));
 }
@@ -530,7 +544,7 @@ function assertPlayStatus() {
 }
 
 function pauseWave() {
-  var currWave = queuedWaves[0];
+  var currWave = Mixer.getQueue('wave')[0];
   // if currWave and currWave is not a soft transition, pause it
   if (currWave && (currWave.sample.transitionType !== 'soft')) {
     currWave.pause();
@@ -538,7 +552,7 @@ function pauseWave() {
 }
 
 function playWave() {
-  var wave = queuedWaves[0];
+  var wave = Mixer.getQueue('wave')[0];
   if (wave) {
 
     // if this is a dummy 'soft' transition wave, cycle now
