@@ -253,6 +253,7 @@ Uploader = {
     if (typeof wave !== 'object') { wave = Uploader.waves[wave]; }
     Uploader.pause();
     if (wave && wave.backend.buffer) {
+      Uploader.waves['focus'] = wave.id;
       Uploader.waves['playingWave'] = wave;
       wave.play();
     }

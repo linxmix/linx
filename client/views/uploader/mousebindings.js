@@ -40,11 +40,11 @@ Template.wave.events({
   },
 
   'click .waveform': function (e) {
-    Uploader.waves['lastWaveClicked'] = this.id;
+    Uploader.waves['focus'] = this.id;
   },
 
   'click .wavePlayer': function (e) {
-    Uploader.waves['lastWaveClicked'] = this.id;
+    Uploader.waves['focus'] = this.id;
   },
 
   //

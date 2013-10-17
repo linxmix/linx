@@ -43,7 +43,7 @@ function handleEvent(e, action) {
     !(Uploader.waves['modalWaveOpen'])) {
     // figure out the id of this wave
     var id = (e.target && e.target.dataset && e.target.dataset.id) ||
-      Uploader.waves['lastWaveClicked'];
+      Uploader.waves['focus'];
     // call appropriate event handler
     eventHandlers[action](e, id);
   }
