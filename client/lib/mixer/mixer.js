@@ -19,7 +19,7 @@ Mixer = {
   // vars
   //
   'local': false,
-  'part': 'http://s3-us-west-2.amazonaws.com/beatfn.com/',
+  'part': 'http://s3-us-west-2.amazonaws.com/linx-music/',
   'audioContext': audioContext,
 
   //
@@ -148,12 +148,12 @@ Mixer = {
     var part = Mixer.part;
     if (local || Mixer.local) part = "";
     if (sample.type === 'song') {
-      var ret = getSongUrl(sample, part);
+      var ret = getSongUrl(sample, part).replace(' ', '_');
       console.log("getSampleUrl returning: "+ret);
       return ret;
     }
     else if (sample.type === 'transition') {
-      var ret = getTransitionUrl(sample, part);
+      var ret = getTransitionUrl(sample, part).replace(' ', '_');
       console.log("getSampleUrl returning: "+ret);
       return ret;
     }

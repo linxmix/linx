@@ -9,7 +9,7 @@ s3Client = Knox.createClient({
   region: 'us-west-2', // NOTE: this must be changed when the bucket goes US-Standard!
   key: 'AKIAIYJQCD622ZS3OMLA',
   secret: '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',
-  bucket: 'linx-music'
+  bucket: 'linx-music',
 });
 
 //
@@ -70,14 +70,11 @@ function putArray(array, url, attempt) {
   var ret = s3Client.putBuffer(buffer, url, headers,
     Meteor.bindEnvironment(function(err, res) {
 
-    // on error, reattempt after 1 second
+    // on error, reattempt
     if (err) { return console.log(err); }
     ret.on('error', Meteor.bindEnvironment(function(error) {
       console.log(error);
-      Meteor.setTimeout(function() {
-        putArray(array, url, attempt++);
-      }, 1000);
-
+      putArray(array, url, ++attempt);
     }, function () { console.log('Failed to bind environment'); }));
     res.resume();
   }, function () { console.log('Failed to bind environment'); }));
