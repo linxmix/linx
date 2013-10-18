@@ -9,7 +9,7 @@ s3Client = Knox.createClient({
   region: 'us-west-2', // NOTE: this must be changed when the bucket goes US-Standard!
   key: 'AKIAIYJQCD622ZS3OMLA',
   secret: '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',
-  bucket: 'beatfn.com'
+  bucket: 'linx-music'
 });
 
 //
@@ -38,31 +38,56 @@ Meteor.methods({
     return fut.wait();
   },
 
-  putArray: function (array, url) {
-    // access control
-    if (!Meteor.userId()) {
-      return console.log("ERROR: will not put to s3 if user is not logged in");
-    }
-    var headers = {
-      'Content-Type': 'audio/mp3',
-      'x-amz-acl': 'public-read'
-    };
-    var buffer = new Buffer(array);
-    console.log("PUTTING TO URL: "+url);
-    var ret = s3Client.putBuffer(buffer, url, headers, function(err, res) {
-      if (err) { return console.log(err); }
-      ret.on('progress', function (e) {
-        console.log("PROGRESS");
-        console.log(e);
-      });
-      ret.on('response', function(e) {
-        console.log("RESPONSE");
-        console.log(e);
-      });
-      res.on('error', function(error) {
-        console.log(error);
-      });
-      res.resume();
-    });
+  'putArray': function (array, url) {
+    putArray(array, url, 0);
   }
+
 });
+
+function putArray(array, url, attempt) {
+
+  // give up after 3 attempts, and log that we failed
+  if (attempt >= 3) {
+    return console.log("ERROR: failed 3 times, giving up on PUT");
+  }
+
+  // access control
+  if (!Meteor.userId()) {
+    return console.log("ERROR: will not put to s3 if user is not logged in");
+  }
+
+  // set headers
+  var headers = {
+    'Content-Type': 'audio/mp3',
+    'x-amz-acl': 'public-read',
+    'x-amz-storage-class': 'REDUCED_REDUNDANCY'
+  };
+
+  // make buffer and http request
+  var buffer = new Buffer(array);
+  console.log("PUTTING TO URL: "+url);
+  var ret = s3Client.putBuffer(buffer, url, headers,
+    Meteor.bindEnvironment(function(err, res) {
+
+    // on error, reattempt after 1 second
+    if (err) { return console.log(err); }
+    ret.on('error', Meteor.bindEnvironment(function(error) {
+      console.log(error);
+      Meteor.setTimeout(function() {
+        putArray(array, url, attempt++);
+      }, 1000);
+
+    }, function () { console.log('Failed to bind environment'); }));
+    res.resume();
+  }, function () { console.log('Failed to bind environment'); }));
+}
+
+
+      //ret.on('progress', function (e) {
+      //  console.log("PROGRESS");
+      //  console.log(e);
+      //});
+      //ret.on('response', function(e) {
+      //  console.log("RESPONSE");
+      //  console.log(e);
+      //});
