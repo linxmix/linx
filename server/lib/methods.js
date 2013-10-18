@@ -44,7 +44,8 @@ Meteor.methods({
       return console.log("ERROR: will not put to s3 if user is not logged in");
     }
     var headers = {
-      'Content-Type': 'audio/mp3'
+      'Content-Type': 'audio/mp3',
+      'x-amz-acl': 'public-read'
     };
     var buffer = new Buffer(array);
     var ret = s3Client.putBuffer(buffer, url, headers, function(err, res) {
