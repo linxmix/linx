@@ -48,16 +48,20 @@ Meteor.methods({
       'x-amz-acl': 'public-read'
     };
     var buffer = new Buffer(array);
+    console.log("PUTTING TO URL: "+url);
     var ret = s3Client.putBuffer(buffer, url, headers, function(err, res) {
       if (err) { return console.log(err); }
-      /*res.on('progress', function (e) {
+      ret.on('progress', function (e) {
         console.log("PROGRESS");
         console.log(e);
       });
-      res.on('response', function(e) {
+      ret.on('response', function(e) {
         console.log("RESPONSE");
         console.log(e);
-      });*/
+      });
+      res.on('error', function(error) {
+        console.log(error);
+      });
       res.resume();
     });
   }
