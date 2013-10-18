@@ -8,7 +8,12 @@
   padding: 0;
 }
 
-.waveform.wavesurfer-dragover, .loadText:hover {
+.wavesurfer-dragover {
+  color: #fff;
+  background-color: #330000;
+}
+
+.loadText:hover {
   color: #fff;
   background-color: #555;
   border-color: #000;

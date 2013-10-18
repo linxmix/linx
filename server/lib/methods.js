@@ -44,6 +44,7 @@ Meteor.methods({
 
 });
 
+// put given array to the s3 server at given url
 function putArray(array, url, attempt) {
 
   // give up after 3 attempts, and log that we failed
