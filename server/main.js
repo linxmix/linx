@@ -17,14 +17,13 @@ Meteor.startup(function () {
   //
   // database stuff
   //
-  Songs.remove({});
-  Transitions.remove({});
-
+  console.log("Transition Count: "+Transitions.find().count());
+  console.log("Song Count: "+Songs.find().count());
   var transitions = [], songs = {};
 
   if (Transitions.find().count() === 0) {
 
-    // inital transitions TODO make this not hardcoded... use mixxx's db?
+    // inital transitions
     transitions = [
     {
       startSong: "reach for me",
@@ -1070,8 +1069,6 @@ Meteor.startup(function () {
         { multi: true });
     });
 
-    console.log("Transition Count: "+Transitions.find().count());
-    console.log("Song Count: "+Songs.find().count());
   }
 
 });

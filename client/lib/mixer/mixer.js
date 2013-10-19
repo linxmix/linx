@@ -154,7 +154,7 @@ Mixer = {
       ret = getTransitionUrl(sample, part);
     }
     // replace whitespace with underscore so s3 accepts it
-    //ret = ret.replace(/\s/g, '_');
+    ret = ret.replace(/\s/g, '_');
     console.log("getSampleUrl returning: "+ret);
     return ret;
   },
