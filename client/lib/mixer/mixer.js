@@ -145,18 +145,16 @@ Mixer = {
   },
 
   'getSampleUrl': function(sample, local) {
-    var part = Mixer.part;
+    var part = Mixer.part, ret;
     if (local || Mixer.local) part = "";
     if (sample.type === 'song') {
-      var ret = getSongUrl(sample, part).replace(' ', '_');
-      console.log("getSampleUrl returning: "+ret);
-      return ret;
+      ret = getSongUrl(sample, part);
     }
     else if (sample.type === 'transition') {
-      var ret = getTransitionUrl(sample, part).replace(' ', '_');
-      console.log("getSampleUrl returning: "+ret);
-      return ret;
+      ret = getTransitionUrl(sample, part);
     }
+    ret.replaceAll(' ', '_');
+    console.log("getSampleUrl returning: "+ret);
   },
 
   // returns a valid transition to song such that the queue
