@@ -153,8 +153,10 @@ Mixer = {
     else if (sample.type === 'transition') {
       ret = getTransitionUrl(sample, part);
     }
-    ret.replaceAll(' ', '_');
+    // replace whitespace with underscore so s3 accepts it
+    //ret = ret.replace(/\s/g, '_');
     console.log("getSampleUrl returning: "+ret);
+    return ret;
   },
 
   // returns a valid transition to song such that the queue

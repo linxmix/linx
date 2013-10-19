@@ -17,7 +17,7 @@ s3Client = Knox.createClient({
 //
 Meteor.methods({
 
-  getFileUrl: function (path) {
+  'getFileUrl': exceptionWrapper(function (path) {
     var local = true;
     if (local) {
       console.log("Serving File Locally: "+path);
@@ -26,36 +26,38 @@ Meteor.methods({
       console.log("Getting File Externally: "+path);
       return s3Client.http(path);
     }
-  },
+  }),
 
   // TODO: will max-keys be an issue? check knox list api for reference
-  getList: function(prefix) {
+  'getList': exceptionWrapper(function(prefix) {
     var fut = new Future();
     s3Client.list({ 'prefix': prefix}, function (err, data) {
       if (err) { return err; }
       fut['return'](data);
     });
     return fut.wait();
-  },
+  }),
 
-  'putArray': function (array, url) {
+  'putArray': exceptionWrapper(function (array, url) {
     putArray(array, url, 0);
-  }
+  }),
 
 });
 
+// wrap function in try/catch so that server won't reset on error
+function exceptionWrapper(func, extra) {
+  return function() {
+    try {
+      return func.apply(this, arguments);
+    } catch (e) {
+      console.log("SERVER ERROR CAUGHT!");
+      console.log(e);
+    }
+  };
+}
+
 // put given array to the s3 server at given url
 function putArray(array, url, attempt) {
-
-  // give up after 3 attempts, and log that we failed
-  if (attempt >= 3) {
-    return console.log("ERROR: failed 3 times, giving up on PUT");
-  }
-
-  // access control
-  if (!Meteor.userId()) {
-    return console.log("ERROR: will not put to s3 if user is not logged in");
-  }
 
   // set headers
   var headers = {
@@ -67,15 +69,32 @@ function putArray(array, url, attempt) {
   // make buffer and http request
   var buffer = new Buffer(array);
   console.log("PUTTING TO URL: "+url);
+
+  // error handler
+  function handleError(error) {
+    // reattempt on error if less than 3 attempts
+    if (attempt < 3) {
+      console.log(error);
+      putArray(array, url, ++attempt);
+    } else {
+      console.log("ERROR: failed putArray 3 times for url: "+url+"; giving up on PUT");
+      throw error;
+    }
+  }
+
+  // put buffer
   var ret = s3Client.putBuffer(buffer, url, headers,
     Meteor.bindEnvironment(function(err, res) {
 
-    // on error, reattempt
-    if (err) { return console.log(err); }
-    ret.on('error', Meteor.bindEnvironment(function(error) {
-      console.log(error);
-      putArray(array, url, ++attempt);
-    }, function () { console.log('Failed to bind environment'); }));
+    if (err) { console.log(err); }
+    // handle errors
+    ret.on('error',
+      Meteor.bindEnvironment(
+        function (error) { handleError(error); },
+        function () { console.log('Failed to bind environment'); }
+      )
+    );
+
     res.resume();
   }, function () { console.log('Failed to bind environment'); }));
 }
