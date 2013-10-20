@@ -18,7 +18,7 @@ Mixer = {
   //
   // vars
   //
-  'local': true,
+  'local': false,
   'part': 'http://s3-us-west-2.amazonaws.com/linx-music/',
   'audioContext': audioContext,
 
@@ -29,8 +29,10 @@ Mixer = {
   'play': function(sample) {
     // if given a sample, place it at start of queue and pick a first transition
     if (sample) {
-      Mixer.queue(sample, 0);
-      pickTransition();
+      // if sample was queued successfully, pick a first transition
+      if (Mixer.queue(sample, 0)) {
+        pickTransition();
+      }
     }
     // update play status
     Session.set("mixer_playing", true);
@@ -131,16 +133,20 @@ Mixer = {
     };
   },
 
-  // adds given sample to the queue
+  // adds given sample to the queue. returns true if successful, or undefined
   'queue': function(sample, index, startTime, endTime) {
+    if (!Meteor.userId()) {
+      return alert("Sorry, but you cannot stream music unless you're logged into an account that owns it. If you'd like to help test this app, contact wolfbiter@gmail.com.");
+    }
+
     if (!sample) {
       return console.log("WARNING: Mixer.queue called without a sample");
     }
     else if (sample.type === 'song') {
-      queueSong(sample, index, startTime, endTime);
+      return queueSong(sample, index, startTime, endTime);
     }
     else if (sample.type === 'transition') {
-      queueTransition(sample, index, startTime, endTime);
+      return queueTransition(sample, index, startTime, endTime);
     }
   },
 
@@ -225,7 +231,7 @@ function queueSong(song, index, startTime, endTime) {
 
   // otherwise, queue this song
   } else {
-    addToQueue(song, startTime, endTime, index);
+    return addToQueue(song, startTime, endTime, index);
   }
 }
 
@@ -259,7 +265,7 @@ function queueTransition(transition, index, startTime, endTime) {
     addToQueue(transition, transition.startTime, transition.endTime, index++);
 
     // queue endSong
-    queueSong(transition.endSong, index++, transition.endSongStart);
+    return queueSong(transition.endSong, index++, transition.endSongStart);
 
   } else {
     return console.log("ERROR: Invalid Transition given to queueTransition");
@@ -280,6 +286,7 @@ function addToQueue(sample, startTime, endTime, index) {
   queue.splice(index, chopIndex, sample);
   queuedWaves.splice(index, chopIndex);
   Session.set("queue", queue);
+  return true;
 }
 
 function isValidTransition(prevSample, transition, debug) {
@@ -466,12 +473,7 @@ function makeWave(sample, callback) {
 
   // load url
   // TODO: make this a progress bar
-  // access control TODO: move this
-  if (Mixer.local || Meteor.userId()) {
-    wave.load(Mixer.getSampleUrl(sample));
-  } else {
-    return alert("Sorry, but you cannot stream music unless you're logged into an account that owns it. If you'd like to help test this app, contact wolfbiter@gmail.com.");
-  }
+  wave.load(Mixer.getSampleUrl(sample));
 
   // cancel if loadingWave changes out from under us
   wave.on('loading', function (percent, xhr) {
