@@ -187,15 +187,13 @@ Template.wave.rendered = function () {
     // if wave has no song, it must been drag and drop
     // => so prompt the user to get the metadata
     if (!wave.hasMetadata && (id !== 'transitionWave')) {
-      $('#songInfoDialog').modal('show');
-      Uploader.waves['modalWaveOpen'] = Uploader.waves[id];
+      Uploader.openDialog($('#songInfoDialog'), "song_info", id);
     }
 
     // if transition has no sample, it must be new
     // => so prompt the user to get the metadata
     if (!wave.hasMetadata && (id === 'transitionWave')) {
-      $('#transitionInfoDialog').modal('show');
-      Uploader.waves['modalWaveOpen'] = Uploader.waves[id];
+      Uploader.openDialog($('#transitionInfoDialog'), "transition_info", id);
     }
 
     // reset hasMetadata in case new file is loaded after this
@@ -235,6 +233,13 @@ Uploader = {
   //
   // methods
   //
+
+  'openDialog': function(selector, name, id) {
+    $(selector.find('form'))[0].reset(); // reset dialog's form
+    Session.set("open_dialog", name);
+    selector.modal('show');
+    Uploader.waves['modalWaveOpen'] = Uploader.waves[id];
+  },
 
   // position is in seconds
   'getWavePosition': function(wave) {

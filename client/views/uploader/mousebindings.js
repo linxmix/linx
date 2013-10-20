@@ -26,17 +26,13 @@ Template.wave.events({
   // area clicks
   //
   'click .songLoadText': function (e) {
-    Session.set("song_select_dialog", true);
     Session.set("song_search_query", "");
-    $('#songSelectDialog').modal('show');
-    Uploader.waves['modalWaveOpen'] = Uploader.waves[this.id];
+    Uploader.openDialog($('#songSelectDialog'), "song_select", this.id);
   },
 
   'click .transitionLoadText': function (e) {
-    Session.set("transition_select_dialog", true);
     Session.set("transition_search_query", "");
-    $('#transitionSelectDialog').modal('show');
-    Uploader.waves['modalWaveOpen'] = Uploader.waves[this.id];
+    Uploader.openDialog($('#transitionSelectDialog'), "transition_select", this.id);
   },
 
   'click .waveform': function (e) {
@@ -73,57 +69,6 @@ Template.wave.events({
   },
 
 });
-
-// TODO: fix these global hacks, it exists so double click on song can load that song
-uploaderLoadSong = function (e) {
-  var wave = Uploader.waves['modalWaveOpen'];
-  $('.close').click(); // click is here so double click on song will close modal
-  var song = Songs.findOne(Session.get("selected_song"));
-
-  if (wave && song) {
-    wave.song = song;
-    wave.hasMetadata = true;
-    wave.load(Mixer.getSampleUrl(song));
-  }
-};
-
-uploaderLoadTransition = function (e) {
-  var transitionWave = Uploader.waves['modalWaveOpen'];
-  $('.close').click(); // click is here so double click on transition will close modal
-  var transition = Transitions.findOne(Session.get("selected_transition"));
-
-  if (transitionWave && transition) {
-    // load transition
-    transitionWave.transition = transition;
-    transitionWave.hasMetadata = true;
-    transitionWave.load(Mixer.getSampleUrl(transition));
-    // load startWave
-    var startSong = Songs.findOne(transition.startSong);
-    var startWave = Uploader.waves['startWave'];
-    startWave.song = startSong;
-    startWave.hasMetadata = true;
-    startWave.load(Mixer.getSampleUrl(startSong));
-    // load endWave
-    var endSong = Songs.findOne(transition.endSong);
-    var endWave = Uploader.waves['endWave'];
-    endWave.song = endSong;
-    endWave.hasMetadata = true;
-    endWave.load(Mixer.getSampleUrl(endSong));
-    // mark waves
-    startWave.on('ready', function () {
-      Uploader.markWaveEnd(startWave, transition.startSongEnd);
-    });
-    transitionWave.on('ready', function () {
-      var startTime = transition.startTime || 0;
-      var endTime = transition.endTime || Uploader.getWaveDuration(transitionWave);
-      Uploader.markWaveStart(transitionWave, startTime);
-      Uploader.markWaveEnd(transitionWave, endTime);
-    });
-    endWave.on('ready', function () {
-      Uploader.markWaveStart(endWave, transition.endSongStart);
-    });
-  }
-};
 
 //
 // zoom stuff

@@ -18,7 +18,7 @@ Mixer = {
   //
   // vars
   //
-  'local': false,
+  'local': true,
   'part': 'http://s3-us-west-2.amazonaws.com/linx-music/',
   'audioContext': audioContext,
 
@@ -369,8 +369,8 @@ function loadSample(index) {
     if (currSample_id === sample._id) {
       Mixer.getQueue('wave')[0].sample = sample;
       setWaveEndMark(Mixer.getQueue('wave')[0]);
-      // load next transition if this is not the last
-      if (++index < queue.length) {
+      // load next sample, up to 5, if this is not the last
+      if ((++index < 5) && (index < queue.length)) {
         return loadSample(index);
       }
 
@@ -544,7 +544,7 @@ function getWaveDuration(wave) {
 function cycleQueue() {
   // update wave queue
   pauseWave();
-  queuedWaves.shift();
+  console.log(queuedWaves.shift().empty());
 
   // update sample queue
   var queue = Mixer.getQueue();

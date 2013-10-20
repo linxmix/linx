@@ -40,7 +40,7 @@ function addKeyBindings() {
 function handleEvent(e, action) {
   // make sure we are on uploader page and no modals are open
   if ((Meteor.router.nav() === 'uploaderPage') &&
-    !(Uploader.waves['modalWaveOpen'])) {
+    Session.equals("open_dialog", undefined)) {
     // figure out the id of this wave
     var id = (e.target && e.target.dataset && e.target.dataset.id) ||
       Uploader.waves['focus'];
@@ -177,6 +177,23 @@ function validateUpload(startWave, transitionWave, endWave, callback) {
 
 }
 
+function uploadSong(wave) {
+  var song = wave.song;
+  // if song is new, add to database and upload wave
+  if (!song._id) {
+    song._id = Songs.insert(song);
+    // upload song to s3 server
+    uploadWave(wave);
+  }
+  // otherwise, just update song volume
+  else {
+    Songs.update(
+      { '_id': song._id },
+      { $set: { 'volume': song.volume } }
+    );
+  }
+}
+
 function uploadTransition(startWave, transitionWave, endWave) {
   var startSongEnd = startWave.markers['end'].position;
   var endSongStart = endWave.markers['start'].position;
@@ -213,23 +230,6 @@ function uploadTransition(startWave, transitionWave, endWave) {
       'volume': $('#transitionWave .volumeSlider').data('slider').getValue()
     }
   });
-}
-
-function uploadSong(wave) {
-  var song = wave.song;
-  // if song is new, add to database and upload wave
-  if (!song._id) {
-    song._id = Songs.insert(song);
-    // upload song to s3 server
-    uploadWave(wave);
-  }
-  // otherwise, just update song volume
-  else {
-    Songs.update(
-      { '_id': song._id },
-      { $set: { 'volume': song.volume } }
-    );
-  }
 }
 
 // uploads buffer of given wave to s3

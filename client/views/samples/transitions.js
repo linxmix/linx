@@ -6,7 +6,7 @@ Template.transition.events({
     Session.set("selected_transition", this._id);
     // if transition select modal is active,
     // this serves as a click to the load transition button
-    if (Session.get("transition_select_dialog")) {
+    if (Session.equals("open_dialog", "transition_select")) {
       uploaderLoadTransition(e);
     }
     // otherwise, queue this transition

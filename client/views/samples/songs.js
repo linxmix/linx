@@ -6,7 +6,7 @@ Template.song.events({
     Session.set("selected_song", this._id);
 
     // if song select modal is active, this serves as a click to the load song button
-    if (Session.get("song_select_dialog")) {
+    if (Session.equals("open_dialog", "song_select")) {
       uploaderLoadSong(e);
     }
     // queue a "soft" transition to this song if we already have a queue
