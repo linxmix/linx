@@ -1,0 +1,1 @@
+Echojs = Npm.require('echojs');

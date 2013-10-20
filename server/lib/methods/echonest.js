@@ -5,17 +5,22 @@ Meteor.startup(function () {
 //
 // s3 stuff
 //
-s3Client = Knox.createClient({
+var s3Client = Knox.createClient({
   region: 'us-west-2', // NOTE: this must be changed when the bucket goes US-Standard!
   key: 'AKIAIYJQCD622ZS3OMLA',
   secret: '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',
   bucket: 'linx-music',
 });
 
-//
-// meteor methods
-//
+var echoClient = Echojs({
+  'key': 'CWBME38JDGQNEJPXT'
+});
+
 Meteor.methods({
+
+  'identifyTrack': exceptionWrapper(function (path) {
+
+  }),
 
   'getFileUrl': exceptionWrapper(function (path) {
     var local = true;
@@ -43,6 +48,10 @@ Meteor.methods({
   }),
 
 });
+
+//
+// echojs stuff
+//
 
 // wrap function in try/catch so that server won't reset on error
 function exceptionWrapper(func, extra) {
