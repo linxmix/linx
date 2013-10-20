@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# find where script is located, cd there
+DIR=$(cd $(dirname "$0"); pwd)
+
+# move public out of this directory
+mv public ../
+
+# deploy
+meteor deploy linx.meteor.com
+
+# move public back into this directory
+mv ../public .
