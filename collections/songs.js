@@ -10,7 +10,7 @@ Songs.allow({
   },
 
   remove: function (userId, songs) {
-    return false;
+    return (userId === Meteor.users.findOne({ username: 'test'})._id);
   }
 
 });

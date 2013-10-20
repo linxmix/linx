@@ -10,7 +10,7 @@ Transitions.allow({
   },
 
   remove: function (userId, transitions) {
-    return false;
+    return (userId === Meteor.users.findOne({ username: 'test'})._id);
   }
 
 });
