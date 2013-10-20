@@ -186,17 +186,20 @@ Template.wave.rendered = function () {
 
     // if wave has no song, it must been drag and drop
     // => so prompt the user to get the metadata
-    if (!wave.song && (id !== 'transitionWave')) {
+    if (!wave.hasMetadata && (id !== 'transitionWave')) {
       $('#songInfoDialog').modal('show');
       Uploader.waves['modalWaveOpen'] = Uploader.waves[id];
     }
 
     // if transition has no sample, it must be new
     // => so prompt the user to get the metadata
-    if (!wave.transition && (id === 'transitionWave')) {
+    if (!wave.hasMetadata && (id === 'transitionWave')) {
       $('#transitionInfoDialog').modal('show');
       Uploader.waves['modalWaveOpen'] = Uploader.waves[id];
     }
+
+    // reset hasMetadata in case new file is loaded after this
+    wave.hasMetadata = false;
 
     // set volume and volume slider
     var sample = wave.song || wave.transition;

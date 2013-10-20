@@ -82,6 +82,7 @@ uploaderLoadSong = function (e) {
 
   if (wave && song) {
     wave.song = song;
+    wave.hasMetadata = true;
     wave.load(Mixer.getSampleUrl(song));
   }
 };
@@ -94,16 +95,19 @@ uploaderLoadTransition = function (e) {
   if (transitionWave && transition) {
     // load transition
     transitionWave.transition = transition;
+    transitionWave.hasMetadata = true;
     transitionWave.load(Mixer.getSampleUrl(transition));
     // load startWave
     var startSong = Songs.findOne(transition.startSong);
     var startWave = Uploader.waves['startWave'];
     startWave.song = startSong;
+    startWave.hasMetadata = true;
     startWave.load(Mixer.getSampleUrl(startSong));
     // load endWave
     var endSong = Songs.findOne(transition.endSong);
     var endWave = Uploader.waves['endWave'];
     endWave.song = endSong;
+    endWave.hasMetadata = true;
     endWave.load(Mixer.getSampleUrl(endSong));
     // mark waves
     startWave.on('ready', function () {
