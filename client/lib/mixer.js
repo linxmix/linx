@@ -313,6 +313,15 @@ function loadSample(index) {
   var queue = Mixer.getQueue(),
       sample = queue[index];
 
+  // function to call for loading the next sample in line
+  function loadNext(index) {
+    var length = Mixer.getQueue().length;
+    // load next sample, up to 5, if this is not the last
+    if ((++index < 5) && (index < queue.length)) {
+        return loadSample(index);
+      }
+  }
+
   console.log("loading sample at index: "+index);
   //console.log(sample);
 
@@ -324,10 +333,7 @@ function loadSample(index) {
     if (currSample_id === sample._id) {
       Mixer.getQueue('wave')[0].sample = sample;
       setWaveEndMark(Mixer.getQueue('wave')[0]);
-      // load next sample, up to 5, if this is not the last
-      if ((++index < 5) && (index < queue.length)) {
-        return loadSample(index);
-      }
+      return loadNext(++index);
 
     // if playing wave is not this one, pause that wave since it's now old
     } else {
@@ -350,13 +356,7 @@ function loadSample(index) {
       index = Math.min(index, queuedWaves.length);
       queuedWaves[index] = wave;
       assertPlayStatus();
-
-      // load next transition if this is not the last
-      // NOTE: queue length may have changed, so take that into account
-      if (++index < Mixer.getQueue().length) {
-        return loadSample(index);
-      }
-
+      return loadNext(++index);
     });
   }
 }
