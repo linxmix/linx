@@ -236,6 +236,8 @@ Template.wave.rendered = function () {
     // if transition has no sample, it must be new
     // => so prompt the user to get the metadata
     if (!wave.hasMetadata && (id === 'transitionWave')) {
+      // reset transitionWave.sample because a new one has been loaded
+      wave.sample = undefined;
       Uploader.openDialog($('#transitionInfoDialog'), "transition_info", id);
     }
 
@@ -426,7 +428,7 @@ Uploader = {
       Storage.putSong(startWave, uploadComplete);
       Storage.putSong(endWave, uploadComplete);
       Storage.putTransition(startWave, transitionWave, endWave, uploadComplete);
-      alert("Upload initiated! Please leave this page as is until you get another alert indicating the upload has completed.");
+      alert("Upload initiated! Please DO NOT leave this page until you get confirmation that the upload has completed.");
     });
   },
 
