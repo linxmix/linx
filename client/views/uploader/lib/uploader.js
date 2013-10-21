@@ -83,7 +83,7 @@ function makeWave(id, loadText, isSongWave) {
   // hack to access the ArrayBuffer of audio data as it's read
   wave.loadBuffer = function (data) {
     var my = wave;
-    wave.array = new Uint8Array(data);
+    wave.arrayBuffer = data;
     wave.pause();
     wave.backend.loadBuffer(data, function () {
       my.clearMarks();
@@ -185,18 +185,53 @@ Template.wave.rendered = function () {
     $(selector+' .loadText').hide();
 
     // if wave has no song, it must been drag and drop
-    // => so prompt the user to get the metadata
+    // => get the metadata
     if (!wave.hasMetadata && (id !== 'transitionWave')) {
-      Uploader.openDialog($('#songInfoDialog'), "song_info", id);
+
+      // compute md5  
+      var spark = new SparkMD5.ArrayBuffer();
+      spark.append(wave.arrayBuffer);
+      var md5String = spark.end();
+      Meteor.call('identifySong', { 'md5': md5String }, function(err, response) {
+        if (err) { return console.log(err); }
+
+        // recover track info
+        var track = (response && response.track);
+        console.log(track);
+        if (track) {
+          wave.song = {
+            'type': 'song',
+            // TODO: make this based on given buffer's file name extension
+            'fileType': 'mp3',
+            'name': track.title,
+            'playCount': 0,
+            'volume': 0.8,
+            'title': track.title,
+            'artist': track.artist,
+            'bitrate': track.bitrate,
+            'sampleRate': track.samplerate,
+            'echoId': track.song_id,
+            'md5': track.md5,
+          };
+
+        // echonest attempt failed, so prompt the user to get the metadata
+        } else {
+          Uploader.openDialog($('#songInfoDialog'), "song_info", id);
+        }
+
+      });
+
     }
 
     // if transition has no sample, it must be new
     // => so prompt the user to get the metadata
     if (!wave.hasMetadata && (id === 'transitionWave')) {
+
       Uploader.openDialog($('#transitionInfoDialog'), "transition_info", id);
     }
 
     // reset hasMetadata in case new file is loaded after this
+    wave.file = undefined;
     wave.hasMetadata = false;
 
     // set volume and volume slider

@@ -1,5 +1,5 @@
 Meteor.startup(function () {
- Future = Npm.require('fibers/future');
+  Future = Npm.require('fibers/future');
 });
 
 //
