@@ -419,7 +419,8 @@ Uploader = {
         if (err) { return alert(err); }
         --Storage.uploadsInProgress;
         console.log("one upload completed. remaining uploads: "+Storage.uploadsInProgress);
-        if (Storage.uploadsInProgress === 0) {
+        if (Storage.uploadsInProgress <= 0) {
+          Storage.uploadsInProgress = 0;
           alert('Upload successfully completed!');
         }
       }
@@ -428,7 +429,14 @@ Uploader = {
       Storage.putSong(startWave, uploadComplete);
       Storage.putSong(endWave, uploadComplete);
       Storage.putTransition(startWave, transitionWave, endWave, uploadComplete);
-      alert("Upload initiated! Please DO NOT leave this page until you get confirmation that the upload has completed.");
+
+      // decide how to alert user. if no songs required uploading, we're done now
+      if (Uploader.uploadsInProgress <= 0) {
+        uploadComplete();
+      // else tell them to wait for upload completion confirmatiom
+      } else {
+        alert("Upload initiated! Please DO NOT leave this page until you get confirmation that the upload has completed.");
+      }
     });
   },
 
