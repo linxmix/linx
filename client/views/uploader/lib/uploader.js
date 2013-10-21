@@ -199,7 +199,7 @@ Template.wave.rendered = function () {
         var track = (response && response.track);
         console.log(track);
         if (track) {
-          wave.song = {
+          wave.sample = {
             'type': 'song',
             // TODO: make this based on given buffer's file name extension
             'fileType': 'mp3',
@@ -226,7 +226,6 @@ Template.wave.rendered = function () {
     // if transition has no sample, it must be new
     // => so prompt the user to get the metadata
     if (!wave.hasMetadata && (id === 'transitionWave')) {
-
       Uploader.openDialog($('#transitionInfoDialog'), "transition_info", id);
     }
 
@@ -234,7 +233,7 @@ Template.wave.rendered = function () {
     wave.hasMetadata = false;
 
     // set volume and volume slider
-    var sample = wave.song || wave.transition;
+    var sample = wave.sample;
     if (sample && sample.volume) {
       wave.setVolume(sample.volume);
       // update volumeSlider
@@ -331,7 +330,7 @@ Uploader = {
     var song = Songs.findOne(Session.get("selected_song"));
 
     if (wave && song) {
-      wave.song = song;
+      wave.sample = song;
       wave.hasMetadata = true;
       wave.load(Storage.getSampleUrl(song));
     }
@@ -344,19 +343,19 @@ Uploader = {
 
     if (transitionWave && transition) {
       // load transition
-      transitionWave.transition = transition;
+      transitionWave.sample = transition;
       transitionWave.hasMetadata = true;
       transitionWave.load(Storage.getSampleUrl(transition));
       // load startWave
       var startSong = Songs.findOne(transition.startSong);
       var startWave = Uploader.waves['startWave'];
-      startWave.song = startSong;
+      startWave.sample = startSong;
       startWave.hasMetadata = true;
       startWave.load(Storage.getSampleUrl(startSong));
       // load endWave
       var endSong = Songs.findOne(transition.endSong);
       var endWave = Uploader.waves['endWave'];
-      endWave.song = endSong;
+      endWave.sample = endSong;
       endWave.hasMetadata = true;
       endWave.load(Storage.getSampleUrl(endSong));
       // mark waves
@@ -387,8 +386,8 @@ Uploader = {
     validateUpload(startWave, transitionWave, endWave, function () {
 
       // update volumes
-      startWave.song.volume = $('#startWave .volumeSlider').data('slider').getValue();
-      endWave.song.volume = $('#endWave .volumeSlider').data('slider').getValue();
+      startWave.sample.volume = $('#startWave .volumeSlider').data('slider').getValue();
+      endWave.sample.volume = $('#endWave .volumeSlider').data('slider').getValue();
 
       // upload samples
       Storage.putSong(startWave);
@@ -397,7 +396,7 @@ Uploader = {
       alert("Transition successfully uploaded!");
     });
   },
-  
+
 };
 
 function validateUpload(startWave, transitionWave, endWave, callback) {
@@ -433,8 +432,8 @@ function validateUpload(startWave, transitionWave, endWave, callback) {
   // finally, make sure songs don't already exist on s3
  /* Meteor.call('getList', 'songs/', function (err, data) {
     if (err) { return console.log(err); }
-    var startUrl = Storage.getSampleUrl(startWave.song, true);
-    var endUrl = Storage.getSampleUrl(endWave.song, true);
+    var startUrl = Storage.getSampleUrl(startWave.sample, true);
+    var endUrl = Storage.getSampleUrl(endWave.sample, true);
     var urlList = data.Contents.map(function (listItem) {
       return listItem.Key;
     });
@@ -447,10 +446,10 @@ function validateUpload(startWave, transitionWave, endWave, callback) {
     var alertStart = 'Hmmm... this ';
     var alertMiddle;
     var alertEnd = ' already exists on our cloud server! Please let Daniel (wolfbiter@gmail.com) know what you were uploading so he can help you sort out this issue!';
-    if (!startWave.song._id && isInArray(startUrl, urlList)) {
+    if (!startWave.sample._id && isInArray(startUrl, urlList)) {
       alertMiddle = "starting song";
     }
-    else if (!endWave.song._id && isInArray(endUrl, urlList)) {
+    else if (!endWave.sample._id && isInArray(endUrl, urlList)) {
       alertMiddle = "ending song";
     }
 

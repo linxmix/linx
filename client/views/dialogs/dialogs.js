@@ -46,7 +46,7 @@ function submitSongInfo(e) {
     }, 1000);
   }
 
-  wave.song = {
+  wave.sample = {
     'type': 'song',
     // TODO: make this based on given buffer's file name extension
     'fileType': 'mp3',
@@ -67,7 +67,7 @@ function submitSongInfo(e) {
       // TODO: make it so user picks the right info
       var track = (response && response.songs[0]);
       if (track) {
-        wave.song = $.extend(Uploader.waves[wave._id], {
+        wave.sample = $.extend(Uploader.waves[wave._id], {
           'title': track.title,
           'artist': track.artist_name,
           'echoId': track.id

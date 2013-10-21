@@ -35,11 +35,11 @@ Storage = {
     }
     // then delete from s3 server
     var url = Storage.getSampleUrl(sample, true);
-    //Meteor.call('deleteFile', url);
+    Meteor.call('deleteFile', url);
   },
 
   'putSong': function(wave) {
-    var song = wave.song;
+    var song = wave.sample;
     // if song is new, add to database and upload wave
     if (!song._id) {
       song._id = Songs.insert(song);
@@ -62,11 +62,11 @@ Storage = {
     var startTime = transitionWave.markers['start'].position;
     var endTime = transitionWave.markers['end'].position;
 
-    var startSong = Songs.findOne({ 'name': startWave.song.name });
-    var endSong = Songs.findOne({ 'name': endWave.song.name });
+    var startSong = Songs.findOne({ 'name': startWave.sample.name });
+    var endSong = Songs.findOne({ 'name': endWave.sample.name });
 
     // get transition metadata, or make if wave doesn't have it
-    var transition = transitionWave.transition = transitionWave.transition || {
+    var transition = transitionWave.sample = transitionWave.sample || {
       'type': 'transition',
       'transitionType': 'active',
       // TODO: make this based on given buffer's file name extension
@@ -161,7 +161,7 @@ function getTransitionUrl(transition, part) {
 
 // uploads buffer of given wave to s3
 function putWave(wave) {
-  var sample = wave.song || wave.transition;
+  var sample = wave.sample;
   var url = Storage.getSampleUrl(sample, true);
   console.log("uploading wave to url: "+url);
   console.log(wave);
