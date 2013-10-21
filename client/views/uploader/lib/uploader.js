@@ -192,36 +192,46 @@ Template.wave.rendered = function () {
       var spark = new SparkMD5.ArrayBuffer();
       spark.append(wave.arrayBuffer);
       var md5String = spark.end();
-      Meteor.call('identifySong', { 'md5': md5String }, function(err, response) {
-        if (err) { return console.log(err); }
+      wave['md5'] = md5String;
 
-        // recover track info
-        var track = (response && response.track);
-        console.log(track);
-        if (track) {
-          wave.sample = {
-            'type': 'song',
-            // TODO: make this based on given buffer's file name extension
-            'fileType': 'mp3',
-            'name': track.title,
-            'playCount': 0,
-            'volume': 0.8,
-            'title': track.title,
-            'artist': track.artist,
-            'bitrate': track.bitrate,
-            'sampleRate': track.samplerate,
-            'echoId': track.song_id,
-            'md5': track.md5,
-          };
+      // if we have this song in our database, use that
+      var song = Songs.findOne({'md5': md5String});
+      if (song) {
+        wave.sample = song;
+      }
 
-        // echonest attempt failed, so prompt the user to get the metadata
-        } else {
-          Uploader.openDialog($('#songInfoDialog'), "song_info", id);
-        }
+      // otherwise, try echo nest
+      else {
+        Meteor.call('identifySong', { 'md5': md5String }, function(err, response) {
+          if (err) { return console.log(err); }
 
-      });
+          // recover track info
+          var track = (response && response.track);
+          console.log(track);
+          if (track) {
+            wave.sample = {
+              'type': 'song',
+              // TODO: make this based on given buffer's file name extension
+              'fileType': 'mp3',
+              'name': track.title,
+              'playCount': 0,
+              'volume': 0.8,
+              'title': track.title,
+              'artist': track.artist,
+              'bitrate': track.bitrate,
+              'sampleRate': track.samplerate,
+              'echoId': track.song_id,
+              'md5': track.md5,
+            };
 
-    }
+          // echonest attempt failed, so prompt the user to get the metadata
+          } else {
+            Uploader.openDialog($('#songInfoDialog'), "song_info", id);
+          }
+
+        });
+      }
+    } // /identify song
 
     // if transition has no sample, it must be new
     // => so prompt the user to get the metadata
@@ -393,7 +403,7 @@ Uploader = {
       Storage.putSong(startWave);
       Storage.putSong(endWave);
       Storage.putTransition(startWave, transitionWave, endWave);
-      alert("Transition successfully uploaded!");
+      alert("Transition upload initiated! Please leave your computer on for at least 10min so the server has a chance to get all the data!");
     });
   },
 

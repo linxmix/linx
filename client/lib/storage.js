@@ -101,9 +101,11 @@ Storage = {
     }
     else if (sample.type === 'transition') {
       ret = getTransitionUrl(sample, part);
+    } else {
+      return console.log("ERROR: unknown sample type given to getSampleUrl");
     }
     // replace whitespace with underscore so s3 accepts it
-    ret = ret.replace(/\s/g, '_');
+    ret = (ret && ret.replace(/\s/g, '_'));
     console.log("getSampleUrl returning: "+ret);
     return ret;
   },

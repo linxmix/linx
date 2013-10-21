@@ -54,26 +54,45 @@ function submitSongInfo(e) {
     'title': name,
     'artist': artist,
     'playCount': 0,
-    'volume': 0.8
+    'volume': 0.8,
+    'md5': wave.md5
   };
 
-  // now see if user's song info can get us an echo nest match
-  Meteor.call('searchEchoNest',
-    { 'title': name, 'artist': artist },
-    function (err, response) {
-      if (err) { return console.log(err); }
+  function searchEchoNest() {
+    Meteor.call('searchEchoNest',
+      { 'title': name, 'artist': artist },
+      function (err, response) {
+        if (err) { return console.log(err); }
 
-      // recover track info
-      // TODO: make it so user picks the right info
-      var track = (response && response.songs[0]);
-      if (track) {
-        wave.sample = $.extend(Uploader.waves[wave._id], {
-          'title': track.title,
-          'artist': track.artist_name,
-          'echoId': track.id
-        });
-      }
-  });
+        // recover track info
+        // TODO: make it so user picks the right info
+        var track = (response && response.songs[0]);
+        if (track) {
+          wave.sample = $.extend(wave.sample, {
+            'title': track.title,
+            'artist': track.artist_name,
+            'echoId': track.id
+          });
+        }
+    });
+  }
+
+  //
+  // use user-provided info to attempt to ID song
+  //
+  var songs = Songs.find({ $or: [
+    { 'name':  { $regex: name, $options: 'i' } },
+    { 'artist':  { $regex: artist, $options: 'i' } }
+  ]}).fetch();
+  // first see if we have any songs like this one in our database
+  if (songs.length > 0) {
+    // TODO: prompt user with song choice dialog, offer option of "none" which calls
+    //       above searchEchoNest
+  }
+  // couldn't find in our database, so search echo nest for a match
+  else {
+    searchEchoNest();
+  }
 }
 
 function submitTransitionInfo(e) {
