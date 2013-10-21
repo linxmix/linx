@@ -7,7 +7,6 @@ Session.set("mixer_playing", false);
 // private variables
 var loadingWave;
 var queuedWaves = [];
-var BUFFER_LOAD_SPEED = 1000000; // bytes/sec
 
 //
 // /init
@@ -18,8 +17,6 @@ Mixer = {
   //
   // vars
   //
-  'local': false,
-  'part': 'http://s3-us-west-2.amazonaws.com/linx-music/',
   'audioContext': audioContext,
 
   //
@@ -111,15 +108,6 @@ Mixer = {
       }
     }
   },
-  
-  // get a random entry from given collection
-  // TODO: make this true random and not need to get every doc
-  'getRandom': function(coll) {
-    var found = coll.find();
-    var count = found.count() - 1; // -1 for array indexing
-    var rand = Math.round(Math.random() * count);
-    return found.fetch()[rand];
-  },
 
   // creates a soft transition object from startSong to endSong
   'makeSoftTransition': function(startSong, endSong) {
@@ -150,21 +138,6 @@ Mixer = {
     }
   },
 
-  'getSampleUrl': function(sample, local) {
-    var part = Mixer.part, ret;
-    if (local || Mixer.local) part = "";
-    if (sample.type === 'song') {
-      ret = getSongUrl(sample, part);
-    }
-    else if (sample.type === 'transition') {
-      ret = getTransitionUrl(sample, part);
-    }
-    // replace whitespace with underscore so s3 accepts it
-    ret = ret.replace(/\s/g, '_');
-    console.log("getSampleUrl returning: "+ret);
-    return ret;
-  },
-
   // returns a valid transition to song such that the queue
   // retains maximum possible length. 
   // TODO: what if none exist? add a soft transition to the end? or maybe find a path such that one exists?
@@ -182,32 +155,7 @@ Mixer = {
     }
     return console.log("ERROR: found no valid transitions for: "+song.name);
   },
-
-  // print all sample urls not present on s3 server
-  'checkExistingSamples': function(coll, prefix) {
-    var samples = coll.find().fetch();
-    Meteor.call('getList', prefix, function(err, data) {
-      if (err) { return console.log(err); }
-      var urlList = data.Contents.map(function (listItem) {
-        return listItem.Key;
-      });
-
-      // function to check to see if value exists in array
-      function isInArray(value, array) {
-        return array.indexOf(value) > -1 ? true : false;
-      }
-
-      // remove samples that are not on server
-      samples.filter(function (sample) {
-        var url = Mixer.getSampleUrl(sample, true);
-        var bool = isInArray(url, urlList);
-        if (!bool) {
-          console.log("s3 is missing sample: "+url);
-        }
-        return bool;
-      });
-    });
-  },
+  
 };
 
 //
@@ -473,7 +421,7 @@ function makeWave(sample, callback) {
 
   // load url
   // TODO: make this a progress bar
-  wave.load(Mixer.getSampleUrl(sample));
+  wave.load(Storage.getSampleUrl(sample));
 
   // cancel if loadingWave changes out from under us
   wave.on('loading', function (percent, xhr) {
@@ -599,21 +547,11 @@ function playWave() {
   }
 }
 
-function getSongUrl(song, part) {
-  return part + 'songs/' + song.name + '.' + song.fileType;
-}
-
-function getTransitionUrl(transition, part) {
-  return part + 'transitions/' +
-    Songs.findOne(transition.startSong).name + '-' +
-    Songs.findOne(transition.endSong).name + '.' + transition.fileType;
-}
-
 // algorithm to decide which transition comes next.
 // TODO: make this work when still loading the first song
 function pickTransition() {
   var queue = Mixer.getQueue();
-  var lastSample = queue[queue.length - 1] || Mixer.getRandom(Songs);
+  var lastSample = queue[queue.length - 1] || Storage.getRandom(Songs);
   // if last sample is currently playing, startTime is currSample's currTime
   var startTime = (queue.length <= 1) ?
     Mixer.getCurrentPosition() : lastSample.startTime;
@@ -625,7 +563,7 @@ function pickTransition() {
   // find choice with endSong that has least number of plays amongst choices
   var transition = choices[0],
       endSong = (transition && Songs.findOne(transition.endSong)) ||
-        Mixer.getRandom(Songs);
+        Storage.getRandom(Songs);
   // TODO: make this a slick database query
   for (var i = 1; i < choices.length; i++) {
     var _transition = choices[i];

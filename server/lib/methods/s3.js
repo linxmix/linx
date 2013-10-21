@@ -35,6 +35,14 @@ Meteor.methods({
     return fut.wait();
   }),
 
+  'deleteFile': exceptionWrapper(function (path) {
+    console.log("DELETING FILE: "+path);
+    s3Client.deleteFile(path, function(err, res) {
+      if (err) { return err;}
+      res.resume();
+    });
+  }),
+
   'putArray': exceptionWrapper(function (array, url) {
     putArray(array, url, 0);
   }),

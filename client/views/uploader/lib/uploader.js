@@ -231,7 +231,6 @@ Template.wave.rendered = function () {
     }
 
     // reset hasMetadata in case new file is loaded after this
-    wave.file = undefined;
     wave.hasMetadata = false;
 
     // set volume and volume slider
@@ -326,4 +325,141 @@ Uploader = {
     });
   },
 
+  'loadSong': function (e) {
+    var wave = Uploader.waves['modalWaveOpen'];
+    $('.close').click(); // click is here so double click on song will close modal
+    var song = Songs.findOne(Session.get("selected_song"));
+
+    if (wave && song) {
+      wave.song = song;
+      wave.hasMetadata = true;
+      wave.load(Storage.getSampleUrl(song));
+    }
+  },
+
+  'loadTransition': function (e) {
+    var transitionWave = Uploader.waves['modalWaveOpen'];
+    $('.close').click(); // click is here so double click on transition will close modal
+    var transition = Transitions.findOne(Session.get("selected_transition"));
+
+    if (transitionWave && transition) {
+      // load transition
+      transitionWave.transition = transition;
+      transitionWave.hasMetadata = true;
+      transitionWave.load(Storage.getSampleUrl(transition));
+      // load startWave
+      var startSong = Songs.findOne(transition.startSong);
+      var startWave = Uploader.waves['startWave'];
+      startWave.song = startSong;
+      startWave.hasMetadata = true;
+      startWave.load(Storage.getSampleUrl(startSong));
+      // load endWave
+      var endSong = Songs.findOne(transition.endSong);
+      var endWave = Uploader.waves['endWave'];
+      endWave.song = endSong;
+      endWave.hasMetadata = true;
+      endWave.load(Storage.getSampleUrl(endSong));
+      // mark waves
+      startWave.on('ready', function () {
+        Uploader.markWaveEnd(startWave, transition.startSongEnd);
+      });
+      transitionWave.on('ready', function () {
+        var startTime = transition.startTime || 0;
+        var endTime = transition.endTime || Uploader.getWaveDuration(transitionWave);
+        Uploader.markWaveStart(transitionWave, startTime);
+        Uploader.markWaveEnd(transitionWave, endTime);
+      });
+      endWave.on('ready', function () {
+        Uploader.markWaveStart(endWave, transition.endSongStart);
+      });
+    }
+  },
+
+  'upload': function(e) {
+    var startWave = Uploader.waves['startWave'];
+    var transitionWave = Uploader.waves['transitionWave'];
+    var endWave = Uploader.waves['endWave'];
+
+    // pause uploader
+    Uploader.pause();
+
+    // make sure this transition is valid before uploading
+    validateUpload(startWave, transitionWave, endWave, function () {
+
+      // update volumes
+      startWave.song.volume = $('#startWave .volumeSlider').data('slider').getValue();
+      endWave.song.volume = $('#endWave .volumeSlider').data('slider').getValue();
+
+      // upload samples
+      Storage.putSong(startWave);
+      Storage.putSong(endWave);
+      Storage.putTransition(startWave, transitionWave, endWave);
+      alert("Transition successfully uploaded!");
+    });
+  },
+  
 };
+
+function validateUpload(startWave, transitionWave, endWave, callback) {
+
+  //
+  // validation check
+  // 
+  // check user is logged in
+  if (!Meteor.userId()) {
+    return alert("Sorry, but you must be logged in to submit a transition!");
+  }
+  var validWaves = true;
+  // check buffers are loaded
+  if (!(startWave.backend.buffer &&
+    transitionWave.backend.buffer &&
+    endWave.backend.buffer)) {
+    validWaves = false;
+  // check markers are present
+  } else if (!(startWave.markers['end'] &&
+    transitionWave.markers['start'] &&
+    transitionWave.markers['end'] &&
+    endWave.markers['start'])) {
+    validWaves = false;
+  }
+  if (!validWaves) {
+    return alert("All three waves must be loaded and marked before submission.");
+  }
+  //
+  // /validation
+  //
+  return callback();
+
+  // finally, make sure songs don't already exist on s3
+ /* Meteor.call('getList', 'songs/', function (err, data) {
+    if (err) { return console.log(err); }
+    var startUrl = Storage.getSampleUrl(startWave.song, true);
+    var endUrl = Storage.getSampleUrl(endWave.song, true);
+    var urlList = data.Contents.map(function (listItem) {
+      return listItem.Key;
+    });
+
+    // function to check to see if value exists in array
+    function isInArray(value, array) {
+      return array.indexOf(value) > -1 ? true : false;
+    }
+
+    var alertStart = 'Hmmm... this ';
+    var alertMiddle;
+    var alertEnd = ' already exists on our cloud server! Please let Daniel (wolfbiter@gmail.com) know what you were uploading so he can help you sort out this issue!';
+    if (!startWave.song._id && isInArray(startUrl, urlList)) {
+      alertMiddle = "starting song";
+    }
+    else if (!endWave.song._id && isInArray(endUrl, urlList)) {
+      alertMiddle = "ending song";
+    }
+
+    if (alertMiddle) {
+      return alert(alertStart + alertMiddle + alertEnd);
+    } else {
+      return callback();
+    }
+
+  });*/
+
+}
