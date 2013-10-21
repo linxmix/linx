@@ -8,7 +8,8 @@
       "accounts-ui-bootstrap-dropdown": {},
       "mini-pages": {},
       "jquery-mousewheel": {},
-      "keybindings": {}
+      "keybindings": {},
+      "crypto-md5": {}
     },
     "packages": {
       "bootstrap-3": {
@@ -46,6 +47,11 @@
         "tag": "v0.3.8",
         "commit": "7102c7329453c18c63846d74d0b51ef35a23e945"
       },
+      "crypto-md5": {
+        "git": "https://github.com/tmeasday/meteor-crypto-md5.git",
+        "tag": "v0.0.2",
+        "commit": "a943bea4cffeac9a14c2825dfe57d32b9d677e6f"
+      },
       "HTML5-History-API": {
         "git": "https://github.com/tmeasday/meteor-HTML5-History-API.git",
         "tag": "v4.0.0",
@@ -55,6 +61,11 @@
         "git": "https://github.com/tmeasday/meteor-page-js-ie-support.git",
         "tag": "v1.3.5",
         "commit": "b99ed8380aefd10b2afc8f18d9eed4dd0d8ea9cb"
+      },
+      "crypto-base": {
+        "git": "https://github.com/tmeasday/meteor-crypto-base.git",
+        "tag": "v0.0.3",
+        "commit": "fdc0b7b3d24e2e31c5c95beddafe890ffbaafd42"
       }
     }
   }

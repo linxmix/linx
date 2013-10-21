@@ -25,7 +25,7 @@ Template.player.events({
 Template.songNav.events({
   'keyup .song-search-query': function (e) {
     // use modal query if there is one
-    var query = Session.get("song_select_dialog") ?
+    var query = !!Session.get("open_dialog") ?
       $(".modal .song-search-query").val() : $(".song-search-query").val();
     Session.set("song_search_query", query);
   }
@@ -34,7 +34,7 @@ Template.songNav.events({
 Template.transitionNav.events({
   'keyup .transition-search-query': function (e) {
     // use modal query if there is one
-    var query = Session.get("transition_select_dialog") ?
+    var query = !!Session.get("open_dialog") ?
       $(".modal .transition-search-query").val() : $(".transition-search-query").val();
     Session.set("transition_search_query", query);
   }

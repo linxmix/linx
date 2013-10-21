@@ -1,57 +1,78 @@
 Meteor.startup(function () {
- Future = Npm.require('fibers/future');
-});
-
-//
-// s3 stuff
-//
-var s3Client = Knox.createClient({
-  region: 'us-west-2', // NOTE: this must be changed when the bucket goes US-Standard!
-  key: 'AKIAIYJQCD622ZS3OMLA',
-  secret: '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',
-  bucket: 'linx-music',
-});
-
-var echoClient = Echojs({
-  'key': 'CWBME38JDGQNEJPXT'
-});
-
-Meteor.methods({
-
-  'identifyTrack': exceptionWrapper(function (path) {
-
-  }),
-
-  'getFileUrl': exceptionWrapper(function (path) {
-    var local = true;
-    if (local) {
-      console.log("Serving File Locally: "+path);
-      return path;
-    } else {
-      console.log("Getting File Externally: "+path);
-      return s3Client.http(path);
-    }
-  }),
-
-  // TODO: will max-keys be an issue? check knox list api for reference
-  'getList': exceptionWrapper(function(prefix) {
-    var fut = new Future();
-    s3Client.list({ 'prefix': prefix}, function (err, data) {
-      if (err) { return err; }
-      fut['return'](data);
-    });
-    return fut.wait();
-  }),
-
-  'putArray': exceptionWrapper(function (array, url) {
-    putArray(array, url, 0);
-  }),
-
+ Path = Npm.require('path');
+ fs = Npm.require('fs');
+ var decoder = Npm.require('string_decoder').StringDecoder;
+ StringDecoder = new decoder('utf8');
 });
 
 //
 // echojs stuff
 //
+echoClient = Echojs({
+  'key': 'CWBME38JDGQNEJPXT'
+});
+
+echoClient('song/search').get({
+  artist: 'radiohead',
+  title: 'karma police'
+}, function (err, json) {
+  console.log(json.response);
+});
+
+console.log(CryptoJS.MD5('some-string').toString());
+
+Meteor.methods({
+
+  'identifySong': exceptionWrapper(function (songId, path) {
+    console.log("IDENTIFYING SONG:"+path);
+
+    // first get the track from s3
+    s3Client.getFile(path, Meteor.bindEnvironment(function(err, res) {
+      if (err) { return console.log(err); }
+
+      // collect Buffer chunks into array
+      var buffers = [];
+      res.on('data', function(chunk) {
+        buffers.push(chunk);
+      });
+
+      // concat Buffers, compute md5, then pass to echo nest
+      res.on('end', function() {
+        // var bufferString = StringDecoder.write(Buffer.concat(buffers));
+        fs.writeFileSync('tmp.mp3', Buffer.concat(buffers));
+        var bufferString = fs.readFileSync('tmp.mp3', 'utf8');
+        console.log(bufferString);
+        var md5String = CryptoJS.MD5(bufferString).toString();
+        console.log(md5String);
+
+        echoClient('track/profile').get({
+          'md5': md5String,
+        }, function(err, json) {
+          if (err) { return console.log(err); }
+
+          // update database with track info
+          var track = json.response.track;
+          Songs.update({ '_id': songId }, { $set:
+            {
+              'title': track.title,
+              'artist': track.artist,
+              'bitrate': track.bitrate,
+              'sampleRate': track.samplerate,
+              'md5': track.md5,
+            }
+          });
+
+          console.log(json.response);
+        });
+      });
+
+      res.resume();
+    }, function () { console.log('Failed to bind environment'); }));
+
+  }),
+
+});
+
 
 // wrap function in try/catch so that server won't reset on error
 function exceptionWrapper(func, extra) {
@@ -61,59 +82,7 @@ function exceptionWrapper(func, extra) {
     } catch (e) {
       console.log("SERVER ERROR CAUGHT!");
       console.log(e);
+      console.log(e.stack);
     }
   };
 }
-
-// put given array to the s3 server at given url
-function putArray(array, url, attempt) {
-
-  // set headers
-  var headers = {
-    'Content-Type': 'audio/mp3',
-    'x-amz-acl': 'public-read',
-    'x-amz-storage-class': 'REDUCED_REDUNDANCY'
-  };
-
-  // make buffer and http request
-  var buffer = new Buffer(array);
-  console.log("PUTTING TO URL: "+url);
-
-  // error handler
-  function handleError(error) {
-    // reattempt on error if less than 3 attempts
-    if (attempt < 3) {
-      console.log(error);
-      putArray(array, url, ++attempt);
-    } else {
-      console.log("ERROR: failed putArray 3 times for url: "+url+"; giving up on PUT");
-      throw error;
-    }
-  }
-
-  // put buffer
-  var ret = s3Client.putBuffer(buffer, url, headers,
-    Meteor.bindEnvironment(function(err, res) {
-
-    if (err) { console.log(err); }
-    // handle errors
-    ret.on('error',
-      Meteor.bindEnvironment(
-        function (error) { handleError(error); },
-        function () { console.log('Failed to bind environment'); }
-      )
-    );
-
-    res.resume();
-  }, function () { console.log('Failed to bind environment'); }));
-}
-
-
-      //ret.on('progress', function (e) {
-      //  console.log("PROGRESS");
-      //  console.log(e);
-      //});
-      //ret.on('response', function(e) {
-      //  console.log("RESPONSE");
-      //  console.log(e);
-      //});

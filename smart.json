@@ -6,6 +6,7 @@
     "accounts-ui-bootstrap-dropdown": {},
     "mini-pages": {},
     "jquery-mousewheel": {},
-    "keybindings": {}
+    "keybindings": {},
+    "crypto-md5": {}
   }
 }
