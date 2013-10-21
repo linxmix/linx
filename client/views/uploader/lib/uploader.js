@@ -418,7 +418,8 @@ Uploader = {
       function uploadComplete(err, data) {
         if (err) { return alert(err); }
         --Storage.uploadsInProgress;
-        console.log("one upload completed. remaining uploads: "+Storage.uploadsInProgress);
+        console.log("one upload completed. remaining uploads: " +
+          min(Storage.uploadsInProgress, 0));
         if (Storage.uploadsInProgress <= 0) {
           Storage.uploadsInProgress = 0;
           alert('Upload successfully completed!');
@@ -431,7 +432,7 @@ Uploader = {
       Storage.putTransition(startWave, transitionWave, endWave, uploadComplete);
 
       // decide how to alert user. if no songs required uploading, we're done now
-      if (Uploader.uploadsInProgress <= 0) {
+      if (Storage.uploadsInProgress <= 0) {
         uploadComplete();
       // else tell them to wait for upload completion confirmatiom
       } else {
