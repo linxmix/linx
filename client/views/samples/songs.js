@@ -5,10 +5,12 @@ Template.song.events({
   'dblclick': function(e) {
     Session.set("selected_song", this._id);
 
-    // if song select modal is active, this serves as a click to the load song button
-    if (Session.equals("open_dialog", "song_select")) {
+    // if either song choice modal is active, this serves as a click to the load song button
+    if (Session.equals("open_dialog", "song_select") ||
+      Session.equals("open_dialog", "song_match")) {
       Uploader.loadSong(e);
     }
+
     // queue a "soft" transition to this song if we already have a queue
     else if (Mixer.getQueue().length > 0) {
       Mixer.queue(Songs.findOne(this._id));

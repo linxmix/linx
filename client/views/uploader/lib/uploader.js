@@ -278,7 +278,11 @@ Uploader = {
   //
 
   'openDialog': function(selector, name, id) {
-    $(selector.find('form'))[0].reset(); // reset dialog's form
+    Session.set("selected_song", undefined);
+    Session.set("selected_transition", undefined);
+    // reset dialog's form
+    var form = $(selector.find('form'))[0];
+    if (form) { form.reset(); }
     Session.set("open_dialog", name);
     selector.modal('show');
     Uploader.waves['modalWaveOpen'] = Uploader.waves[id];
@@ -339,10 +343,18 @@ Uploader = {
     $('.close').click(); // click is here so double click on song will close modal
     var song = Songs.findOne(Session.get("selected_song"));
 
+    // if wave and song exist, load song and tie song to wave
     if (wave && song) {
       wave.sample = song;
       wave.hasMetadata = true;
       wave.load(Storage.getSampleUrl(song));
+    }
+    // try to use echonest to fill in missing information
+    else if (wave && wave.searchEchoNest) {
+      wave.searchEchoNest();
+    }
+    else {
+      console.log("WARNING: loadSong didn't load metadata");
     }
   },
 

@@ -6,18 +6,18 @@ Template.transitionSelectDialog.events({
   'click #loadTransition': Uploader.loadTransition
 });
 
-Template.songInfoDialog.events({
+Template.songMatchDialog.events({
+  'click .submitSongMatch': Uploader.loadSong,
+});
 
+Template.songInfoDialog.events({
   'click #submitSongInfo': submitSongInfo,
   'keyup': submitOnEnterPress,
-
 });
 
 Template.transitionInfoDialog.events({
-
   'click #submitTransitionInfo': submitTransitionInfo,
   'keyup': submitOnEnterPress,
-  
 });
 
 Template.uploaderPage.events({
@@ -27,55 +27,60 @@ Template.uploaderPage.events({
     $('#transitionSelectDialog').modal('hide');
     $('#songInfoDialog').modal('hide');
     $('#transitionInfoDialog').modal('hide');
-    Meteor.setTimeout(function () {
-      Uploader.waves['modalWaveOpen'] = undefined;
-    }, 100);
+    $('#songMatchDialog').modal('hide');
+    Uploader.waves['modalWaveOpen'] = undefined;
   },
 });
 
+Template.songMatches.songs = function () {
+  return Session.get("song_matches");
+};
+
 function submitSongInfo(e) {
   var wave = Uploader.waves['modalWaveOpen'];
+  $('.close').click(); // click is here so that close is triggered
   var serial = $('#songInfoDialog form').serializeArray();
   var name = serial[0]['value'];
   var artist = serial[1]['value'];
-  $('.close').click(); // click is here so that close is triggered
   // hack to not accept empty names
   if (!name) {
-    setTimeout(function () {
+    return setTimeout(function () {
       Uploader.openDialog($('#songInfoDialog'), "song_info", wave.id);
     }, 1000);
   }
 
-  wave.sample = {
-    'type': 'song',
-    // TODO: make this based on given buffer's file name extension
-    'fileType': 'mp3',
-    'name': name,
-    'title': name,
-    'artist': artist,
-    'playCount': 0,
-    'volume': 0.8,
-    'md5': wave.md5
-  };
+  wave.searchEchoNest = function() {
+    wave.sample = {
+      'type': 'song',
+      // TODO: make this based on given buffer's file name extension
+      'fileType': 'mp3',
+      'name': name,
+      'title': name,
+      'artist': artist,
+      'playCount': 0,
+      'volume': 0.8,
+      'md5': wave.md5
+    };
 
-  function searchEchoNest() {
-    Meteor.call('searchEchoNest',
+    // TODO: how to handle songs we have that weren't ID'd?
+    /*Meteor.call('searchEchoNest',
       { 'title': name || undefined, 'artist': artist || undefined },
       function (err, response) {
         if (err) { return console.log(err); }
+        var songs = (response && response.songs);
+        console.log(songs);
 
-        // recover track info
-        // TODO: make it so user picks the right info
-        var track = (response && response.songs[0]);
-        if (track) {
+        // if there are echo nest matches, have user pick best match
+        if (songs) {
           wave.sample = $.extend(wave.sample, {
-            'title': track.title,
-            'artist': track.artist_name,
-            'echoId': track.id
+            'title': songs[0].title,
+            'artist': songs[0].artist_name,
+            'echoId': songs[0].id
           });
         }
-    });
-  }
+
+    });*/
+  };
 
   //
   // use user-provided info to attempt to ID song
@@ -86,12 +91,12 @@ function submitSongInfo(e) {
   ]}).fetch();
   // first see if we have any songs like this one in our database
   if (songs.length > 0) {
-    // TODO: prompt user with song choice dialog, offer option of "none" which calls
-    //       above searchEchoNest
+    Session.set("song_matches", songs);
+    Uploader.openDialog($('#songMatchDialog'), "song_match", wave.id);
   }
   // couldn't find in our database, so search echo nest for a match
   else {
-    searchEchoNest();
+    wave.searchEchoNest();
   }
 }
 

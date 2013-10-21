@@ -1,0 +1,39 @@
+<!-- Modal -->
+<template name="songMatchDialog">
+  <div class="modal modal-sm fade" id ="songMatchDialog">
+
+    <div class="modal-header">
+      <button type="button" class="close"></button>
+      <h4 class="modal-title">Choose a match, or click "No Matches"</h4>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+      {{> songMatches}}
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="submitSongMatch btn btn-default" data-dismiss="modal">No Matches</button>
+      <button type="button" class="submitSongMatch btn btn-primary" data-dismiss="modal">Submit Match</button>
+    </div>
+
+
+  </div><!-- /.modal -->
+</template>
+
+<!-- Song Matches -->
+<template name="songMatches">
+  <ul class="songs">
+    {{#each songs}}
+      {{> song}}
+    {{/each}}
+  </ul>
+</template>
+
+<!-- Echo Song -->
+<template name="echoSong">
+  <div class="song {{selected}} well well-sm">
+    <p>Title: {{title}}</p>
+    <p>Artist: {{artist}}</p>
+  </div>
+</template>
