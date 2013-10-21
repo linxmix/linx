@@ -15,7 +15,7 @@ Meteor.methods({
   'identifySong': exceptionWrapper(function (data) {
     var fut = new Future();
     echoClient('track/profile').get(data, function(err, json) {
-      if (err) { return console.log(err); }
+      if (err) { fut['return'](console.log(err)); }
       fut['return'](json.response);
     });
     return fut.wait();
@@ -24,7 +24,7 @@ Meteor.methods({
   'searchEchoNest': exceptionWrapper(function (data) {
     var fut = new Future();
     echoClient('song/search').get(data, function(err, json) {
-      if (err) { return console.log(err); }
+      if (err) { fut['return'](console.log(err)); }
       fut['return'](json.response);
     });
     return fut.wait();

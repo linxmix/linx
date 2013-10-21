@@ -60,7 +60,7 @@ function submitSongInfo(e) {
 
   function searchEchoNest() {
     Meteor.call('searchEchoNest',
-      { 'title': name, 'artist': artist },
+      { 'title': name || undefined, 'artist': artist || undefined },
       function (err, response) {
         if (err) { return console.log(err); }
 

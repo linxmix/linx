@@ -15,21 +15,15 @@ s3Client = Knox.createClient({
 Meteor.methods({
 
   'getFileUrl': exceptionWrapper(function (path) {
-    var local = true;
-    if (local) {
-      console.log("Serving File Locally: "+path);
-      return path;
-    } else {
-      console.log("Getting File Externally: "+path);
-      return s3Client.http(path);
-    }
+    // deprecated
+    return null;
   }),
 
   // TODO: will max-keys be an issue? check knox list api for reference
   'getList': exceptionWrapper(function(prefix) {
     var fut = new Future();
     s3Client.list({ 'prefix': prefix}, function (err, data) {
-      if (err) { return err; }
+      if (err) { fut['return'](err); }
       fut['return'](data);
     });
     return fut.wait();
@@ -38,12 +32,13 @@ Meteor.methods({
   'deleteFile': exceptionWrapper(function (path) {
     console.log("DELETING FILE: "+path);
     s3Client.deleteFile(path, function(err, res) {
-      if (err) { return err;}
+      if (err) { return err; }
       res.resume();
     });
   }),
 
   'putArray': exceptionWrapper(function (array, url) {
+    this.unblock();
     putArray(array, url, 0);
   }),
 
@@ -63,6 +58,8 @@ function exceptionWrapper(func, extra) {
 
 // put given array to the s3 server at given url
 function putArray(array, url, attempt) {
+  var buffer = new Buffer(array);
+  console.log("PUTTING TO URL: "+url);
 
   // set headers
   var headers = {
@@ -71,45 +68,50 @@ function putArray(array, url, attempt) {
     'x-amz-storage-class': 'REDUCED_REDUNDANCY'
   };
 
-  // make buffer and http request
-  var buffer = new Buffer(array);
-  console.log("PUTTING TO URL: "+url);
-
   // error handler
+  var handling = false;
   function handleError(error) {
-    // reattempt on error if less than 3 attempts
-    if (attempt < 3) {
-      console.log(error);
-      putArray(array, url, ++attempt);
-    } else {
-      console.log("ERROR: failed putArray 3 times for url: "+url+"; giving up on PUT");
-      throw error;
+    if (!handling) {
+      handling = true;
+      // reattempt on error if less than 3 attempts
+      if (attempt < 3) {
+        console.log(error);
+        putArray(array, url, ++attempt);
+      } else {
+        console.log("ERROR: failed putArray 3 times for url: "+url+"; giving up on PUT");
+        handling = false;
+      }
+      handling = false;
     }
   }
 
   // put buffer
-  var ret = s3Client.putBuffer(buffer, url, headers,
-    Meteor.bindEnvironment(function(err, res) {
+  var fut = new Future();
+  var req = s3Client.putBuffer(buffer, url, headers, function(err, res) {
 
-    if (err) { console.log(err); }
     // handle errors
-    ret.on('error',
-      Meteor.bindEnvironment(
-        function (error) { handleError(error); },
-        function () { console.log('Failed to bind environment'); }
-      )
-    );
+    if (err) { handleError(err); }
+    req.on('error', function (error) {
+      handleError(error);
+    });
+
+    // call callback on finish
+    res.on('end', function () {
+      console.log("upload complete");
+      fut['return']({ successFlag: true });
+    });
 
     res.resume();
-  }, function () { console.log('Failed to bind environment'); }));
+  });
+  return fut.wait();
 }
 
 
-      //ret.on('progress', function (e) {
+      //req.on('progress', function (e) {
       //  console.log("PROGRESS");
       //  console.log(e);
       //});
-      //ret.on('response', function(e) {
+      //req.on('response', function(e) {
       //  console.log("RESPONSE");
       //  console.log(e);
       //});

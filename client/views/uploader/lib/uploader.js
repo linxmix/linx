@@ -399,11 +399,22 @@ Uploader = {
       startWave.sample.volume = $('#startWave .volumeSlider').data('slider').getValue();
       endWave.sample.volume = $('#endWave .volumeSlider').data('slider').getValue();
 
+      // function to call on upload completion
+      // TODO: debug why data is always undefined
+      function uploadComplete(err, data) {
+        if (err) { return alert(err); }
+        --Storage.uploadsInProgress;
+        console.log("one upload completed. remaining uploads: "+Storage.uploadsInProgress);
+        if (Storage.uploadsInProgress === 0) {
+          alert('Upload successfully completed!');
+        }
+      }
+
       // upload samples
-      Storage.putSong(startWave);
-      Storage.putSong(endWave);
-      Storage.putTransition(startWave, transitionWave, endWave);
-      alert("Transition upload initiated! Please leave your computer on for at least 10min so the server has a chance to get all the data!");
+      Storage.putSong(startWave, uploadComplete);
+      Storage.putSong(endWave, uploadComplete);
+      Storage.putTransition(startWave, transitionWave, endWave, uploadComplete);
+      alert("Upload initiated! Please leave this page as is until you get another alert indicating the upload has completed.");
     });
   },
 

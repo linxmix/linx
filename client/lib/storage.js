@@ -5,6 +5,7 @@ Storage = {
   //
   'local': false,
   'part': 'http://s3-us-west-2.amazonaws.com/linx-music/',
+  'uploadsInProgress': 0,
 
   //
   // functions
@@ -38,13 +39,13 @@ Storage = {
     Meteor.call('deleteFile', url);
   },
 
-  'putSong': function(wave) {
+  'putSong': function(wave, callback) {
     var song = wave.sample;
     // if song is new, add to database and upload wave
     if (!song._id) {
       song._id = Songs.insert(song);
       // upload song to s3 server
-      putWave(wave);
+      putWave(wave, callback);
     }
     // otherwise, just update song volume
     else {
@@ -55,7 +56,7 @@ Storage = {
     }
   },
 
-  'putTransition': function(startWave, transitionWave, endWave) {
+  'putTransition': function(startWave, transitionWave, endWave, callback) {
     var startSongEnd = startWave.markers['end'].position;
     var endSongStart = endWave.markers['start'].position;
 
@@ -79,7 +80,7 @@ Storage = {
     if (!transition._id) {
       transition._id = Transitions.insert(transition);
       // upload transition to s3 server
-      putWave(transitionWave);
+      putWave(transitionWave, callback);
     }
     // update transition with timings and volume
     Transitions.update({ '_id': transition._id }, { $set:
@@ -150,7 +151,6 @@ Storage = {
 //
 // private methods
 //
-
 function getSongUrl(song, part) {
   return part + 'songs/' + song.name + '.' + song.fileType;
 }
@@ -162,10 +162,11 @@ function getTransitionUrl(transition, part) {
 }
 
 // uploads buffer of given wave to s3
-function putWave(wave) {
+function putWave(wave, callback) {
   var sample = wave.sample;
   var url = Storage.getSampleUrl(sample, true);
   console.log("uploading wave to url: "+url);
   console.log(wave);
-  Meteor.call('putArray', new Uint8Array(wave.arrayBuffer), url);
+  ++Storage.uploadsInProgress;
+  Meteor.call('putArray', new Uint8Array(wave.arrayBuffer), url, callback);
 }
