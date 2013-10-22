@@ -26,8 +26,8 @@ var keyBindingsInterval = Meteor.setInterval(function(){
 function addKeyBindings() {
   Meteor.Keybindings.add({
     'space': function (e) { handleEvent(e, 'playPause'); },
-    'left': function(e) { handleEvent(e, 'markStart'); },
-    'right': function(e) { handleEvent(e, 'markEnd'); },
+    'left/shift+left': function(e) { handleEvent(e, 'markStart'); },
+    'right/shift+right': function(e) { handleEvent(e, 'markEnd'); },
     'down/shift+down': function(e) { handleEvent(e, 'back'); },
     'up/shift+up': function(e) { handleEvent(e, 'forth'); },
   });
@@ -65,18 +65,32 @@ var eventHandlers = {
 
   'markStart': function(e, id) {
     e.preventDefault();
-    Uploader.markWaveStart(Uploader.waves[id]);
+    var wave = Uploader.waves[id];
+    // if shift is held, snap progress to startMarker
+    if (e && e.shiftKey) {
+      wave.seekTo(wave.markers['start'].position / Uploader.getWaveDuration(wave));
+    // otherwise, mark start at current progress  
+    } else {
+    Uploader.markWaveStart(wave);
+    }
   },
 
   'markEnd': function(e, id) {
     e.preventDefault();
-    Uploader.markWaveEnd(Uploader.waves[id]);
+    var wave = Uploader.waves[id];
+    // if shift is held, snap progress to endMarker
+    if (e && e.shiftKey) {
+      wave.seekTo(wave.markers['end'].position / Uploader.getWaveDuration(wave));
+    // otherwise, mark end at current progress  
+    } else {
+    Uploader.markWaveEnd(wave);
+    }
   },
 
   'back': function(e, id) {
     e.preventDefault();
     var dist = -0.005;
-    if (e.shiftKey) {
+    if (e && e.shiftKey) {
        dist *= 50;
     }
     Uploader.waves[id].skip(dist);
@@ -85,7 +99,7 @@ var eventHandlers = {
   'forth': function(e, id) {
     e.preventDefault();
     var dist = 0.005;
-    if (e.shiftKey) {
+    if (e && e.shiftKey) {
        dist *= 50;
     }
     Uploader.waves[id].skip(dist);
