@@ -52,34 +52,6 @@ function makeWave(id, loadText, isSongWave) {
   Session.set("waves", sessionWaves);
   Uploader.waves[id] = wave;
 
-  // hack to make mark events more precise
-  wave.bindMarks = function () {
-    var my = wave,
-        firing = false;
-    wave.backend.createScriptNode();
-    wave.backend.on('audioprocess', function () {
-      if (!firing) {
-        Object.keys(my.markers).forEach(function (id) {
-          var marker = my.markers[id];
-          var position = marker.position.toPrecision(3);
-          var time = my.backend.getCurrentTime().toPrecision(3);
-          if (position == time) {
-
-            firing = true;
-            var diff = marker.position - my.backend.getCurrentTime();
-            Meteor.setTimeout(function () {
-              console.log("firing with diff: "+diff);
-              firing = false;
-              my.fireEvent('mark', marker);
-              marker.fireEvent('reached');
-            }, (diff * 1000) - 2); // subtract 2ms to improve accuracy
-          }
-        });
-      }
-    });
-  };
-  // /hack
-
   // hack to access the ArrayBuffer of audio data as it's read
   wave.loadBuffer = function (data) {
     var my = wave;
@@ -93,10 +65,6 @@ function makeWave(id, loadText, isSongWave) {
       my.fireEvent('error', 'Error decoding audio');
     });
   };
-  // /hack
-
-  // hack to reset wave.hasMetadata on drag-and-drop
-
   // /hack
 
   //
@@ -190,8 +158,6 @@ Template.wave.rendered = function () {
     wave.hasMetadata = false;
     wave.sample = undefined;
   });
-  // bind marks
-  wave.bindMarks();
 
   // progress bar
   var firstLoading = true, currXhr, hasMetadata,

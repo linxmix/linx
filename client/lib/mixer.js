@@ -373,33 +373,6 @@ function makeWave(sample, callback) {
     return callback(wave);
   }
 
-  // hack to make mark events more precise
-  wave.bindMarks = function () {
-    var my = wave,
-        firing = false;
-    wave.backend.createScriptNode();
-    wave.backend.on('audioprocess', function () {
-      if (!firing) {
-        Object.keys(my.markers).forEach(function (id) {
-          var marker = my.markers[id];
-          var position = marker.position.toPrecision(3);
-          var time = my.backend.getCurrentTime().toPrecision(3);
-          if (position == time) {
-
-            firing = true;
-            var diff = marker.position - my.backend.getCurrentTime();
-            Meteor.setTimeout(function () {
-              firing = false;
-              my.fireEvent('mark', marker);
-              marker.fireEvent('reached');
-            }, (diff * 1000) - 2); // subtract 2ms to improve accuracy
-          }
-        });
-      }
-    });
-  };
-  // /hack
-
   //
   // init new wave
   //
@@ -413,8 +386,11 @@ function makeWave(sample, callback) {
 
   // set this wave's marker events
   wave.on('mark', function (mark) {
-    if (mark.id === 'end' ||
-      mark.id === 'track_end') {
+    // cycle queue if hitting end marker and queue has not already been cycled
+    if (((mark.id === 'end') ||
+      (mark.id === 'track_end')) &&
+      !wave.hasCycled) {
+      wave.hasCycled = true;
       cycleQueue();
     }
   });
@@ -437,7 +413,6 @@ function makeWave(sample, callback) {
     if (wave.sample._id === loadingWave.sample._id) {
       loadingWave = undefined;
       setWaveMarks(wave);
-      wave.bindMarks();
       console.log("wave ready");
       return callback(wave);
     }
@@ -494,7 +469,7 @@ function getWaveDuration(wave) {
 function cycleQueue() {
   // update wave queue
   pauseWave();
-  console.log(queuedWaves.shift().empty());
+  queuedWaves.shift();
 
   // update sample queue
   var queue = Mixer.getQueue();
@@ -521,7 +496,7 @@ function assertPlayStatus() {
 function pauseWave() {
   var currWave = Mixer.getQueue('wave')[0];
   // if currWave and currWave is not a soft transition, pause it
-  if (currWave && (currWave.sample.transitionType !== 'soft')) {
+  if ((currWave && currWave.sample) && (currWave.sample.transitionType !== 'soft')) {
     currWave.pause();
   }
 }
