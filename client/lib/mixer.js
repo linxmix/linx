@@ -313,17 +313,7 @@ function loadSample(index) {
   var queue = Mixer.getQueue(),
       sample = queue[index];
 
-  // function to call for loading the next sample in line
-  function loadNext(index) {
-    var length = Mixer.getQueue().length;
-    // load next sample, up to 5, if this is not the last
-    if ((++index < 5) && (index < queue.length)) {
-        return loadSample(index);
-      }
-  }
-
   console.log("loading sample at index: "+index);
-  //console.log(sample);
 
   // if scheduling this as first and we're already playing a sample
   var currSample_id = Session.get("current_sample");
@@ -359,6 +349,15 @@ function loadSample(index) {
       return loadNext(++index);
     });
   }
+}
+
+// function to call for loading the next sample in line
+function loadNext(ind) {
+  var length = Mixer.getQueue().length;
+  // load next sample, up to 5, if this is not the last
+  if ((ind < 5) && (ind < queue.length)) {
+      return loadSample(ind);
+    }
 }
 
 // make wave from url, return new wave to callback

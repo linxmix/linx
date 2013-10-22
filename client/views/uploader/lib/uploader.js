@@ -342,7 +342,7 @@ Uploader = {
 
   'loadSong': function (e) {
     var wave = Uploader.waves['modalWaveOpen'];
-    $('.close').click(); // click is here so double click on song will close modal
+    Dialog.close(e); // click is here so double click on song will close modal
     var song = Songs.findOne(Session.get("selected_song"));
 
     // if wave and song exist, load song and tie song to wave
@@ -362,7 +362,7 @@ Uploader = {
 
   'loadTransition': function (e) {
     var transitionWave = Uploader.waves['modalWaveOpen'];
-    $('.close').click(); // click is here so double click on transition will close modal
+    Dialog.close(e); // click is here so double click on transition will close modal
     var transition = Transitions.findOne(Session.get("selected_transition"));
 
     if (transitionWave && transition) {
@@ -419,7 +419,7 @@ Uploader = {
         if (err) { return alert(err); }
         --Storage.uploadsInProgress;
         console.log("one upload completed. remaining uploads: " +
-          min(Storage.uploadsInProgress, 0));
+          Math.min(Storage.uploadsInProgress, 0));
         if (Storage.uploadsInProgress <= 0) {
           Storage.uploadsInProgress = 0;
           alert('Upload successfully completed!');

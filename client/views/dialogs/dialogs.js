@@ -1,3 +1,15 @@
+Dialog = {
+  'close': function (e) {
+    Session.set("open_dialog", undefined);
+    $('#songSelectDialog').modal('hide');
+    $('#transitionSelectDialog').modal('hide');
+    $('#songInfoDialog').modal('hide');
+    $('#transitionInfoDialog').modal('hide');
+    $('#songMatchDialog').modal('hide');
+    Uploader.waves['modalWaveOpen'] = undefined;
+  },
+};
+
 Template.songSelectDialog.events({
   'click #loadSong': Uploader.loadSong
 });
@@ -21,15 +33,8 @@ Template.transitionInfoDialog.events({
 });
 
 Template.uploaderPage.events({
-  'click .close': function (e) {
-    Session.set("open_dialog", undefined);
-    $('#songSelectDialog').modal('hide');
-    $('#transitionSelectDialog').modal('hide');
-    $('#songInfoDialog').modal('hide');
-    $('#transitionInfoDialog').modal('hide');
-    $('#songMatchDialog').modal('hide');
-    Uploader.waves['modalWaveOpen'] = undefined;
-  },
+  'click .close': Dialog.close,
+  'click .cancel': Dialog.close,
 });
 
 Template.songMatches.songs = function () {
@@ -38,16 +43,10 @@ Template.songMatches.songs = function () {
 
 function submitSongInfo(e) {
   var wave = Uploader.waves['modalWaveOpen'];
-  $('.close').click(); // click is here so that close is triggered
+  Dialog.close(e);
   var serial = $('#songInfoDialog form').serializeArray();
   var name = serial[0]['value'];
   var artist = serial[1]['value'];
-  // hack to not accept empty names
-  if (!name) {
-    return setTimeout(function () {
-      Uploader.openDialog($('#songInfoDialog'), "song_info", wave.id);
-    }, 1000);
-  }
 
   wave.searchEchoNest = function() {
     wave.sample = {
@@ -102,15 +101,9 @@ function submitSongInfo(e) {
 
 function submitTransitionInfo(e) {
   var wave = Uploader.waves['modalWaveOpen'];
+  Dialog.close(e); // click is here so that close is triggered
   var serial = $('#transitionInfoDialog form').serializeArray();
   var DJName = serial[0]['value'];
-  $('.close').click(); // click is here so that close is triggered
-  // hack to not accept empty names
-  if (!DJName) {
-    setTimeout(function () {
-      Uploader.openDialog($('#transitionInfoDialog'), "transition_info", wave.id);
-    }, 1000);
-  }
   wave['dj'] = DJName;
 }
 
