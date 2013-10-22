@@ -79,7 +79,7 @@ Storage = {
       'endSong': endSong._id,
       'dj': transitionWave.dj
     };
-    
+
     // add transition to database and s3 server if doesnt already exist
     if (!transition._id) {
       // upload transition to s3 server
@@ -128,6 +128,17 @@ Storage = {
     var count = found.count() - 1; // -1 for array indexing
     var rand = Math.round(Math.random() * count);
     return found.fetch()[rand];
+  },
+
+  // increment given sample's playcount in the database
+  'incrementPlayCount': function (sample) {
+    // curry appropriate collection
+    var coll;
+    if (sample.type === 'song') { coll = Songs; }
+    else if (sample.type === 'transition') { coll = Transitions; }
+    else { return console.log("WARNING: tried to incrementPlayCount of unknown sample type"); }
+    // update coll
+    coll.update({ '_id': sample._id }, { $inc: { 'playCount': 1 } });
   },
 
   // print all sample urls not present on s3 server

@@ -531,13 +531,17 @@ function playWave() {
 
     // if this is a dummy 'soft' transition wave, cycle now
     if (wave.sample.transitionType === 'soft') {
-      cycleQueue();
+      return cycleQueue();
+    }
 
-    // otherwise, play it and set it as playing
-    } else {
-      wave.setVolume(wave.sample.volume);
-      wave.play();
-      Session.set("current_sample", wave.sample._id);
+    // otherwise, play it, set volume, and set it as playing
+    wave.setVolume(wave.sample.volume);
+    wave.play();
+    Session.set("current_sample", wave.sample._id);
+    // update playcount if not already done
+    if (!wave.played) {
+      wave.played = true;
+      Storage.incrementPlayCount(wave.sample);
     }
 
   // no waves queued, so say no waves are playing
