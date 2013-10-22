@@ -112,7 +112,7 @@ Template.wave.rendered = function () {
         var transitionWave = Uploader.waves['transitionWave'];
         var transitionStart =
           (transitionWave.markers['start'].position) /
-          Uploader.getWaveDuration(transitionWave);
+          Wave.getDuration(transitionWave);
         transitionWave.seekTo(transitionStart);
         Uploader.playWave(transitionWave);
       }
@@ -125,7 +125,7 @@ Template.wave.rendered = function () {
         var endWave = Uploader.waves['endWave'];
         var endStart =
           (endWave.markers['start'].position) /
-          Uploader.getWaveDuration(endWave);
+          Wave.getDuration(endWave);
         endWave.seekTo(endStart);
         Uploader.playWave(endWave);
       }
@@ -303,21 +303,6 @@ Uploader = {
     Uploader.waves['modalWaveOpen'] = Uploader.waves[id];
   },
 
-  // position is in seconds
-  'getWavePosition': function(wave) {
-    return wave.timings()[0];
-  },
-
-  // duration is in seconds
-  'getWaveDuration': function(wave) {
-    return wave.timings()[1];
-  },
-
-  // progress is in percent
-  'getWaveProgress': function(wave) {
-    return Uploader.getWavePosition(wave) / Uploader.getWaveDuration(wave);
-  },
-
   'playWave': function(wave) {
     // curry arg
     if (typeof wave !== 'object') { wave = Uploader.waves[wave]; }
@@ -335,31 +320,6 @@ Uploader = {
       playingWave.pause();
       Uploader.waves['playingWave'] = undefined;
     }
-  },
-
-  'markWaveStart': function(wave, position) {
-    wave.mark({
-      'id': 'start',
-      'position': position || Uploader.getWavePosition(wave),
-      'color': 'rgba(0, 255, 0, 0.8)'
-    });
-  },
-
-  'markWaveEnd': function(wave, position) {
-    wave.mark({
-      'id': 'end',
-      'position': position || Uploader.getWavePosition(wave),
-      'color': 'rgba(255, 0, 0, 0.8)'
-    });
-  },
-
-  'markWaveHover': function(wave, position) {
-    position = position || 0;
-    wave.mark({
-      'id': 'hover',
-      'position': position,
-      'color': 'rgba(255, 255, 255, 0.8)'
-    });
   },
 
   'loadSong': function (e) {
@@ -406,16 +366,16 @@ Uploader = {
       endWave.load(Storage.getSampleUrl(endSong));
       // mark waves
       startWave.once('ready', function () {
-        Uploader.markWaveEnd(startWave, transition.startSongEnd);
+        Wave.markEnd(startWave, transition.startSongEnd);
       });
       transitionWave.once('ready', function () {
         var startTime = transition.startTime || 0;
-        var endTime = transition.endTime || Uploader.getWaveDuration(transitionWave);
-        Uploader.markWaveStart(transitionWave, startTime);
-        Uploader.markWaveEnd(transitionWave, endTime);
+        var endTime = transition.endTime || Wave.getDuration(transitionWave);
+        Wave.markStart(transitionWave, startTime);
+        Wave.markEnd(transitionWave, endTime);
       });
       endWave.once('ready', function () {
-        Uploader.markWaveStart(endWave, transition.endSongStart);
+        Wave.markStart(endWave, transition.endSongStart);
       });
     }
   },

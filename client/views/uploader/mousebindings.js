@@ -65,7 +65,7 @@ Template.wave.events({
       // scale percent to duration
       position *= Uploader.getWaveDuration(wave);
       // mark hover position
-      Uploader.markWaveHover(wave, position);
+      Wave.markHover(wave, position);
     }
   },
 
@@ -74,7 +74,7 @@ Template.wave.events({
     // only do this if we have a file buffer loaded
     if (wave.backend.buffer) {
       // clear hover marker
-      Uploader.markWaveHover(wave, 0);
+      Wave.markHover(wave, 0);
     }
   },
 
@@ -121,7 +121,7 @@ Template.wavePlayer.rendered = function () {
     'min': 1,
     'max': 100,
     'step': 1,
-    'handle': 'square',
+    'handle': 'triangle',
   })
   .on('slide', function(ev) {
     zoomWave(id, ev.value);

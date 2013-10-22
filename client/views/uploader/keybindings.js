@@ -68,10 +68,10 @@ var eventHandlers = {
     var wave = Uploader.waves[id];
     // if shift is held, snap progress to startMarker
     if (e && e.shiftKey) {
-      wave.seekTo(wave.markers['start'].position / Uploader.getWaveDuration(wave));
+      wave.seekTo(wave.markers['start'].position / Wave.getDuration(wave));
     // otherwise, mark start at current progress  
     } else {
-    Uploader.markWaveStart(wave);
+    Wave.markStart(wave);
     }
   },
 
@@ -80,10 +80,10 @@ var eventHandlers = {
     var wave = Uploader.waves[id];
     // if shift is held, snap progress to endMarker
     if (e && e.shiftKey) {
-      wave.seekTo(wave.markers['end'].position / Uploader.getWaveDuration(wave));
+      wave.seekTo(wave.markers['end'].position / Wave.getDuration(wave));
     // otherwise, mark end at current progress  
     } else {
-    Uploader.markWaveEnd(wave);
+    Wave.markEnd(wave);
     }
   },
 

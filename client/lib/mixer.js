@@ -16,11 +16,6 @@ var queuedWaves = [];
 Mixer = {
 
   //
-  // vars
-  //
-  'audioContext': audioContext,
-
-  //
   // functions
   // 
 
@@ -48,9 +43,7 @@ Mixer = {
     }
   },
 
-  'skip': function() {
-    cycleQueue();
-  },
+  'skip': cycleQueue(),
 
   'stop': function() {
     Session.set("mixer_playing", false);
@@ -77,7 +70,7 @@ Mixer = {
   // NOTE: position is in seconds, progress is in percent
   'getCurrentPosition': function() {
     var wave = Mixer.getQueue('wave')[0];
-    return (wave && getWavePosition(wave)) || 0;
+    return (wave && Wave.getPosition(wave)) || 0;
   },
 
   // sifts through the queue to return only samples of type, or everything
@@ -378,7 +371,7 @@ function makeWave(sample, callback) {
   //
   wave.init({
     'container': $('#mixerWave')[0],
-    'audioContext': Mixer.audioContext
+    'audioContext': audioContext
   });
 
   // set loadingWave
@@ -437,7 +430,7 @@ function setWaveMarks(wave) {
   // mark wave's track_end
   wave.mark({
     'id': 'track_end',
-    'position': getWaveDuration(wave)
+    'position': Wave.getDuration(wave)
   });
 }
 
@@ -450,20 +443,6 @@ function setWaveEndMark(wave) {
       'position': endTime
     });
   }
-}
-
-function currentProgress() {
-  var wave = Mixer.getQueue('wave')[0];
-  return (wave &&
-    (getWavePosition(wave) / getWaveDuration(wave)));
-}
-
-function getWavePosition(wave) {
-  return wave.timings()[0];
-}
-
-function getWaveDuration(wave) {
-  return wave.timings()[1];
 }
 
 function cycleQueue() {

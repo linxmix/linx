@@ -75,6 +75,7 @@ Storage = {
       'transitionType': 'active',
       // TODO: make this based on given buffer's file name extension
       'fileType': 'mp3',
+      'playCount': 0,
       'startSong': startSong._id,
       'endSong': endSong._id,
       'dj': transitionWave.dj
