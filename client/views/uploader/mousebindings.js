@@ -109,7 +109,7 @@ Template.wavePlayer.rendered = function () {
     'min': 0,
     'max': 1,
     'step': 0.01,
-    'value': this.data.isSongWave ? 0.8 : 1.0
+    'value': this.data.isSongWave ? 0.8 : 1.0,
   })
   .on('slide', function(ev) {
     Uploader.waves[id].setVolume(ev.value);
@@ -121,6 +121,7 @@ Template.wavePlayer.rendered = function () {
     'min': 1,
     'max': 100,
     'step': 1,
+    'handle': 'square',
   })
   .on('slide', function(ev) {
     zoomWave(id, ev.value);

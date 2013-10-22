@@ -1,3 +1,18 @@
+Template.player.rendered = function () {
+  // set up volume slider
+  var volumeSlider = $(this.find('.volumeSlider'));
+  volumeSlider.slider({
+    'min': 0,
+    'max': 1,
+    'step': 0.01,
+    'value': 1.0,
+    'tooltip': 'hide',
+  })
+  .on('slide', function(ev) {
+    Session.set("mixer_volume", ev.value);
+  });
+};
+
 Template.player.events({
 
   'click #playPause': function(e) {

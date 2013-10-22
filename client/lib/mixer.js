@@ -3,6 +3,7 @@
 //
 Session.set("queue", []);
 Session.set("mixer_playing", false);
+Session.set("mixer_volume", 1);
 
 // private variables
 var loadingWave;
@@ -355,7 +356,7 @@ function loadSample(index) {
 function loadNext(index) {
   var length = Mixer.getQueue().length;
   // load next sample, up to 5, if this is not the last
-  if ((index < 5) && (index < queue.length)) {
+  if ((index < 5) && (index < length)) {
       return loadSample(index);
     }
 }
@@ -534,9 +535,9 @@ function playWave() {
       return cycleQueue();
     }
 
-    // otherwise, play it, set volume, and set it as playing
-    wave.setVolume(wave.sample.volume);
+    // otherwise, play it, assert volume, and set it as playing
     wave.play();
+    assertVolume();
     Session.set("current_sample", wave.sample._id);
     // update playcount if not already done
     if (!wave.played) {
@@ -547,6 +548,14 @@ function playWave() {
   // no waves queued, so say no waves are playing
   } else {
     Session.set("current_sample", undefined);
+  }
+}
+
+function assertVolume() {
+  var volume = Session.get("mixer_volume");
+  var wave = Mixer.getQueue('wave')[0];
+  if (wave) {
+    wave.setVolume(wave.sample.volume * volume);
   }
 }
 
@@ -602,3 +611,4 @@ function pickTransition() {
 //
 Meteor.autorun(assertQueue);
 Meteor.autorun(assertPlayStatus);
+Meteor.autorun(assertVolume);
