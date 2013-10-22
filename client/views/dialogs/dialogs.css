@@ -6,6 +6,7 @@
 
 .modal-body {
   width: 100%;
+  min-height: 70%;
   max-height: 78.5%;
 }
 

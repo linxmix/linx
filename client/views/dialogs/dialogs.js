@@ -32,10 +32,18 @@ Template.transitionInfoDialog.events({
   'keyup': submitOnEnterPress,
 });
 
-Template.uploaderPage.events({
+Template.Dialog.events({
   'click .close': Dialog.close,
   'click .cancel': Dialog.close,
 });
+
+Template.Dialog.rendered = function () {
+  $('#songSelectDialog').on('hidden.bs.modal', Dialog.close);
+  $('#transitionSelectDialog').on('hidden.bs.modal', Dialog.close);
+  $('#songInfoDialog').on('hidden.bs.modal', Dialog.close);
+  $('#transitionInfoDialog').on('hidden.bs.modal', Dialog.close);
+  $('#songMatchDialog').on('hidden.bs.modal', Dialog.close);
+};
 
 Template.songMatches.songs = function () {
   return Session.get("song_matches");
@@ -93,9 +101,9 @@ function submitSongInfo(e) {
     Session.set("song_matches", songs);
     Uploader.openDialog($('#songMatchDialog'), "song_match", wave.id);
   }
-  // couldn't find in our database, so search echo nest for a match
+  // couldn't find any possible matches in our database, so try to guess info
   else {
-    wave.searchEchoNest();
+    wave.guessSample();
   }
 }
 

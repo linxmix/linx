@@ -405,11 +405,6 @@ Uploader = {
     else {
       console.log("WARNING: loadSong didn't load metadata");
     }
-
-    // clear hasMetadata if after song match dialog
-    if (wave.guessSample) {
-      wave.hasMetadata = false;
-    }
   },
 
   'loadTransition': function (e) {
