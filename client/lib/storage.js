@@ -43,16 +43,19 @@ Storage = {
     var song = wave.sample;
     // if song is new, add to database and upload wave
     if (!song._id) {
-      song._id = Songs.insert(song);
       // upload song to s3 server
-      putWave(wave, callback);
+      putWave(wave, function () {
+        song._id = Songs.insert(song);
+        if (callback) { callback(); }
+      });
     }
-    // otherwise, just update song volume
+    // otherwise, just update song volume and call callback
     else {
       Songs.update(
         { '_id': song._id },
         { $set: { 'volume': song.volume } }
       );
+      if (callback) { callback(); }
     }
   },
 
@@ -76,12 +79,19 @@ Storage = {
       'endSong': endSong._id,
       'dj': transitionWave.dj
     };
+    
     // add transition to database and s3 server if doesnt already exist
     if (!transition._id) {
-      transition._id = Transitions.insert(transition);
       // upload transition to s3 server
-      putWave(transitionWave, callback);
+      putWave(transitionWave, function () {
+        transition._id = Transitions.insert(transition);
+        if (callback) { callback(); }
+      });
+    // make sure to still call callback if not putting to server
+    } else {
+      if (callback) { callback(); }
     }
+
     // update transition with timings and volume
     Transitions.update({ '_id': transition._id }, { $set:
       {

@@ -482,16 +482,18 @@ Uploader = {
         }
       }
 
-      // upload samples
-      Storage.putSong(startWave, uploadComplete);
-      Storage.putSong(endWave, uploadComplete);
-      Storage.putTransition(startWave, transitionWave, endWave, uploadComplete);
-
-      // decide how to alert user. if no songs required uploading, we're done now
-      if (Storage.uploadsInProgress <= 0) {
+      // synchronously upload samples, signaling completion on each callback
+      Storage.uploadsInProgress = 3;
+      Storage.putSong(startWave, function () {
         uploadComplete();
-      // else tell them to wait for upload completion confirmatiom
-      } else {
+        Storage.putSong(endWave, function () {
+          uploadComplete();
+          Storage.putTransition(startWave, transitionWave, endWave, uploadComplete);
+        });
+      });
+
+      // if pending uploads, tell user to wait for completion
+      if (Storage.uploadsInProgress > 0) {
         alert("Upload initiated! Please DO NOT leave this page until you get confirmation that the upload has completed.");
       }
     });
@@ -507,6 +509,10 @@ function validateUpload(startWave, transitionWave, endWave, callback) {
   // check user is logged in
   if (!Meteor.userId()) {
     return alert("Sorry, but you must be logged in to submit a transition!");
+  }
+  // check not currently doing an upload
+  if (Storage.uploadsInProgress > 0) {
+    return alert("Another upload is already in progress!");
   }
   var validWaves = true;
   // check buffers are loaded
