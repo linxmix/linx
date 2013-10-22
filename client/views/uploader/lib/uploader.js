@@ -439,16 +439,16 @@ Uploader = {
       endWave.hasMetadata = true;
       endWave.load(Storage.getSampleUrl(endSong));
       // mark waves
-      startWave.on('ready', function () {
+      startWave.once('ready', function () {
         Uploader.markWaveEnd(startWave, transition.startSongEnd);
       });
-      transitionWave.on('ready', function () {
+      transitionWave.once('ready', function () {
         var startTime = transition.startTime || 0;
         var endTime = transition.endTime || Uploader.getWaveDuration(transitionWave);
         Uploader.markWaveStart(transitionWave, startTime);
         Uploader.markWaveEnd(transitionWave, endTime);
       });
-      endWave.on('ready', function () {
+      endWave.once('ready', function () {
         Uploader.markWaveStart(endWave, transition.endSongStart);
       });
     }
