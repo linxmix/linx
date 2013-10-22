@@ -32,6 +32,7 @@
   <div class ="row wave" id="{{id}}">
     <div class="col-md-12 waveform">
       <!-- Here be waveform -->
+      {{> progressBar}}
       <div class="loadText text-center">
         {{#if isSongWave}}
           {{> songLoadText}}
@@ -41,6 +42,14 @@
       </div>
     </div>
     {{> wavePlayer}}
+  </div>
+</template>
+
+<!-- Progress Bar -->
+<template name="progressBar">
+  <div class="progress progress-striped active">
+    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
+    </div>
   </div>
 </template>
 

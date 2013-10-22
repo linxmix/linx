@@ -48,7 +48,7 @@ function submitSongInfo(e) {
   var name = serial[0]['value'];
   var artist = serial[1]['value'];
 
-  wave.searchEchoNest = function() {
+  wave.guessSample = function() {
     wave.sample = {
       'type': 'song',
       // TODO: make this based on given buffer's file name extension

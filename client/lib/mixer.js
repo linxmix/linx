@@ -352,11 +352,11 @@ function loadSample(index) {
 }
 
 // function to call for loading the next sample in line
-function loadNext(ind) {
+function loadNext(index) {
   var length = Mixer.getQueue().length;
   // load next sample, up to 5, if this is not the last
-  if ((ind < 5) && (ind < queue.length)) {
-      return loadSample(ind);
+  if ((index < 5) && (index < queue.length)) {
+      return loadSample(index);
     }
 }
 

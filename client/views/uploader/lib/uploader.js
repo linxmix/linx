@@ -95,6 +95,10 @@ function makeWave(id, loadText, isSongWave) {
   };
   // /hack
 
+  // hack to reset wave.hasMetadata on drag-and-drop
+
+  // /hack
+
   //
   // flash when reaching a mark
   //
@@ -169,6 +173,7 @@ Template.wave.rendered = function () {
     'progressColor': progressColors[id],
     'cursorColor': cursorColors[id],
     'minPxPerSec': 10,
+    'height': 197,
     'fillParent': false,
     'scrollParent': true,
     'cursorWidth': 2,
@@ -176,15 +181,59 @@ Template.wave.rendered = function () {
     'renderer': 'Canvas',
     'audioContext': audioContext
   });
+
+  // bind drag n drop
   wave.bindDragNDrop($(selector+' .waveform')[0]);
+  // reset wave metadata on drop
+  $(selector+' .waveform').on('drop', function (e) {
+    console.log("resetting "+wave.id+"'s metadata");
+    wave.hasMetadata = false;
+    wave.sample = undefined;
+  });
+  // bind marks
   wave.bindMarks();
 
-  // TODO: progress bar after wavesurfer issue is fixed
-  wave.on('ready', function() {
-    // hide load text
-    $(selector+' .loadText').hide();
+  // progress bar
+  var firstLoading = true, currXhr, hasMetadata,
+      progressDiv = $(selector+' .progress'),
+      progressBar = $(selector+' .progress-bar'),
+      waveDiv = $(selector+' wave');
+  progressDiv.hide();
+  waveDiv.hide();
+  wave.on('loading', function(percent, xhr) {
+    progressBar.css({ 'width': percent + '%' });
 
-    // if wave has no song, it must been drag and drop
+    // do stuff on first load
+    if (firstLoading) {
+      // hide load text, hide wave, show progress bar, set vars
+      $(selector+' .loadText').hide();
+      waveDiv.hide();
+      progressDiv.show();
+      firstLoading = false;
+      currXhr = xhr;
+      xhr.curr = true;
+    }
+
+    // TODO: figure out how to reset metadata
+    // if loading new xhr, cancel prev and update with new
+    if (!xhr.curr) {
+      currXhr.abort();
+      currXhr = xhr;
+      xhr.curr = true;
+      console.log("aborting prev xhr");
+    }
+    
+  });
+
+  wave.on('ready', function() {
+    // reset firstLoading status and currXhr
+    firstLoading = true; currXhr = undefined;
+    // hide progress div
+    progressDiv.hide();
+    // show wave
+    waveDiv.show();
+
+    // if wave has no song, it must have been drag and drop
     // => get the metadata
     if (!wave.hasMetadata && (id !== 'transitionWave')) {
 
@@ -236,8 +285,6 @@ Template.wave.rendered = function () {
     // if transition has no sample, it must be new
     // => so prompt the user to get the metadata
     if (!wave.hasMetadata && (id === 'transitionWave')) {
-      // reset transitionWave.sample because a new one has been loaded
-      wave.sample = undefined;
       Uploader.openDialog($('#transitionInfoDialog'), "transition_info", id);
     }
 
@@ -351,12 +398,17 @@ Uploader = {
       wave.hasMetadata = true;
       wave.load(Storage.getSampleUrl(song));
     }
-    // try to use echonest to fill in missing information
-    else if (wave && wave.searchEchoNest) {
-      wave.searchEchoNest();
+    // otherwise, try to fill in missing information
+    else if (wave && wave.guessSample) {
+      wave.guessSample();
     }
     else {
       console.log("WARNING: loadSong didn't load metadata");
+    }
+
+    // clear hasMetadata if after song match dialog
+    if (wave.guessSample) {
+      wave.hasMetadata = false;
     }
   },
 
