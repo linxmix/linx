@@ -387,6 +387,15 @@ Uploader = {
     });
   },
 
+  'markWaveHover': function(wave, position) {
+    position = position || 0;
+    wave.mark({
+      'id': 'hover',
+      'position': position,
+      'color': 'rgba(255, 255, 255, 0.8)'
+    });
+  },
+
   'loadSong': function (e) {
     var wave = Uploader.waves['modalWaveOpen'];
     Dialog.close(e); // click is here so double click on song will close modal

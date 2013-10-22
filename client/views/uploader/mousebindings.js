@@ -52,6 +52,33 @@ Template.wave.events({
   },
 
   //
+  // hover
+  //
+  'mousemove .waveform': function(e) {
+    var wave = Uploader.waves[this.id];
+
+    // only do this if we have a file buffer loaded
+    if (wave.backend.buffer) {
+      // extract mouse position from event
+      var relX = 'offsetX' in e ? e.offsetX : e.layerX;
+      var position = (relX / wave.drawer.scrollWidth) || 0;
+      // scale percent to duration
+      position *= Uploader.getWaveDuration(wave);
+      // mark hover position
+      Uploader.markWaveHover(wave, position);
+    }
+  },
+
+  'mouseout .waveform': function(e) {
+    var wave = Uploader.waves[this.id];
+    // only do this if we have a file buffer loaded
+    if (wave.backend.buffer) {
+      // clear hover marker
+      Uploader.markWaveHover(wave, 0);
+    }
+  },
+
+  //
   // scroll
   //
   'mousewheel .waveform': function (e) {
@@ -60,7 +87,7 @@ Template.wave.events({
       e.preventDefault();
       e.stopPropagation();
       var direction = e.wheelDelta >= 0 ? 1 : -1;
-      var zoom = 0.5;
+      var zoom = 1;
       if (e.shiftKey) {
         zoom *= 10;
       }
