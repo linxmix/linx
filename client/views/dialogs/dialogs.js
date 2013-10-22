@@ -37,13 +37,13 @@ Template.Dialog.events({
   'click .cancel': Dialog.close,
 });
 
-Template.Dialog.rendered = function () {
+/*Template.Dialog.rendered = function () {
   $('#songSelectDialog').on('hidden.bs.modal', Dialog.close);
   $('#transitionSelectDialog').on('hidden.bs.modal', Dialog.close);
   $('#songInfoDialog').on('hidden.bs.modal', Dialog.close);
   $('#transitionInfoDialog').on('hidden.bs.modal', Dialog.close);
   $('#songMatchDialog').on('hidden.bs.modal', Dialog.close);
-};
+};*/
 
 Template.songMatches.songs = function () {
   return Session.get("song_matches");

@@ -109,9 +109,10 @@ function zoomWave(id, percent, additive) {
 
   if (percent !== lastPercent) {
     wave.lastPercent = percent;
-    // zoom and draw wave
+    // do zoom
     wave.params['minPxPerSec'] = wave.drawer.params['minPxPerSec'] =
       getZoomPx(wave, percent);
+    // redraw wave
     redrawWave(id);
     // update zoomSlider
     $('#'+id+' .zoomSlider').slider('setValue', percent);
@@ -136,10 +137,13 @@ function redrawWave(id) {
   var wave = Uploader.waves[id];
   // redraw wave
   wave.drawBuffer();
-  // update with and center screen on progress
-  var progress = Uploader.getWaveProgress(wave);
-  wave.drawer.updateProgress(progress);
-  wave.drawer.recenter(progress);
+  // update with and center screen on progress if wave is not playing
+  var playingWave = Uploader.waves['playingWave'];
+  if (!(playingWave && (playingWave['id'] === id))) {
+    var progress = Uploader.getWaveProgress(wave);
+    wave.drawer.progress(progress);
+  }
+
   // update markers
   for (var waveId in wave.markers) {
     wave.drawer.addMark(wave.markers[waveId]);
