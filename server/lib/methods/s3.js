@@ -29,9 +29,9 @@ Meteor.methods({
     return fut.wait();
   }),
 
-  'deleteFile': exceptionWrapper(function (path) {
-    console.log("DELETING FILE: "+path);
-    s3Client.deleteFile(path, function(err, res) {
+  'deleteFile': exceptionWrapper(function (url) {
+    console.log("DELETING FILE: "+url);
+    s3Client.deleteFile(url, function(err, res) {
       if (err) { return console.log(err); }
       res.resume();
     });
@@ -73,7 +73,6 @@ function putArray(array, url, attempt) {
   var headers = {
     'Content-Type': 'audio/mp3',
     'x-amz-acl': 'public-read',
-    'x-amz-storage-class': 'REDUCED_REDUNDANCY'
   };
 
   // error handler

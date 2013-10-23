@@ -243,7 +243,7 @@ Storage = {
 //
 // private methods
 //
-function newGetSongUrl(song, part) {
+function getSongUrl(song, part) {
   var middle = Storage.local ? song.name : song._id;
   if (!middle) {
     console.log("ERROR: getSongUrl has no middle!");
@@ -251,7 +251,7 @@ function newGetSongUrl(song, part) {
   return part + 'songs/' + middle + '.' + song.fileType;
 }
 
-function newGetTransitionUrl(transition, part) {
+function getTransitionUrl(transition, part) {
   var middle = Storage.local ?
     Songs.findOne(transition.startSong).name + '-' +
     Songs.findOne(transition.endSong).name : transition._id;
@@ -261,17 +261,7 @@ function newGetTransitionUrl(transition, part) {
   return part + 'transitions/' + middle + '.' + transition.fileType;
 }
 
-function getNewSongUrl(song) {
-  var middle = song._id;
-  return 'songs/' + middle + '.' + song.fileType;
-}
-
-function getNewTransitionUrl(transition) {
-  var middle = transition._id;
-  return 'transitions/' + middle + '.' + transition.fileType;
-}
-
-function getSongUrl(song, part) {
+function getOldSongUrl(song, part) {
   var middle = song.name;
   if (!middle) {
     console.log("ERROR: getSongUrl has no middle!");
@@ -280,7 +270,7 @@ function getSongUrl(song, part) {
 }
 
 
-function getTransitionUrl(transition, part) {
+function getOldTransitionUrl(transition, part) {
   var middle = Songs.findOne(transition.startSong).name + '-' +
     Songs.findOne(transition.endSong).name;
   if (!middle) {
