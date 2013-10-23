@@ -203,7 +203,6 @@ Template.wave.rendered = function () {
       'captureWheel': false,
       'direction': 'horizontal',
       'hoverThumbs': true,
-      'zIndex': 5
     });
 
     // if wave has no song, it must have been drag and drop
