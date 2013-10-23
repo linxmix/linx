@@ -23,20 +23,6 @@ var cursorColors = {
   'endWave': 'navy'
 };
 
-Meteor.startup(function () {
-
-  //
-  // make waves
-  //
-  makeWave("startWave", "Drop starting song here", true);
-  makeWave("transitionWave", "Drop new transition here", false);
-  makeWave("endWave", "Drop ending song here", true);
-
-  // set startWave as initial focus
-  Session.set("wave_focus", "startWave");
-
-});
-
 //
 // /init
 //
@@ -325,6 +311,17 @@ Uploader = {
   //
   // methods
   //
+
+  // reset the uploader page
+  'reset': function () {
+    console.log("resetting");
+    // make waves
+    makeWave("startWave", "Drop starting song here", true);
+    makeWave("transitionWave", "Drop new transition here", false);
+    makeWave("endWave", "Drop ending song here", true);
+    // set startWave as initial focus
+    Session.set("wave_focus", "startWave");
+  },
 
   'cycleFocus': function (id, direction) {
     var mapping = {
