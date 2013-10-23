@@ -23,18 +23,20 @@
 
 <!-- Wave -->
 <template name="wave">
-  <div class ="row wave" id="{{id}}">
-    <div class="col-md-12 waveform">
-      <!-- Here be waveform -->
-      {{> progressBar}}
-      <div class="loadText text-center">
-        {{#if isSongWave}}
-          {{> songLoadText}}
-        {{else}}
-          {{> transitionLoadText}}
-        {{/if}}
+  <div class ="row wave {{focus}}" id="{{id}}">
+    {{#constant}}
+      <div class="col-md-12 waveform">
+        <!-- Here be waveform -->
+        {{> progressBar}}
+        <div class="loadText text-center">
+          {{#if isSongWave}}
+            {{> songLoadText}}
+          {{else}}
+            {{> transitionLoadText}}
+          {{/if}}
+        </div>
       </div>
-    </div>
+    {{/constant}}
     {{> wavePlayer}}
   </div>
 </template>

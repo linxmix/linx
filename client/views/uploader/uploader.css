@@ -8,6 +8,17 @@
   padding: 0;
 }
 
+.wave-focus {
+  background: #880000; /* Old browsers */
+  background: -moz-radial-gradient(center, ellipse cover,  #880000 0%, #ffffff 84%); /* FF3.6+ */
+  background: -webkit-gradient(radial, center center, 0px, center center, 100%, color-stop(0%,#880000), color-stop(84%,#ffffff)); /* Chrome,Safari4+ */
+  background: -webkit-radial-gradient(center, ellipse cover,  #880000 0%,#ffffff 84%); /* Chrome10+,Safari5.1+ */
+  background: -o-radial-gradient(center, ellipse cover,  #880000 0%,#ffffff 84%); /* Opera 12+ */
+  background: -ms-radial-gradient(center, ellipse cover,  #880000 0%,#ffffff 84%); /* IE10+ */
+  background: radial-gradient(ellipse at center,  #880000 0%,#ffffff 84%); /* W3C */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#880000', endColorstr='#ffffff',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+
 .progress {
   height: 40px;
   margin: 80px;
@@ -15,7 +26,7 @@
 
 .wavesurfer-dragover {
   color: #fff;
-  background-color: #330000;
+  background-color: #003300;
 }
 
 .loadText:hover {

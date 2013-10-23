@@ -32,6 +32,9 @@ Meteor.startup(function () {
   makeWave("transitionWave", "Drop new transition here", false);
   makeWave("endWave", "Drop ending song here", true);
 
+  // set startWave as initial focus
+  Session.set("wave_focus", "startWave");
+
 });
 
 //
@@ -98,11 +101,33 @@ function makeWave(id, loadText, isSongWave) {
   });
 }
 
+Template.wave.focus = function () {
+  var wave = Uploader.waves[this.id];
+  var waveFocused = Session.equals("wave_focus", this.id);
+  return waveFocused ? "wave-focus" : "";
+};
+
 Template.wave.rendered = function () {
   var id = this.data.id;
+  var wave = Uploader.waves[id];
+  var selector = '#'+id;
+  var firstLoading = true,
+      loadTextDiv = $(selector+' .loadText'),
+      progressDiv = $(selector+' .progress'),
+      progressBar = $(selector+' .progress-bar'),
+      waveDiv = $(selector+' wave');
+
+  // toggle progressDiv and loadTextDiv appropriately
+  if (!wave.currXhr) { progressDiv.hide(); }
+  var waveLoaded = wave.backend && wave.backend.buffer;
+  if (waveLoaded || wave.currXhr) { loadTextDiv.hide(); }
+
+  // make sure only to run the init once
+  if (wave.initialized) { return console.log("stopped wave rerender: "+wave.id); }
+  wave.initialized = true;
+  console.log("rendering wave: "+id);
 
   // first handle id-specific stuff
-  var wave = Uploader.waves[id];
   switch (id) {
 
     // when a mark is reached, pause this and play transitionWave
@@ -134,7 +159,6 @@ Template.wave.rendered = function () {
   }
 
   // init wave
-  var selector = '#'+id;
   wave.init({
     'container': $(selector+' .waveform')[0],
     'waveColor': waveColors[id],
@@ -160,31 +184,27 @@ Template.wave.rendered = function () {
   });
 
   // progress bar
-  var firstLoading = true, currXhr, hasMetadata,
-      progressDiv = $(selector+' .progress'),
-      progressBar = $(selector+' .progress-bar'),
-      waveDiv = $(selector+' wave');
-  progressDiv.hide();
   waveDiv.hide();
+  loadTextDiv.show();
   wave.on('loading', function(percent, xhr) {
     progressBar.css({ 'width': percent + '%' });
 
     // do stuff on first load
     if (firstLoading) {
       // hide load text, hide wave, show progress bar, set vars
-      $(selector+' .loadText').hide();
+      loadTextDiv.hide();
       waveDiv.hide();
       progressDiv.show();
       firstLoading = false;
-      currXhr = xhr;
+      wave.currXhr = xhr;
       xhr.curr = true;
     }
 
     // TODO: figure out how to reset metadata
     // if loading new xhr, cancel prev and update with new
     if (!xhr.curr) {
-      currXhr.abort();
-      currXhr = xhr;
+      wave.currXhr.abort();
+      wave.currXhr = xhr;
       xhr.curr = true;
       console.log("aborting prev xhr");
     }
@@ -193,7 +213,7 @@ Template.wave.rendered = function () {
 
   wave.on('ready', function() {
     // reset firstLoading status and currXhr
-    firstLoading = true; currXhr = undefined;
+    firstLoading = true; wave.currXhr = undefined;
     // hide progress div
     progressDiv.hide();
     // show wave
@@ -310,7 +330,7 @@ Uploader = {
     if (typeof wave !== 'object') { wave = Uploader.waves[wave]; }
     Uploader.pause();
     if (wave && wave.backend.buffer) {
-      Uploader.waves['focus'] = wave.id;
+      Session.set("wave_focus", wave.id);
       Uploader.waves['playingWave'] = wave;
       wave.play();
     }

@@ -29,7 +29,7 @@ Template.wave.events({
   //
   'mousemove .waveform': function(e) {
     var wave = Uploader.waves[this.id];
-    Uploader.waves['focus'] = this.id;
+    Session.set("wave_focus", this.id);
 
     // only do this if we have a file buffer loaded
     if (wave.backend.buffer) {
@@ -44,7 +44,7 @@ Template.wave.events({
   },
 
   'mousemove .wavePlayer': function(e) {
-    Uploader.waves['focus'] = this.id;
+    Session.set("wave_focus", this.id);
   },
 
   'mouseout .waveform': function(e) {
