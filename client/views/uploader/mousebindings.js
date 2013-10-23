@@ -35,14 +35,6 @@ Template.wave.events({
     Uploader.openDialog($('#transitionSelectDialog'), "transition_select", this.id);
   },
 
-  'click .waveform': function (e) {
-    Uploader.waves['focus'] = this.id;
-  },
-
-  'click .wavePlayer': function (e) {
-    Uploader.waves['focus'] = this.id;
-  },
-
   //
   // double click
   //
@@ -56,6 +48,7 @@ Template.wave.events({
   //
   'mousemove .waveform': function(e) {
     var wave = Uploader.waves[this.id];
+    Uploader.waves['focus'] = this.id;
 
     // only do this if we have a file buffer loaded
     if (wave.backend.buffer) {
@@ -67,6 +60,10 @@ Template.wave.events({
       // mark hover position
       Wave.markHover(wave, position);
     }
+  },
+  
+  'mousemove .wavePlayer': function(e) {
+    Uploader.waves['focus'] = this.id;
   },
 
   'mouseout .waveform': function(e) {
@@ -168,7 +165,7 @@ function redrawWave(id) {
   // update with and center screen on progress if wave is not playing
   var playingWave = Uploader.waves['playingWave'];
   if (!(playingWave && (playingWave['id'] === id))) {
-    var progress = Uploader.getWaveProgress(wave);
+    var progress = Wave.getProgress(wave);
     wave.drawer.progress(progress);
   }
 
