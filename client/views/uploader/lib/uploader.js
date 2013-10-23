@@ -407,6 +407,7 @@ Uploader = {
       alert("Upload initiated! Please DO NOT leave this page until you get confirmation that the upload has completed.");
 
       // synchronously upload samples, signaling completion on each callback
+      Storage.uploadsInProgress = 3; // TODO: move this out of here
       Storage.putSong(startWave, function () {
         putComplete();
         Storage.putSong(endWave, function () {

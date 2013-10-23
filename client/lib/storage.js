@@ -98,7 +98,6 @@ Storage = {
   },
 
   'putSong': function(wave, callback) {
-    ++Storage.uploadsInProgress;
 
     var newCallback = function () {
       --Storage.uploadsInProgress;
@@ -126,7 +125,6 @@ Storage = {
   },
 
   'putTransition': function(startWave, transitionWave, endWave, callback) {
-    ++Storage.uploadsInProgress;
     var startSongEnd = startWave.markers['end'].position;
     var endSongStart = endWave.markers['start'].position;
 
