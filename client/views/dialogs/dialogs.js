@@ -57,17 +57,13 @@ function submitSongInfo(e) {
   var artist = serial[1]['value'];
 
   wave.guessSample = function() {
-    wave.sample = {
-      'type': 'song',
-      // TODO: make this based on given buffer's file name extension
-      'fileType': 'mp3',
+    wave.sample = Storage.makeSong({
       'name': name,
       'title': name,
       'artist': artist,
-      'playCount': 0,
-      'volume': 0.8,
-      'md5': wave.md5
-    };
+      'md5': wave.md5,
+      'duration': Wave.getDuration(wave),
+    });
 
     // TODO: how to handle songs we have that weren't ID'd?
     /*Meteor.call('searchEchoNest',

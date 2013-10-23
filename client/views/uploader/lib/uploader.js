@@ -232,6 +232,7 @@ Template.wave.rendered = function () {
               'sampleRate': track.samplerate,
               'echoId': track.song_id,
               'md5': track.md5,
+              'duration': Wave.getDuration(wave),
             });
 
           // echonest attempt failed, so prompt the user to get the metadata
@@ -392,31 +393,27 @@ Uploader = {
 
       // function to call on upload completion
       // TODO: debug why data is always undefined
-      function uploadComplete(err, data) {
+      function putComplete(err, data) {
         if (err) { return alert(err); }
-        --Storage.uploadsInProgress;
         console.log("one upload completed. remaining uploads: " +
-          Math.min(Storage.uploadsInProgress, 0));
+          Math.max(Storage.uploadsInProgress, 0));
         if (Storage.uploadsInProgress <= 0) {
           Storage.uploadsInProgress = 0;
           alert('Upload successfully completed!');
         }
       }
 
+      // tell user to wait for completion of uploads
+      alert("Upload initiated! Please DO NOT leave this page until you get confirmation that the upload has completed.");
+
       // synchronously upload samples, signaling completion on each callback
-      Storage.uploadsInProgress = 3;
       Storage.putSong(startWave, function () {
-        uploadComplete();
+        putComplete();
         Storage.putSong(endWave, function () {
-          uploadComplete();
-          Storage.putTransition(startWave, transitionWave, endWave, uploadComplete);
+          putComplete();
+          Storage.putTransition(startWave, transitionWave, endWave, putComplete);
         });
       });
-
-      // if pending uploads, tell user to wait for completion
-      if (Storage.uploadsInProgress > 0) {
-        alert("Upload initiated! Please DO NOT leave this page until you get confirmation that the upload has completed.");
-      }
     });
   },
 

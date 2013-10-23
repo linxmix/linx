@@ -85,14 +85,34 @@ Storage = {
     Meteor.call('deleteFile', url);
   },
 
+  'copySong': function(song) {
+    var newUrl = getNewSongUrl(song);
+    var oldUrl = getSongUrl(song, '').replace(/\s/g, '_');
+    Meteor.call('copyFile', oldUrl, newUrl);
+  },
+
+  'copyTransition': function(transition) {
+    var newUrl = getNewTransitionUrl(transition);
+    var oldUrl = getTransitionUrl(transition, '').replace(/\s/g, '_');
+    Meteor.call('copyFile', oldUrl, newUrl);
+  },
+
   'putSong': function(wave, callback) {
+    ++Storage.uploadsInProgress;
+
+    var newCallback = function () {
+      --Storage.uploadsInProgress;
+      // call old callback
+      if (callback) { callback(); }
+    };
+
     var song = wave.sample;
     // if song is new, add to database and upload wave
     if (!song._id) {
       // upload song to s3 server
       putWave(wave, function () {
         song._id = Songs.insert(song);
-        if (callback) { callback(); }
+        newCallback();
       });
     }
     // otherwise, just update song volume and call callback
@@ -101,11 +121,12 @@ Storage = {
         { '_id': song._id },
         { $set: { 'volume': song.volume } }
       );
-      if (callback) { callback(); }
+      newCallback();
     }
   },
 
   'putTransition': function(startWave, transitionWave, endWave, callback) {
+    ++Storage.uploadsInProgress;
     var startSongEnd = startWave.markers['end'].position;
     var endSongStart = endWave.markers['start'].position;
 
@@ -120,11 +141,13 @@ Storage = {
       transitionWave.sample || Storage.makeTransition({
         'startSong': startSong._id,
         'endSong': endSong._id,
-        'dj': transitionWave.dj
+        'dj': transitionWave.dj,
+        'duration': Wave.getDuration(transitionWave),
     });
 
     // add transition metadata stuff to callback
-    newCallback = function () {
+    var newCallback = function () {
+      --Storage.uploadsInProgress;
       // update transition with timings and volume
       Transitions.update({ '_id': transition._id }, { $set:
         {
@@ -220,14 +243,50 @@ Storage = {
 //
 // private methods
 //
-function getSongUrl(song, part) {
-  return part + 'songs/' + song.name + '.' + song.fileType;
+function newGetSongUrl(song, part) {
+  var middle = Storage.local ? song.name : song._id;
+  if (!middle) {
+    console.log("ERROR: getSongUrl has no middle!");
+  }
+  return part + 'songs/' + middle + '.' + song.fileType;
 }
 
-function getTransitionUrl(transition, part) {
-  return part + 'transitions/' +
+function newGetTransitionUrl(transition, part) {
+  var middle = Storage.local ?
     Songs.findOne(transition.startSong).name + '-' +
-    Songs.findOne(transition.endSong).name + '.' + transition.fileType;
+    Songs.findOne(transition.endSong).name : transition._id;
+  if (!middle) {
+    console.log("ERROR: getTransitionUrl has no middle!");
+  }
+  return part + 'transitions/' + middle + '.' + transition.fileType;
+}
+
+function getNewSongUrl(song) {
+  var middle = song._id;
+  return 'songs/' + middle + '.' + song.fileType;
+}
+
+function getNewTransitionUrl(transition) {
+  var middle = transition._id;
+  return 'transitions/' + middle + '.' + transition.fileType;
+}
+
+function getSongUrl(song, part) {
+  var middle = song.name;
+  if (!middle) {
+    console.log("ERROR: getSongUrl has no middle!");
+  }
+  return part + 'songs/' + middle + '.' + song.fileType;
+}
+
+
+function getTransitionUrl(transition, part) {
+  var middle = Songs.findOne(transition.startSong).name + '-' +
+    Songs.findOne(transition.endSong).name;
+  if (!middle) {
+    console.log("ERROR: getTransitionUrl has no middle!");
+  }
+  return part + 'transitions/' + middle + '.' + transition.fileType;
 }
 
 // uploads buffer of given wave to s3
@@ -236,6 +295,5 @@ function putWave(wave, callback) {
   var url = Storage.getSampleUrl(sample, true);
   console.log("uploading wave to url: "+url);
   console.log(wave);
-  ++Storage.uploadsInProgress;
   Meteor.call('putArray', new Uint8Array(wave.arrayBuffer), url, callback);
 }

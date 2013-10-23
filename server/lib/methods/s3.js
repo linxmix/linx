@@ -32,7 +32,15 @@ Meteor.methods({
   'deleteFile': exceptionWrapper(function (path) {
     console.log("DELETING FILE: "+path);
     s3Client.deleteFile(path, function(err, res) {
-      if (err) { return err; }
+      if (err) { return console.log(err); }
+      res.resume();
+    });
+  }),
+
+  'copyFile': exceptionWrapper(function (oldUrl, newUrl) {
+    console.log("COPYING FILE AT: "+oldUrl+" TO NEW URL: "+newUrl);
+    s3Client.copyFile(oldUrl, newUrl, function(err, res) {
+      if (err) { return console.log(err); }
       res.resume();
     });
   }),
