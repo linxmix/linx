@@ -85,7 +85,7 @@ Template.wavePlayer.rendered = function () {
   var volumeSlider = $(this.find('.volumeSlider'));
   volumeSlider.slider({
     'min': 0,
-    'max': 1,
+    'max': this.data.isSongWave ? 1.0 : 1.25,
     'step': 0.01,
     'value': this.data.isSongWave ? 0.8 : 1.0,
   })
@@ -147,7 +147,7 @@ function redrawWave(id) {
   // update with and center screen on progress if wave is not playing
   var playingWave = Uploader.waves['playingWave'];
   if (!(playingWave && (playingWave['id'] === id))) {
-    //var hoverMarker = wave.markers['hover'];
+    var hoverMarker = wave.markers['hover'];
     var progress = Wave.getProgress(wave) ||
       (hoverMarker && hoverMarker.percentage);
     wave.drawer.recenterOnPosition(~~(wave.drawer.scrollWidth * progress), true);

@@ -16,7 +16,7 @@ Wave = {
 
   // progress is in percent
   'getProgress': function(wave) {
-    return Wave.getPosition(wave) / Wave.getDuration(wave);
+    return (Wave.getPosition(wave) / Wave.getDuration(wave)) || 0;
   },
 
   'markStart': function(wave, position) {
