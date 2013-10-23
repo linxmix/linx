@@ -191,6 +191,23 @@ Storage = {
     console.log("getSampleUrl returning: "+ret);
     return ret;
   },
+
+  'getOldSampleUrl': function(sample, local) {
+    var part = Storage.part, ret;
+    if (local || Storage.local) part = "";
+    if (sample.type === 'song') {
+      ret = getOldSongUrl(sample, part);
+    }
+    else if (sample.type === 'transition') {
+      ret = getOldTransitionUrl(sample, part);
+    } else {
+      return console.log("ERROR: unknown sample type given to getSampleUrl");
+    }
+    // replace whitespace with underscore so s3 accepts it
+    ret = (ret && ret.replace(/\s/g, '_'));
+    console.log("getOldSampleUrl returning: "+ret);
+    return ret;
+  },
   
   // get a random entry from given collection
   // TODO: make this true random and not need to get every doc
