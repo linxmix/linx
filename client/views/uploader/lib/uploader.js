@@ -13,7 +13,7 @@ var waveColors = {
 
 var progressColors = {
   'startWave': 'purple',
-  'transitionWave': 'midnightblue',
+  'transitionWave': 'darkblue',
   'endWave': 'orangered'
 };
 
@@ -235,7 +235,6 @@ Template.wave.rendered = function () {
     $(selector+' wave').first().overscroll({
       'captureWheel': false,
       'direction': 'horizontal',
-      'hoverThumbs': true,
     });
 
     // if wave has no song, it must have been drag and drop
@@ -465,7 +464,7 @@ Uploader = {
       }
 
       // tell user to wait for completion of uploads
-      alert("Upload initiated! Please DO NOT leave this page until you get confirmation that the upload has completed.");
+      alert("Upload initiated! Please close this, but DO NOT leave this page until you get confirmation that the upload has completed.");
 
       // synchronously upload samples, signaling completion on each callback
       Storage.uploadsInProgress = 3; // TODO: move this out of here

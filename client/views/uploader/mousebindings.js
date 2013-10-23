@@ -32,7 +32,7 @@ Template.wave.events({
     Session.set("wave_focus", this.id);
 
     // only do this if we have a file buffer loaded
-    if (wave.backend.buffer) {
+    if (wave.backend && wave.backend.buffer) {
       // extract mouse position from event
       var relX = 'offsetX' in e ? e.offsetX : e.layerX;
       var position = (relX / wave.drawer.scrollWidth) || 0;
@@ -80,6 +80,10 @@ Template.wave.events({
 //
 Template.wavePlayer.rendered = function () {
   var id = this.data.id;
+  var wave = Uploader.waves[id];
+
+  // make sure only to run the init once
+  if (wave.initialized) { return; }
 
   // set up volume slider
   var volumeSlider = $(this.find('.volumeSlider'));
@@ -90,7 +94,7 @@ Template.wavePlayer.rendered = function () {
     'value': this.data.isSongWave ? 0.8 : 1.0,
   })
   .on('slide', function(ev) {
-    Uploader.waves[id].setVolume(ev.value);
+    wave.setVolume(ev.value);
   });
 
   // set up zoom slider
