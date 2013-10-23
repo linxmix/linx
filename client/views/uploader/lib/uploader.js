@@ -314,6 +314,27 @@ Uploader = {
   // methods
   //
 
+  'cycleFocus': function (id, direction) {
+    var mapping = {
+      'startWave': 0,
+      'transitionWave': 1,
+      'endWave': 2
+    };
+    var reverseMapping = {
+      0: 'startWave',
+      1: 'transitionWave',
+      2: 'endWave'
+    };
+    // first find current wave
+    var curr = mapping[id];
+    // then find next
+    var next = (curr + direction) % 3;
+    // hack because javascript sucks at mods with negative
+    if (next < 0) { next = 2; }
+    // update wave focus
+    Session.set("wave_focus", reverseMapping[next]);
+  },
+
   'openDialog': function(selector, name, id) {
     Session.set("selected_song", undefined);
     Session.set("selected_transition", undefined);

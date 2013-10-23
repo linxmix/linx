@@ -30,6 +30,8 @@ function addKeyBindings() {
     'right/shift+right': function(e) { handleEvent(e, 'markEnd'); },
     'down/shift+down': function(e) { handleEvent(e, 'back'); },
     'up/shift+up': function(e) { handleEvent(e, 'forth'); },
+    'tab': function(e) { handleEvent(e, 'focusForth'); },
+    'shift+tab': function(e) { handleEvent(e, 'focusBack'); },
   });
 }
 
@@ -41,6 +43,9 @@ function handleEvent(e, action) {
   // make sure we are on uploader page and no modals are open
   if ((Meteor.router.nav() === 'uploaderPage') &&
     Session.equals("open_dialog", undefined)) {
+    // prevent default and propagation
+    e.preventDefault();
+    e.stopPropagation();
     // figure out the id of this wave
     var id = (e.target && e.target.dataset && e.target.dataset.id) ||
       Session.get("wave_focus");
@@ -52,7 +57,6 @@ function handleEvent(e, action) {
 var eventHandlers = {
 
   'playPause': function(e, id) {
-    e.preventDefault();
     var playingId =
       (Uploader.waves['playingWave'] && Uploader.waves['playingWave'].id);
     if (playingId === id) {
@@ -64,7 +68,6 @@ var eventHandlers = {
   },
 
   'markStart': function(e, id) {
-    e.preventDefault();
     var wave = Uploader.waves[id];
     // if shift is held, snap progress to startMarker
     if (e && e.shiftKey) {
@@ -76,7 +79,6 @@ var eventHandlers = {
   },
 
   'markEnd': function(e, id) {
-    e.preventDefault();
     var wave = Uploader.waves[id];
     // if shift is held, snap progress to endMarker
     if (e && e.shiftKey) {
@@ -88,7 +90,6 @@ var eventHandlers = {
   },
 
   'back': function(e, id) {
-    e.preventDefault();
     var dist = -0.005;
     if (e && e.shiftKey) {
        dist *= 50;
@@ -97,12 +98,19 @@ var eventHandlers = {
   },
 
   'forth': function(e, id) {
-    e.preventDefault();
     var dist = 0.005;
     if (e && e.shiftKey) {
        dist *= 50;
     }
     Uploader.waves[id].skip(dist);
+  },
+
+  'focusBack': function (e, id) {
+    Uploader.cycleFocus(id, -1);
+  },
+
+  'focusForth': function (e, id) {
+    Uploader.cycleFocus(id, 1);
   },
 
   'upload': Uploader.upload
