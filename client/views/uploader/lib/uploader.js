@@ -117,13 +117,24 @@ Template.wave.rendered = function () {
       progressBar = $(selector+' .progress-bar'),
       waveDiv = $(selector+' wave');
 
-  // toggle progressDiv and loadTextDiv appropriately
-  if (!wave.currXhr) { progressDiv.hide(); }
-  var waveLoaded = wave.backend && wave.backend.buffer;
-  if (waveLoaded || wave.currXhr) { loadTextDiv.hide(); }
+  // toggle progressDiv, waveDiv, and loadTextDiv appropriately
+  var waveLoaded = (wave.backend && wave.backend.buffer);
+  if (wave.currXhr) { // a wave is loading
+    progressDiv.show();
+    loadTextDiv.hide();
+    waveDiv.hide();
+  } else if (waveLoaded) { // a wave has been loaded
+    progressDiv.hide();
+    loadTextDiv.hide();
+    waveDiv.show();
+  } else { // no waves have been loaded
+    progressDiv.hide();
+    loadTextDiv.show();
+    waveDiv.hide();
+  }
 
   // make sure only to run the init once
-  if (wave.initialized) { return console.log("stopped wave rerender: "+wave.id); }
+  if (wave.initialized) { return; }
   wave.initialized = true;
   console.log("rendering wave: "+id);
 
@@ -184,9 +195,11 @@ Template.wave.rendered = function () {
   });
 
   // progress bar
-  waveDiv.hide();
-  loadTextDiv.show();
   wave.on('loading', function(percent, xhr) {
+    loadTextDiv = $(selector+' .loadText'),
+    progressDiv = $(selector+' .progress'),
+    progressBar = $(selector+' .progress-bar'),
+    waveDiv = $(selector+' wave');
     progressBar.css({ 'width': percent + '%' });
 
     // do stuff on first load

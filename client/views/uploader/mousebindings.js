@@ -43,7 +43,7 @@ Template.wave.events({
     }
   },
 
-  'mousemove .wavePlayer': function(e) {
+  'click .wavePlayer': function(e) {
     Session.set("wave_focus", this.id);
   },
 
