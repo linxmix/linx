@@ -103,18 +103,6 @@ Mixer = {
     }
   },
 
-  // creates a soft transition object from startSong to endSong
-  'makeSoftTransition': function(startSong, endSong) {
-    return {
-      'type': 'transition',
-      '_id': 'soft',
-      'startSong': startSong,
-      'endSong': endSong,
-      'transitionType': 'soft',
-      'volume': 1.0
-    };
-  },
-
   // adds given sample to the queue. returns true if successful, or undefined
   'queue': function(sample, index, startTime, endTime) {
     if (!Meteor.userId()) {
@@ -168,7 +156,7 @@ function queueSong(song, index, startTime, endTime) {
   // make a soft transition and queue it (implicitly queueing this song)
   var lastSample = queue[queue.length - 1];
   if ((lastSample && lastSample.type) === 'song') {
-    var softTransition = Mixer.makeSoftTransition(lastSample._id, song._id);
+    var softTransition = Storage.makeSoftTransition(lastSample._id, song._id);
     queueTransition(softTransition, index);
 
   // otherwise, queue this song
@@ -219,8 +207,8 @@ function addToQueue(sample, startTime, endTime, index) {
   startTime = startTime || 0;
   // add start and end time to given sample
   $.extend(sample, {
-      'startTime': startTime,
-      'endTime': endTime
+    'startTime': startTime,
+    'endTime': endTime
   });
   var queue = Mixer.getQueue();
   // remove stuff after this index from queue and queuedWaves
@@ -543,12 +531,12 @@ function pickTransition() {
   // if there is a song with a lower playCount than endSong, soft transition to it
   //var song = Songs.findOne({ 'playCount': { $lt: endSong.playCount } });
   //if (song) {
-  //  transition = Mixer.makeSoftTransition(lastSample._id, song._id);
+  //  transition = Storage.makeSoftTransition(lastSample._id, song._id);
   //}
 
   // if no transition has yet been chosen, make one up
   if (!transition) {
-    transition = Mixer.makeSoftTransition(lastSample._id, endSong._id);
+    transition = Storage.makeSoftTransition(lastSample._id, endSong._id);
   }
 
   console.log("CHOOSING transition: ");

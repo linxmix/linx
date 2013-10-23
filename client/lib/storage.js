@@ -11,6 +11,52 @@ Storage = {
   // functions
   // 
 
+  // creates a soft transition object from startSong to endSong
+  'makeSoftTransition': function(startSong, endSong) {
+    return Storage.makeTransition({
+      'startSong': startSong,
+      'endSong': endSong,
+      'transitionType': 'soft',
+      '_id': 'soft',
+    });
+  },
+
+  'makeTransition': function (options) {
+    return $.extend({
+      // knowns
+      'type': 'transition',
+      'fileType': 'mp3',
+      'playCount': 0,
+      'volume': 1.0,
+      'transitionType': 'active',
+      // unknowns
+      'dj': '',
+      'startSong': '',
+      'startSongEnd': 0,
+      'endSong': '',
+      'endSongStart': 0,
+    }, options);
+  },
+
+  'makeSong': function (options) {
+    return $.extend({
+      // knowns
+      'type': 'song',
+      'fileType': 'mp3',
+      'playCount': 0,
+      'volume': 0.8,
+      // unknowns
+      'name': '',
+      'title': '',
+      'artist': '',
+      'bitrate': 0,
+      'sampleRate': 0,
+      'echoId': '',
+      'md5': '',
+    }, options);
+  },
+
+
   'deleteSample': function(sample) {
     // check user is logged in
     if (!Meteor.userId()) {
@@ -70,16 +116,12 @@ Storage = {
     var endSong = Songs.findOne({ 'name': endWave.sample.name });
 
     // get transition metadata, or make if wave doesn't have it
-    var transition = transitionWave.sample = transitionWave.sample || {
-      'type': 'transition',
-      'transitionType': 'active',
-      // TODO: make this based on given buffer's file name extension
-      'fileType': 'mp3',
-      'playCount': 0,
-      'startSong': startSong._id,
-      'endSong': endSong._id,
-      'dj': transitionWave.dj
-    };
+    var transition = transitionWave.sample =
+      transitionWave.sample || Storage.makeTransition({
+        'startSong': startSong._id,
+        'endSong': endSong._id,
+        'dj': transitionWave.dj
+    });
 
     // add transition metadata stuff to callback
     newCallback = function () {

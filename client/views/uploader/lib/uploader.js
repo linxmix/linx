@@ -224,20 +224,15 @@ Template.wave.rendered = function () {
           var track = (response && response.track);
           console.log(track);
           if (track) {
-            wave.sample = {
-              'type': 'song',
-              // TODO: make this based on given buffer's file name extension
-              'fileType': 'mp3',
+            wave.sample = Storage.makeSong({
               'name': track.title,
-              'playCount': 0,
-              'volume': 0.8,
               'title': track.title,
               'artist': track.artist,
               'bitrate': track.bitrate,
               'sampleRate': track.samplerate,
               'echoId': track.song_id,
               'md5': track.md5,
-            };
+            });
 
           // echonest attempt failed, so prompt the user to get the metadata
           } else {

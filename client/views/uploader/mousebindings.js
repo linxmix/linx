@@ -63,7 +63,7 @@ Template.wave.events({
       var relX = 'offsetX' in e ? e.offsetX : e.layerX;
       var position = (relX / wave.drawer.scrollWidth) || 0;
       // scale percent to duration
-      position *= Uploader.getWaveDuration(wave);
+      position *= Wave.getDuration(wave);
       // mark hover position
       Wave.markHover(wave, position);
     }
@@ -150,7 +150,7 @@ function zoomWave(id, percent, additive) {
 function getZoomPx(wave, percent) {
   // find max zoom
   var MAX_CANVAS_WIDTH = 32767; // current limit in google chrome
-  var maxZoom = Math.floor(MAX_CANVAS_WIDTH / Uploader.getWaveDuration(wave));
+  var maxZoom = Math.floor(MAX_CANVAS_WIDTH / Wave.getDuration(wave));
   // set bounds on zoom %
   if (percent > 100) {
     percent = 100;
