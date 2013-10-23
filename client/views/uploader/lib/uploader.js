@@ -198,6 +198,13 @@ Template.wave.rendered = function () {
     progressDiv.hide();
     // show wave
     waveDiv.show();
+    // enable overscroll on wave
+    $(selector+' wave').first().overscroll({
+      'captureWheel': false,
+      'direction': 'horizontal',
+      'hoverThumbs': true,
+      'zIndex': 5
+    });
 
     // if wave has no song, it must have been drag and drop
     // => get the metadata
@@ -394,6 +401,7 @@ Uploader = {
       // function to call on upload completion
       // TODO: debug why data is always undefined
       function putComplete(err, data) {
+        --Storage.uploadsInProgress;
         if (err) { return alert(err); }
         console.log("one upload completed. remaining uploads: " +
           Math.max(Storage.uploadsInProgress, 0));

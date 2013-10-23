@@ -43,12 +43,12 @@ body {
   cursor: pointer;
 }
 
-.selected {
+.current {
     font-size: 24px;
     background-color: yellow;
 }
 
-.current {
+.selected {
     font-size: 24px;
     color: white;
     background-color: blue;

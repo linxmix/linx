@@ -1,26 +1,7 @@
 //
 // mouse events
 //
-var mouseClickHeld = false;
 Template.wave.events({
-
-  //
-  // click and drag
-  //
-  'mousedown canvas': function (e) {
-    mouseClickHeld = true;
-  },
-
-  'mouseup': function (e) {
-    mouseClickHeld = false;
-  },
-
-  'mousemove canvas': function (e) {
-    // click and drag
-    if (mouseClickHeld) {
-      // move track
-    }
-  },
 
   //
   // area clicks
@@ -61,7 +42,7 @@ Template.wave.events({
       Wave.markHover(wave, position);
     }
   },
-  
+
   'mousemove .wavePlayer': function(e) {
     Uploader.waves['focus'] = this.id;
   },

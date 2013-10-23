@@ -100,7 +100,6 @@ Storage = {
   'putSong': function(wave, callback) {
 
     var newCallback = function () {
-      --Storage.uploadsInProgress;
       // call old callback
       if (callback) { callback(); }
     };
@@ -145,7 +144,6 @@ Storage = {
 
     // add transition metadata stuff to callback
     var newCallback = function () {
-      --Storage.uploadsInProgress;
       // update transition with timings and volume
       Transitions.update({ '_id': transition._id }, { $set:
         {
