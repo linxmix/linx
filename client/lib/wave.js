@@ -44,5 +44,56 @@ Wave = {
     });
   },
 
+  'addVolumeAutomation': function(wave, startTime, endTime, endVol) {
+    var stepSize = 0.01;
+    if (typeof wave.volume === 'undefined') { wave.volume = wave.sample.volume; }
+    var startVol = wave.volume;
+
+    // schedule start and stop of automation if not scheduled
+    if (!wave.markers['volume']) {
+      wave.on('mark', function(mark) {
+        // start volume automation
+        if ((mark && mark.id) === 'volume') {
+          wave.interval = wave.startAutomation();
+        }
+      });
+    }
+
+    // mark waves with automation times
+    wave.mark({
+      'id': 'volume',
+      'position': startTime
+    });
+    wave.markers['volume'].played = false;
+
+    // TODO: check start and end times
+
+    // calculate automation interval
+    var deltat = endTime - startTime; // total change in time
+    var deltav = endVol - startVol; // total change in volume
+    var secondsPerStep = stepSize * (deltat / deltav);
+    // if secondsPerStep is negative, flip direction
+    if (secondsPerStep < 0) {
+      secondsPerStep *= -1;
+      stepSize *= -1;
+    }
+
+    // make automation function
+    wave.startAutomation = function () {
+
+      // schedule automation end
+      Meteor.setTimeout(function () {
+        Meteor.clearInterval(wave.interval);
+      }, 1000 * deltat);
+
+      // begin automation
+      return Meteor.setInterval(function () {
+        console.log("wave volume: "+wave.volume);
+        wave.volume += stepSize;
+        wave.setVolume(Session.get("mixer_volume") * wave.volume);
+      }, secondsPerStep * 1000);
+    };
+  }
+
   
 };

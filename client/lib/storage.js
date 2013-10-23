@@ -81,28 +81,33 @@ Storage = {
       'dj': transitionWave.dj
     };
 
+    // add transition metadata stuff to callback
+    newCallback = function () {
+      // update transition with timings and volume
+      Transitions.update({ '_id': transition._id }, { $set:
+        {
+          'startSongEnd': startSongEnd,
+          'endSongStart': endSongStart,
+          'startTime': startTime,
+          'endTime': endTime,
+          'volume': $('#transitionWave .volumeSlider').data('slider').getValue()
+        }
+      });
+      // call old callback
+      if (callback) { callback(); }
+    };
+
     // add transition to database and s3 server if doesnt already exist
     if (!transition._id) {
       // upload transition to s3 server
       putWave(transitionWave, function () {
         transition._id = Transitions.insert(transition);
-        if (callback) { callback(); }
+        newCallback();
       });
     // make sure to still call callback if not putting to server
     } else {
-      if (callback) { callback(); }
+      newCallback();
     }
-
-    // update transition with timings and volume
-    Transitions.update({ '_id': transition._id }, { $set:
-      {
-        'startSongEnd': startSongEnd,
-        'endSongStart': endSongStart,
-        'startTime': startTime,
-        'endTime': endTime,
-        'volume': $('#transitionWave .volumeSlider').data('slider').getValue()
-      }
-    });
   },
 
   'getSampleUrl': function(sample, local) {

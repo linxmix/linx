@@ -43,7 +43,7 @@ Mixer = {
     }
   },
 
-  'skip': cycleQueue(),
+  'skip': cycleQueue,
 
   'stop': function() {
     Session.set("mixer_playing", false);
