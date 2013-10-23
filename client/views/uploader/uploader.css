@@ -5,8 +5,8 @@
 .waveform {
   color: #000;
   text-decoration: bold;
-  background-color: #D3C6C6;
-  border: 2px solid #257776;
+  background-color: #7A6161;
+  border: 2px solid #555;
   height: 200px;
   margin-top: 30px;
   padding: 0;
@@ -28,7 +28,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#002400', end
 }
 
 .wavesurfer-dragover {
-  background-color: #225522;
+  background-color: #330000;
   color: #fff;
 }
 
