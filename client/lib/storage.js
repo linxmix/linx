@@ -24,6 +24,7 @@ Storage = {
   'makeTransition': function (options) {
     return $.extend({
       // knowns
+      '_id': (new Meteor.Collection.ObjectID()).toHexString(),
       'type': 'transition',
       'fileType': 'mp3',
       'playCount': 0,
@@ -41,6 +42,7 @@ Storage = {
   'makeSong': function (options) {
     return $.extend({
       // knowns
+      '_id': (new Meteor.Collection.ObjectID()).toHexString(),
       'type': 'song',
       'fileType': 'mp3',
       'playCount': 0,
@@ -82,19 +84,15 @@ Storage = {
     }
     // then delete from s3 server
     var url = Storage.getSampleUrl(sample, true);
-    Meteor.call('deleteFile', url);
+    Storage.deleteFile(url);
   },
 
-  'copySong': function(song) {
-    var newUrl = getNewSongUrl(song);
-    var oldUrl = getSongUrl(song, '').replace(/\s/g, '_');
-    Meteor.call('copyFile', oldUrl, newUrl);
+  'deleteFile': function(url, callback) {
+    Meteor.call('deleteFile', url, callback);
   },
 
-  'copyTransition': function(transition) {
-    var newUrl = getNewTransitionUrl(transition);
-    var oldUrl = getTransitionUrl(transition, '').replace(/\s/g, '_');
-    Meteor.call('copyFile', oldUrl, newUrl);
+  'copyFile': function(src, dest, callback) {
+    Meteor.call('copyFile', src, dest, callback);
   },
 
   'putSong': function(wave, callback) {

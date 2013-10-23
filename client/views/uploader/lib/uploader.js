@@ -247,7 +247,7 @@ Template.wave.rendered = function () {
       var md5String = spark.end();
       wave['md5'] = md5String;
 
-      // if we have this song in our database, use that
+      // if we have this song in our database, use that and we're done
       var song = Songs.findOne({'md5': md5String});
       if (song) {
         wave.sample = song;
