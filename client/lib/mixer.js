@@ -434,16 +434,14 @@ function setWaveEndMark(wave) {
 }
 
 function cycleQueue() {
-  // update wave queue
-  pauseWave();
-  queuedWaves.shift();
-
   // update sample queue
   var queue = Mixer.getQueue();
   queue.shift();
   Session.set("queue", queue);
+  // update wave queue
+  pauseWave();
+  queuedWaves.shift();
   // if cycling to the last song, pick new transition to continue the mix
-  // TODO: implement this
   if (queue.length === 1) {
     pickTransition();
   }
