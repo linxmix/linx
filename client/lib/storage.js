@@ -104,7 +104,7 @@ Storage = {
 
     var song = wave.sample;
     // if song is new, add to database and upload wave
-    if (!song._id) {
+    if (!Songs.findOne(song._id)) {
       // upload song to s3 server
       putWave(wave, function () {
         song._id = Songs.insert(song);
@@ -157,7 +157,7 @@ Storage = {
     };
 
     // add transition to database and s3 server if doesnt already exist
-    if (!transition._id) {
+    if (!Transitions.findOne(transition._id)) {
       // upload transition to s3 server
       putWave(transitionWave, function () {
         transition._id = Transitions.insert(transition);
