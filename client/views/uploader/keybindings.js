@@ -16,31 +16,37 @@ Template.uploaderPage.events({
 //
 // key events
 //
-var keyBindingsInterval = Meteor.setInterval(function(){
-   if (Meteor.Keybindings) {
-     Meteor.clearInterval(keyBindingsInterval);
-     addKeyBindings();
-   }
-}, 500);
+Template.uploaderPage.rendered = function () {
 
-function addKeyBindings() {
-  Meteor.Keybindings.add({
-    'space': function (e) { handleEvent(e, 'playPause'); },
-    'left/shift+left': function(e) { handleEvent(e, 'markStart'); },
-    'right/shift+right': function(e) { handleEvent(e, 'markEnd'); },
-    'down/shift+down': function(e) { handleEvent(e, 'back'); },
-    'up/shift+up': function(e) { handleEvent(e, 'forth'); },
-    'tab': function(e) { handleEvent(e, 'focusForth'); },
-    'shift+tab': function(e) { handleEvent(e, 'focusBack'); },
-    'enter': function(e) { handleEvent(e, 'openSelectDialog'); },
-  });
-}
+  // hack to wait for Meteor.Keybindings to load
+  var keyBindingsInterval = Meteor.setInterval(function(){
+     if (Meteor.Keybindings) {
+       Meteor.clearInterval(keyBindingsInterval);
+       addKeyBindings();
+     }
+  }, 500);
+
+  function addKeyBindings() {
+    Meteor.Keybindings.add({
+      'space': function (e) { handleEvent(e, 'playPause'); },
+      'left/shift+left': function(e) { handleEvent(e, 'markStart'); },
+      'right/shift+right': function(e) { handleEvent(e, 'markEnd'); },
+      'down/shift+down': function(e) { handleEvent(e, 'back'); },
+      'up/shift+up': function(e) { handleEvent(e, 'forth'); },
+      'tab': function(e) { handleEvent(e, 'focusForth'); },
+      'shift+tab': function(e) { handleEvent(e, 'focusBack'); },
+      'enter': function(e) { handleEvent(e, 'openSelectDialog'); },
+      'z/shift+z': function(e) { handleEvent(e, 'zoomOut'); },
+      'a/shift+a': function(e) { handleEvent(e, 'zoomIn' ); },
+    });
+  }
+};
 
 //
 // event handlers
 //
-
 function handleEvent(e, action) {
+  console.log("keypress");
   // make sure we are on uploader page and no modals are open
   if ((Meteor.router.nav() === 'uploaderPage') &&
     Session.equals("open_dialog", undefined)) {
@@ -51,6 +57,10 @@ function handleEvent(e, action) {
       Session.get("wave_focus");
     // call appropriate event handler
     eventHandlers[action](e, id);
+
+  // otherwise, allow default key behaviour
+  } else {
+    return true;
   }
 }
 
@@ -113,6 +123,14 @@ var eventHandlers = {
     Uploader.cycleFocus(id, 1);
   },
 
+  'zoomOut': function (e, id) {
+    zoomWave(e, id, -1);
+  },
+
+  'zoomIn': function (e, id) {
+    zoomWave(e, id, 1);
+  },
+
   'openSelectDialog': function (e, id) {
     if (id === 'transitionWave') {
       Dialog.openDialog("transition_select", id);
@@ -124,3 +142,15 @@ var eventHandlers = {
   'upload': Uploader.upload,
 
 };
+
+function zoomWave(e, id, direction) {
+  // only do this if we have a file buffer loaded
+  var wave = Uploader.waves[id];
+  if (wave.backend.buffer) {
+    var zoom = 1;
+    if (e.shiftKey) {
+      zoom *= 10;
+    }
+    Wave.zoom(wave, zoom * direction, true);
+  }
+}

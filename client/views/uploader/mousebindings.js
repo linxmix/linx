@@ -9,6 +9,10 @@ Template.wave.events({
   'click .wavePlayer': function(e) {
     Session.set("wave_focus", this.id);
   },
+
+  'click .waveform': function(e) {
+    Session.set("wave_focus", this.id);
+  },
   
   'click .loadText': function (e) {
     Session.set("wave_focus", this.id);
@@ -26,6 +30,7 @@ Template.wave.events({
   // double click
   //
   'dblclick .waveform': function (e) {
+    Session.set("wave_focus", this.id);
     Uploader.playWave(this.id);
     e.preventDefault();
   },
@@ -63,7 +68,8 @@ Template.wave.events({
   //
   'mousewheel .waveform': function (e) {
     // only do this if we have a file buffer loaded
-    if (Uploader.waves[this.id].backend.buffer) {
+    var wave = Uploader.waves[this.id];
+    if (wave.backend.buffer) {
       e.preventDefault();
       e.stopPropagation();
       var direction = e.wheelDelta >= 0 ? 1 : -1;
@@ -71,96 +77,8 @@ Template.wave.events({
       if (e.shiftKey) {
         zoom *= 10;
       }
-      zoomWave(this.id, zoom * direction, true);
+      Wave.zoom(wave, zoom * direction, true);
     }
   },
 
 });
-
-//
-// zoom stuff
-//
-Template.wavePlayer.rendered = function () {
-  var id = this.data.id;
-  var wave = Uploader.waves[id];
-
-  // make sure only to run the init once
-  if (wave.initialized) { return; }
-
-  // set up volume slider
-  var volumeSlider = $(this.find('.volumeSlider'));
-  volumeSlider.slider({
-    'min': 0,
-    'max': this.data.isSongWave ? 1.0 : 1.25,
-    'step': 0.01,
-    'value': this.data.isSongWave ? 0.8 : 1.0,
-  })
-  .on('slide', function(ev) {
-    wave.setVolume(ev.value);
-  });
-
-  // set up zoom slider
-  var zoomSlider = $(this.find('.zoomSlider'));
-  zoomSlider.slider({
-    'min': 1,
-    'max': 100,
-    'step': 1,
-    'handle': 'triangle',
-  })
-  .on('slide', function(ev) {
-    zoomWave(id, ev.value);
-  });
-};
-
-function zoomWave(id, percent, additive) {
-  var wave = Uploader.waves[id];
-  var lastPercent = wave.lastPercent || 5;
-  if (additive) {
-    percent += lastPercent;
-  }
-
-  // set bounds on zoom %
-  if (percent > 100) {
-    percent = 100;
-  } else if (percent < 1) {
-    percent = 1;
-  }
-
-  if (percent !== lastPercent) {
-    wave.lastPercent = percent;
-    // do zoom
-    wave.params['minPxPerSec'] = wave.drawer.params['minPxPerSec'] =
-      getZoomPx(wave, percent);
-    // redraw wave
-    redrawWave(id);
-    // update zoomSlider
-    $('#'+id+' .zoomSlider').slider('setValue', percent);
-  }
-}
-
-function getZoomPx(wave, percent) {
-  // find max zoom
-  var MAX_CANVAS_WIDTH = 32767; // current limit in google chrome
-  var maxZoom = Math.floor(MAX_CANVAS_WIDTH / Wave.getDuration(wave));
-  // calculate px and return
-  return (percent / 100.0) * maxZoom;
-}
-
-function redrawWave(id) {
-  var wave = Uploader.waves[id];
-  // redraw wave
-  wave.drawBuffer();
-  // update with and center screen on progress if wave is not playing
-  var playingWave = Uploader.waves['playingWave'];
-  if (!(playingWave && (playingWave['id'] === id))) {
-    var hoverMarker = wave.markers['hover'];
-    var progress = Wave.getProgress(wave) ||
-      (hoverMarker && hoverMarker.percentage);
-    wave.drawer.recenterOnPosition(~~(wave.drawer.scrollWidth * progress), true);
-  }
-
-  // update markers
-  for (var waveId in wave.markers) {
-    wave.drawer.addMark(wave.markers[waveId]);
-  }
-}

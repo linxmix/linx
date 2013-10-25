@@ -19,6 +19,33 @@ Wave = {
     return (Wave.getPosition(wave) / Wave.getDuration(wave)) || 0;
   },
 
+  'zoom': function(wave, percent, additive) {
+    var lastPercent = wave.lastPercent || 5;
+    if (additive) {
+      percent += lastPercent;
+    }
+
+    // set bounds on zoom %
+    if (percent > 100) {
+      percent = 100;
+    } else if (percent < 1) {
+      percent = 1;
+    }
+
+    if (percent !== lastPercent) {
+      wave.lastPercent = percent;
+      // do zoom
+      wave.params['minPxPerSec'] = wave.drawer.params['minPxPerSec'] =
+        getZoomPx(wave, percent);
+      // redraw wave
+      redrawWave(wave);
+      // update zoomSlider, if exists
+      if (wave.id) {
+        $('#'+wave.id+' .zoomSlider').slider('setValue', percent);
+      }
+    }
+  },
+
   'markStart': function(wave, position) {
     wave.mark({
       'id': 'start',
@@ -94,6 +121,34 @@ Wave = {
       }, secondsPerStep * 1000);
     };
   }
-
   
 };
+
+
+//
+// zoom stuff
+//
+function getZoomPx(wave, percent) {
+  // find max zoom
+  var MAX_CANVAS_WIDTH = 32767; // current limit in google chrome
+  var maxZoom = Math.floor(MAX_CANVAS_WIDTH / Wave.getDuration(wave));
+  // calculate px and return
+  return (percent / 100.0) * maxZoom;
+}
+
+function redrawWave(wave) {
+  // redraw wave
+  wave.drawBuffer();
+  // update with and center screen on progress if wave is not playing
+  var playingWave = Uploader.waves['playingWave'];
+  if (!(playingWave && (playingWave['id'] === wave.id))) {
+    var hoverMarker = wave.markers['hover'];
+    var progress = Wave.getProgress(wave) ||
+      (hoverMarker && hoverMarker.percentage);
+    wave.drawer.recenterOnPosition(~~(wave.drawer.scrollWidth * progress), true);
+  }
+  // update markers
+  for (var waveId in wave.markers) {
+    wave.drawer.addMark(wave.markers[waveId]);
+  }
+}
