@@ -445,7 +445,6 @@ function cycleQueue() {
   if (queue.length === 1) {
     pickTransition();
   }
-
   // confirm play status
   assertPlayStatus();
 }
