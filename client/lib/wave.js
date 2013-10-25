@@ -32,6 +32,7 @@ Wave = {
       percent = 1;
     }
 
+    // run zoom only if our percent changed
     if (percent !== lastPercent) {
       wave.lastPercent = percent;
       // do zoom
@@ -39,9 +40,15 @@ Wave = {
         getZoomPx(wave, percent);
       // redraw wave
       redrawWave(wave);
-      // update zoomSlider, if exists
+      // if waveid exists, update zoomSlider, and enable overscroll
       if (wave.id) {
-        $('#'+wave.id+' .zoomSlider').slider('setValue', percent);
+        var selector = '#'+wave.id;
+        $(selector+' .zoomSlider').slider('setValue', percent);
+        // enable overscroll on wave
+        $(selector+' wave').first().overscroll({
+          'captureWheel': false,
+          'direction': 'horizontal',
+        });
       }
     }
   },
