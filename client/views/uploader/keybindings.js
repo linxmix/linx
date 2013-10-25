@@ -45,7 +45,6 @@ function handleEvent(e, action) {
     Session.equals("open_dialog", undefined)) {
     // prevent default and propagation
     e.preventDefault();
-    e.stopPropagation();
     // figure out the id of this wave
     var id = (e.target && e.target.dataset && e.target.dataset.id) ||
       Session.get("wave_focus");

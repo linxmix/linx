@@ -6,6 +6,14 @@ Template.wave.events({
   //
   // area clicks
   //
+  'click .wavePlayer': function(e) {
+    Session.set("wave_focus", this.id);
+  },
+  
+  'click .loadText': function (e) {
+    Session.set("wave_focus", this.id);
+  },
+
   'click .songLoadText': function (e) {
     Session.set("song_search_query", "");
     Uploader.openDialog($('#songSelectDialog'), "song_select", this.id);
@@ -29,7 +37,7 @@ Template.wave.events({
   //
   'mousemove .waveform': function(e) {
     var wave = Uploader.waves[this.id];
-    Session.set("wave_focus", this.id);
+    //Session.set("wave_focus", this.id);
 
     // only do this if we have a file buffer loaded
     if (wave.backend && wave.backend.buffer) {
@@ -41,10 +49,6 @@ Template.wave.events({
       // mark hover position
       Wave.markHover(wave, position);
     }
-  },
-
-  'click .wavePlayer': function(e) {
-    Session.set("wave_focus", this.id);
   },
 
   'mouseout .waveform': function(e) {
