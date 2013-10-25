@@ -1,78 +1,86 @@
 //
-// link button clicks to event handler
+// global handleKey
 //
-Template.uploaderPage.events({
+handleKeyEvent = function(e, action, id) {
+  // make sure action exists
+  if (action && action in eventHandlers) {
 
-  'click button': function (e) {
-    var action = e.target.dataset && e.target.dataset.action;
-    // pass click to event handlers
-    if (action && action in eventHandlers) {
-      handleEvent(e, action);
+    // make sure we are on uploader page and no modals are open
+    if ((Meteor.router.nav() === 'uploaderPage') &&
+      Session.equals("open_dialog", undefined)) {
+
+      // prevent default and propagation
+      e.preventDefault();
+      // figure out the id of this wave
+      id = id || (e.target && e.target.dataset && e.target.dataset.id) ||
+        Session.get("wave_focus");
+      // call appropriate event handler
+      eventHandlers[action](e, id);
+
+    // otherwise, allow default key behaviour
+    } else {
+      return true;
     }
-  }
-
-});
-
-//
-// key events
-//
-Template.uploaderPage.rendered = function () {
-
-  // hack to wait for Meteor.Keybindings to load
-  var keyBindingsInterval = Meteor.setInterval(function(){
-     if (Meteor.Keybindings) {
-       Meteor.clearInterval(keyBindingsInterval);
-       addKeyBindings();
-     }
-  }, 500);
-
-  function addKeyBindings() {
-    Meteor.Keybindings.add({
-      'space': function (e) { handleEvent(e, 'playPause'); },
-      'left/shift+left': function(e) { handleEvent(e, 'markStart'); },
-      'right/shift+right': function(e) { handleEvent(e, 'markEnd'); },
-      'down/shift+down': function(e) { handleEvent(e, 'back'); },
-      'up/shift+up': function(e) { handleEvent(e, 'forth'); },
-      'tab': function(e) { handleEvent(e, 'focusForth'); },
-      'shift+tab': function(e) { handleEvent(e, 'focusBack'); },
-      'enter': function(e) { handleEvent(e, 'openSelectDialog'); },
-      'z/shift+z': function(e) { handleEvent(e, 'zoomOut'); },
-      'a/shift+a': function(e) { handleEvent(e, 'zoomIn' ); },
-    });
+  } else {
+    return true;
   }
 };
 
 //
-// event handlers
+// key events
 //
-function handleEvent(e, action) {
-  // make sure we are on uploader page and no modals are open
-  if ((Meteor.router.nav() === 'uploaderPage') &&
-    Session.equals("open_dialog", undefined)) {
-    // prevent default and propagation
-    e.preventDefault();
-    // figure out the id of this wave
-    var id = (e.target && e.target.dataset && e.target.dataset.id) ||
-      Session.get("wave_focus");
-    // call appropriate event handler
-    eventHandlers[action](e, id);
 
-  // otherwise, allow default key behaviour
-  } else {
-    return true;
-  }
+// hack to wait for Meteor.Keybindings to load
+var keyBindingsInterval = Meteor.setInterval(function(){
+   if (Meteor.Keybindings) {
+     Meteor.clearInterval(keyBindingsInterval);
+     addKeyBindings();
+   }
+}, 500);
+
+function addKeyBindings() {
+  Meteor.Keybindings.add({
+    'space/shift+space': function(e) { handleKeyEvent(e, 'playPause'); },
+    'left/shift+left': function(e) { handleKeyEvent(e, 'markStart'); },
+    'right/shift+right': function(e) { handleKeyEvent(e, 'markEnd'); },
+    'down/shift+down': function(e) { handleKeyEvent(e, 'back'); },
+    'up/shift+up': function(e) { handleKeyEvent(e, 'forth'); },
+    'tab': function(e) { handleKeyEvent(e, 'focusForth'); },
+    'shift+tab': function(e) { handleKeyEvent(e, 'focusBack'); },
+    'enter': function(e) { handleKeyEvent(e, 'openSelectDialog'); },
+    'z/shift+z': function(e) { handleKeyEvent(e, 'zoomOut'); },
+    'a/shift+a': function(e) { handleKeyEvent(e, 'zoomIn' ); },
+  });
 }
 
+//
+// event handlers
+//
 var eventHandlers = {
 
   'playPause': function(e, id) {
-    var playingId =
-      (Uploader.waves['playingWave'] && Uploader.waves['playingWave'].id);
-    if (playingId === id) {
-      // we want this to be a universal pause
+    var wave = Uploader.waves[id],
+        playing = Uploader.waves['playing'],
+        lastPlay = Uploader.waves['lastPlay'];
+
+    // redirect shift presses
+    if (e.shiftKey) {
+      playLastPlay(e, id);
+    }
+
+    // we want this to be a universal pause
+    else if (wave.id === (playing && playing.id)) {
       Uploader.pause();
+
+    // this wave isn't already playing, so play it and update lastPlay
     } else {
-      Uploader.playWave(id);
+      // if lastPlay, clear its mark
+      if (lastPlay) {
+        Wave.clearMark(lastPlay, 'lastPlay');
+      }
+      Uploader.waves['lastPlay'] = wave;
+      Wave.markPlay(wave, Wave.getPosition(wave));
+      Uploader.playWave(wave);
     }
   },
 
@@ -151,5 +159,16 @@ function zoomWave(e, id, direction) {
       zoom *= 10;
     }
     Wave.zoom(wave, zoom * direction, true);
+  }
+}
+
+// find wave with lastPlay marker and play from that marker
+function playLastPlay(e, id) {
+  var lastPlay = Uploader.waves['lastPlay'];
+  if (lastPlay) {
+    var progress = (lastPlay.markers['lastPlay'] &&
+      lastPlay.markers['lastPlay'].percentage);
+    lastPlay.seekTo(progress);
+    Uploader.playWave(lastPlay);
   }
 }

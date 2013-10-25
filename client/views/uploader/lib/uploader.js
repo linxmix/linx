@@ -368,19 +368,22 @@ Uploader = {
   'playWave': function(wave) {
     // curry arg
     if (typeof wave !== 'object') { wave = Uploader.waves[wave]; }
+    // pause any possible playing wave
     Uploader.pause();
+
+    // if wave is loaded, play it and update playing/lastPlay
     if (wave && wave.backend.buffer) {
       Session.set("wave_focus", wave.id);
-      Uploader.waves['playingWave'] = wave;
+      Uploader.waves['playing'] = wave;
       wave.play();
     }
   },
 
   'pause': function() {
-    var playingWave = Uploader.waves['playingWave'];
+    var playingWave = Uploader.waves['playing'];
     if (playingWave) {
       playingWave.pause();
-      Uploader.waves['playingWave'] = undefined;
+      Uploader.waves['playing'] = undefined;
     }
   },
 

@@ -5,24 +5,36 @@
 // count mouse move events while click is held
 var clickHeld = false;
 Template.uploaderPage.events({
+
+  //
+  // click and hold events
+  //
   // unset clickHeld
   'mouseup': function (e) {
     clickHeld = false;
-    console.log(clickHeld);
   },
   // set clickHeld, reset movesMade
   'mousedown .waveform': function(e) {
     clickHeld = true;
     Uploader.movesMade = 0;
-    console.log(clickHeld);
   },
   // increment movesMade while click is held
   'mousemove .waveform': function(e) {
     if (clickHeld) {
       Uploader.movesMade++;
     }
+  },
+
+  //
+  // link button clicks to key event handler
+  //
+  'click button': function (e) {
+    var action = e.target.dataset && e.target.dataset.action;
+    // pass click to event handlers
+    handleKeyEvent(e, action);
   }
 });
+
 
 // other wave events
 Template.wave.events({
@@ -53,10 +65,11 @@ Template.wave.events({
   //
   // double click
   //
-  'dblclick .waveform': function (e) {
-    Session.set("wave_focus", this.id);
-    Uploader.playWave(this.id);
-    e.preventDefault();
+  'dblclick .waveform': function(e) {
+    // pause uploader beforehand so this is always a play
+    Uploader.pause();
+    // trigger playPause
+    handleKeyEvent(e, 'playPause', this.id);
   },
 
   //
@@ -94,14 +107,8 @@ Template.wave.events({
     // only do this if we have a file buffer loaded
     var wave = Uploader.waves[this.id];
     if (wave.backend.buffer) {
-      e.preventDefault();
-      e.stopPropagation();
-      var direction = e.wheelDelta >= 0 ? 1 : -1;
-      var zoom = 1;
-      if (e.shiftKey) {
-        zoom *= 10;
-      }
-      Wave.zoom(wave, zoom * direction, true);
+      var action = e.wheelDelta >= 0 ? 'zoomIn' : 'zoomOut';
+      handleKeyEvent(e, action, wave.id);
     }
   },
 

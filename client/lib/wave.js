@@ -4,6 +4,10 @@ Wave = {
   // functions
   // 
 
+  'clearMark': function(wave, id) {
+    (wave.markers[id] && wave.markers[id].remove());
+  },
+
   // position is in seconds
   'getPosition': function(wave) {
     return (wave && wave.timings()[0]);
@@ -78,6 +82,15 @@ Wave = {
     });
   },
 
+  'markPlay': function(wave, position) {
+    position = position || 0;
+    wave.mark({
+      'id': 'lastPlay',
+      'position': position,
+      'color': 'rgba(0, 0, 0, 1.0)'
+    });
+  },
+
   'addVolumeAutomation': function(wave, startTime, endTime, endVol) {
     var stepSize = 0.01;
     if (typeof wave.volume === 'undefined') { wave.volume = wave.sample.volume; }
@@ -147,7 +160,7 @@ function redrawWave(wave) {
   // redraw wave
   wave.drawBuffer();
   // update with and center screen on progress if wave is not playing
-  var playingWave = Uploader.waves['playingWave'];
+  var playingWave = Uploader.waves['playing'];
   if (!(playingWave && (playingWave['id'] === wave.id))) {
     var hoverMarker = wave.markers['hover'];
     var progress = Wave.getProgress(wave) ||
