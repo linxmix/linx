@@ -1,6 +1,30 @@
 //
 // mouse events
 //
+
+// count mouse move events while click is held
+var clickHeld = false;
+Template.uploaderPage.events({
+  // unset clickHeld
+  'mouseup': function (e) {
+    clickHeld = false;
+    console.log(clickHeld);
+  },
+  // set clickHeld, reset movesMade
+  'mousedown .waveform': function(e) {
+    clickHeld = true;
+    Uploader.movesMade = 0;
+    console.log(clickHeld);
+  },
+  // increment movesMade while click is held
+  'mousemove .waveform': function(e) {
+    if (clickHeld) {
+      Uploader.movesMade++;
+    }
+  }
+});
+
+// other wave events
 Template.wave.events({
 
   //

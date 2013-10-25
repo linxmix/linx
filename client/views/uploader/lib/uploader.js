@@ -3,8 +3,6 @@
 //
 Session.set("waves", []);
 
-// private variables
-
 var waveColors = {
   'startWave': 'mediumorchid',
   'transitionWave': 'steelblue',
@@ -22,7 +20,6 @@ var cursorColors = {
   'transitionWave': 'navy',
   'endWave': 'navy'
 };
-
 //
 // /init
 //
@@ -52,6 +49,30 @@ function makeWave(id, loadText, isSongWave) {
       my.fireEvent('ready');
     }, function () {
       my.fireEvent('error', 'Error decoding audio');
+    });
+  };
+  // /hack
+
+  // hack to make it so click only seeks on drag
+  wave.createDrawer = function () {
+    var my = wave;
+
+    wave.drawer = Object.create(WaveSurfer.Drawer[wave.params.renderer]);
+    wave.drawer.init(wave.params);
+
+    wave.drawer.on('redraw', function () {
+      my.drawBuffer();
+    });
+
+    // only seek if there was no click and drag
+    wave.drawer.on('click', function (progress) {
+      if (Uploader.movesMade < 3) {
+        my.seekTo(progress);
+      }
+    });
+
+    wave.on('progress', function (progress) {
+      my.drawer.progress(progress);
     });
   };
   // /hack
@@ -307,6 +328,7 @@ Uploader = {
   // vars
   //
   'waves': {},
+  'movesMade': 0,
 
   //
   // methods
@@ -314,7 +336,6 @@ Uploader = {
 
   // reset the uploader page
   'reset': function () {
-    console.log("resetting");
     // make waves
     makeWave("startWave", "Drop starting song here", true);
     makeWave("transitionWave", "Drop new transition here", false);

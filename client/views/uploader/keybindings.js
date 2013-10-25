@@ -46,7 +46,6 @@ Template.uploaderPage.rendered = function () {
 // event handlers
 //
 function handleEvent(e, action) {
-  console.log("keypress");
   // make sure we are on uploader page and no modals are open
   if ((Meteor.router.nav() === 'uploaderPage') &&
     Session.equals("open_dialog", undefined)) {
