@@ -16,12 +16,12 @@ Template.wave.events({
 
   'click .songLoadText': function (e) {
     Session.set("song_search_query", "");
-    Uploader.openDialog($('#songSelectDialog'), "song_select", this.id);
+    Dialog.openDialog($('#songSelectDialog'), "song_select", this.id);
   },
 
   'click .transitionLoadText': function (e) {
     Session.set("transition_search_query", "");
-    Uploader.openDialog($('#transitionSelectDialog'), "transition_select", this.id);
+    Dialog.openDialog($('#transitionSelectDialog'), "transition_select", this.id);
   },
 
   //

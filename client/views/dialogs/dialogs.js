@@ -1,4 +1,5 @@
 Dialog = {
+
   'close': function (e) {
     Session.set("open_dialog", undefined);
     $('#songSelectDialog').modal('hide');
@@ -8,6 +9,20 @@ Dialog = {
     $('#songMatchDialog').modal('hide');
     Uploader.waves['modalWaveOpen'] = undefined;
   },
+
+  'openDialog': function(selector, name, id) {
+    Session.set("selected_song", undefined);
+    Session.set("selected_transition", undefined);
+    // reset dialog's form
+    var form = $(selector.find('form'))[0];
+    if (form) { form.reset(); }
+    // close any previous dialog
+    Dialog.close();
+    Session.set("open_dialog", name);
+    selector.modal('show');
+    Uploader.waves['modalWaveOpen'] = Uploader.waves[id];
+  },
+
 };
 
 Template.songSelectDialog.events({
@@ -95,7 +110,7 @@ function submitSongInfo(e) {
   // first see if we have any songs like this one in our database
   if (songs.length > 0) {
     Session.set("song_matches", songs);
-    Uploader.openDialog($('#songMatchDialog'), "song_match", wave.id);
+    Dialog.openDialog($('#songMatchDialog'), "song_match", wave.id);
   }
   // couldn't find any possible matches in our database, so try to guess info
   else {

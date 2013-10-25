@@ -261,7 +261,7 @@ Template.wave.rendered = function () {
 
           // echonest attempt failed, so prompt the user to get the metadata
           } else {
-            Uploader.openDialog($('#songInfoDialog'), "song_info", id);
+            Dialog.openDialog($('#songInfoDialog'), "song_info", id);
           }
 
         });
@@ -271,7 +271,7 @@ Template.wave.rendered = function () {
     // if transition has no sample, it must be new
     // => so prompt the user to get the metadata
     if (!wave.hasMetadata && (id === 'transitionWave')) {
-      Uploader.openDialog($('#transitionInfoDialog'), "transition_info", id);
+      Dialog.openDialog($('#transitionInfoDialog'), "transition_info", id);
     }
 
     // reset hasMetadata in case new file is loaded after this
@@ -342,17 +342,6 @@ Uploader = {
     if (next < 0) { next = 2; }
     // update wave focus
     Session.set("wave_focus", reverseMapping[next]);
-  },
-
-  'openDialog': function(selector, name, id) {
-    Session.set("selected_song", undefined);
-    Session.set("selected_transition", undefined);
-    // reset dialog's form
-    var form = $(selector.find('form'))[0];
-    if (form) { form.reset(); }
-    Session.set("open_dialog", name);
-    selector.modal('show');
-    Uploader.waves['modalWaveOpen'] = Uploader.waves[id];
   },
 
   'playWave': function(wave) {
