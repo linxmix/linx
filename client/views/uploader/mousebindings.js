@@ -14,14 +14,12 @@ Template.wave.events({
     Session.set("wave_focus", this.id);
   },
 
-  'click .songLoadText': function (e) {
-    Session.set("song_search_query", "");
-    Dialog.openDialog($('#songSelectDialog'), "song_select", this.id);
+  'click .songLoadText': function(e) {
+    Dialog.openDialog("song_select", this.id);
   },
 
-  'click .transitionLoadText': function (e) {
-    Session.set("transition_search_query", "");
-    Dialog.openDialog($('#transitionSelectDialog'), "transition_select", this.id);
+  'click .transitionLoadText': function(e) {
+    Dialog.openDialog("transition_select", this.id);
   },
 
   //

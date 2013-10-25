@@ -32,6 +32,7 @@ function addKeyBindings() {
     'up/shift+up': function(e) { handleEvent(e, 'forth'); },
     'tab': function(e) { handleEvent(e, 'focusForth'); },
     'shift+tab': function(e) { handleEvent(e, 'focusBack'); },
+    'enter': function(e) { handleEvent(e, 'openSelectDialog'); },
   });
 }
 
@@ -112,5 +113,14 @@ var eventHandlers = {
     Uploader.cycleFocus(id, 1);
   },
 
-  'upload': Uploader.upload
+  'openSelectDialog': function (e, id) {
+    if (id === 'transitionWave') {
+      Dialog.openDialog("transition_select", id);
+    } else {
+      Dialog.openDialog("song_select", id);
+    }
+  },
+
+  'upload': Uploader.upload,
+
 };

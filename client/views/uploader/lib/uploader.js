@@ -182,14 +182,15 @@ Template.wave.rendered = function () {
 
   // progress bar
   wave.on('loading', function(percent, xhr) {
-    loadTextDiv = $(selector+' .loadText'),
-    progressDiv = $(selector+' .progress'),
-    progressBar = $(selector+' .progress-bar'),
-    waveDiv = $(selector+' wave');
     progressBar.css({ 'width': percent + '%' });
 
     // do stuff on first load
     if (firstLoading) {
+      // refresh div pointers
+      loadTextDiv = $(selector+' .loadText');
+      progressDiv = $(selector+' .progress');
+      progressBar = $(selector+' .progress-bar');
+      waveDiv = $(selector+' wave');
       // hide load text, hide wave, show progress bar, set vars
       loadTextDiv.hide();
       waveDiv.hide();
@@ -199,7 +200,6 @@ Template.wave.rendered = function () {
       xhr.curr = true;
     }
 
-    // TODO: figure out how to reset metadata
     // if loading new xhr, cancel prev and update with new
     if (!xhr.curr) {
       wave.currXhr.abort();
@@ -261,7 +261,7 @@ Template.wave.rendered = function () {
 
           // echonest attempt failed, so prompt the user to get the metadata
           } else {
-            Dialog.openDialog($('#songInfoDialog'), "song_info", id);
+            Dialog.openDialog("song_info", id);
           }
 
         });
@@ -271,7 +271,7 @@ Template.wave.rendered = function () {
     // if transition has no sample, it must be new
     // => so prompt the user to get the metadata
     if (!wave.hasMetadata && (id === 'transitionWave')) {
-      Dialog.openDialog($('#transitionInfoDialog'), "transition_info", id);
+      Dialog.openDialog("transition_info", id);
     }
 
     // reset hasMetadata in case new file is loaded after this
@@ -361,6 +361,51 @@ Uploader = {
       playingWave.pause();
       Uploader.waves['playingWave'] = undefined;
     }
+  },
+
+  // submit song info on song info modal close
+  'submitSongInfo': function(e) {
+    var wave = Uploader.waves['modalWaveOpen'];
+    Dialog.close(e);
+    var serial = $('#songInfoDialog form').serializeArray();
+    var name = serial[0]['value'];
+    var artist = serial[1]['value'];
+
+    wave.guessSample = function() {
+      wave.sample = Storage.makeSong({
+        'name': name,
+        'title': name,
+        'artist': artist,
+        'md5': wave.md5,
+        'duration': Wave.getDuration(wave),
+      });
+    };
+
+    //
+    // use user-provided info to attempt to ID song
+    //
+    var songs = Songs.find({ $or: [
+      { 'name':  { $regex: name, $options: 'i' } },
+      { 'artist':  { $regex: artist, $options: 'i' } }
+    ]}).fetch();
+    // first see if we have any songs like this one in our database
+    if (songs.length > 0) {
+      Session.set("song_matches", songs);
+      Dialog.openDialog("song_match", wave.id);
+    }
+    // couldn't find any possible matches in our database, so try to guess info
+    else {
+      wave.guessSample();
+    }
+  },
+
+  // submit transition info on transition info modal close
+  'submitTransitionInfo': function(e) {
+    var wave = Uploader.waves['modalWaveOpen'];
+    Dialog.close(e); // click is here so that close is triggered
+    var serial = $('#transitionInfoDialog form').serializeArray();
+    var DJName = serial[0]['value'];
+    wave['dj'] = DJName;
   },
 
   'loadSong': function (e) {
