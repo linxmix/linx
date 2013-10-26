@@ -442,6 +442,8 @@ function setWaveEndMark(wave) {
   }
 
   // if this is a song wave, automate its volume
+  wave.volume = (wave.sample.startVolume !== undefined) ?
+    wave.sample.startVolume : wave.sample.volume;
   if (wave.sample.type === 'song') {
     // if wave is currently playing, startTime is currentPos
     var startTime = wave.markers['start'].position;
@@ -507,8 +509,6 @@ function playWave() {
 
     // otherwise, play it, assert volume, and set it as playing
     wave.play();
-    wave.volume = (wave.sample.startVolume !== undefined) ?
-      wave.sample.startVolume : wave.sample.volume;
     assertVolume();
     Session.set("current_sample", wave.sample._id);
 
