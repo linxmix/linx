@@ -444,8 +444,6 @@ function setWaveEndMark(wave) {
   }
 
   // if this is a song wave, automate its volume
-  wave.volume = (wave.sample.startVolume !== undefined) ?
-    wave.sample.startVolume : wave.sample.volume;
   if (wave.sample.type === 'song') {
     // if wave is currently playing, startTime is currentPos
     var startTime = wave.markers['start'].position;
