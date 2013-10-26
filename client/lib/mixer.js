@@ -392,6 +392,8 @@ function makeWave(sample, callback) {
     if (wave.sample._id === loadingWave.sample._id) {
       loadingWave = undefined;
       setWaveMarks(wave);
+      wave.volume = (wave.sample.startVolume !== undefined) ?
+        wave.sample.startVolume : wave.sample.volume;
       console.log("wave ready");
       return callback(wave);
     }
@@ -507,8 +509,6 @@ function playWave() {
 
     // otherwise, play it, assert volume, and set it as playing
     wave.play();
-    wave.volume = (wave.sample.startVolume !== undefined) ?
-      wave.sample.startVolume : wave.sample.volume;
     assertVolume();
     Session.set("current_sample", wave.sample._id);
 

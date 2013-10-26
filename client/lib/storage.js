@@ -59,14 +59,22 @@ Storage = {
     }, options);
   },
 
-  'updateAll': function(coll, data) {
-  // check user is logged in
+  'updateAll': function(coll, fnc) {
+    // check user is logged in
     if (!Meteor.userId()) {
       return alert("Sorry, but you must be logged in to updateAll!");
     }
-    coll.find().fetch().forEach(function (element) {
-      coll.update({ '_id': element._id }, { $set: data });
-    });
+
+    // if fnc is an object, set it directly
+    if (typeof fnc === 'object') {
+      coll.find().fetch().forEach(function (element) {
+        coll.update({ '_id': element._id }, { $set: fnc });
+      });
+
+    // if fnc is a function, call it on each element
+    } else if (typeof fnc === 'function') {
+      coll.find().fetch().forEach(fnc);
+    }
   },
 
   'deleteSample': function(sample) {

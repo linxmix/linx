@@ -93,7 +93,9 @@ Wave = {
 
   'addVolumeAutomation': function(wave, startTime, endTime, endVol) {
     var stepSize = 0.01;
-    if (typeof wave.volume === 'undefined') { wave.volume = wave.sample.volume; }
+    if (typeof wave.volume === 'undefined') {
+      wave.volume = wave.sample.startVolume || wave.sample.volume;
+    }
     var startVol = wave.volume;
 
     console.log("automating wave with below arguments: ");
@@ -107,6 +109,7 @@ Wave = {
     // validation
     if ((startTime === undefined) ||
       (endTime === undefined) ||
+      (startVol === undefined) ||
       (endVol === undefined)) {
       return console.log("ERROR: addVolumeAutomation given invalid args!");
     }

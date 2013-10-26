@@ -474,20 +474,22 @@ Uploader = {
     }
 
     if (transitionWave && transition) {
-      
+
       // load transition
       loadWave(transitionWave, transition, transition.volume,
         Storage.getSampleUrl(transition));
 
       // load startWave
-      loadWave(Uploader.waves['startWave'],
-        Songs.findOne(transition.startSong),
+      var startSong = Songs.findOne(transition.startSong);
+      var startWave = Uploader.waves['startWave'];
+      loadWave(startWave, startSong,
         transition.startSongVolume,
         Storage.getSampleUrl(startSong));
 
       // load endWave
-      loadWave(Uploader.waves['endWave'],
-        Songs.findOne(transition.endSong),
+      var endSong = Songs.findOne(transition.endSong);
+      var endWave = Uploader.waves['endWave'];
+      loadWave(endWave, endSong,
         transition.endSongVolume,
         Storage.getSampleUrl(endSong));
 
