@@ -49,7 +49,6 @@ Storage = {
       'fileType': 'mp3',
       'playCount': 0,
       // unknowns
-      'name': '',
       'title': '',
       'artist': '',
       'bitrate': 0,
