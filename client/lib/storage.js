@@ -33,8 +33,10 @@ Storage = {
       // unknowns
       'dj': '',
       'startSong': '',
+      'startSongVolume': 0.8,
       'startSongEnd': 0,
       'endSong': '',
+      'endSongVolume': 0.8,
       'endSongStart': 0,
     }, options);
   },
@@ -46,7 +48,6 @@ Storage = {
       'type': 'song',
       'fileType': 'mp3',
       'playCount': 0,
-      'volume': 0.8,
       // unknowns
       'name': '',
       'title': '',
@@ -58,6 +59,15 @@ Storage = {
     }, options);
   },
 
+  'updateAll': function(coll, data) {
+  // check user is logged in
+    if (!Meteor.userId()) {
+      return alert("Sorry, but you must be logged in to updateAll!");
+    }
+    coll.find().fetch().forEach(function (element) {
+      coll.update({ '_id': element._id }, { $set: data });
+    });
+  },
 
   'deleteSample': function(sample) {
     // check user is logged in
@@ -111,12 +121,8 @@ Storage = {
         newCallback();
       });
     }
-    // otherwise, just update song volume and call callback
+    // otherwise, just call callback
     else {
-      Songs.update(
-        { '_id': song._id },
-        { $set: { 'volume': song.volume } }
-      );
       newCallback();
     }
   },
@@ -149,6 +155,8 @@ Storage = {
           'endSongStart': endSongStart,
           'startTime': startTime,
           'endTime': endTime,
+          'startSongVolume': $('#startWave .volumeSlider').data('slider').getValue(),
+          'endSongVolume': $('#endWave .volumeSlider').data('slider').getValue(),
           'volume': $('#transitionWave .volumeSlider').data('slider').getValue()
         }
       });
@@ -237,7 +245,7 @@ Storage = {
         return array.indexOf(value) > -1 ? true : false;
       }
 
-      // remove samples that are not on server
+      // remove from results samples that are not on server
       samples.filter(function (sample) {
         var url = Storage.getSampleUrl(sample, true);
         var bool = isInArray(url, urlList);

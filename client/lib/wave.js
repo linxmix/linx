@@ -96,7 +96,28 @@ Wave = {
     if (typeof wave.volume === 'undefined') { wave.volume = wave.sample.volume; }
     var startVol = wave.volume;
 
-    // schedule start and stop of automation if not scheduled
+    console.log("automating wave with below arguments: ");
+    console.log(arguments);
+
+    // if start and end vol are the same, we're done
+    if (startVol === endVol) {
+      return;
+    }
+
+    // validation
+    if ((startTime === undefined) ||
+      (endTime === undefined) ||
+      (endVol === undefined)) {
+      return console.log("ERROR: addVolumeAutomation given invalid args!");
+    }
+
+    // first clear any previous intervals
+    if (wave.interval) {
+      Meteor.clearInterval(wave.interval);
+      wave.interval = undefined;
+    }
+
+    // schedule start of automation if not scheduled
     if (!wave.markers['volume']) {
       wave.on('mark', function(mark) {
         // start volume automation
@@ -106,14 +127,12 @@ Wave = {
       });
     }
 
-    // mark waves with automation times
+    // mark wave with automation time
     wave.mark({
       'id': 'volume',
       'position': startTime
     });
     wave.markers['volume'].played = false;
-
-    // TODO: check start and end times
 
     // calculate automation interval
     var deltat = endTime - startTime; // total change in time
@@ -131,12 +150,15 @@ Wave = {
       // schedule automation end
       Meteor.setTimeout(function () {
         Meteor.clearInterval(wave.interval);
+        wave.interval = undefined;
+        wave.volume = endVol;
+        wave.setVolume(Session.get("mixer_volume") * wave.volume);
       }, 1000 * deltat);
 
       // begin automation
       return Meteor.setInterval(function () {
-        console.log("wave volume: "+wave.volume);
         wave.volume += stepSize;
+        console.log("wave volume: "+wave.volume);
         wave.setVolume(Session.get("mixer_volume") * wave.volume);
       }, secondsPerStep * 1000);
     };

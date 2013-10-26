@@ -144,9 +144,11 @@ Mixer = {
 // private methods
 //
 
-function queueSong(song, index, startTime, endTime) {
+function queueSong(song, index, startTime, endTime, startVolume, endVolume) {
   var queue = Mixer.getQueue();
-  if (index === undefined) index = queue.length;
+  if (index === undefined) { index = queue.length; }
+  if (startVolume === undefined) { startVolume = 0.8; }
+  if (endVolume === undefined) { endVolume = 0.8; }
   // coerce song into object
   if (typeof song !== 'object') {
     song = Songs.findOne(song);
@@ -161,13 +163,18 @@ function queueSong(song, index, startTime, endTime) {
 
   // otherwise, queue this song
   } else {
+    // add start and end volumes to song
+    $.extend(song, {
+      'startVolume': startVolume,
+      'endVolume': endVolume,
+    });
     return addToQueue(song, startTime, endTime, index);
   }
 }
 
 function queueTransition(transition, index, startTime, endTime) {
   var queue = Mixer.getQueue();
-  if (index === undefined) index = queue.length;
+  if (index === undefined) { index = queue.length; }
   // coerce transition into object
   if (typeof transition !== 'object') {
     transition = Transitions.findOne(transition);
@@ -178,16 +185,18 @@ function queueTransition(transition, index, startTime, endTime) {
 
   // if queueing transition at front, queue startSong first
   if (index === 0) {
-    queueSong(transition.startSong, index++, undefined, transition.startSongEnd);
+    queueSong(transition.startSong, index++, undefined,
+      transition.startSongEnd, undefined, transition.startSongVolume);
   }
 
   // if transition fits at this index
   var prevSample = queue[index - 1];
   if (isValidTransition(prevSample, transition)) {
 
-    // otherwise, make sure to update previous sample's endTime
+    // otherwise, make sure to update previous sample's endTime and endVolume
     if (prevSample) {
       prevSample.endTime = transition.startSongEnd;
+      prevSample.endVolume = transition.startSongVolume || 0.8;
       Session.set("queue", queue);
     }
 
@@ -195,7 +204,8 @@ function queueTransition(transition, index, startTime, endTime) {
     addToQueue(transition, transition.startTime, transition.endTime, index++);
 
     // queue endSong
-    return queueSong(transition.endSong, index++, transition.endSongStart);
+    return queueSong(transition.endSong, index++, transition.endSongStart, undefined,
+      transition.endSongVolume, undefined);
 
   } else {
     return console.log("ERROR: Invalid Transition given to queueTransition");
@@ -365,19 +375,7 @@ function makeWave(sample, callback) {
   // set loadingWave
   loadingWave = wave;
 
-  // set this wave's marker events
-  wave.on('mark', function (mark) {
-    // cycle queue if hitting end marker and queue has not already been cycled
-    if (((mark.id === 'end') ||
-      (mark.id === 'track_end')) &&
-      !wave.hasCycled) {
-      wave.hasCycled = true;
-      cycleQueue();
-    }
-  });
-
   // load url
-  // TODO: make this a progress bar
   wave.load(Storage.getSampleUrl(sample));
 
   // cancel if loadingWave changes out from under us
@@ -403,6 +401,17 @@ function makeWave(sample, callback) {
 // sets markers for wave such that it will transition smoothly
 function setWaveMarks(wave) {
 
+  // set this wave's marker events
+  wave.on('mark', function (mark) {
+    // cycle queue if hitting end marker and queue has not already been cycled
+    if (((mark.id === 'end') ||
+      (mark.id === 'track_end')) &&
+      !wave.hasCycled) {
+      wave.hasCycled = true;
+      cycleQueue();
+    }
+  });
+
   // mark wave start
   var startTime = wave.sample.startTime || 0;
   wave.mark({
@@ -412,24 +421,40 @@ function setWaveMarks(wave) {
   // set this wave to start at its startTime
   wave.skip(startTime);
 
-  // separate function so it can be called alone
-  setWaveEndMark(wave);
-
   // mark wave's track_end
   wave.mark({
     'id': 'track_end',
-    'position': Wave.getDuration(wave)
+    'position': Wave.getDuration(wave) - 0.1, // subtract to make sure mark is hit
   });
+
+  // separate function so it can be called alone
+  setWaveEndMark(wave);
 }
 
 function setWaveEndMark(wave) {
   var endTime = wave.sample.endTime;
-  // mark wave end
+  // if wave has a given endTime, mark its end
   if (endTime) {
     wave.mark({
       'id': 'end',
       'position': endTime
     });
+  }
+
+  // if this is a song wave, automate its volume
+  if (wave.sample.type === 'song') {
+    // if wave is currently playing, startTime is currentPos
+    var startTime = wave.markers['start'].position;
+    if (Session.equals("current_sample", wave.sample._id)) {
+      startTime = Mixer.getCurrentPosition();
+    }
+    endTime = (endTime !== undefined) ? endTime : Wave.getDuration(wave);
+
+    // add automation
+    Wave.addVolumeAutomation(wave,    // wave
+      startTime + 1,                  // start time
+      endTime,                        // end time
+      wave.sample.endVolume);         // end vol
   }
 }
 
@@ -440,7 +465,13 @@ function cycleQueue() {
   Session.set("queue", queue);
   // update wave queue
   pauseWave();
-  queuedWaves.shift();
+  var lastWave = queuedWaves.shift();
+
+  // if lastWave still has an interval, cancel it
+  if (lastWave && lastWave.interval) {
+    Meteor.clearInterval(lastWave.interval);
+    lastWave.interval = undefined;
+  }
   // if cycling to the last song, pick new transition to continue the mix
   if (queue.length === 1) {
     pickTransition();
@@ -476,9 +507,12 @@ function playWave() {
 
     // otherwise, play it, assert volume, and set it as playing
     wave.play();
+    wave.volume = (wave.sample.startVolume !== undefined) ?
+      wave.sample.startVolume : wave.sample.volume;
     assertVolume();
     Session.set("current_sample", wave.sample._id);
-    // update playcount if not already done
+
+    // update wave playCount if not already done
     if (!wave.played) {
       wave.played = true;
       Storage.incrementPlayCount(wave.sample);
@@ -491,10 +525,10 @@ function playWave() {
 }
 
 function assertVolume() {
-  var volume = Session.get("mixer_volume");
+  var mixerVolume = Session.get("mixer_volume");
   var wave = Mixer.getQueue('wave')[0];
   if (wave) {
-    wave.setVolume(wave.sample.volume * volume);
+    wave.setVolume(wave.volume * mixerVolume);
   }
 }
 

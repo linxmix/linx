@@ -244,6 +244,9 @@ Template.wave.rendered = function () {
       'direction': 'horizontal',
     });
 
+    //
+    // metadata
+    //
     // if wave has no song, it must have been drag and drop
     // => get the metadata
     if (!wave.hasMetadata && (id !== 'transitionWave')) {
@@ -294,17 +297,20 @@ Template.wave.rendered = function () {
     if (!wave.hasMetadata && (id === 'transitionWave')) {
       Dialog.openDialog("transition_info", id);
     }
+    //
+    // /metadata
+    // 
+
+    // if wave has no metadata, set volume to default
+    if (!wave.hasMetadata) {
+      var volume = (wave.id === 'transitionWave') ? 1.0 : 0.8;
+      // update volume and slider
+      wave.setVolume(volume);
+      $(selector+' .volumeSlider').slider('setValue', volume);
+    }
 
     // reset hasMetadata in case new file is loaded after this
     wave.hasMetadata = false;
-
-    // set volume and volume slider
-    var sample = wave.sample;
-    if (sample && sample.volume) {
-      wave.setVolume(sample.volume);
-      // update volumeSlider
-      $(selector+' .volumeSlider').slider('setValue', sample.volume);
-    }
 
   });
 };
@@ -457,23 +463,34 @@ Uploader = {
     Dialog.close(e); // click is here so double click on transition will close modal
     var transition = Transitions.findOne(Session.get("selected_transition"));
 
+    function loadWave(wave, sample, volume, url) {
+      wave.sample = sample;
+      wave.hasMetadata = true;
+      // update volume and slider
+      wave.setVolume(volume);
+      $('#'+wave.id+' .volumeSlider').slider('setValue', volume);
+      // load file
+      wave.load(url);
+    }
+
     if (transitionWave && transition) {
+      
       // load transition
-      transitionWave.sample = transition;
-      transitionWave.hasMetadata = true;
-      transitionWave.load(Storage.getSampleUrl(transition));
+      loadWave(transitionWave, transition, transition.volume,
+        Storage.getSampleUrl(transition));
+
       // load startWave
-      var startSong = Songs.findOne(transition.startSong);
-      var startWave = Uploader.waves['startWave'];
-      startWave.sample = startSong;
-      startWave.hasMetadata = true;
-      startWave.load(Storage.getSampleUrl(startSong));
+      loadWave(Uploader.waves['startWave'],
+        Songs.findOne(transition.startSong),
+        transition.startSongVolume,
+        Storage.getSampleUrl(startSong));
+
       // load endWave
-      var endSong = Songs.findOne(transition.endSong);
-      var endWave = Uploader.waves['endWave'];
-      endWave.sample = endSong;
-      endWave.hasMetadata = true;
-      endWave.load(Storage.getSampleUrl(endSong));
+      loadWave(Uploader.waves['endWave'],
+        Songs.findOne(transition.endSong),
+        transition.endSongVolume,
+        Storage.getSampleUrl(endSong));
+
       // mark waves
       startWave.once('ready', function () {
         Wave.markEnd(startWave, transition.startSongEnd);
@@ -500,10 +517,6 @@ Uploader = {
 
     // make sure this transition is valid before uploading
     validateUpload(startWave, transitionWave, endWave, function () {
-
-      // update volumes
-      startWave.sample.volume = $('#startWave .volumeSlider').data('slider').getValue();
-      endWave.sample.volume = $('#endWave .volumeSlider').data('slider').getValue();
 
       // function to call on upload completion
       // TODO: debug why data is always undefined
