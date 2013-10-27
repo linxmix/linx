@@ -58,6 +58,18 @@ Storage = {
     }, options);
   },
 
+  'saveMix': function (queue) {
+    // extract all ids from samples in queue
+    queue.map(function(sample) {
+      return sample._id;
+    });
+    // TODO: call queue info modal here
+    Mixes.insert({
+      'name': name,
+      'queue': queue,
+    })
+  },
+
   'updateAll': function(coll, fnc) {
     // check user is logged in
     if (!Meteor.userId()) {
