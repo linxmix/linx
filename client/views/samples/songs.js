@@ -6,8 +6,8 @@ Template.song.events({
     Session.set("selected_song", this._id);
 
     // if either song choice modal is active, this serves as a click to the load song button
-    if (Session.equals("open_dialog", "song_select") ||
-      Session.equals("open_dialog", "song_match")) {
+    if (Session.equals("open_modal", "song_select") ||
+      Session.equals("open_modal", "song_match")) {
       Uploader.loadSong(e);
     }
 

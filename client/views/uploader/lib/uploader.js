@@ -285,7 +285,7 @@ Template.wave.rendered = function () {
 
           // echonest attempt failed, so prompt the user to get the metadata
           } else {
-            Dialog.openDialog("song_info", id);
+            Modal.openModal("song_info", id);
           }
 
         });
@@ -295,7 +295,7 @@ Template.wave.rendered = function () {
     // if transition has no sample, it must be new
     // => so prompt the user to get the metadata
     if (!wave.hasMetadata && (id === 'transitionWave')) {
-      Dialog.openDialog("transition_info", id);
+      Modal.openModal("transition_info", id);
     }
     //
     // /metadata
@@ -396,8 +396,8 @@ Uploader = {
   // submit song info on song info modal close
   'submitSongInfo': function(e) {
     var wave = Uploader.waves['modalWaveOpen'];
-    Dialog.close(e);
-    var serial = $('#songInfoDialog form').serializeArray();
+    Modal.close(e);
+    var serial = $('#songInfoModal form').serializeArray();
     var name = serial[0]['value'];
     var artist = serial[1]['value'];
 
@@ -421,7 +421,7 @@ Uploader = {
     // first see if we have any songs like this one in our database
     if (songs.length > 0) {
       Session.set("song_matches", songs);
-      Dialog.openDialog("song_match", wave.id);
+      Modal.openModal("song_match", wave.id);
     }
     // couldn't find any possible matches in our database, so try to guess info
     else {
@@ -432,15 +432,15 @@ Uploader = {
   // submit transition info on transition info modal close
   'submitTransitionInfo': function(e) {
     var wave = Uploader.waves['modalWaveOpen'];
-    Dialog.close(e); // click is here so that close is triggered
-    var serial = $('#transitionInfoDialog form').serializeArray();
+    Modal.close(e); // click is here so that close is triggered
+    var serial = $('#transitionInfoModal form').serializeArray();
     var DJName = serial[0]['value'];
     wave['dj'] = DJName;
   },
 
   'loadSong': function (e) {
     var wave = Uploader.waves['modalWaveOpen'];
-    Dialog.close(e); // click is here so double click on song will close modal
+    Modal.close(e); // click is here so double click on song will close modal
     var song = Songs.findOne(Session.get("selected_song"));
 
     // if wave and song exist, load song and tie song to wave
@@ -460,7 +460,7 @@ Uploader = {
 
   'loadTransition': function (e) {
     var transitionWave = Uploader.waves['modalWaveOpen'];
-    Dialog.close(e); // click is here so double click on transition will close modal
+    Modal.close(e); // click is here so double click on transition will close modal
     var transition = Transitions.findOne(Session.get("selected_transition"));
 
     function loadWave(wave, sample, volume, url) {

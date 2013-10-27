@@ -7,7 +7,7 @@ handleKeyEvent = function(e, action, id) {
 
     // make sure we are on uploader page and no modals are open
     if ((Meteor.router.nav() === 'uploaderPage') &&
-      Session.equals("open_dialog", undefined)) {
+      Session.equals("open_modal", undefined)) {
 
       // prevent default and propagation
       e.preventDefault();
@@ -47,7 +47,7 @@ function addKeyBindings() {
     'up/shift+up': function(e) { handleKeyEvent(e, 'forth'); },
     'tab': function(e) { handleKeyEvent(e, 'focusForth'); },
     'shift+tab': function(e) { handleKeyEvent(e, 'focusBack'); },
-    'enter': function(e) { handleKeyEvent(e, 'openSelectDialog'); },
+    'enter': function(e) { handleKeyEvent(e, 'openSelectModal'); },
     'z/shift+z': function(e) { handleKeyEvent(e, 'zoomOut'); },
     'a/shift+a': function(e) { handleKeyEvent(e, 'zoomIn' ); },
   });
@@ -138,11 +138,11 @@ var eventHandlers = {
     zoomWave(e, id, 1);
   },
 
-  'openSelectDialog': function (e, id) {
+  'openSelectModal': function (e, id) {
     if (id === 'transitionWave') {
-      Dialog.openDialog("transition_select", id);
+      Modal.openModal("transition_select", id);
     } else {
-      Dialog.openDialog("song_select", id);
+      Modal.openModal("song_select", id);
     }
   },
 

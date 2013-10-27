@@ -55,11 +55,11 @@ Template.wave.events({
   },
 
   'click .songLoadText': function(e) {
-    Dialog.openDialog("song_select", this.id);
+    Modal.openModal("song_select", this.id);
   },
 
   'click .transitionLoadText': function(e) {
-    Dialog.openDialog("transition_select", this.id);
+    Modal.openModal("transition_select", this.id);
   },
 
   //
