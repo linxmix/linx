@@ -426,7 +426,7 @@ function setWaveMarks(wave) {
   // mark wave's track_end
   wave.mark({
     'id': 'track_end',
-    'position': Wave.getDuration(wave) - 0.1, // subtract to make sure mark is hit
+    'position': Wave.getDuration(wave), // subtract to make sure mark is hit
   });
 
   // separate function so it can be called alone
