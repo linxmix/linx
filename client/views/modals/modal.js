@@ -1,29 +1,53 @@
 Modal = {
 
+  // 
+  // vars
+  // 
+  'queuedModals': [],
+
+  //
+  // functions
+  //
   'close': function (e) {
-    Session.set("open_modal", undefined);
     $('#songSelectModal').modal('hide');
     $('#transitionSelectModal').modal('hide');
     $('#songInfoModal').modal('hide');
     $('#transitionInfoModal').modal('hide');
     $('#songMatchModal').modal('hide');
+
+    // reset modals
+    console.log("resetting modals");
+    Session.set("open_modal", undefined);
     Uploader.waves['modalWaveOpen'] = undefined;
+
+    // if another modal is queued to open, do that
+    var nextModal = Modal.queuedModals.shift();
+    if (nextModal) {
+      Modal.openModal(nextModal.name, nextModal.id);
+    }
   },
 
   'openModal': function(name, id) {
 
+    // if another modal is already open, queue this one to open next
+    if (Session.get("open_modal") !== undefined) {
+      return Modal.queuedModals.push({ 'name': name, 'id': id });
+    }
+
     // modal-specific stuff
-    var selector;
+    var selector, closeOnEscape = false;
     switch (name) {
 
       case "song_select":
         selector = $('#songSelectModal');
         Session.set("song_search_query", "");
+        closeOnEscape = true;
         break;
 
       case "transition_select":
         selector = $('#transitionSelectModal');
         Session.set("transition_search_query", "");
+        closeOnEscape = true;
         break;
 
       case "song_info":
@@ -48,10 +72,13 @@ Modal = {
     // reset modal's form
     var form = $(selector.find('form'))[0];
     if (form) { form.reset(); }
-    // close any previous modal
-    Modal.close();
+
+    // open new modal
     Session.set("open_modal", name);
-    selector.modal('show');
+    selector.modal({
+      'show': true,
+      'keyboard': closeOnEscape,
+    });
     Uploader.waves['modalWaveOpen'] = Uploader.waves[id];
   },
 
@@ -71,26 +98,18 @@ Template.songMatchModal.events({
 
 Template.songInfoModal.events({
   'click #submitSongInfo': Uploader.submitSongInfo,
-  'keyup': submitOnEnterPress,
 });
 
 Template.transitionInfoModal.events({
-  'click #submitTransitionInfo': Uploader.submitTransitionInfo,
-  'keyup': submitOnEnterPress,
+  'click #submitTransitionInfo': Uploader.submitTransitionInfo
 });
 
 Template.Modal.events({
   'click .close': Modal.close,
   'click .cancel': Modal.close,
+  'keyup': submitOnEnterPress,
 });
 
-/*Template.Modal.rendered = function () {
-  $('#songSelectModal').on('hidden.bs.modal', Modal.close);
-  $('#transitionSelectModal').on('hidden.bs.modal', Modal.close);
-  $('#songInfoModal').on('hidden.bs.modal', Modal.close);
-  $('#transitionInfoModal').on('hidden.bs.modal', Modal.close);
-  $('#songMatchModal').on('hidden.bs.modal', Modal.close);
-};*/
 
 Template.songMatches.songs = function () {
   return Session.get("song_matches");
@@ -99,11 +118,16 @@ Template.songMatches.songs = function () {
 function submitOnEnterPress(e) {
   if (e.keyCode === 13) { // enter key
 
-    if (Session.equals("open_modal", "song_info")) {
-      Uploader.submitSongInfo(e);
-    } else if (Session.equals("open_modal", "transition_info")) {
-      Uploader.submitTransitionInfo(e);
-    }
+    switch (Session.get("open_modal")) {
+      case "song_info":
+        Uploader.submitSongInfo(e); break;
+      case "transition_info":
+        Uploader.submitTransitionInfo(e); break;
+      case "song_select":
+        Uploader.loadSong(e); break;
+      case "transition_select":
+        Uploader.loadTransition(e); break;
+    };
 
   }
 }

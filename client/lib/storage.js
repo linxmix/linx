@@ -70,6 +70,8 @@ Storage = {
     })
   },
 
+  // TODO: make this back up the database before doing any of this!
+  //  Storage.updateAll(Songs, function(song) { var x = Storage.makeSong(song); delete x._id; return x; } )
   'updateAll': function(coll, fnc) {
     // check user is logged in
     if (!Meteor.userId()) {
@@ -84,7 +86,12 @@ Storage = {
 
     // if fnc is a function, call it on each element
     } else if (typeof fnc === 'function') {
-      coll.find().fetch().forEach(fnc);
+      coll.find().fetch().forEach(function (element) {
+        var options = fnc(element);
+        if (options !== undefined) {
+          coll.update({ '_id': element._id }, { $set: options });
+        }
+      });
     }
   },
 
