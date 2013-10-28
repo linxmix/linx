@@ -65,7 +65,7 @@ var eventHandlers = {
 
     // redirect shift presses
     if (e.shiftKey) {
-      playLastPlay(e, id);
+      seekLastPlayPos(e, id);
     }
 
     // we want this to be a universal pause
@@ -162,13 +162,14 @@ function zoomWave(e, id, direction) {
   }
 }
 
-// find wave with lastPlay marker and play from that marker
-function playLastPlay(e, id) {
+// find wave with lastPlay marker and seek there
+function seekLastPlayPos(e, id) {
   var lastPlay = Uploader.waves['lastPlay'];
   if (lastPlay) {
     var progress = (lastPlay.markers['lastPlay'] &&
       lastPlay.markers['lastPlay'].percentage);
     lastPlay.seekTo(progress);
-    Uploader.playWave(lastPlay);
+    Uploader.pause();
+    Session.set("wave_focus", lastPlay.id);
   }
 }

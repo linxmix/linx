@@ -243,6 +243,8 @@ Template.wave.rendered = function () {
       'captureWheel': false,
       'direction': 'horizontal',
     });
+    // reset zoom
+    Wave.zoom(wave, 5);
 
     //
     // metadata
