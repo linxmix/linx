@@ -137,7 +137,6 @@ Mixer = {
         }
       }
     }
-    return console.log("ERROR: found no valid transitions for: "+song.name);
   },
   
 };

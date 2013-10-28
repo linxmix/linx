@@ -93,7 +93,7 @@ Template.transitionSelectModal.events({
 });
 
 Template.songMatchModal.events({
-  'click .submitSongMatch': Uploader.loadSong,
+  'click #submitSongMatch': Uploader.loadSong,
 });
 
 Template.songInfoModal.events({
@@ -107,7 +107,7 @@ Template.transitionInfoModal.events({
 Template.Modal.events({
   'click .close': Modal.close,
   'click .cancel': Modal.close,
-  'keyup': submitOnEnterPress,
+  'keydown': submitOnEnterPress,
 });
 
 
@@ -115,6 +115,7 @@ Template.songMatches.songs = function () {
   return Session.get("song_matches");
 };
 
+// TODO: debug how to get this to work in modals that dont have forms
 function submitOnEnterPress(e) {
   if (e.keyCode === 13) { // enter key
 

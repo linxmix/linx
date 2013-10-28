@@ -101,7 +101,7 @@ Wave = {
     if (startVol === endVol) {
       return;
     }
-
+    
     console.log("adding volume automation with args: ");
     console.log(arguments);
 
