@@ -22,40 +22,6 @@ Wave = {
     return (Wave.getPosition(wave) / Wave.getDuration(wave)) || 0;
   },
 
-  'zoom': function(wave, percent, additive) {
-    var lastPercent = wave.lastPercent || 5;
-    if (additive) {
-      percent += lastPercent;
-    }
-
-    // set bounds on zoom %
-    if (percent > 100) {
-      percent = 100;
-    } else if (percent < 1) {
-      percent = 1;
-    }
-
-    // run zoom only if our percent changed
-    if (percent !== lastPercent) {
-      wave.lastPercent = percent;
-      // do zoom
-      wave.params['minPxPerSec'] = wave.drawer.params['minPxPerSec'] =
-        getZoomPx(wave, percent);
-      // redraw wave
-      redrawWave(wave);
-      // if waveid exists, update zoomSlider, and enable overscroll
-      if (wave.id) {
-        var selector = '#'+wave.id;
-        $(selector+' .zoomSlider').slider('setValue', percent);
-        // enable overscroll on wave
-        $(selector+' wave').first().overscroll({
-          'captureWheel': false,
-          'direction': 'horizontal',
-        });
-      }
-    }
-  },
-
   'markStart': function(wave, position) {
     wave.mark({
       'id': 'start',
@@ -90,10 +56,44 @@ Wave = {
     });
   },
 
+  'zoom': function(wave, percent, additive) {
+    var lastPercent = wave.lastPercent || 5;
+    if (additive) {
+      percent += lastPercent;
+    }
+
+    // set bounds on zoom %
+    if (percent > 100) {
+      percent = 100;
+    } else if (percent < 1) {
+      percent = 1;
+    }
+
+    // run zoom only if our percent changed
+    if (percent !== lastPercent) {
+      wave.lastPercent = percent;
+      // do zoom
+      wave.params['minPxPerSec'] = wave.drawer.params['minPxPerSec'] =
+        getZoomPx(wave, percent);
+      // redraw wave
+      redrawWave(wave);
+      // if waveid exists, update zoomSlider, and enable overscroll
+      if (wave.id) {
+        var selector = '#'+wave.id;
+        $(selector+' .zoomSlider').slider('setValue', percent);
+        // enable overscroll on wave
+        $(selector+' wave').first().overscroll({
+          'captureWheel': false,
+          'direction': 'horizontal',
+        });
+      }
+    }
+  },
+
   'addVolumeAutomation': function(wave, startTime, endTime, endVol) {
     var stepSize = 0.01;
     if (typeof wave.volume === 'undefined') {
-      wave.volume = wave.sample.startVolume || wave.sample.volume;
+      wave.volume = wave.sample.startVolume;
     }
     var startVol = wave.volume;
 
@@ -101,6 +101,9 @@ Wave = {
     if (startVol === endVol) {
       return;
     }
+
+    console.log("adding volume automation with args: ");
+    console.log(arguments);
 
     // validation
     if ((startTime === undefined) ||
@@ -161,7 +164,7 @@ Wave = {
         wave.setVolume(Session.get("mixer_volume") * wave.volume);
       }, secondsPerStep * 1000);
     };
-  }
+  },
   
 };
 

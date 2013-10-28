@@ -161,6 +161,7 @@ function queueSong(data) {
       'endVolume': data.endVolume,
     });
   }
+
   // ensure volume fields of song
   if (song.startVolume === undefined) { song.startVolume = 0.8; }
   if (song.endVolume === undefined) { song.endVolume = 0.8; }
@@ -186,22 +187,22 @@ function queueTransition(transition, index) {
   console.log("queueTransition called with below at index: "+index);
   console.log(transition);
 
-  // if queueing transition at front, queue startSong first
-  if (index === 0) {
-    queueSong({
-      'sample': transition.startSong,
-      'index': index++,
-      'endTime': transition.startSongEnd,
-      'endVolume': transition.startSongVolume
-    });
-  }
-
   // if transition fits at this index
   var prevSample = queue[index - 1];
   if (isValidTransition(prevSample, transition)) {
 
+    // if queueing transition at front, queue startSong first
+    if (index === 0) {
+      queueSong({
+        'sample': transition.startSong,
+        'index': index++,
+        'endTime': transition.startSongEnd,
+        'endVolume': transition.startSongVolume
+      });
+    }
+
     // otherwise, make sure to update previous sample's endTime and endVolume
-    if (prevSample) {
+    else if (prevSample) {
       prevSample['endTime'] = transition['startSongEnd'];
       prevSample['endVolume'] = (transition['startSongVolume'] !== undefined) ?
         transition['startSongVolume'] : prevSample['endVolume'];
@@ -321,8 +322,9 @@ function loadSample(index) {
 
     // and that sample is this one, update sample and wave scheduling, then continue
     if (currSample_id === sample._id) {
-      Mixer.getQueue('wave')[0].sample = sample;
-      setWaveEndMark(Mixer.getQueue('wave')[0]);
+      var currWave = Mixer.getQueue('wave')[0]
+      currWave.sample = sample;
+      setWaveEndMark(currWave);
       return loadNext(++index);
 
     // if playing wave is not this one, pause that wave since it's now old
