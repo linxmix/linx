@@ -14,58 +14,50 @@ s3Client = Knox.createClient({
 
 Meteor.methods({
 
-  'getFileUrl': exceptionWrapper(function (path) {
-    // deprecated
-    return null;
-  }),
-
   // TODO: will max-keys be an issue? check knox list api for reference
-  'getList': exceptionWrapper(function(prefix) {
+  'getList': function(prefix) {
+    if (!Meteor.userId()) {
+      return alert("WARNING: Server method called from user who was not logged in!");
+    }
     var fut = new Future();
     s3Client.list({ 'prefix': prefix}, function (err, data) {
       if (err) { fut['return'](err); }
       fut['return'](data);
     });
     return fut.wait();
-  }),
+  },
 
-  'deleteFile': exceptionWrapper(function (url) {
+  'deleteFile': function(url) {
+    if (!Meteor.userId()) {
+      return alert("WARNING: Server method called from user who was not logged in!");
+    }
     console.log("DELETING FILE: "+url);
     s3Client.deleteFile(url, function(err, res) {
       if (err) { return console.log(err); }
       res.resume();
     });
-  }),
+  },
 
-  'copyFile': exceptionWrapper(function (oldUrl, newUrl) {
+  'copyFile': function (oldUrl, newUrl) {
+    if (!Meteor.userId()) {
+      return alert("WARNING: Server method called from user who was not logged in!");
+    }
     console.log("COPYING FILE AT: "+oldUrl+" TO NEW URL: "+newUrl);
     s3Client.copyFile(oldUrl, newUrl, function(err, res) {
       if (err) { return console.log(err); }
       res.resume();
     });
-  }),
+  },
 
-  'putArray': exceptionWrapper(function (array, url) {
+  'putArray': function (array, url) {
+    if (!Meteor.userId()) {
+      return alert("WARNING: Server method called from user who was not logged in!");
+    }
     this.unblock();
     putArray(array, url, 0);
-  }),
+  },
 
 });
-
-// wrap function in try/catch so that server won't reset on error
-function exceptionWrapper(func, extra) {
-  if (!Meteor.userId()) {
-    return alert("WARNING: Server method called from user who was not logged in!");
-  }
-  return function() {
-    try {
-      return func.apply(this, arguments);
-    } catch (e) {
-      console.log("SERVER ERROR CAUGHT!");
-      console.log(e);
-    }
-  };
-}
 
 // put given array to the s3 server at given url
 function putArray(array, url, attempt) {

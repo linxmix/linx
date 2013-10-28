@@ -12,23 +12,29 @@ echoClient = Echojs({
 
 Meteor.methods({
 
-  'identifySong': exceptionWrapper(function (data) {
+  'identifySong': function (data) {
+    if (!Meteor.userId()) {
+      return alert("WARNING: Server method called from user who was not logged in!");
+    }
     var fut = new Future();
     echoClient('track/profile').get(data, function(err, json) {
       if (err) { fut['return'](console.log(err)); }
       fut['return'](json.response);
     });
     return fut.wait();
-  }),
+  },
 
-  'searchEchoNest': exceptionWrapper(function (data) {
+  'searchEchoNest': function (data) {
+    if (!Meteor.userId()) {
+      return alert("WARNING: Server method called from user who was not logged in!");
+    }
     var fut = new Future();
     echoClient('song/search').get(data, function(err, json) {
       if (err) { fut['return'](console.log(err)); }
       fut['return'](json.response);
     });
     return fut.wait();
-  })
+  },
 
 });
 
