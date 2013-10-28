@@ -9,16 +9,16 @@ Modal = {
   // functions
   //
   'close': function (e) {
+    // reset modals
+    console.log("resetting modals");
+    Session.set("open_modal", undefined);
+    Uploader.waves['modalWaveOpen'] = undefined;
+
     $('#songSelectModal').modal('hide');
     $('#transitionSelectModal').modal('hide');
     $('#songInfoModal').modal('hide');
     $('#transitionInfoModal').modal('hide');
     $('#songMatchModal').modal('hide');
-
-    // reset modals
-    console.log("resetting modals");
-    Session.set("open_modal", undefined);
-    Uploader.waves['modalWaveOpen'] = undefined;
 
     // if another modal is queued to open, do that
     var nextModal = Modal.queuedModals.shift();

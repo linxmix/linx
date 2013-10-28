@@ -54,6 +54,9 @@ Meteor.methods({
 
 // wrap function in try/catch so that server won't reset on error
 function exceptionWrapper(func, extra) {
+  if (!Meteor.userId()) {
+    return alert("WARNING: Server method called from user who was not logged in!");
+  }
   return function() {
     try {
       return func.apply(this, arguments);

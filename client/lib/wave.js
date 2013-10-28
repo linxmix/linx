@@ -3,7 +3,6 @@ Wave = {
   //
   // functions
   // 
-
   'clearMark': function(wave, id) {
     (wave.markers[id] && wave.markers[id].remove());
   },

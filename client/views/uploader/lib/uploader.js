@@ -199,6 +199,7 @@ Template.wave.rendered = function () {
     console.log("resetting "+wave.id+"'s metadata");
     wave.hasMetadata = false;
     wave.sample = undefined;
+    wave.empty();
   });
 
   // progress bar
