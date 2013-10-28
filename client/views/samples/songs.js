@@ -13,7 +13,7 @@ Template.song.events({
 
     // queue a "soft" transition to this song if we already have a queue
     else if (Mixer.getQueue().length > 0) {
-      Mixer.queue(Songs.findOne(this._id));
+      Mixer.queue({ 'sample': Songs.findOne(this._id) });
     }
     // if we have no queue, start the mix with this song
     else {

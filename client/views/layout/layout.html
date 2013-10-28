@@ -15,7 +15,7 @@
   {{> player}}
   {{> pageNav}}
   {{> songNav}}
-  {{> loginNav}}
+  {{> userNav}}
 </template>
 
 <!-- Player -->
@@ -44,8 +44,10 @@
   </ul>
 </template>
 
-<template name="loginNav">
+<template name="userNav">
   <div class="navbar-right">
+    <button class="navbar-btn btn-success">Save Mix</button>
+    <button class="navbar-btn btn-danger">Load Mix</button>
     <button class="navbar-btn btn-primary">{{loginButtons}}</button>
   </div>
 </template>

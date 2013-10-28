@@ -97,9 +97,6 @@ Wave = {
     }
     var startVol = wave.volume;
 
-    console.log("automating wave with below arguments: ");
-    console.log(arguments);
-
     // if start and end vol are the same, we're done
     if (startVol === endVol) {
       return;

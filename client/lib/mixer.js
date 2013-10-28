@@ -23,7 +23,7 @@ Mixer = {
     // if given a sample, place it at start of queue and pick a first transition
     if (sample) {
       // if sample was queued successfully, pick a first transition
-      if (Mixer.queue(sample, 0)) {
+      if (Mixer.queue({ 'sample': sample, 'index': 0 })) {
         pickTransition();
       }
     }
@@ -104,19 +104,21 @@ Mixer = {
   },
 
   // adds given sample to the queue. returns true if successful, or undefined
-  'queue': function(sample, index, startTime, endTime) {
+  'queue': function(data) {
     if (!Meteor.userId()) {
       return alert("Sorry, but you cannot stream music unless you're logged into an account that owns it. If you'd like to help test this app, contact wolfbiter@gmail.com.");
     }
 
-    if (!sample) {
-      return console.log("WARNING: Mixer.queue called without a sample");
+    if (!data.sample) {
+      return console.log("WARNING: Mixer.queue called without a sample.");
     }
-    else if (sample.type === 'song') {
-      return queueSong(sample, index, startTime, endTime);
+    else if (data.sample.type === 'song') {
+      return queueSong(data);
     }
-    else if (sample.type === 'transition') {
-      return queueTransition(sample, index, startTime, endTime);
+    else if (data.sample.type === 'transition') {
+      return queueTransition(data.sample, data.index);
+    } else {
+      return console.log("WARNING: Mixer.queue called with sample of unknown type.")
     }
   },
 
@@ -143,50 +145,55 @@ Mixer = {
 //
 // private methods
 //
+function queueSong(data) {
+  var queue = Mixer.getQueue(),
+      song = data.sample;
+  if (data.index === undefined) { data.index = queue.length; }
 
-function queueSong(song, index, startTime, endTime, startVolume, endVolume) {
-  var queue = Mixer.getQueue();
-  if (index === undefined) { index = queue.length; }
-  if (startVolume === undefined) { startVolume = 0.8; }
-  if (endVolume === undefined) { endVolume = 0.8; }
   // coerce song into object
   if (typeof song !== 'object') {
     song = Songs.findOne(song);
+    // add startTime, endTime, startVolume, endVolume to song
+    $.extend(song, {
+      'startTime': data.startTime,
+      'endTime': data.endTime,
+      'startVolume': data.startVolume,
+      'endVolume': data.endVolume,
+    });
+  }
+  // ensure volume fields of song
+  if (song.startVolume === undefined) { song.startVolume = 0.8; }
+  if (song.endVolume === undefined) { song.endVolume = 0.8; }
+
+  // if the previous sample in the queue is a song,
+  // make a soft transition and queue it (implicitly queueing this song)
+  var prevSample = queue[data.index - 1];
+  if ((prevSample && prevSample.type) === 'song') {
+    var softTransition = Storage.makeSoftTransition(prevSample._id, song._id);
+    return queueTransition(softTransition, data.index);
   }
 
-  // if the last sample in the queue is a song,
-  // make a soft transition and queue it (implicitly queueing this song)
-  var lastSample = queue[queue.length - 1];
-  if ((lastSample && lastSample.type) === 'song') {
-    var softTransition = Storage.makeSoftTransition(lastSample._id, song._id);
-    queueTransition(softTransition, index);
-
   // otherwise, queue this song
-  } else {
-    // add start and end volumes to song
-    $.extend(song, {
-      'startVolume': startVolume,
-      'endVolume': endVolume,
-    });
-    return addToQueue(song, startTime, endTime, index);
+  else {
+    return updateQueue(song, data.index);
   }
 }
 
-function queueTransition(transition, index, startTime, endTime) {
+function queueTransition(transition, index) {
   var queue = Mixer.getQueue();
   if (index === undefined) { index = queue.length; }
-  // coerce transition into object
-  if (typeof transition !== 'object') {
-    transition = Transitions.findOne(transition);
-  }
 
   console.log("queueTransition called with below at index: "+index);
   console.log(transition);
 
   // if queueing transition at front, queue startSong first
   if (index === 0) {
-    queueSong(transition.startSong, index++, undefined,
-      transition.startSongEnd, undefined, transition.startSongVolume);
+    queueSong({
+      'sample': transition.startSong,
+      'index': index++,
+      'endTime': transition.startSongEnd,
+      'endVolume': transition.startSongVolume
+    });
   }
 
   // if transition fits at this index
@@ -195,17 +202,22 @@ function queueTransition(transition, index, startTime, endTime) {
 
     // otherwise, make sure to update previous sample's endTime and endVolume
     if (prevSample) {
-      prevSample.endTime = transition.startSongEnd;
-      prevSample.endVolume = transition.startSongVolume || 0.8;
+      prevSample['endTime'] = transition['startSongEnd'];
+      prevSample['endVolume'] = (transition['startSongVolume'] !== undefined) ?
+        transition['startSongVolume'] : prevSample['endVolume'];
       Session.set("queue", queue);
     }
 
     // queue transition
-    addToQueue(transition, transition.startTime, transition.endTime, index++);
+    updateQueue(transition, index++);
 
     // queue endSong
-    return queueSong(transition.endSong, index++, transition.endSongStart, undefined,
-      transition.endSongVolume, undefined);
+    return queueSong({
+      'sample': transition.endSong,
+      'index': index,
+      'startTime': transition.endSongStart,
+      'startVolume': transition.endSongVolume,
+    });
 
   } else {
     return console.log("ERROR: Invalid Transition given to queueTransition");
@@ -213,14 +225,10 @@ function queueTransition(transition, index, startTime, endTime) {
 }
 
 // insert sample at index
-function addToQueue(sample, startTime, endTime, index) {
-  startTime = startTime || 0;
-  // add start and end time to given sample
-  $.extend(sample, {
-    'startTime': startTime,
-    'endTime': endTime
-  });
+function updateQueue(sample, index) {
   var queue = Mixer.getQueue();
+  // ensure sample has a startTime
+  sample.startTime = sample.startTime || 0;
   // remove stuff after this index from queue and queuedWaves
   var chopIndex = queue.length - index;
   queue.splice(index, chopIndex, sample);
@@ -415,7 +423,7 @@ function setWaveMarks(wave) {
   });
 
   // mark wave start
-  var startTime = wave.sample.startTime || 0;
+  var startTime = wave.sample.startTime;
   wave.mark({
     'id': 'start',
     'position': startTime
@@ -435,7 +443,7 @@ function setWaveMarks(wave) {
 
 function setWaveEndMark(wave) {
   var endTime = wave.sample.endTime;
-  // if wave has a given endTime, mark its end
+  // if wave has a nonzero endTime, mark its end
   if (endTime) {
     wave.mark({
       'id': 'end',
@@ -573,7 +581,7 @@ function pickTransition() {
   console.log("CHOOSING transition: ");
   console.log(transition);
 
-  Mixer.queue(transition);
+  Mixer.queue({ 'sample': transition });
 }
 //
 // /private methods

@@ -34,7 +34,7 @@ Storage = {
       'dj': '',
       'startSong': '',
       'startSongVolume': 0.8,
-      'startSongEnd': 0,
+      'startSongEnd': undefined,
       'endSong': '',
       'endSongVolume': 0.8,
       'endSongStart': 0,

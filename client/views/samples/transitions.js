@@ -11,7 +11,7 @@ Template.transition.events({
     }
     // otherwise, queue this transition
     else {
-      Mixer.queue(Transitions.findOne(this._id));
+      Mixer.queue({ 'sample': Transitions.findOne(this._id) });
     }
   }
 });

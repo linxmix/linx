@@ -53,9 +53,7 @@ Template.graph.rendered = function () {
         Mixer.getCurrentPosition() : lastSong.startTime;
       links = queuedTransitions.concat(Transitions.find({
         'startSong': lastSong._id,
-        'startSongEnd': {
-          $gt: startTime
-        }
+        'startSongEnd': { $gt: startTime }
       }).fetch());
 
     // no currSong, so draw graph in view all mode
@@ -151,7 +149,10 @@ Template.graph.rendered = function () {
     .style("fill", colorNode)
     .on("dblclick", function (d) {
       if (d.transition_info) {
-        Mixer.queue(d.transition_info['transition'], d.transition_info['index']);
+        Mixer.queue({
+          'sample': d.transition_info['transition'],
+          'index': d.transition_info['index'],
+        });
       } else if (!currSong) {
         Mixer.play(d);
       }
