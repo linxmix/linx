@@ -107,7 +107,7 @@ Template.transitionInfoModal.events({
 Template.Modal.events({
   'click .close': Modal.close,
   'click .cancel': Modal.close,
-  'keydown': submitOnEnterPress,
+  'keyup': submitOnEnterPress,
 });
 
 
