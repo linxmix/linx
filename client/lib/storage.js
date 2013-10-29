@@ -58,6 +58,45 @@ Storage = {
     }, options);
   },
 
+  'calcMD5': function (arrayBuffer) {
+    var spark = new SparkMD5.ArrayBuffer();
+    spark.append(arrayBuffer);
+    return spark.end();
+  },
+
+  // given the string of an md5 hash, returns a sample with corresponding metadata
+  // (or undefined if none is found). skips the echonest check if that var is true
+  'identifySample': function (md5String, skipEchoNest) {
+
+    // if we have this md5 in our database, use that and we're done
+    var song = Songs.findOne({ 'md5': md5String });
+    var transition = Transitions.findOne({ 'md5': md5String });
+    if (song) { return song; }
+    else if (transition) { return transition; }
+
+    // otherwise, try echo nest if we are supposed to
+    else if (!skipEchoNest) {
+      Meteor.call('identifySong', { 'md5': md5String }, function(err, response) {
+        if (err) { return console.log(err); }
+        var track = (response && response.track);
+        console.log(track);
+
+        // if track info is present, return a new song with that info        
+        if (track) {
+          return Storage.makeSong({
+            'name': track.title,
+            'title': track.title,
+            'artist': track.artist,
+            'bitrate': track.bitrate,
+            'sampleRate': track.samplerate,
+            'echoId': track.song_id,
+            'md5': track.md5,
+          });
+        }
+      });
+    }
+  },
+
   'saveMix': function (queue) {
     // extract all ids from samples in queue
     queue.map(function(sample) {

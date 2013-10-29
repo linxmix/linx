@@ -110,8 +110,8 @@ function makeWave(id, loadText, isSongWave) {
 
 Template.wave.focus = function () {
   var wave = Uploader.waves[this.id];
-  var waveFocused = Session.equals("wave_focus", this.id);
-  return waveFocused ? "wave-focus" : "";
+  var waveFocus = Session.equals("wave_focus", this.id);
+  return waveFocus ? "wave-focus" : "";
 };
 
 Template.wave.rendered = function () {
@@ -250,67 +250,37 @@ Template.wave.rendered = function () {
     //
     // metadata
     //
-    // if wave has no song, it must have been drag and drop
-    // => get the metadata
-    if (!wave.hasMetadata && (id !== 'transitionWave')) {
-
-      // compute md5  
-      var spark = new SparkMD5.ArrayBuffer();
-      spark.append(wave.arrayBuffer);
-      var md5String = spark.end();
-      wave['md5'] = md5String;
-
-      // if we have this song in our database, use that and we're done
-      var song = Songs.findOne({'md5': md5String});
-      if (song) {
-        wave.sample = song;
-      }
-
-      // otherwise, try echo nest
-      else {
-        Meteor.call('identifySong', { 'md5': md5String }, function(err, response) {
-          if (err) { return console.log(err); }
-
-          // recover track info
-          var track = (response && response.track);
-          console.log(track);
-          if (track) {
-            wave.sample = Storage.makeSong({
-              'name': track.title,
-              'title': track.title,
-              'artist': track.artist,
-              'bitrate': track.bitrate,
-              'sampleRate': track.samplerate,
-              'echoId': track.song_id,
-              'md5': track.md5,
-              'duration': Wave.getDuration(wave),
-            });
-
-          // echonest attempt failed, so prompt the user to get the metadata
-          } else {
-            Modal.openModal("song_info", id);
-          }
-
-        });
-      }
-    } // /identify song
-
-    // if transition has no sample, it must be new
-    // => so prompt the user to get the metadata
-    if (!wave.hasMetadata && (id === 'transitionWave')) {
-      Modal.openModal("transition_info", id);
-    }
-    //
-    // /metadata
-    // 
-
-    // if wave has no metadata, set volume to default
     if (!wave.hasMetadata) {
+      wave['md5'] = Storage.calcMD5(wave.arrayBuffer);
+
+      // handle songWaves here
+      if (id !== 'transitionWave') {
+        wave.sample = Storage.identifySample(wave['md5']);
+        // if sample was not identified, prompt user for metadata
+        if (!wave.sample) {
+          Modal.openModal("song_info", id);
+        }
+      }
+
+      // handle transitionWave here
+      else {
+        wave.sample = Storage.identifySample(wave['md5'], true);
+        // if sample was not identified, prompt user for metadata
+        if (!wave.sample) {
+          Modal.openModal("transition_info", id);
+        }
+      }
+
+      // TODO move and/or change this to be more cleanly logical!
+      // since wave had no metadata, set volume to default
       var volume = (wave.id === 'transitionWave') ? 1.0 : 0.8;
       // update volume and slider
       wave.setVolume(volume);
       $(selector+' .volumeSlider').slider('setValue', volume);
     }
+    //
+    // /metadata
+    // 
 
     // reset hasMetadata in case new file is loaded after this
     wave.hasMetadata = false;
@@ -330,7 +300,6 @@ Template.uploader.waves = function () {
 //
 // Make Uploader
 //
-
 Uploader = {
 
   //
@@ -342,8 +311,6 @@ Uploader = {
   //
   // methods
   //
-
-  // reset the uploader page
   'reset': function () {
     // make waves
     makeWave("startWave", "Drop starting song here", true);
@@ -538,7 +505,7 @@ Uploader = {
 
       // tell user to wait for completion of uploads
       alert("Upload initiated! Please close this, but DO NOT leave this page until you get confirmation that the upload has completed.");
-
+/*
       // synchronously upload samples, signaling completion on each callback
       Storage.uploadsInProgress = 3; // TODO: move this out of here
       Storage.putSong(startWave, function () {
@@ -548,6 +515,7 @@ Uploader = {
           Storage.putTransition(startWave, transitionWave, endWave, putComplete);
         });
       });
+      */
     });
   },
 
@@ -558,14 +526,29 @@ function validateUpload(startWave, transitionWave, endWave, callback) {
   //
   // validation check
   // 
-  // check user is logged in
+
+  // 1. check user is logged in
   if (!Meteor.userId()) {
     return alert("Sorry, but you must be logged in to submit a transition!");
   }
-  // check not currently doing an upload
+
+  // 2. check not currently doing an upload
   if (Storage.uploadsInProgress > 0) {
     return alert("Another upload is already in progress!");
   }
+
+  // 3. if transition has a mongo id, check it corresponds to these songs
+  var transition = transitionWave.sample;
+  var startSong = startWave.sample;
+  var endSong = endWave.sample;
+  if (transition && transition._id) {
+    if ((transition.startSong !== (startSong && startSong._id)) ||
+      (transition.endSong !== (endSong && endSong._id))) {
+      return alert("What? The database says this transition doesn't fit these songs!");
+    }
+  }
+
+  // 4. check waves are loaded and marked
   var validWaves = true;
   // check buffers are loaded
   if (!(startWave.backend.buffer &&
@@ -582,41 +565,9 @@ function validateUpload(startWave, transitionWave, endWave, callback) {
   if (!validWaves) {
     return alert("All three waves must be loaded and marked before submission.");
   }
+
   //
   // /validation
   //
   return callback();
-
-  // finally, make sure songs don't already exist on s3
- /* Meteor.call('getList', 'songs/', function (err, data) {
-    if (err) { return console.log(err); }
-    var startUrl = Storage.getSampleUrl(startWave.sample, true);
-    var endUrl = Storage.getSampleUrl(endWave.sample, true);
-    var urlList = data.Contents.map(function (listItem) {
-      return listItem.Key;
-    });
-
-    // function to check to see if value exists in array
-    function isInArray(value, array) {
-      return array.indexOf(value) > -1 ? true : false;
-    }
-
-    var alertStart = 'Hmmm... this ';
-    var alertMiddle;
-    var alertEnd = ' already exists on our cloud server! Please let Daniel (wolfbiter@gmail.com) know what you were uploading so he can help you sort out this issue!';
-    if (!startWave.sample._id && isInArray(startUrl, urlList)) {
-      alertMiddle = "starting song";
-    }
-    else if (!endWave.sample._id && isInArray(endUrl, urlList)) {
-      alertMiddle = "ending song";
-    }
-
-    if (alertMiddle) {
-      return alert(alertStart + alertMiddle + alertEnd);
-    } else {
-      return callback();
-    }
-
-  });*/
-
 }
