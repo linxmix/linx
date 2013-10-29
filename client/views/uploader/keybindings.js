@@ -59,22 +59,18 @@ function addKeyBindings() {
 var eventHandlers = {
 
   'playPause': function(e, id) {
-    var wave = Uploader.waves[id],
-        playing = Uploader.waves['playing'],
-        lastPlay = Uploader.waves['lastPlay'];
-
     // redirect shift presses
-    if (e.shiftKey) {
+    if (e && e.shiftKey) {
       seekLastPlayPos(e, id);
     }
-
     // we want this to be a universal pause
-    else if (wave.id === (playing && playing.id)) {
+    else if (Uploader.waves['playing']) {
       Uploader.pause();
     }
-
-    // this wave isn't already playing, so play it and update lastPlay
+    // no wave is playing, so play this wave and update lastPlay
     else {
+      var wave = Uploader.waves[id],
+          lastPlay = Uploader.waves['lastPlay'];
       // if lastPlay, clear its mark
       if (lastPlay) {
         Wave.clearMark(lastPlay, 'lastPlay');
