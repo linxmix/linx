@@ -71,9 +71,10 @@ var eventHandlers = {
     // we want this to be a universal pause
     else if (wave.id === (playing && playing.id)) {
       Uploader.pause();
+    }
 
     // this wave isn't already playing, so play it and update lastPlay
-    } else {
+    else {
       // if lastPlay, clear its mark
       if (lastPlay) {
         Wave.clearMark(lastPlay, 'lastPlay');
@@ -89,7 +90,7 @@ var eventHandlers = {
     // if shift is held, snap progress to startMarker
     if (e && e.shiftKey) {
       wave.seekTo(wave.markers['start'].position / Wave.getDuration(wave));
-    // otherwise, mark start at current progress  
+    // otherwise, mark start at current progress
     } else {
     Wave.markStart(wave);
     }

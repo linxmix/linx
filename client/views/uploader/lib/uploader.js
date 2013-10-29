@@ -145,7 +145,7 @@ Template.wave.rendered = function () {
   wave.initialized = true;
   console.log("rendering wave: "+id);
 
-  // first handle id-specific stuff
+  // first handle id-specific transitioning stuff
   switch (id) {
 
     // when a mark is reached, pause this and play transitionWave
@@ -278,12 +278,17 @@ Template.wave.rendered = function () {
       wave.setVolume(volume);
       $(selector+' .volumeSlider').slider('setValue', volume);
     }
+
+    // reset hasMetadata at end in case new file is loaded after this
+    wave.hasMetadata = false;
     //
     // /metadata
-    // 
+    //
 
-    // reset hasMetadata in case new file is loaded after this
-    wave.hasMetadata = false;
+    // mark track end
+    //Wave.markTrackEnd(wave).on('reached', function() {
+    //  Uploader.waves['playing'] = undefined;
+    //});
 
   });
 };

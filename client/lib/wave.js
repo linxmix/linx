@@ -23,7 +23,7 @@ Wave = {
   },
 
   'markStart': function(wave, position) {
-    wave.mark({
+    return wave.mark({
       'id': 'start',
       'position': position || Wave.getPosition(wave),
       'color': 'rgba(0, 255, 0, 0.8)'
@@ -31,16 +31,23 @@ Wave = {
   },
 
   'markEnd': function(wave, position) {
-    wave.mark({
+    return wave.mark({
       'id': 'end',
       'position': position || Wave.getPosition(wave),
       'color': 'rgba(255, 0, 0, 0.8)'
     });
   },
 
+  'markTrackEnd': function(wave) {
+    return wave.mark({
+      'id': 'track_end',
+      'position': Wave.getDuration(wave),
+    });
+  },
+
   'markHover': function(wave, position) {
     position = position || 0;
-    wave.mark({
+    return wave.mark({
       'id': 'hover',
       'position': position,
       'color': 'rgba(255, 255, 255, 0.8)'
@@ -49,7 +56,7 @@ Wave = {
 
   'markPlay': function(wave, position) {
     position = position || 0;
-    wave.mark({
+    return wave.mark({
       'id': 'lastPlay',
       'position': position,
       'color': 'rgba(0, 0, 0, 1.0)'

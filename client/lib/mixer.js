@@ -423,20 +423,12 @@ function setWaveMarks(wave) {
     }
   });
 
-  // mark wave start
+  // prepare this wave to start at its startTime
   var startTime = wave.sample.startTime;
-  wave.mark({
-    'id': 'start',
-    'position': startTime
-  });
-  // set this wave to start at its startTime
   wave.skip(startTime);
 
   // mark wave's track_end
-  wave.mark({
-    'id': 'track_end',
-    'position': Wave.getDuration(wave), // subtract to make sure mark is hit
-  });
+  Wave.markTrackEnd(wave);
 
   // separate function so it can be called alone
   setWaveEndMark(wave);
@@ -446,10 +438,7 @@ function setWaveEndMark(wave) {
   var endTime = wave.sample.endTime;
   // if wave has a nonzero endTime, mark its end
   if (endTime) {
-    wave.mark({
-      'id': 'end',
-      'position': endTime
-    });
+    Wave.markEnd(wave, endTime);
   }
 
   // if this is a song wave, automate its volume
