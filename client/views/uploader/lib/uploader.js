@@ -1,8 +1,6 @@
 //
 // init
 //
-Session.set("waves", []);
-
 var waveColors = {
   'startWave': 'mediumorchid',
   'transitionWave': 'steelblue',
@@ -317,7 +315,9 @@ Uploader = {
   // methods
   //
   'reset': function () {
-    // make waves
+    // clear old waves
+    Session.set("waves", []);
+    // make new waves
     makeWave("startWave", "Drop starting song here", true);
     makeWave("transitionWave", "Drop new transition here", false);
     makeWave("endWave", "Drop ending song here", true);
@@ -510,7 +510,7 @@ Uploader = {
 
       // tell user to wait for completion of uploads
       alert("Upload initiated! Please close this, but DO NOT leave this page until you get confirmation that the upload has completed.");
-      
+
       // synchronously upload samples, signaling completion on each callback
       Storage.uploadsInProgress = 3; // TODO: move this out of here
       Storage.putSong(startWave, function () {
