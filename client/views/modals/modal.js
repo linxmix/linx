@@ -34,10 +34,6 @@ Modal = {
       return Modal.queuedModals.push({ 'name': name, 'waveId': waveId });
     }
 
-    // set session variables
-    Session.set("open_modal", name);
-    Session.set("modal_wave", waveId);
-
     // modal-specific stuff
     var selector, closeOnEscape = false;
     switch (name) {
@@ -78,6 +74,8 @@ Modal = {
     if (form) { form.reset(); }
 
     // open new modal
+    Session.set("open_modal", name);
+    Session.set("modal_wave", waveId);
     selector.modal({
       'show': true,
       'keyboard': closeOnEscape,
@@ -113,10 +111,10 @@ Template.Modal.events({
   'keyup': submitOnEnterPress,
 });
 
-Template.songInfoModal.songName = function () {
+Template.songInfoModal.waveName = function () {
   switch (Session.get("modal_wave")) {
-    case 'startWave': return 'Starting Song';
-    case 'endWave': return 'Ending Song';
+    case 'startWave': return 'starting song';
+    case 'endWave': return 'ending song';
     default: return '';
   }
 }
