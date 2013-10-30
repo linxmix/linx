@@ -411,33 +411,22 @@ function makeWave(sample, callback) {
 
 // sets markers for wave such that it will transition smoothly
 function setWaveMarks(wave) {
-
-  // set this wave's marker events
-  wave.on('mark', function (mark) {
-    // cycle queue if hitting end marker and queue has not already been cycled
-    if (((mark.id === 'end') ||
-      (mark.id === 'track_end')) &&
-      !wave.hasCycled) {
-      wave.hasCycled = true;
-      cycleQueue();
-    }
-  });
-
-  // prepare this wave to start at its startTime
   wave.skip(wave.sample.startTime);
-
-  // mark wave's track_end
-  Wave.markTrackEnd(wave);
-
-  // schedule wave's end
+  Wave.markTrackEnd(wave).on('reached', cycleQueue);
   scheduleWaveEnd(wave);
 }
 
+// set end marker and volume automation
 function scheduleWaveEnd(wave) {
-  var endTime = wave.sample.endTime;
+
   // if wave has a nonzero endTime, mark its end
+  var endTime = wave.sample.endTime;
   if (endTime) {
-    Wave.markEnd(wave, endTime);
+    Wave.markEnd(wave, endTime).on('reached', cycleQueue);
+
+  // otherwise, make sure to remove any residual end marks
+  } else {
+    Wave.clearMark(wave, 'end');
   }
 
   // if this is a song wave, automate its volume
@@ -464,19 +453,18 @@ function cycleQueue() {
   Session.set("queue", queue);
   // update wave queue
   pauseWave();
-  var lastWave = queuedWaves.shift();
+  var cycledWave = queuedWaves.shift();
+  assertPlayStatus(); // make sure new currWave is played
 
-  // if lastWave still has an interval, cancel it
-  if (lastWave && lastWave.interval) {
-    Meteor.clearInterval(lastWave.interval);
-    lastWave.interval = undefined;
+  // if cycledWave still has an interval, cancel it
+  if (cycledWave && cycledWave.interval) {
+    Meteor.clearInterval(cycledWave.interval);
+    cycledWave.interval = undefined;
   }
   // if cycling to the last song, pick new transition to continue the mix
   if (queue.length === 1) {
     pickTransition();
   }
-  // confirm play status
-  assertPlayStatus();
 }
 
 function assertPlayStatus() {

@@ -88,7 +88,7 @@ var eventHandlers = {
       wave.seekTo(wave.markers['start'].position / Wave.getDuration(wave));
     // otherwise, mark start at current progress
     } else {
-    Wave.markStart(wave);
+      Wave.markStart(wave);
     }
   },
 
@@ -97,9 +97,9 @@ var eventHandlers = {
     // if shift is held, snap progress to endMarker
     if (e && e.shiftKey) {
       wave.seekTo(wave.markers['end'].position / Wave.getDuration(wave));
-    // otherwise, mark end at current progress  
+    // otherwise, mark end at current progress
     } else {
-    Wave.markEnd(wave);
+      Uploader.markWaveEnd(wave);
     }
   },
 
@@ -120,11 +120,11 @@ var eventHandlers = {
   },
 
   'focusBack': function (e, id) {
-    Uploader.cycleFocus(id, -1);
+    Uploader.cycleFocus(-1);
   },
 
   'focusForth': function (e, id) {
-    Uploader.cycleFocus(id, 1);
+    Uploader.cycleFocus(1);
   },
 
   'zoomOut': function (e, id) {

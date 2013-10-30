@@ -144,38 +144,9 @@ Template.wave.rendered = function () {
   wave.initialized = true;
   console.log("rendering wave: "+id);
 
-  // first handle id-specific transitioning stuff
-  switch (id) {
-
-    // when a mark is reached, pause this and play transitionWave
-    case 'startWave':
-    wave.on('mark', function(mark) {
-      if (mark.id === 'end') {
-        var transitionWave = Uploader.waves['transitionWave'];
-        var transitionStart =
-          (transitionWave.markers['start'].position) /
-          Wave.getDuration(transitionWave);
-        transitionWave.seekTo(transitionStart);
-        Uploader.playWave(transitionWave);
-      }
-    }); break;
-
-    // when a mark is reached, pause this and play endWave
-    case 'transitionWave':
-    wave.on('mark', function(mark) {
-      if (mark.id === 'end') {
-        var endWave = Uploader.waves['endWave'];
-        var endStart =
-          (endWave.markers['start'].position) /
-          Wave.getDuration(endWave);
-        endWave.seekTo(endStart);
-        Uploader.playWave(endWave);
-      }
-    }); break;
-
-  }
-
+  //
   // init wave
+  //
   wave.init({
     'container': $(selector+' .waveform')[0],
     'waveColor': waveColors[id],
@@ -200,8 +171,13 @@ Template.wave.rendered = function () {
     wave.sample = undefined;
     wave.empty();
   });
+  //
+  // /init wave
+  //
 
+  //
   // progress bar
+  //
   wave.on('loading', function(percent, xhr) {
     progressBar.css({ 'width': percent + '%' });
 
@@ -230,6 +206,9 @@ Template.wave.rendered = function () {
     }
     
   });
+  //
+  // /progress bar
+  //
 
   wave.on('ready', function() {
     // reset firstLoading status and currXhr
@@ -245,6 +224,10 @@ Template.wave.rendered = function () {
     });
     // reset zoom
     Wave.zoom(wave, 5);
+    // mark track end
+    Wave.markTrackEnd(wave).on('reached', function() {
+      Uploader.waves['playing'] = undefined;
+    });
 
     //
     // metadata
@@ -271,12 +254,6 @@ Template.wave.rendered = function () {
     //
     // /metadata
     //
-
-    // mark track end
-    //Wave.markTrackEnd(wave).on('reached', function() {
-    //  Uploader.waves['playing'] = undefined;
-    //});
-
   });
 };
 
@@ -315,25 +292,16 @@ Uploader = {
     Session.set("wave_focus", "startWave");
   },
 
-  'cycleFocus': function (id, direction) {
-    var mapping = {
-      'startWave': 0,
-      'transitionWave': 1,
-      'endWave': 2
-    };
-    var reverseMapping = {
-      0: 'startWave',
-      1: 'transitionWave',
-      2: 'endWave'
-    };
+  'cycleFocus': function (magnitude) {
+    var mapping = ['startWave', 'transitionWave', 'endWave'];
     // first find current wave
-    var curr = mapping[id];
+    var curr = mapping.indexOf(Session.get('wave_focus'));
     // then find next
-    var next = (curr + direction) % 3;
+    var next = (curr + magnitude) % 3;
     // hack because javascript sucks at mods with negative
     if (next < 0) { next = 2; }
     // update wave focus
-    Session.set("wave_focus", reverseMapping[next]);
+    Session.set("wave_focus", mapping[next]);
   },
 
   'playWave': function(wave) {
@@ -356,6 +324,17 @@ Uploader = {
       playingWave.pause();
       Uploader.waves['playing'] = undefined;
     }
+  },
+
+  'markWaveEnd': function(wave, position) {
+    // when end mark is reached, cycle to next wave's startMark
+    Wave.markEnd(wave, position).on('reached', function () {
+      Uploader.cycleFocus(1);
+      var nextWave = Uploader.waves[Session.get('wave_focus')];
+      var startPos = (nextWave.markers['start'] && nextWave.markers['start'].position);
+      nextWave.seekTo(startPos / Wave.getDuration(nextWave));
+      Uploader.playWave(nextWave);
+    });
   },
 
   // submit song info on song info modal close
@@ -465,13 +444,13 @@ Uploader = {
 
       // mark waves
       startWave.once('ready', function () {
-        Wave.markEnd(startWave, transition.startSongEnd);
+        Uploader.markWaveEnd(startWave, transition.startSongEnd);
       });
       transitionWave.once('ready', function () {
         var startTime = transition.startTime || 0;
         var endTime = transition.endTime || Wave.getDuration(transitionWave);
         Wave.markStart(transitionWave, startTime);
-        Wave.markEnd(transitionWave, endTime);
+        Uploader.markWaveEnd(transitionWave, endTime);
       });
       endWave.once('ready', function () {
         Wave.markStart(endWave, transition.endSongStart);
