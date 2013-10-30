@@ -420,13 +420,10 @@ function setWaveMarks(wave) {
 function scheduleWaveEnd(wave) {
 
   // if wave has a nonzero endTime, mark its end
+  Wave.clearMark(wave, 'end'); // clear old mark
   var endTime = wave.sample.endTime;
   if (endTime) {
     Wave.markEnd(wave, endTime).on('reached', cycleQueue);
-
-  // otherwise, make sure to remove any residual end marks
-  } else {
-    Wave.clearMark(wave, 'end');
   }
 
   // if this is a song wave, automate its volume

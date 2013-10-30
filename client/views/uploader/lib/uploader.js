@@ -76,6 +76,36 @@ function makeWave(id, loadText, isSongWave) {
   };
   // /hack
 
+  // hack to make marks more precise while waveform is present
+  wave.bindMarks = function () {
+    var my = wave;
+    var prevTime = 0;
+
+    wave.backend.on('play', function () {
+      // Reset marker events
+      Object.keys(my.markers).forEach(function (id) {
+        my.markers[id].played = false;
+      });
+    });
+
+    wave.backend.on('audioprocess', function (time) {
+      Object.keys(my.markers).forEach(function (id) {
+        var marker = my.markers[id];
+        if (!marker.played) {
+          if (marker.position <= time && marker.position >= prevTime) {
+            // Prevent firing the event more than once per playback
+            marker.played = true;  
+
+            my.fireEvent('mark', marker);
+            marker.fireEvent('reached', time);
+          }
+        }
+      });
+      prevTime = time;
+    });
+  };
+  // /hack
+
   //
   // flash when reaching a mark
   //
@@ -327,12 +357,16 @@ Uploader = {
   },
 
   'markWaveEnd': function(wave, position) {
-    // when end mark is reached, cycle to next wave's startMark
-    Wave.markEnd(wave, position).on('reached', function () {
+    position = position || Wave.getPosition(wave);
+    Wave.clearMark(wave, 'end'); // clear old mark
+    // when endMark is reached, cycle to next wave's startMark
+    Wave.markEnd(wave, position).on('reached', function (time) {
       Uploader.cycleFocus(1);
       var nextWave = Uploader.waves[Session.get('wave_focus')];
       var startPos = (nextWave.markers['start'] && nextWave.markers['start'].position);
-      nextWave.seekTo(startPos / Wave.getDuration(nextWave));
+      var lag = time - position;
+      startPos += lag; // account for lag offset
+      nextWave.seekTo(Math.max(startPos, 0) / Wave.getDuration(nextWave));
       Uploader.playWave(nextWave);
     });
   },
