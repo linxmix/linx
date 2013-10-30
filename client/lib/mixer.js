@@ -323,7 +323,7 @@ function loadSample(index) {
     if (currSample_id === sample._id) {
       var currWave = Mixer.getQueue('wave')[0]
       currWave.sample = sample;
-      setWaveEndMark(currWave);
+      scheduleWaveEnd(currWave);
       return loadNext(++index);
 
     // if playing wave is not this one, pause that wave since it's now old
@@ -424,17 +424,16 @@ function setWaveMarks(wave) {
   });
 
   // prepare this wave to start at its startTime
-  var startTime = wave.sample.startTime;
-  wave.skip(startTime);
+  wave.skip(wave.sample.startTime);
 
   // mark wave's track_end
   Wave.markTrackEnd(wave);
 
-  // separate function so it can be called alone
-  setWaveEndMark(wave);
+  // schedule wave's end
+  scheduleWaveEnd(wave);
 }
 
-function setWaveEndMark(wave) {
+function scheduleWaveEnd(wave) {
   var endTime = wave.sample.endTime;
   // if wave has a nonzero endTime, mark its end
   if (endTime) {
@@ -444,7 +443,7 @@ function setWaveEndMark(wave) {
   // if this is a song wave, automate its volume
   if (wave.sample.type === 'song') {
     // if wave is currently playing, startTime is currentPos
-    var startTime = wave.markers['start'].position;
+    var startTime = wave.sample.startTime;
     if (Session.equals("current_sample", wave.sample._id)) {
       startTime = Mixer.getCurrentPosition();
     }
