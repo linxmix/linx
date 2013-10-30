@@ -52,6 +52,8 @@ Mixer = {
     Session.set("current_sample", undefined);
     queuedWaves = [];
     Session.set("queue", []);
+    // cancel loading wave
+    loadingWave = undefined;
   },
 
   'clearQueue': function() {
@@ -390,7 +392,7 @@ function makeWave(sample, callback) {
 
   // cancel if loadingWave changes out from under us
   wave.on('loading', function (percent, xhr) {
-    if (wave.sample._id !== loadingWave.sample._id) {
+    if (wave.sample._id !== (loadingWave && loadingWave.sample._id)) {
       console.log("canceling wave load");
       xhr.abort();
     }
