@@ -22,6 +22,11 @@ Wave = {
     return (Wave.getPosition(wave) / Wave.getDuration(wave)) || 0;
   },
 
+  'seekToPos': function(wave, position) {
+    position = position || 0;
+    wave.seekTo(position / Wave.getDuration(wave));
+  },
+
   'markStart': function(wave, position) {
     return wave.mark({
       'id': 'start',

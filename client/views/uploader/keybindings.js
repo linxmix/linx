@@ -85,7 +85,7 @@ var eventHandlers = {
     var wave = Uploader.waves[id];
     // if shift is held, snap progress to startMarker
     if (e && e.shiftKey) {
-      wave.seekTo(wave.markers['start'].position / Wave.getDuration(wave));
+      Wave.seekToPos(wave, wave.markers['start'].position);
     // otherwise, mark start at current progress
     } else {
       Wave.markStart(wave);
@@ -96,7 +96,7 @@ var eventHandlers = {
     var wave = Uploader.waves[id];
     // if shift is held, snap progress to endMarker
     if (e && e.shiftKey) {
-      wave.seekTo(wave.markers['end'].position / Wave.getDuration(wave));
+      Wave.seekToPos(wave, wave.markers['end'].position);
     // otherwise, mark end at current progress
     } else {
       Uploader.markWaveEnd(wave);

@@ -332,6 +332,7 @@ Uploader = {
     if (next < 0) { next = 2; }
     // update wave focus
     Session.set("wave_focus", mapping[next]);
+    return mapping[next];
   },
 
   'playWave': function(wave) {
@@ -361,13 +362,14 @@ Uploader = {
     Wave.clearMark(wave, 'end'); // clear old mark
     // when endMark is reached, cycle to next wave's startMark
     Wave.markEnd(wave, position).on('reached', function (time) {
-      Uploader.cycleFocus(1);
-      var nextWave = Uploader.waves[Session.get('wave_focus')];
+      var prevWave = Uploader.waves[Session.get('wave_focus')];
+      var nextWave = Uploader.waves[Uploader.cycleFocus(1)];
       var startPos = (nextWave.markers['start'] && nextWave.markers['start'].position);
       var lag = time - position;
-      startPos += lag; // account for lag offset
-      nextWave.seekTo(startPos / Wave.getDuration(nextWave));
+      Wave.seekToPos(nextWave, startPos + lag);
       Uploader.playWave(nextWave);
+      // seek previous wave to its marker position to account for lag
+      Wave.seekToPos(prevWave, position);
     });
   },
 
