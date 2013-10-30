@@ -8,6 +8,7 @@ Session.set("mixer_volume", 1);
 // private variables
 var loadingWave;
 var queuedWaves = [];
+var CUE_LAG = 0.005; // inherent lag with marker.on('reached') event
 
 //
 // /init
@@ -429,7 +430,7 @@ function scheduleWaveEnd(wave) {
   // if this is a song wave, automate its volume
   if (wave.sample.type === 'song') {
     // if wave is currently playing, startTime is currentPos
-    var startTime = wave.sample.startTime;
+    var startTime = wave.sample.startTime + CUE_LAG;
     if (Session.equals("current_sample", wave.sample._id)) {
       startTime = Mixer.getCurrentPosition();
     }

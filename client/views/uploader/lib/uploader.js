@@ -366,7 +366,7 @@ Uploader = {
       var startPos = (nextWave.markers['start'] && nextWave.markers['start'].position);
       var lag = time - position;
       startPos += lag; // account for lag offset
-      nextWave.seekTo(Math.max(startPos, 0) / Wave.getDuration(nextWave));
+      nextWave.seekTo(startPos / Wave.getDuration(nextWave));
       Uploader.playWave(nextWave);
     });
   },
