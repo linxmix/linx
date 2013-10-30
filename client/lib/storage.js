@@ -66,13 +66,25 @@ Storage = {
 
   // given the string of an md5 hash, returns a sample with corresponding metadata
   // (or undefined if none is found). skips the echonest check if that var is true
-  'identifySample': function (md5String, skipEchoNest) {
+  'identifyWave': function (wave, sampleType) {
+    var skipEchoNest = (sampleType === 'transition'),
+        modalName = sampleType + '_info';
+
+    // calculate md5 of wave, if doesnt have one
+    var md5String = wave['md5'];
+    if (!md5String) {
+      md5String = wave['md5'] = Storage.calcMD5(wave.arrayBuffer);
+    }
 
     // if we have this md5 in our database, use that and we're done
-    var song = Songs.findOne({ 'md5': md5String });
-    var transition = Transitions.findOne({ 'md5': md5String });
-    if (song) { return song; }
-    else if (transition) { return transition; }
+    var sample;
+    if (sampleType === 'song') {
+      sample = Songs.findOne({ 'md5': md5String });
+    } else if (sampleType === 'transition') {
+      sample = Transitions.findOne({ 'md5': md5String });
+    }
+
+    if (sample) { wave['sample'] = sample; }
 
     // otherwise, try echo nest if we are supposed to
     else if (!skipEchoNest) {
@@ -83,7 +95,7 @@ Storage = {
 
         // if track info is present, return a new song with that info        
         if (track) {
-          return Storage.makeSong({
+          wave['sample'] = Storage.makeSong({
             'name': track.title,
             'title': track.title,
             'artist': track.artist,
@@ -91,9 +103,18 @@ Storage = {
             'sampleRate': track.samplerate,
             'echoId': track.song_id,
             'md5': track.md5,
+            'duration': Wave.getDuration(wave),
           });
+
+        // if no track info present, prompt user for metadata
+        } else {
+          Modal.openModal(modalName, wave.id);
         }
       });
+    
+    // if skipping echo nest, prompt user for metadata
+    } else {
+      Modal.openModal(modalName, wave.id);
     }
   },
 
@@ -209,6 +230,7 @@ Storage = {
         'startSong': startSong._id,
         'endSong': endSong._id,
         'dj': transitionWave.dj,
+        'md5': wave.md5,
         'duration': Wave.getDuration(transitionWave),
     });
 

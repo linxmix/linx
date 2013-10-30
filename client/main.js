@@ -11,7 +11,7 @@ Meteor.startup(function() {
   // mini pages
   Meteor.pages({
     '/': { to: 'graphPage', nav: 'graphPage' },
-    '/uploader': { to: 'uploaderPage', nav: 'uploaderPage', before: resetUploader },
+    '/uploader': { to: 'uploaderPage', nav: 'uploaderPage', before: [resetUploader] },
   });
   
 });

@@ -18,6 +18,7 @@ var cursorColors = {
   'transitionWave': 'navy',
   'endWave': 'navy'
 };
+
 //
 // /init
 //
@@ -249,24 +250,12 @@ Template.wave.rendered = function () {
     // metadata
     //
     if (!wave.hasMetadata) {
-      wave['md5'] = Storage.calcMD5(wave.arrayBuffer);
 
-      // handle songWaves here
+      // tell storage to identify sample based on sample type
       if (id !== 'transitionWave') {
-        wave.sample = Storage.identifySample(wave['md5']);
-        // if sample was not identified, prompt user for metadata
-        if (!wave.sample) {
-          Modal.openModal("song_info", id);
-        }
-      }
-
-      // handle transitionWave here
-      else {
-        wave.sample = Storage.identifySample(wave['md5'], true);
-        // if sample was not identified, prompt user for metadata
-        if (!wave.sample) {
-          Modal.openModal("transition_info", id);
-        }
+        Storage.identifyWave(wave, 'song');
+      } else {
+        Storage.identifyWave(wave, 'transition');
       }
 
       // TODO move and/or change this to be more cleanly logical!
@@ -315,6 +304,7 @@ Uploader = {
   // methods
   //
   'reset': function () {
+    console.log("resetting uploader");
     // clear old waves
     Session.set("waves", []);
     // make new waves
@@ -424,12 +414,17 @@ Uploader = {
       wave.hasMetadata = true;
       wave.load(Storage.getSampleUrl(song));
     }
-    // otherwise, try to fill in missing information
-    else if (wave && wave.guessSample) {
-      wave.guessSample();
-    }
     else {
       console.log("WARNING: loadSong didn't load metadata");
+    }
+  },
+
+  // no match was found, fill in missing information
+  'noSongMatch': function (e) {
+    var wave = Uploader.waves['modalWaveOpen'];
+    Modal.close(e); // click is here so double click on song will close modal
+    if (wave && wave.guessSample) {
+      wave.guessSample();
     }
   },
 

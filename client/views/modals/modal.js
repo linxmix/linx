@@ -94,6 +94,7 @@ Template.transitionSelectModal.events({
 
 Template.songMatchModal.events({
   'click #submitSongMatch': Uploader.loadSong,
+  'click #noSongMatch': Uploader.noSongMatch,
 });
 
 Template.songInfoModal.events({
