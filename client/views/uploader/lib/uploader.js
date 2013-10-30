@@ -360,7 +360,7 @@ Uploader = {
 
   // submit song info on song info modal close
   'submitSongInfo': function(e) {
-    var wave = Uploader.waves['modalWaveOpen'];
+    var wave = Uploader.waves[Session.get("modal_wave")];
     Modal.close(e);
     var serial = $('#songInfoModal form').serializeArray();
     var name = serial[0]['value'];
@@ -396,7 +396,7 @@ Uploader = {
 
   // submit transition info on transition info modal close
   'submitTransitionInfo': function(e) {
-    var wave = Uploader.waves['modalWaveOpen'];
+    var wave = Uploader.waves[Session.get("modal_wave")];
     Modal.close(e); // click is here so that close is triggered
     var serial = $('#transitionInfoModal form').serializeArray();
     var DJName = serial[0]['value'];
@@ -404,7 +404,7 @@ Uploader = {
   },
 
   'loadSong': function (e) {
-    var wave = Uploader.waves['modalWaveOpen'];
+    var wave = Uploader.waves[Session.get("modal_wave")];
     Modal.close(e); // click is here so double click on song will close modal
     var song = Songs.findOne(Session.get("selected_song"));
 
@@ -421,7 +421,7 @@ Uploader = {
 
   // no match was found, fill in missing information
   'noSongMatch': function (e) {
-    var wave = Uploader.waves['modalWaveOpen'];
+    var wave = Uploader.waves[Session.get("modal_wave")];
     Modal.close(e); // click is here so double click on song will close modal
     if (wave && wave.guessSample) {
       wave.guessSample();
@@ -429,7 +429,7 @@ Uploader = {
   },
 
   'loadTransition': function (e) {
-    var transitionWave = Uploader.waves['modalWaveOpen'];
+    var transitionWave = Uploader.waves[Session.get("modal_wave")];
     Modal.close(e); // click is here so double click on transition will close modal
     var transition = Transitions.findOne(Session.get("selected_transition"));
 

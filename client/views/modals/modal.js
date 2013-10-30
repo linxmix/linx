@@ -12,7 +12,7 @@ Modal = {
     // reset modals
     console.log("resetting modals");
     Session.set("open_modal", undefined);
-    Uploader.waves['modalWaveOpen'] = undefined;
+    Session.set("modal_wave", undefined);
 
     $('#songSelectModal').modal('hide');
     $('#transitionSelectModal').modal('hide');
@@ -23,16 +23,20 @@ Modal = {
     // if another modal is queued to open, do that
     var nextModal = Modal.queuedModals.shift();
     if (nextModal) {
-      Modal.openModal(nextModal.name, nextModal.id);
+      Modal.openModal(nextModal['name'], nextModal['waveId']);
     }
   },
 
-  'openModal': function(name, id) {
+  'openModal': function(name, waveId) {
 
     // if another modal is already open, queue this one to open next
     if (Session.get("open_modal") !== undefined) {
-      return Modal.queuedModals.push({ 'name': name, 'id': id });
+      return Modal.queuedModals.push({ 'name': name, 'waveId': waveId });
     }
+
+    // set session variables
+    Session.set("open_modal", name);
+    Session.set("modal_wave", waveId);
 
     // modal-specific stuff
     var selector, closeOnEscape = false;
@@ -74,12 +78,10 @@ Modal = {
     if (form) { form.reset(); }
 
     // open new modal
-    Session.set("open_modal", name);
     selector.modal({
       'show': true,
       'keyboard': closeOnEscape,
     });
-    Uploader.waves['modalWaveOpen'] = Uploader.waves[id];
   },
 
 };
@@ -111,6 +113,13 @@ Template.Modal.events({
   'keyup': submitOnEnterPress,
 });
 
+Template.songInfoModal.songName = function () {
+  switch (Session.get("modal_wave")) {
+    case 'startWave': return 'Starting Song';
+    case 'endWave': return 'Ending Song';
+    default: return '';
+  }
+}
 
 Template.songMatches.songs = function () {
   return Session.get("song_matches");
@@ -125,10 +134,6 @@ function submitOnEnterPress(e) {
         Uploader.submitSongInfo(e); break;
       case "transition_info":
         Uploader.submitTransitionInfo(e); break;
-      case "song_select":
-        Uploader.loadSong(e); break;
-      case "transition_select":
-        Uploader.loadTransition(e); break;
     };
 
   }

@@ -46,8 +46,8 @@
 
 <template name="userNav">
   <div class="navbar-right">
-    <button class="navbar-btn btn-success">Save Mix</button>
-    <button class="navbar-btn btn-danger">Load Mix</button>
+    <!--<button class="navbar-btn btn-success">Save Mix</button>
+    <button class="navbar-btn btn-danger">Load Mix</button>-->
     <button class="navbar-btn btn-primary">{{loginButtons}}</button>
   </div>
 </template>
@@ -55,11 +55,15 @@
 <template name="songNav">
   <form class="navbar-form navbar-search navbar-right">
     <input type="text" class="song-search-query" placeholder="Find Songs...">
+    <!-- hack to prevent submission on enter press for single input form -->
+    <input type="text" style="display: none;" />
   </form>
 </template>
 
 <template name="transitionNav">
   <form class="navbar-form navbar-search navbar-right">
     <input type="text" class="transition-search-query" placeholder="Find Transitions...">
+    <!-- hack to prevent submission on enter press for single input form -->
+    <input type="text" style="display: none;" />
   </form>
 </template>

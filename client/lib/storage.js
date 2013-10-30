@@ -199,8 +199,8 @@ Storage = {
       if (callback) { callback(); }
     };
 
-    var song = wave.sample;
     // if song is new, add to database and upload wave
+    var song = wave.sample;
     if (!Songs.findOne(song._id)) {
       // upload song to s3 server
       putWave(wave, function () {
@@ -224,13 +224,13 @@ Storage = {
     var startSong = Songs.findOne({ 'name': startWave.sample.name });
     var endSong = Songs.findOne({ 'name': endWave.sample.name });
 
-    // get transition metadata, or make if wave doesn't have it
+    // get transition metadata, or make if transitionWave doesn't have it
     var transition = transitionWave.sample =
       transitionWave.sample || Storage.makeTransition({
         'startSong': startSong._id,
         'endSong': endSong._id,
         'dj': transitionWave.dj,
-        'md5': wave.md5,
+        'md5': transitionWave.md5,
         'duration': Wave.getDuration(transitionWave),
     });
 
