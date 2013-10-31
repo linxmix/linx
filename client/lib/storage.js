@@ -221,7 +221,7 @@ Storage = {
     if (!song._id) {
       // upload song to s3 server
       putWave(songWave, function () {
-        song = Storage.makeSong(song);
+        song = songWave.sample = Storage.makeSong(song);
         Songs.insert(song);
         if (callback) { callback(); }
       });
@@ -267,7 +267,7 @@ Storage = {
           'startSong': startSong._id,
           'endSong': endSong._id,
         });
-        transition = Storage.makeTransition(transition);
+        transition = transitionWave.sample = Storage.makeTransition(transition);
         Transitions.insert(transition);
         newCallback();
       });
@@ -401,6 +401,11 @@ function getOldTransitionUrl(transition, part) {
 // uploads buffer of given wave to s3
 function putWave(wave, callback) {
   var sample = wave.sample;
+
+  // TODO: fix this sorely misplaced logic!
+  sample['_id'] = sample['md5'];
+  sample['fileType'] = 'mp3'
+
   var url = Storage.getSampleUrl(sample, true);
   console.log("uploading wave to url: "+url);
   console.log(wave);
