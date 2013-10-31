@@ -262,18 +262,20 @@ Template.wave.rendered = function () {
     //
     // metadata
     //
-    var sample = {
+    wave.sample = {
       'md5': Storage.calcMD5(wave.arrayBuffer),
       'duration': Wave.getDuration(wave),
     };
 
     // if dealing with samples of type song
     if (id !== 'transitionWave') {
-      sample['type'] = 'song';
+      wave.sample['type'] = 'song';
       Storage.identifySample({
-        'sample': sample,
+        'sample': wave.sample,
         'checkDB': true,
         'callback': function (sample) {
+          console.log("callback with sample");
+          console.log(sample);
           if (sample) { wave.sample = sample; }
           // if sample was unidentified, prompt user for metadata
           else { Modal.openModal('song_info', wave.id); }
@@ -283,9 +285,9 @@ Template.wave.rendered = function () {
 
     // if dealing with samples of type transition
     else {
-      sample['type'] = 'transition';
+      wave.sample['type'] = 'transition';
       Storage.identifySample({
-        'sample': sample,
+        'sample': wave.sample,
         'checkDB': true,
         'callback': function (sample) {
           if (sample) {
@@ -379,7 +381,8 @@ Uploader = {
     Wave.clearMark(wave, 'end'); // clear old mark
     // when endMark is reached, cycle to next wave's startMark
     Wave.markEnd(wave, position).on('reached', function (time) {
-      var prevWave = Uploader.waves[Session.get('wave_focus')];
+      var prevWave = Uploader.waves['playing'];
+      Session.set('wave_focus', prevWave.id);
       var nextWave = Uploader.waves[Uploader.cycleFocus(1)];
       var startPos = (nextWave.markers['start'] && nextWave.markers['start'].position);
       var lag = time - position;
@@ -450,7 +453,7 @@ Uploader = {
       Uploader.setWaveVolume(wave, volume);
     }
     else {
-      console.log("WARNING: loadWave given an undefined arg.");
+      console.log("WARNING: loadWave given an invalid arg.");
     }
   },
 
@@ -547,7 +550,6 @@ function validateUpload(startWave, transitionWave, endWave, callback) {
 }
 
 function setupTransition(transition) {
-  var transitionWave = Uploader.waves[Session.get("modal_wave")];
 
   // load and mark startWave
   var startSong = Songs.findOne(transition.startSong);
@@ -566,6 +568,7 @@ function setupTransition(transition) {
   Uploader.loadWave(endWave, endSong, transition.endSongVolume);
 
   // mark transitionWave
+  var transitionWave = Uploader.waves['transitionWave'];
   var startTime = transition.startTime || 0;
   var endTime = transition.endTime || Wave.getDuration(transitionWave);
   Wave.markStart(transitionWave, startTime);

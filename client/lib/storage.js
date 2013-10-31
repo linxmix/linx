@@ -68,33 +68,38 @@ Storage = {
   },
 
   'getAudioInfo': function (sample, callback) {
-    var wave = Object.create(WaveSurfer);
-    // hack to access the ArrayBuffer of audio data as it's read
-    wave.loadBuffer = function (data) {
-      var my = wave;
-      wave.arrayBuffer = data;
-      wave.pause();
-      wave.backend.loadBuffer(data, function () {
-        my.clearMarks();
-        my.drawBuffer();
-        my.fireEvent('ready');
-      }, function () {
-        my.fireEvent('error', 'Error decoding audio');
+    // if sample has duration and md5, skip it
+    if (sample['duration'] && sample['md5']) {
+      return callback(sample);
+    } else {
+      var wave = Object.create(WaveSurfer);
+      // hack to access the ArrayBuffer of audio data as it's read
+      wave.loadBuffer = function (data) {
+        var my = wave;
+        wave.arrayBuffer = data;
+        wave.pause();
+        wave.backend.loadBuffer(data, function () {
+          my.clearMarks();
+          my.drawBuffer();
+          my.fireEvent('ready');
+        }, function () {
+          my.fireEvent('error', 'Error decoding audio');
+        });
+      };
+      // /hack
+      wave.init({
+        'container': $('#hiddenWaves')[0],
+        'audioContext': audioContext
       });
-    };
-    // /hack
-    wave.init({
-      'container': $('#hiddenWaves')[0],
-      'audioContext': audioContext
-    });
-    wave.on('ready', function () {
-      $.extend(sample, {
-        'md5': Storage.calcMD5(wave.arrayBuffer),
-        'duration': Wave.getDuration(wave),
+      wave.on('ready', function () {
+        $.extend(sample, {
+          'md5': Storage.calcMD5(wave.arrayBuffer),
+          'duration': Wave.getDuration(wave),
+        });
+        if (callback) { return callback(sample) };
       });
-      if (callback) { return callback(sample) };
-    });
-    wave.load(Storage.getSampleUrl(sample));
+      wave.load(Storage.getSampleUrl(sample));
+    }
   },
 
   // given a sample with md5 info, calls callback with metadata for it or undefined.
@@ -131,10 +136,10 @@ Storage = {
     }
 
     // otherwise, if sample is a song, try echo nest
-    else if (sample['type'] === 'song') { Storage.echoID(sample, callback); }
+    if (sample['type'] === 'song') { Storage.echoID(sample, callback); }
     
     // if sample is not a song, give up now
-    else { return callback(); }
+    else { console.log("giving up"); callback(); }
   },
 
   'echoID': function (sample, callback) {
@@ -212,11 +217,12 @@ Storage = {
 
   'putSong': function(songWave, callback) {
     // if song is new, add to database and upload songWave
-    if (!songWave.sample._id) {
+    var song = songWave.sample;
+    if (!song._id) {
       // upload song to s3 server
       putWave(songWave, function () {
-        $.extend(songWave.sample, Storage.makeSong());
-        Songs.insert(songWave.sample);
+        song = Storage.makeSong(song);
+        Songs.insert(song);
         if (callback) { callback(); }
       });
     }
@@ -253,14 +259,16 @@ Storage = {
     };
 
     // add transition to database and s3 server if doesnt already exist
+    var transition = transitionWave.sample;
     if (!transition._id) {      
       // upload transition to s3 server
       putWave(transitionWave, function () {
-        $.extend(transitionWave.sample, Storage.makeTransition({
+        $.extend(transition, {
           'startSong': startSong._id,
           'endSong': endSong._id,
-        }));
-        Transitions.insert(transitionWave.sample);
+        });
+        transition = Storage.makeTransition(transition);
+        Transitions.insert(transition);
         newCallback();
       });
     // make sure to still call callback if not putting to server
@@ -295,7 +303,7 @@ Storage = {
     else if (sample.type === 'transition') {
       ret = getOldTransitionUrl(sample, part);
     } else {
-      return console.log("ERROR: unknown sample type given to getSampleUrl");
+      return console.log("ERROR: unknown sample type given to getOldSampleUrl");
     }
     // replace whitespace with underscore so s3 accepts it
     ret = (ret && ret.replace(/\s/g, '_'));
@@ -355,7 +363,7 @@ Storage = {
 // private methods
 //
 function getSongUrl(song, part) {
-  var middle = Storage.local ? song.name : song._id;
+  var middle = (Storage.local || song.local) ? song.name : song._id;
   if (!middle) {
     console.log("ERROR: getSongUrl has no middle!");
   }
@@ -363,7 +371,7 @@ function getSongUrl(song, part) {
 }
 
 function getTransitionUrl(transition, part) {
-  var middle = Storage.local ?
+  var middle = (Storage.local || transition.local) ?
     Songs.findOne(transition.startSong).name + '-' +
     Songs.findOne(transition.endSong).name : transition._id;
   if (!middle) {
