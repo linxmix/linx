@@ -58,7 +58,43 @@ Storage = {
     }, options);
   },
 
-  
+  'updateSampleMD5': function (coll, sample) {
+    // skip sample if already done
+    if (sample.md5 && sample.duration) {
+      return console.log("sample already done: "+sample._id);
+    }
+    var wave = Object.create(WaveSurfer);
+    // hack to access the ArrayBuffer of audio data as it's read
+    wave.loadBuffer = function (data) {
+      var my = wave;
+      wave.arrayBuffer = data;
+      wave.pause();
+      wave.backend.loadBuffer(data, function () {
+        my.clearMarks();
+        my.drawBuffer();
+        my.fireEvent('ready');
+      }, function () {
+        my.fireEvent('error', 'Error decoding audio');
+      });
+    };
+    // /hack
+    wave.init({
+      'container': $('#mixerWave')[0],
+      'audioContext': audioContext
+    });
+    wave.on('ready', function () {
+      var newInfo = {
+        'name': sample.name,
+        'md5': Storage.calcMD5(wave.arrayBuffer),
+        'duration': Wave.getDuration(wave),
+      };
+      console.log(newInfo);
+      coll.update({ _id: sample._id }, { $set:
+        {'md5': newInfo.md5, 'duration': newInfo.duration }
+      });
+    });
+    wave.load(Storage.getSampleUrl(sample));
+  },
 
   'calcMD5': function (arrayBuffer) {
     var spark = new SparkMD5.ArrayBuffer();
