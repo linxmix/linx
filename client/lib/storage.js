@@ -58,6 +58,8 @@ Storage = {
     }, options);
   },
 
+  
+
   'calcMD5': function (arrayBuffer) {
     var spark = new SparkMD5.ArrayBuffer();
     spark.append(arrayBuffer);
