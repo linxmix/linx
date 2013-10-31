@@ -1014,6 +1014,7 @@ Meteor.startup(function () {
 
     transitions.forEach(function (transition) {
       transition['playCount'] = 0;
+      transition['local'] = true;
       Transitions.insert(transition);
     });
   }
@@ -1026,20 +1027,19 @@ Meteor.startup(function () {
         name: transition.startSong,
         fileType: "mp3",
         type: "song",
-        volume: 0.8
       });
       songs[transition.endSong] || (songs[transition.endSong] = {
         name: transition.endSong,
         fileType: "mp3",
         type: "song",
-        volume: 0.8
       });
     });
 
-    // insert songs with sizes
+    // insert songs
     for (var songName in songs) {
       var song = songs[songName];
       song['playCount'] = 0;
+      song['local'] = true;
       Songs.insert(song);
     }
 

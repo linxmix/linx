@@ -380,7 +380,7 @@ function makeWave(sample, callback) {
   // init new wave
   //
   wave.init({
-    'container': $('#mixerWave')[0],
+    'container': $('#hiddenWaves')[0],
     'audioContext': audioContext
   });
 

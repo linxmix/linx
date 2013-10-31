@@ -12,7 +12,7 @@ echoClient = Echojs({
 
 Meteor.methods({
 
-  'identifySong': function (data) {
+  'echoID': function (data) {
     if (!Meteor.userId()) {
       return alert("WARNING: Server method called from user who was not logged in!");
     }

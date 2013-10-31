@@ -23,46 +23,51 @@ Storage = {
 
   'makeTransition': function (options) {
     return $.extend({
-      // knowns
       '_id': (new Meteor.Collection.ObjectID()).toHexString(),
       'type': 'transition',
       'fileType': 'mp3',
       'playCount': 0,
       'volume': 1.0,
       'transitionType': 'active',
-      // unknowns
-      'dj': '',
-      'startSong': '',
       'startSongVolume': 0.8,
-      'startSongEnd': undefined,
-      'endSong': '',
       'endSongVolume': 0.8,
       'endSongStart': 0,
+      /* dj startSong endSong startSongEnd endSongStart md5 duration */
     }, options);
   },
 
   'makeSong': function (options) {
     return $.extend({
-      // knowns
       '_id': (new Meteor.Collection.ObjectID()).toHexString(),
       'type': 'song',
       'fileType': 'mp3',
       'playCount': 0,
-      // unknowns
-      'title': '',
-      'artist': '',
-      'bitrate': 0,
-      'sampleRate': 0,
-      'echoId': '',
-      'md5': '',
+      /* name title artist bitrate sampleRate echoId md5 duration */
     }, options);
   },
 
-  'updateSampleMD5': function (coll, sample) {
-    // skip sample if already done
-    if (sample.md5 && sample.duration) {
-      return console.log("sample already done: "+sample._id);
+  'updateSample': function (sample) {
+    if (!sample) { return; }
+    // first determine this sample's corresponding collection
+    var coll;
+    switch (sample['type']) {
+      case 'song': coll = Songs; break;
+      case 'transition': coll = Transitions; break;
+      default: return console.log("WARNING: sample of unknown type given to Storage.updateSample");
     }
+    // then strip sample of _id and update that collection
+    var clone = $.extend(true, {}, sample);
+    delete clone._id;    
+    coll.update({ '_id': sample['_id'] }, { $set: clone });
+  },
+
+  'calcMD5': function (arrayBuffer) {
+    var spark = new SparkMD5.ArrayBuffer();
+    spark.append(arrayBuffer);
+    return spark.end();
+  },
+
+  'getAudioInfo': function (sample, callback) {
     var wave = Object.create(WaveSurfer);
     // hack to access the ArrayBuffer of audio data as it's read
     wave.loadBuffer = function (data) {
@@ -79,81 +84,82 @@ Storage = {
     };
     // /hack
     wave.init({
-      'container': $('#mixerWave')[0],
+      'container': $('#hiddenWaves')[0],
       'audioContext': audioContext
     });
     wave.on('ready', function () {
-      var newInfo = {
-        'name': sample.name,
+      $.extend(sample, {
         'md5': Storage.calcMD5(wave.arrayBuffer),
         'duration': Wave.getDuration(wave),
-      };
-      console.log(newInfo);
-      coll.update({ _id: sample._id }, { $set:
-        {'md5': newInfo.md5, 'duration': newInfo.duration }
       });
+      if (callback) { return callback(sample) };
     });
     wave.load(Storage.getSampleUrl(sample));
   },
 
-  'calcMD5': function (arrayBuffer) {
-    var spark = new SparkMD5.ArrayBuffer();
-    spark.append(arrayBuffer);
-    return spark.end();
+  // given a sample with md5 info, calls callback with metadata for it or undefined.
+  // metadata will include _id if db already had this sample.
+  'identifySample': function (options) {
+    // curry args
+    var sample = options.sample,
+        callback = options.callback,
+        checkDB = options.checkDB;
+    if (typeof callback !== 'function') {
+      return console.log("WARNING: improper callback given to Storage.identifySample!");
+    }
+
+    // if no md5, attempt to get it then try again
+    if (!sample.md5) {
+      Storage.getAudioInfo(sample, function (sample) {
+        Storage.identifySample({ 'sample': sample, 'callback': callback });
+      });
+      return;
+    }
+
+    // first check to see if we have this md5 in our database
+    if (checkDB) {
+      var sampleMatch;
+      if (sample['type'] === 'song') {
+        sampleMatch = Songs.findOne({ 'md5': sample['md5'] });
+      } else if (sample['type'] === 'transition') {
+        sampleMatch = Transitions.findOne({ 'md5': sample['md5'] });
+      }
+      // if we found a matching sample, we're done.
+      if (sampleMatch) {
+        return callback(sampleMatch);
+      }
+    }
+
+    // otherwise, if sample is a song, try echo nest
+    else if (sample['type'] === 'song') { Storage.echoID(sample, callback); }
+    
+    // if sample is not a song, give up now
+    else { return callback(); }
   },
 
-  // given the string of an md5 hash, returns a sample with corresponding metadata
-  // (or undefined if none is found). skips the echonest check if that var is true
-  'identifyWave': function (wave, sampleType) {
-    var skipEchoNest = (sampleType === 'transition'),
-        modalName = sampleType + '_info';
+  'echoID': function (sample, callback) {
+    Meteor.call('echoID', { 'md5': sample['md5'] }, function(err, response) {
+      if (err) { return console.log(err); }
+      var track = (response && response.track);
+      console.log(track);
 
-    // calculate md5 of wave, if doesnt have one
-    var md5String = wave['md5'];
-    if (!md5String) {
-      md5String = wave['md5'] = Storage.calcMD5(wave.arrayBuffer);
-    }
+      // if track info is present, update sample with that info and return
+      if (track) {
+        $.extend(sample, {
+          'name': track.title,
+          'title': track.title,
+          'artist': track.artist,
+          'bitrate': track.bitrate,
+          'sampleRate': track.samplerate,
+          'echoId': track.song_id,
+          'md5': track.md5,
+        });
+        if (callback) { return callback(sample); }
+      }
 
-    // if we have this md5 in our database, use that and we're done
-    var sample;
-    if (sampleType === 'song') {
-      sample = Songs.findOne({ 'md5': md5String });
-    } else if (sampleType === 'transition') {
-      sample = Transitions.findOne({ 'md5': md5String });
-    }
-
-    if (sample) { wave['sample'] = sample; }
-
-    // otherwise, try echo nest if we are supposed to
-    else if (!skipEchoNest) {
-      Meteor.call('identifySong', { 'md5': md5String }, function(err, response) {
-        if (err) { return console.log(err); }
-        var track = (response && response.track);
-        console.log(track);
-
-        // if track info is present, return a new song with that info        
-        if (track) {
-          wave['sample'] = Storage.makeSong({
-            'name': track.title,
-            'title': track.title,
-            'artist': track.artist,
-            'bitrate': track.bitrate,
-            'sampleRate': track.samplerate,
-            'echoId': track.song_id,
-            'md5': track.md5,
-            'duration': Wave.getDuration(wave),
-          });
-
-        // if no track info present, prompt user for metadata
-        } else {
-          Modal.openModal(modalName, wave.id);
-        }
-      });
-    
-    // if skipping echo nest, prompt user for metadata
-    } else {
-      Modal.openModal(modalName, wave.id);
-    }
+      // if no track info present, return undefined to callback
+      else if (callback) { return callback(); }
+    });
   },
 
   'saveMix': function (queue) {
@@ -166,32 +172,6 @@ Storage = {
       'name': name,
       'queue': queue,
     })
-  },
-
-  // TODO: make this back up the database before doing any of this!
-  'updateAll': function(coll, fnc) {
-    // check user is logged in
-    if (!Meteor.userId()) {
-      return alert("Sorry, but you must be logged in to updateAll!");
-    }
-
-    // if fnc is an object, set it directly
-    if (typeof fnc === 'object') {
-      coll.find().fetch().forEach(function (element) {
-        coll.update({ '_id': element._id }, { $set: fnc });
-      });
-
-    // if fnc is a function, call it on each element
-    } else if (typeof fnc === 'function') {
-      coll.find().fetch().forEach(function (element) {
-        var _id = element._id;
-        var options = fnc(element);
-        if (options !== undefined) {
-          delete options._id;
-          coll.update({ '_id': _id }, { $set: options });
-        }
-      });
-    }
   },
 
   'deleteSample': function(sample) {
@@ -230,26 +210,18 @@ Storage = {
     Meteor.call('copyFile', src, dest, callback);
   },
 
-  'putSong': function(wave, callback) {
-
-    var newCallback = function () {
-      // call old callback
-      if (callback) { callback(); }
-    };
-
-    // if song is new, add to database and upload wave
-    var song = wave.sample;
-    if (!Songs.findOne(song._id)) {
+  'putSong': function(songWave, callback) {
+    // if song is new, add to database and upload songWave
+    if (!songWave.sample._id) {
       // upload song to s3 server
-      putWave(wave, function () {
-        song._id = Songs.insert(song);
-        newCallback();
+      putWave(songWave, function () {
+        $.extend(songWave.sample, Storage.makeSong());
+        Songs.insert(songWave.sample);
+        if (callback) { callback(); }
       });
     }
     // otherwise, just call callback
-    else {
-      newCallback();
-    }
+    else if (callback) { callback(); }
   },
 
   'putTransition': function(startWave, transitionWave, endWave, callback) {
@@ -259,23 +231,13 @@ Storage = {
     var startTime = transitionWave.markers['start'].position;
     var endTime = transitionWave.markers['end'].position;
 
-    var startSong = Songs.findOne({ 'name': startWave.sample.name });
-    var endSong = Songs.findOne({ 'name': endWave.sample.name });
-
-    // get transition metadata, or make if transitionWave doesn't have it
-    var transition = transitionWave.sample =
-      transitionWave.sample || Storage.makeTransition({
-        'startSong': startSong._id,
-        'endSong': endSong._id,
-        'dj': transitionWave.dj,
-        'md5': transitionWave.md5,
-        'duration': Wave.getDuration(transitionWave),
-    });
+    var startSong = startWave.sample;
+    var endSong = endWave.sample;
 
     // add transition metadata stuff to callback
     var newCallback = function () {
       // update transition with timings and volume
-      Transitions.update({ '_id': transition._id }, { $set:
+      Transitions.update({ '_id': transitionWave.sample._id }, { $set:
         {
           'startSongEnd': startSongEnd,
           'endSongStart': endSongStart,
@@ -291,10 +253,14 @@ Storage = {
     };
 
     // add transition to database and s3 server if doesnt already exist
-    if (!Transitions.findOne(transition._id)) {
+    if (!transition._id) {      
       // upload transition to s3 server
       putWave(transitionWave, function () {
-        transition._id = Transitions.insert(transition);
+        $.extend(transitionWave.sample, Storage.makeTransition({
+          'startSong': startSong._id,
+          'endSong': endSong._id,
+        }));
+        Transitions.insert(transitionWave.sample);
         newCallback();
       });
     // make sure to still call callback if not putting to server
@@ -305,14 +271,14 @@ Storage = {
 
   'getSampleUrl': function(sample, local) {
     var part = Storage.part, ret;
-    if (local || Storage.local) part = "";
+    if (local || Storage.local || sample.local) part = "";
     if (sample.type === 'song') {
       ret = getSongUrl(sample, part);
     }
     else if (sample.type === 'transition') {
       ret = getTransitionUrl(sample, part);
     } else {
-      return console.log("ERROR: unknown sample type given to getSampleUrl");
+      throw new TypeError("ERROR: unknown sample type given to getSampleUrl");
     }
     // replace whitespace with underscore so s3 accepts it
     ret = (ret && ret.replace(/\s/g, '_'));

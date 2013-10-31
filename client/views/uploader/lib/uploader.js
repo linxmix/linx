@@ -194,12 +194,12 @@ Template.wave.rendered = function () {
 
   // bind drag n drop
   wave.bindDragNDrop($(selector+' .waveform')[0]);
-  // reset wave metadata on drop
+  // reset wave on drop
   $(selector+' .waveform').on('drop', function (e) {
-    console.log("resetting "+wave.id+"'s metadata");
-    wave.hasMetadata = false;
+    console.log("resetting "+wave.id);
     wave.sample = undefined;
     wave.empty();
+    Uploader.setWaveVolume(wave);
   });
   //
   // /init wave
@@ -262,28 +262,45 @@ Template.wave.rendered = function () {
     //
     // metadata
     //
-    if (!wave.hasMetadata) {
+    var sample = {
+      'md5': Storage.calcMD5(wave.arrayBuffer),
+      'duration': Wave.getDuration(wave),
+    };
 
-      // tell storage to identify sample based on sample type
-      if (id !== 'transitionWave') {
-        Storage.identifyWave(wave, 'song');
-      } else {
-        Storage.identifyWave(wave, 'transition');
-      }
-
-      // TODO move and/or change this to be more cleanly logical!
-      // since wave had no metadata, set volume to default
-      var volume = (wave.id === 'transitionWave') ? 1.0 : 0.8;
-      // update volume and slider
-      wave.setVolume(volume);
-      $(selector+' .volumeSlider').slider('setValue', volume);
+    // if dealing with samples of type song
+    if (id !== 'transitionWave') {
+      sample['type'] = 'song';
+      Storage.identifySample({
+        'sample': sample,
+        'checkDB': true,
+        'callback': function (sample) {
+          if (sample) { wave.sample = sample; }
+          // if sample was unidentified, prompt user for metadata
+          else { Modal.openModal('song_info', wave.id); }
+        }
+      });
     }
 
-    // reset hasMetadata at end in case new file is loaded after this
-    wave.hasMetadata = false;
+    // if dealing with samples of type transition
+    else {
+      sample['type'] = 'transition';
+      Storage.identifySample({
+        'sample': sample,
+        'checkDB': true,
+        'callback': function (sample) {
+          if (sample) {
+            wave.sample = sample;
+            setupTransition(sample);
+          }
+          // if sample was unidentified, prompt user for metadata
+          else { Modal.openModal('transition_info', wave.id); }
+        }
+      });
+    }
     //
     // /metadata
     //
+
   });
 };
 
@@ -373,7 +390,6 @@ Uploader = {
     });
   },
 
-  // submit song info on song info modal close
   'submitSongInfo': function(e) {
     var wave = Uploader.waves[Session.get("modal_wave")];
     Modal.close(e);
@@ -381,117 +397,68 @@ Uploader = {
     var name = serial[0]['value'];
     var artist = serial[1]['value'];
 
-    wave.guessSample = function() {
-      wave.sample = Storage.makeSong({
-        'name': name,
-        'title': name,
-        'artist': artist,
-        'md5': wave.md5,
-        'duration': Wave.getDuration(wave),
-      });
-    };
+    // update sample with submitted info
+    $.extend(wave.sample, {
+      'name': name,
+      'title': name,
+      'artist': artist,
+    });
 
-    //
-    // use user-provided info to attempt to ID song
-    //
-    var songs = Songs.find({ $or: [
+    // present match modal if we have any songs with similar info in our database
+    var matches = Songs.find({ $or: [
       { 'name':  { $regex: name, $options: 'i' } },
       { 'artist':  { $regex: artist, $options: 'i' } }
     ]}).fetch();
-    // first see if we have any songs like this one in our database
-    if (songs.length > 0) {
-      Session.set("song_matches", songs);
+    if (matches.length > 0) {
+      Session.set("song_matches", matches);
       Modal.openModal("song_match", wave.id);
-    }
-    // couldn't find any possible matches in our database, so try to guess info
-    else {
-      wave.guessSample();
     }
   },
 
-  // submit transition info on transition info modal close
   'submitTransitionInfo': function(e) {
     var wave = Uploader.waves[Session.get("modal_wave")];
     Modal.close(e); // click is here so that close is triggered
     var serial = $('#transitionInfoModal form').serializeArray();
     var DJName = serial[0]['value'];
-    wave['dj'] = DJName;
+
+    // update sample with submitted info
+    $.extend(wave.sample, {
+      'dj': DJName,
+    });
   },
 
   'loadSong': function (e) {
     var wave = Uploader.waves[Session.get("modal_wave")];
     Modal.close(e); // click is here so double click on song will close modal
     var song = Songs.findOne(Session.get("selected_song"));
-
-    // if wave and song exist, load song and tie song to wave
-    if (wave && song) {
-      wave.sample = song;
-      wave.hasMetadata = true;
-      wave.load(Storage.getSampleUrl(song));
-    }
-    else {
-      console.log("WARNING: loadSong didn't load metadata");
-    }
-  },
-
-  // no match was found, fill in missing information
-  'noSongMatch': function (e) {
-    var wave = Uploader.waves[Session.get("modal_wave")];
-    Modal.close(e); // click is here so double click on song will close modal
-    if (wave && wave.guessSample) {
-      wave.guessSample();
-    }
+    Uploader.loadWave(wave, song);
   },
 
   'loadTransition': function (e) {
-    var transitionWave = Uploader.waves[Session.get("modal_wave")];
+    var wave = Uploader.waves[Session.get("modal_wave")];
     Modal.close(e); // click is here so double click on transition will close modal
     var transition = Transitions.findOne(Session.get("selected_transition"));
+    Uploader.loadWave(wave, transition, transition.volume);
+  },
 
-    function loadWave(wave, sample, volume, url) {
-      wave.sample = sample;
-      wave.hasMetadata = true;
-      // update volume and slider
-      wave.setVolume(volume);
-      $('#'+wave.id+' .volumeSlider').slider('setValue', volume);
-      // load file
-      wave.load(url);
+  // loads given sample into given wave
+  'loadWave': function (wave, sample, volume) {
+    if (wave && sample) {
+      // load sample
+      wave.load(Storage.getSampleUrl(sample));
+      // set volume
+      Uploader.setWaveVolume(wave, volume);
     }
-
-    if (transitionWave && transition) {
-
-      // load transition
-      loadWave(transitionWave, transition, transition.volume,
-        Storage.getSampleUrl(transition));
-
-      // load startWave
-      var startSong = Songs.findOne(transition.startSong);
-      var startWave = Uploader.waves['startWave'];
-      loadWave(startWave, startSong,
-        transition.startSongVolume,
-        Storage.getSampleUrl(startSong));
-
-      // load endWave
-      var endSong = Songs.findOne(transition.endSong);
-      var endWave = Uploader.waves['endWave'];
-      loadWave(endWave, endSong,
-        transition.endSongVolume,
-        Storage.getSampleUrl(endSong));
-
-      // mark waves
-      startWave.once('ready', function () {
-        Uploader.markWaveEnd(startWave, transition.startSongEnd);
-      });
-      transitionWave.once('ready', function () {
-        var startTime = transition.startTime || 0;
-        var endTime = transition.endTime || Wave.getDuration(transitionWave);
-        Wave.markStart(transitionWave, startTime);
-        Uploader.markWaveEnd(transitionWave, endTime);
-      });
-      endWave.once('ready', function () {
-        Wave.markStart(endWave, transition.endSongStart);
-      });
+    else {
+      console.log("WARNING: loadWave given an undefined arg.");
     }
+  },
+
+  'setWaveVolume': function (wave, volume) {
+    volume = volume || ((wave.id === 'transitionWave') ? 1.0 : 0.8);
+    wave.setVolume(volume);
+    // update slider
+    $('#'+wave.id+' .volumeSlider').slider('setValue', volume);
   },
 
   'upload': function(e) {
@@ -537,10 +504,6 @@ Uploader = {
 
 function validateUpload(startWave, transitionWave, endWave, callback) {
 
-  //
-  // validation check
-  // 
-
   // 1. check user is logged in
   if (!Meteor.userId()) {
     return alert("Sorry, but you must be logged in to submit a transition!");
@@ -580,8 +543,31 @@ function validateUpload(startWave, transitionWave, endWave, callback) {
     return alert("All three waves must be loaded and marked before submission.");
   }
 
-  //
-  // /validation
-  //
   return callback();
+}
+
+function setupTransition(transition) {
+  var transitionWave = Uploader.waves[Session.get("modal_wave")];
+
+  // load and mark startWave
+  var startSong = Songs.findOne(transition.startSong);
+  var startWave = Uploader.waves['startWave'];
+  startWave.once('ready', function () {
+    Uploader.markWaveEnd(startWave, transition.startSongEnd);
+  });
+  Uploader.loadWave(startWave, startSong, transition.startSongVolume);
+
+  // load and mark endWave
+  var endSong = Songs.findOne(transition.endSong);
+  var endWave = Uploader.waves['endWave'];
+  endWave.once('ready', function () {
+    Wave.markStart(endWave, transition.endSongStart);
+  });
+  Uploader.loadWave(endWave, endSong, transition.endSongVolume);
+
+  // mark transitionWave
+  var startTime = transition.startTime || 0;
+  var endTime = transition.endTime || Wave.getDuration(transitionWave);
+  Wave.markStart(transitionWave, startTime);
+  Uploader.markWaveEnd(transitionWave, endTime);
 }
