@@ -68,7 +68,7 @@ Template.graph.rendered = function () {
     // no currSong, so draw graph in view all mode
     } else {
       var options = {
-        'dj': { $regex: Session.get("graph_filter_query"), },
+        'dj': Session.get("graph_filter_query"),
       };
       links = Transitions.find(options).fetch();
     }
