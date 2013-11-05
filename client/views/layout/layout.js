@@ -37,19 +37,18 @@ Template.player.events({
 
 });
 
+Template.nav.events({
+  'click #djSelect': function (e) {
+    Modal.openModal("dj_select");
+  }
+});
+
 Template.songNav.events({
   'keyup .song-search-query': function (e) {
     // use modal query if there is one
     var query = !!Session.get("open_modal") ?
       $(".modal .song-search-query").val() : $(".layout-nav .song-search-query").val();
     Session.set("song_search_query", query);
-  }
-});
-
-Template.graphNav.events({
-  'keyup .graph-filter-query': function (e) {
-    var query = $(".layout-nav .graph-filter-query").val();
-    Session.set("graph_filter_query", query);
   }
 });
 

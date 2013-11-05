@@ -1,0 +1,38 @@
+<template name="djSelectModal">
+  <div class="modal modal-sm fade" id ="djSelectModal">
+
+    <div class="modal-header">
+      <button type="button" class="close">&times;</button>
+      <h4 class="modal-title">Select a DJ</h4>
+    </div>
+
+    <!-- Body -->
+    <div class="modal-body">
+      {{> djs}}
+    </div>
+
+    <div class="modal-footer">
+      <button type="button" class="btn btn-default cancel">Cancel</button>
+      <button type="button" class="btn btn-primary" id="selectDJ">Select DJ</button>
+    </div>
+
+  </div><!-- /.modal -->
+</template>
+
+<!-- DJs -->
+<template name="djs">
+  <ul class="djs">
+    {{#each djs}}
+      {{> dj}}
+    {{/each}}
+  </ul>
+</template>
+
+<!-- Dj -->
+<template name="dj">
+  <div class="dj {{selected}} well well-sm">
+    <p>Dj: {{dj}}</p>
+    <p># Transitions: {{transitionCount}}</p>
+    <p># Transition Plays: {{transitionPlayCount}}</p>
+  </div>
+</template>

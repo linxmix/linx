@@ -42,8 +42,8 @@ Template.graph.rendered = function () {
 
       // define current song as center node
       currSong["fixed"] = true;
-      currSong["px"] = 50;
-      currSong["py"] = 50;
+      currSong["px"] = width / 2;
+      currSong["py"] = height / 2;
       currSong["color"] = 2;
       nodes[currSong._id] = currSong;
 
@@ -68,7 +68,7 @@ Template.graph.rendered = function () {
     // no currSong, so draw graph in view all mode
     } else {
       var options = {
-        'dj': { $regex: Session.get("graph_filter_query"), $options: 'i' },
+        'dj': { $regex: Session.get("graph_filter_query"), },
       };
       links = Transitions.find(options).fetch();
     }

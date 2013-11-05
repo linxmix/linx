@@ -54,7 +54,7 @@ body {
   width: 100%;
 }
 
-.transition, .song {
+.transition, .song, .dj {
   font-size: 18px;
   cursor: pointer;
 }

@@ -19,6 +19,7 @@ Modal = {
     $('#songInfoModal').modal('hide');
     $('#transitionInfoModal').modal('hide');
     $('#songMatchModal').modal('hide');
+    $('#djSelectModal').modal('hide');
 
     // if another modal is queued to open, do that
     var nextModal = Modal.queuedModals.shift();
@@ -65,6 +66,11 @@ Modal = {
         selector = $('#songMatchModal');
         break;
 
+      case "dj_select":
+        Session.set("selected_dj", undefined);
+        selector = $('#djSelectModal');
+        break;
+
       default:
         return console.log("ERROR: openModal called with Modal of unknown name: "+name);
     }
@@ -104,6 +110,10 @@ Template.transitionInfoModal.events({
   'click #submitTransitionInfo': Uploader.submitTransitionInfo,
 });
 
+Template.djSelectModal.events({
+  'click #selectDJ': selectDJ,
+});
+
 Template.Modal.events({
   'click .close': Modal.close,
   'click .cancel': Modal.close,
@@ -135,3 +145,55 @@ function submitOnEnterPress(e) {
 
   }
 }
+
+//
+// DJ Select Stuff
+//
+
+Template.dj.events({
+  'click': function(e) {
+    Session.set("selected_dj", this.dj);
+  },
+  'dblclick': function(e) {
+    Session.set("selected_dj", this.dj);
+    selectDJ(e);
+    Modal.close(e); // click is here so double click on dj will close modal
+  },
+});
+
+function selectDJ(e) {
+  var djName = Session.get("selected_dj");
+  Session.set("graph_filter_query", djName);
+};
+
+Template.djs.djs = function () {
+
+  // accumulate dj's from transitions
+  var djs = {}, transitions = Transitions.find().fetch();
+  Transitions.find().fetch().forEach(function (transition) {
+    var dj = djs[transition['dj']];
+    // if we've already seen this dj, increment transition count and playcount
+    if (dj) {
+      ++dj['transitionCount'];
+      dj['transitionPlayCount'] += transition['playCount'];
+    }
+    // otherwise, add this dj
+    else {
+      djs[transition['dj']] = {
+        'dj': transition['dj'],
+        'transitionCount': 1,
+        'transitionPlayCount': transition['playCount'],
+      }
+    }
+  });
+  var ret = [];
+  for (dj in djs) {
+    ret.push(djs[dj]);
+  }
+  console.log(ret);
+  return ret;
+};
+
+Template.dj.selected = function () {
+  return Session.equals("selected_dj", this.dj) ? "selected" : "";
+};
