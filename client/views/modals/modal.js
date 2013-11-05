@@ -163,7 +163,7 @@ Template.dj.events({
 
 function selectDJ(e) {
   var djName = Session.get("selected_dj");
-  Session.set("graph_filter_query", djName);
+  Session.set("graph_filter_query", djName || "");
 };
 
 Template.djs.djs = function () {
@@ -190,7 +190,6 @@ Template.djs.djs = function () {
   for (dj in djs) {
     ret.push(djs[dj]);
   }
-  console.log(ret);
   return ret;
 };
 
