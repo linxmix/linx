@@ -25,7 +25,7 @@ Mixer = {
     if (sample) {
       // if sample was queued successfully, pick a first transition
       if (Mixer.queue({ 'sample': sample, 'index': 0 })) {
-        pickTransition();
+        //pickTransition();
       }
     }
     // update play status
@@ -463,6 +463,12 @@ function cycleQueue() {
   }
   // if cycling to the last song, pick new transition to continue the mix
   if (queue.length === 1) {
+    pickTransition();
+  }
+
+  // if cycled past the last song, play random + transition to continue the mix
+  else if (queue.length === 0) {
+    Mixer.queue({ 'sample': Storage.getRandom(Songs) });
     pickTransition();
   }
 }

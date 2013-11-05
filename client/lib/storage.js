@@ -305,7 +305,7 @@ Storage = {
   'getRandom': function(coll) {
     var found = coll.find();
     var count = found.count() - 1; // -1 for array indexing
-    var rand = Math.round(Math.random() * count);
+    var rand = ~~(Math.random() * count);
     return found.fetch()[rand];
   },
 
