@@ -105,7 +105,7 @@ Template.graph.rendered = function () {
     .nodes(d3.values(nodes))
     .links(links)
     .size([width, height])
-    .gravity(0.08)
+    .gravity(0.05)
     .linkDistance(100)
     .charge(-350)
     .on("tick", tick)
