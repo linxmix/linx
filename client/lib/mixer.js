@@ -466,7 +466,7 @@ function cycleQueue() {
     pickTransition();
   }
 
-  // if cycled past the last song, play random + transition to continue the mix
+  // if cycled past the last song, play random song + transition to continue the mix
   else if (queue.length === 0) {
     Mixer.queue({ 'sample': Storage.getRandom(Songs) });
     pickTransition();

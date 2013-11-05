@@ -39,7 +39,7 @@ function resetUploader() {
 function checkUploading() {
   this.layout("loadingLayout");
   console.log(Session.get("uploads_in_progress"));
-  if (!(Session.get("uploads_in_progress") >= 0)) {
-    this.redirect('/');
-  }
+  //if (!(Session.get("uploads_in_progress") >= 0)) {
+  //  this.redirect('/');
+  //}
 }
