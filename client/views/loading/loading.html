@@ -1,0 +1,16 @@
+<template name="loadingPage">
+
+  <!-- Hidden button to go to loading page -->
+  <button id="gotoLoadingPage" style="display: none;"></button>
+
+  <div id="loader" class="row text-center">
+    <h1><em>{{uploadCount}} Track Upload(s) Remain...</em></h1>
+    <h5>Please <strong>DO NOT leave this page</strong> until you get confirmation that the upload has completed.</h5>
+    <div id="loadingIcon"></div>
+    <h4><em>Linx thanks you for your contribution!</em></h4>
+  </div>
+</template>
+
+<template name="loadingLayout">
+  {{{yield}}}
+</template>

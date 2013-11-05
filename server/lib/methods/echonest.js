@@ -14,7 +14,7 @@ Meteor.methods({
 
   'echoID': function (data) {
     if (!Meteor.userId()) {
-      return alert("WARNING: Server method called from user who was not logged in!");
+      return console.log("WARNING: Server method called from user who was not logged in!");
     }
     var fut = new Future();
     echoClient('track/profile').get(data, function(err, json) {
@@ -26,7 +26,7 @@ Meteor.methods({
 
   'searchEchoNest': function (data) {
     if (!Meteor.userId()) {
-      return alert("WARNING: Server method called from user who was not logged in!");
+      return console.log("WARNING: Server method called from user who was not logged in!");
     }
     var fut = new Future();
     echoClient('song/search').get(data, function(err, json) {
@@ -42,7 +42,7 @@ Meteor.methods({
 // wrap function in try/catch so that server won't reset on error
 function exceptionWrapper(func, extra) {
   if (!Meteor.userId()) {
-    return alert("WARNING: Server method called from user who was not logged in!");
+    return console.log("WARNING: Server method called from user who was not logged in!");
   }
   return function() {
     try {

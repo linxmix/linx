@@ -17,7 +17,7 @@ Meteor.methods({
   // TODO: will max-keys be an issue? check knox list api for reference
   'getList': function(prefix) {
     if (!Meteor.userId()) {
-      return alert("WARNING: Server method called from user who was not logged in!");
+      return console.log("WARNING: Server method called from user who was not logged in!");
     }
     var fut = new Future();
     s3Client.list({ 'prefix': prefix}, function (err, data) {
@@ -29,7 +29,7 @@ Meteor.methods({
 
   'deleteFile': function(url) {
     if (!Meteor.userId()) {
-      return alert("WARNING: Server method called from user who was not logged in!");
+      return console.log("WARNING: Server method called from user who was not logged in!");
     }
     console.log("DELETING FILE: "+url);
     s3Client.deleteFile(url, function(err, res) {
@@ -40,7 +40,7 @@ Meteor.methods({
 
   'copyFile': function (oldUrl, newUrl) {
     if (!Meteor.userId()) {
-      return alert("WARNING: Server method called from user who was not logged in!");
+      return console.log("WARNING: Server method called from user who was not logged in!");
     }
     console.log("COPYING FILE AT: "+oldUrl+" TO NEW URL: "+newUrl);
     s3Client.copyFile(oldUrl, newUrl, function(err, res) {
@@ -51,7 +51,7 @@ Meteor.methods({
 
   'putArray': function (array, url) {
     if (!Meteor.userId()) {
-      return alert("WARNING: Server method called from user who was not logged in!");
+      return console.log("WARNING: Server method called from user who was not logged in!");
     }
     this.unblock();
     putArray(array, url, 0);

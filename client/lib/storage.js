@@ -5,7 +5,6 @@ Storage = {
   //
   'local': false,
   'part': 'http://s3-us-west-2.amazonaws.com/linx-music/',
-  'uploadsInProgress': 0,
 
   //
   // functions
@@ -231,29 +230,23 @@ Storage = {
   },
 
   'putTransition': function(startWave, transitionWave, endWave, callback) {
-    var startSongEnd = startWave.markers['end'].position;
-    var endSongStart = endWave.markers['start'].position;
 
-    var startTime = transitionWave.markers['start'].position;
-    var endTime = transitionWave.markers['end'].position;
-
-    var startSong = startWave.sample;
-    var endSong = endWave.sample;
+    // add metadata to transitionwave's sample
+    $.extend(transitionWave.sample, {
+      'startSong': startWave.sample._id,
+      'endSong': endWave.sample._id,
+      'startSongEnd': startWave.markers['end'].position,
+      'endSongStart': endWave.markers['start'].position,
+      'startTime': transitionWave.markers['start'].position,
+      'endTime': transitionWave.markers['end'].position,
+    });
 
     // add transition metadata stuff to callback
-    var newCallback = function () {
+    var newCallback = function (transition) {
       // update transition with timings and volume
-      Transitions.update({ '_id': transitionWave.sample._id }, { $set:
-        {
-          'startSongEnd': startSongEnd,
-          'endSongStart': endSongStart,
-          'startTime': startTime,
-          'endTime': endTime,
-          'startSongVolume': $('#startWave .volumeSlider').data('slider').getValue(),
-          'endSongVolume': $('#endWave .volumeSlider').data('slider').getValue(),
-          'volume': $('#transitionWave .volumeSlider').data('slider').getValue()
-        }
-      });
+      console.log("updating transition: ");
+      console.log(transition);
+      Storage.updateSample(transition);
       // call old callback
       if (callback) { callback(); }
     };
@@ -263,17 +256,13 @@ Storage = {
     if (!transition._id) {      
       // upload transition to s3 server
       putWave(transitionWave, function () {
-        $.extend(transition, {
-          'startSong': startSong._id,
-          'endSong': endSong._id,
-        });
         transition = transitionWave.sample = Storage.makeTransition(transition);
         Transitions.insert(transition);
-        newCallback();
+        newCallback(transition);
       });
     // make sure to still call callback if not putting to server
     } else {
-      newCallback();
+      newCallback(transition);
     }
   },
 

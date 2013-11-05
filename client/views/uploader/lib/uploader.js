@@ -474,25 +474,33 @@ Uploader = {
 
     // make sure this transition is valid before uploading
     validateUpload(startWave, transitionWave, endWave, function () {
+      Session.set("uploads_in_progress", 3); // TODO: move this out of here
 
       // function to call on upload completion
       // TODO: debug why data is always undefined
       function putComplete(err, data) {
-        --Storage.uploadsInProgress;
+        var uploadsInProgress = Session.get("uploads_in_progress");
+        Session.set("uploads_in_progress", --uploadsInProgress);
         if (err) { return alert(err); }
         console.log("one upload completed. remaining uploads: " +
-          Math.max(Storage.uploadsInProgress, 0));
-        if (Storage.uploadsInProgress <= 0) {
-          Storage.uploadsInProgress = 0;
+          Math.max(uploadsInProgress, 0));
+        if (uploadsInProgress <= 0) {
+          Uploader.redirectToUploader();
           alert('Upload successfully completed!');
         }
       }
 
-      // tell user to wait for completion of uploads
-      alert("Upload initiated! Please close this, but DO NOT leave this page until you get confirmation that the upload has completed.");
+      // update transitionWave.sample with volumes before redirecting
+      $.extend(transitionWave.sample, {
+        'startSongVolume': $('#startWave .volumeSlider').data('slider').getValue(),
+        'endSongVolume': $('#endWave .volumeSlider').data('slider').getValue(),
+        'volume': $('#transitionWave .volumeSlider').data('slider').getValue()
+      });
+
+      // send client to loading page
+      Uploader.redirectToLoading();
 
       // synchronously upload samples, signaling completion on each callback
-      Storage.uploadsInProgress = 3; // TODO: move this out of here
       Storage.putSong(startWave, function () {
         putComplete();
         Storage.putSong(endWave, function () {
@@ -513,22 +521,11 @@ function validateUpload(startWave, transitionWave, endWave, callback) {
   }
 
   // 2. check not currently doing an upload
-  if (Storage.uploadsInProgress > 0) {
+  if (Session.get("uploads_in_progress") > 0) {
     return alert("Another upload is already in progress!");
   }
 
-  // 3. if transition has a mongo id, check it corresponds to these songs
-  var transition = transitionWave.sample;
-  var startSong = startWave.sample;
-  var endSong = endWave.sample;
-  if (transition && transition._id) {
-    if ((transition.startSong !== (startSong && startSong._id)) ||
-      (transition.endSong !== (endSong && endSong._id))) {
-      return alert("What? The database says this transition doesn't fit these songs!");
-    }
-  }
-
-  // 4. check waves are loaded and marked
+  // 3. check waves are loaded and marked
   var validWaves = true;
   // check buffers are loaded
   if (!(startWave.backend.buffer &&
@@ -544,6 +541,17 @@ function validateUpload(startWave, transitionWave, endWave, callback) {
   }
   if (!validWaves) {
     return alert("All three waves must be loaded and marked before submission.");
+  }
+
+  // 4. if transition has a mongo id, check it corresponds to these songs
+  var transition = transitionWave.sample;
+  var startSong = startWave.sample;
+  var endSong = endWave.sample;
+  if (transition && transition._id) {
+    if ((transition.startSong !== (startSong && startSong._id)) ||
+      (transition.endSong !== (endSong && endSong._id))) {
+      return alert("What? The database says this transition doesn't fit these songs!");
+    }
   }
 
   return callback();

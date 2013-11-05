@@ -15,7 +15,6 @@
   {{> player}}
   {{> pageNav}}
   {{> userNav}}
-  <button class="navbar-btn btn-danger" id="djSelect">Filter By DJ</button>
 </template>
 
 <!-- Player -->
@@ -45,11 +44,10 @@
 </template>
 
 <template name="userNav">
-  <div class="navbar-right">
-    <!--<button class="navbar-btn btn-success">Save Mix</button>
-    <button class="navbar-btn btn-danger">Load Mix</button>-->
-    <button class="navbar-btn btn-primary">{{loginButtons}}</button>
-  </div>
+  <!--<button class="navbar-btn btn-success">Save Mix</button>
+  <button class="navbar-btn btn-danger">Load Mix</button>-->
+  <button class="navbar-btn btn-danger" id="djSelect">Filter By DJ</button>
+  <button class="navbar-btn btn-primary">{{loginButtons}}</button>
 </template>
 
 <template name="songNav">
