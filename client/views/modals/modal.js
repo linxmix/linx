@@ -109,11 +109,6 @@ Template.songInfoModal.events({
 Template.transitionInfoModal.events({
   'click #submitTransitionInfo': Uploader.submitTransitionInfo,
 });
-
-Template.djSelectModal.events({
-  'click #selectDJ': selectDJ,
-});
-
 Template.Modal.events({
   'click .close': Modal.close,
   'click .cancel': Modal.close,
@@ -150,6 +145,14 @@ function submitOnEnterPress(e) {
 // DJ Select Stuff
 //
 
+Template.djSelectModal.events({
+  'click #selectDJ': selectDJ,
+  'click #selectNone': function (e) {
+    Session.set("selected_dj", undefined);
+    selectDJ(e);
+  }
+});
+
 Template.dj.events({
   'click': function(e) {
     Session.set("selected_dj", this.dj);
@@ -157,13 +160,13 @@ Template.dj.events({
   'dblclick': function(e) {
     Session.set("selected_dj", this.dj);
     selectDJ(e);
-    Modal.close(e); // click is here so double click on dj will close modal
   },
 });
 
 function selectDJ(e) {
   var djName = Session.get("selected_dj");
   Session.set("graph_filter_query", djName || "");
+  Modal.close(e);
 };
 
 Template.djs.djs = function () {
