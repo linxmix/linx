@@ -138,8 +138,8 @@ Storage = {
     // otherwise, if sample is a song, try echo nest
     if (sample['type'] === 'song') { Storage.echoID(sample, callback); }
     
-    // if sample is not a song, give up now
-    else { console.log("giving up"); callback(); }
+    // if sample is not a song, finish now
+    else { callback(); }
   },
 
   'echoID': function (sample, callback) {

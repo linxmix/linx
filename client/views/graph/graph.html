@@ -2,11 +2,8 @@
 <template name="graphPage">
   <div class="container-full">
     <div class="row">
-      <div class="col-md-9">
+      <div class="col-md-12">
         {{> graph}}
-      </div>
-      <div class="col-md-3">
-        {{> songs}}
       </div>
     </div>
   </div>
@@ -14,8 +11,10 @@
 
 <!-- Graph -->
 <template name="graph">
-  <div id="graph-wrapper" class="well" style="margin-left: 20px;">
-    {{#constant}}
-    {{/constant}}
+  <div class="graph-wrapper well">
+    <div id="graph">
+      {{#constant}}
+      {{/constant}}
+    </div>
   </div>
 </template>

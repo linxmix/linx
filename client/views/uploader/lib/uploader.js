@@ -555,7 +555,8 @@ function setupTransition(transition) {
   var startSong = Songs.findOne(transition.startSong);
   var startWave = Uploader.waves['startWave'];
   startWave.once('ready', function () {
-    Uploader.markWaveEnd(startWave, transition.startSongEnd);
+    Uploader.markWaveEnd(startWave,
+      (transitionWave.sample.startSongEnd));
   });
   Uploader.loadWave(startWave, startSong, transition.startSongVolume);
 
@@ -563,7 +564,8 @@ function setupTransition(transition) {
   var endSong = Songs.findOne(transition.endSong);
   var endWave = Uploader.waves['endWave'];
   endWave.once('ready', function () {
-    Wave.markStart(endWave, transition.endSongStart);
+    Wave.markStart(endWave,
+      (transitionWave.sample && transitionWave.sample.endSongStart));
   });
   Uploader.loadWave(endWave, endSong, transition.endSongVolume);
 

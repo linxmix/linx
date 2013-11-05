@@ -8,17 +8,26 @@ Template.graph.destroyed = function () {
 };
 
 Template.graph.rendered = function () {
+  var width = $("#graph").width(),
+      height = $("#graph").height();
+
+  // enable overscroll
+  $('.graph-wrapper').overscroll({
+      'persistThumbs': true,
+      'scrollLeft': width / 2 - $(window).width() / 2,
+      'scrollTop': height / 2 - ($(window).height() - 53) / 2,
+    });
+
+  // redraw graph whenever receiving new information
   this.drawGraph = Meteor.autorun(function () {
 
     var nodes = {},
         links = [],
-        charge = $('#chargeSlider').slider('getValue'),
-        width = $("#graph-wrapper").width(),
-        height = width / 1.9;
+        charge = $('#chargeSlider').slider('getValue');
 
     //console.log("CHARGE: "+charge);
-    //console.log("width: "+$("#graph-wrapper").width());
-    //console.log("height: "+$("#graph-wrapper").height());
+    //console.log("width: "+$("#graph").width());
+    //console.log("height: "+$("#graph").height());
 
     //
     // preprocess nodes and links
@@ -100,7 +109,7 @@ Template.graph.rendered = function () {
     .start();
 
     // destroy old stuff
-    var graphWrapper = d3.select("#graph-wrapper").text("");
+    var graphWrapper = d3.select("#graph").text("");
 
     // init new stuff
     var svg = graphWrapper.append("svg")
