@@ -46,6 +46,13 @@ Template.songNav.events({
   }
 });
 
+Template.graphNav.events({
+  'keyup .graph-filter-query': function (e) {
+    var query = $(".layout-nav .graph-filter-query").val();
+    Session.set("graph_filter_query", query);
+  }
+});
+
 Template.transitionNav.events({
   'keyup .transition-search-query': function (e) {
     // use modal query if there is one

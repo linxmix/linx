@@ -13,9 +13,9 @@ Template.graph.rendered = function () {
 
   // enable overscroll
   $('.graph-wrapper').overscroll({
-      'persistThumbs': true,
+      'hoverThumbs': true,
       'scrollLeft': width / 2 - $(window).width() / 2,
-      'scrollTop': height / 2 - ($(window).height() - 53) / 2,
+      'scrollTop': height / 2 - ($(window).height() - 51) / 2,
     });
 
   // redraw graph whenever receiving new information
@@ -67,7 +67,9 @@ Template.graph.rendered = function () {
 
     // no currSong, so draw graph in view all mode
     } else {
-      links = Transitions.find().fetch();
+      var options = {}, djFilter = Session.get("graph_filter_query");
+      if (djFilter) { options['dj'] = djFilter; }
+      links = Transitions.find(options).fetch();
     }
 
     // compute distinct nodes from links
@@ -102,7 +104,7 @@ Template.graph.rendered = function () {
     .nodes(d3.values(nodes))
     .links(links)
     .size([width, height])
-    .gravity(0.05)
+    .gravity(0.08)
     .linkDistance(100)
     .charge(-350)
     .on("tick", tick)
