@@ -91,22 +91,31 @@ Wave = {
 
     // run zoom only if our percent changed
     if (percent !== lastPercent) {
-      wave.lastPercent = percent;
-      // do zoom
-      wave.params['minPxPerSec'] = wave.drawer.params['minPxPerSec'] =
-        getZoomPx(wave, percent);
-      // redraw wave
-      redrawWave(wave);
-      // if waveid exists, update zoomSlider, and enable overscroll
-      if (wave.id) {
-        var selector = '#'+wave.id;
-        $(selector+' .zoomSlider').slider('setValue', percent);
-        // enable overscroll on wave
-        $(selector+' wave').first().overscroll({
-          'captureWheel': false,
-          'direction': 'horizontal',
-        });
+
+      // if many zooms are called in a row, only handle last zoom
+      if (wave.zoom) {
+        Meteor.clearTimeout(wave.zoom);
+        wave.zoom = undefined;
       }
+
+      wave.zoom = Meteor.setTimeout(function () {
+        wave.lastPercent = percent;
+        // do zoom
+        wave.params['minPxPerSec'] = wave.drawer.params['minPxPerSec'] =
+          getZoomPx(wave, percent);
+        // redraw wave
+        redrawWave(wave);
+        // if waveid exists, update zoomSlider, and enable overscroll
+        if (wave.id) {
+          var selector = '#'+wave.id;
+          $(selector+' .zoomSlider').slider('setValue', percent);
+          // enable overscroll on wave
+          $(selector+' wave').first().overscroll({
+            'captureWheel': false,
+            'direction': 'horizontal',
+          });
+        }
+      }, 50);
     }
   },
 
