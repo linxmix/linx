@@ -5,14 +5,20 @@ Template.song.events({
   'dblclick': function(e) {
     Session.set("selected_song", this._id);
 
-    // if either song choice modal is active, this serves as a click to the load song button
+    // if either song choice modal is active,
     if (Session.equals("open_modal", "song_select") ||
       Session.equals("open_modal", "song_match")) {
-      Uploader.loadSong(e);
+      // if on uploaderPage, end this with click to loadSong
+      if (Meteor.router.nav() === 'uploaderPage') {
+        return Uploader.loadSong(e);
+      // otherwise, just close the modal
+      } else {
+        Modal.close(e);
+      }
     }
 
     // queue a "soft" transition to this song if we already have a queue
-    else if (Mixer.getQueue().length > 0) {
+    if (Mixer.getQueue().length > 0) {
       Mixer.queue({ 'sample': Songs.findOne(this._id) });
     }
     // if we have no queue, start the mix with this song

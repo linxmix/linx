@@ -38,9 +38,15 @@ Template.player.events({
 });
 
 Template.nav.events({
+
   'click #djSelect': function (e) {
     Modal.openModal("dj_select");
-  }
+  },
+
+  'click #songSelect': function (e) {
+    Modal.openModal("song_select");
+  },
+
 });
 
 Template.songNav.events({

@@ -91,7 +91,27 @@ Modal = {
 };
 
 Template.songSelectModal.events({
-  'click #loadSong': Uploader.loadSong,
+  'click #loadSong': function(e) {
+
+    // if on uploader page, simply loadSong
+    if (Meteor.router.nav() === 'uploaderPage') {
+      Uploader.loadSong(e);
+    }
+
+    // otherwise, this is a double click to play the song
+    else {
+      var song = Songs.findOne(Session.get("selected_song"));
+      // queue a "soft" transition to this song if we already have a queue
+      if (Mixer.getQueue().length > 0) {
+        Mixer.queue({ 'sample': song });
+      }
+      // if we have no queue, start the mix with this song
+      else {
+        Mixer.play(song);
+      }
+      Modal.close(e);
+    }
+  }
 });
 
 Template.transitionSelectModal.events({
