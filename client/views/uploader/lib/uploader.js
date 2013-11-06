@@ -256,7 +256,13 @@ Template.wave.rendered = function () {
     Wave.zoom(wave, 5);
     // mark track end
     Wave.markTrackEnd(wave).on('reached', function() {
-      Uploader.waves['playing'] = undefined;
+      // if this wave is still "playing", set to undefined because it's not.
+      Meteor.setTimeout(function () {
+        var playingWave = Uploader.waves['playing'];
+        if ((playingWave && playingWave.id) === wave.id) {
+          Uploader.waves['playing'] = undefined;
+        }
+      }, 200);
     });
 
     //
