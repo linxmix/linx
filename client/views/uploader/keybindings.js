@@ -5,6 +5,13 @@ handleKeyEvent = function(e, action, id) {
   // make sure action exists
   if (action && action in eventHandlers) {
 
+    // make sure we aren't trying to log in
+    var str = ((e && e.srcElement) && e.srcElement.id);
+    if (str &&
+      ((str === 'login-username') || (str === 'login-password'))) {
+      return;
+    }
+    
     // make sure we are on uploader page and no modals are open
     if ((Meteor.router.nav() === 'uploaderPage') &&
       Session.equals("open_modal", undefined)) {
