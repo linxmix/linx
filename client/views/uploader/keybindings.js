@@ -86,6 +86,10 @@ var eventHandlers = {
     // if shift is held, snap progress to startMarker
     if (e && e.shiftKey) {
       Wave.seekToPos(wave, wave.markers['start'].position);
+      // pause if this is the currently playing track
+      if ((Uploader.waves['playing'] && Uploader.waves['playing'].id) === id) {
+        Uploader.pause();
+      }
     // otherwise, mark start at current progress
     } else {
       Wave.markStart(wave);
@@ -97,6 +101,10 @@ var eventHandlers = {
     // if shift is held, snap progress to endMarker
     if (e && e.shiftKey) {
       Wave.seekToPos(wave, wave.markers['end'].position);
+      // pause if this is the currently playing track
+      if ((Uploader.waves['playing'] && Uploader.waves['playing'].id) === id) {
+        Uploader.pause();
+      }
     // otherwise, mark end at current progress
     } else {
       Uploader.markWaveEnd(wave);
