@@ -22,6 +22,14 @@ Wave = {
     return (Wave.getPosition(wave) / Wave.getDuration(wave)) || 0;
   },
 
+  'seekHome': function(wave) {
+    wave.seekTo(0);
+  },
+
+  'seekEnd': function(wave) {
+    wave.seekTo(1);
+  },
+
   'seekToPos': function(wave, position) {
     position = position || 0;
     wave.seekTo(position / Wave.getDuration(wave));

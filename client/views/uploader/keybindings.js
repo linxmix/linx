@@ -45,11 +45,15 @@ function addKeyBindings() {
     'right/shift+right': function(e) { handleKeyEvent(e, 'markEnd'); },
     'down/shift+down': function(e) { handleKeyEvent(e, 'back'); },
     'up/shift+up': function(e) { handleKeyEvent(e, 'forth'); },
+    'pgdown/shift+pgdown': function(e) { handleKeyEvent(e, 'backFar' ); },
+    'pgup/shift+pgup': function(e) { handleKeyEvent(e, 'forthFar' ); },
     'tab': function(e) { handleKeyEvent(e, 'focusForth'); },
     'shift+tab': function(e) { handleKeyEvent(e, 'focusBack'); },
     'enter': function(e) { handleKeyEvent(e, 'openSelectModal'); },
     'z/shift+z': function(e) { handleKeyEvent(e, 'zoomOut'); },
     'a/shift+a': function(e) { handleKeyEvent(e, 'zoomIn' ); },
+    'home': function(e) { handleKeyEvent(e, 'seekHome'); },
+    'end': function(e) { handleKeyEvent(e, 'seekEnd'); },
   });
 }
 
@@ -111,6 +115,14 @@ var eventHandlers = {
     }
   },
 
+  'seekHome': function(e, id) {
+    Wave.seekHome(Uploader.waves[id]);
+  },
+
+  'seekEnd': function(e, id) {
+    Wave.seekEnd(Uploader.waves[id]);
+  },
+
   'back': function(e, id) {
     var dist = -0.005;
     if (e && e.shiftKey) {
@@ -119,10 +131,26 @@ var eventHandlers = {
     Uploader.waves[id].skip(dist);
   },
 
+  'backFar': function(e, id) {
+    var dist = -5;
+    if (e && e.shiftKey) {
+       dist *= 5;
+    }
+    Uploader.waves[id].skip(dist);
+  },
+
   'forth': function(e, id) {
     var dist = 0.005;
     if (e && e.shiftKey) {
        dist *= 50;
+    }
+    Uploader.waves[id].skip(dist);
+  },
+
+  'forthFar': function(e, id) {
+    var dist = 5;
+    if (e && e.shiftKey) {
+       dist *= 5;
     }
     Uploader.waves[id].skip(dist);
   },
