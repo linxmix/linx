@@ -7,7 +7,8 @@ var Linx = new Backbone.Marionette.Application();
 
 Linx.addRegions({
   header: '#header',
-  main: '#main',
+  tracks: '#tracks',
+  samples: '#samples',
   footer: '#footer',
 });
 

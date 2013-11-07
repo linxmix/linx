@@ -3,36 +3,36 @@ var Linx = require('../app.js');
 module.exports = Linx.module('Tracks.Views',
   function (Views, App, Backbone, Marionette, $) {
 
-  Views.ItemView = Marionette.ItemView.extend({
-    tagName: 'li',
-    template: '#template-track',
+  Views.TrackView = Marionette.ItemView.extend({
+    'tagName': 'li',
+    'template': '#template-track',
 
-    ui: {
-      edit: '.edit'
+    'ui': {
+      'edit': '.edit'
     },
 
-    events: {
+    'events': {
       'click .destroy': 'destroy',
       'dblclick label': 'onEditClick',
       'keydown .edit': 'onEditKeypress',
       'focusout .edit': 'onEditFocusout',
     },
 
-    modelEvents: {
+    'modelEvents': {
       'change': 'render',
     },
 
-    destroy: function () {
+    'destroy': function () {
       this.model.destroy();
     },
 
-    onEditClick: function () {
+    'onEditClick': function () {
       this.$el.addClass('editing');
       this.ui.edit.focus();
       this.ui.edit.val(this.ui.edit.val());
     },
 
-    onEditFocusout: function () {
+    'onEditFocusout': function () {
       var trackText = this.ui.edit.val().trim();
       if (trackText) {
         this.model.set('name', trackText).save();
@@ -42,7 +42,7 @@ module.exports = Linx.module('Tracks.Views',
       }
     },
 
-    onEditKeypress: function (e) {
+    'onEditKeypress': function (e) {
       var ENTER_KEY = 13, ESC_KEY = 27;
 
       if (e.which === ENTER_KEY) {
@@ -54,20 +54,6 @@ module.exports = Linx.module('Tracks.Views',
         this.ui.edit.val(this.model.get('name'));
         this.$el.removeClass('editing');
       }
-    }
-  });
-
-  Views.ListView = Backbone.Marionette.CompositeView.extend({
-    template: '#template-trackList',
-    itemView: Views.ItemView,
-    itemViewContainer: '#track-list',
-
-    events: {
-      'click .create': 'create',
-    },
-
-    create: function () {
-      App.DAW.tracker.trackList.create();
     }
   });
 

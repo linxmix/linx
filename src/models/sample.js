@@ -1,15 +1,13 @@
 var Linx = require('../app.js');
 
-module.exports = Linx.module('Tracks', function (Tracks, App, Backbone) {
+module.exports = Linx.module('Samples', function (Samples, App, Backbone) {
 
-  Tracks.Track = Backbone.Model.extend({
+  Samples.Sample = Backbone.Model.extend({
   
     defaults: function () {
-      var order = App.Tracks.tracker.trackList.nextOrder();
       return {
-        'type': 'track',
-        'name': "track" + order,
-        'order': order,
+        'type': 'sample',
+        'name': "unnamed sample",
       };
     },
 

@@ -34,7 +34,18 @@ $(function () {
 }*/
 
 
-require('./modules/daw.js');
 require('./models/track.js');
-require('./collections/tracks.js');
-require('./views/tracks.js')
+require('./models/sample.js');
+require('./models/clip.js');
+
+require('./views/track.js')
+require('./views/sample.js')
+require('./views/clip.js')
+require('./views/trackList.js')
+require('./views/sampleList.js')
+
+require('./controllers/tracker.js');
+require('./controllers/sampler.js');
+
+require('./collections/trackList.js');
+require('./collections/sampleList.js');

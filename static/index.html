@@ -5,7 +5,8 @@
 </head>
 <body>
   <header id="header"></header>
-  <main id="main"></main>
+  <section id="tracks"></section>
+  <section id="samples"></section>
   <footer id="footer"></footer>
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js
@@ -21,9 +22,32 @@
     </div>
     <input class="edit" value="<%- name %>">
   </script>
+
+  <script type="text/html" id="template-clip">
+    <div class="view">
+      <label><%- name %></label>
+      <button class="destroy">x</button>
+    </div>
+    <input class="edit" value="<%- name %>">
+  </script>
+
+  <script type="text/html" id="template-sample">
+    <div class="view">
+      <label><%- name %></label>
+      <button class="destroy">x</button>
+    </div>
+    <input class="edit" value="<%- name %>">
+  </script>
+
   <script type="text/html" id="template-trackList">
     <button class="create">+</button>
     <ul id="track-list"></ul>
   </script>
+
+  <script type="text/html" id="template-sampleList">
+    <button class="create">+</button>
+    <ul id="sample-list"></ul>
+  </script>
+
 </body>
 </html>
