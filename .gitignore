@@ -1,3 +1,6 @@
-packages
-public
-.meteor
+/static/songs
+/static/transitions
+
+/static/css/index.css
+
+node_modules
