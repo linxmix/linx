@@ -21,7 +21,7 @@ $(function () {
 
   Backbone.sync = BackbonePouch.sync({
     // suffix with version in case of necessary upgrade.
-    db: PouchDB('linx0'),
+    db: PouchDB('linx1'),
   });
 
   Linx.start();

@@ -38,8 +38,18 @@
     <div class="view">
       <label><%- name %></label>
       <button class="destroy">x</button>
+      <button class="queue">+</button>
     </div>
     <input class="edit" value="<%- name %>">
+  </script>
+
+  <script type="text/html" id="template-sample-clip">
+    <div class="view">
+      <div class="wave"></div>
+      <label><%- name %></label>
+      <button class="play-pause">play/pause</button>
+      <button class="stop">stop</button>
+    </div>
   </script>
 
   <script type="text/html" id="template-trackList">

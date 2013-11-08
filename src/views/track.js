@@ -29,7 +29,7 @@ module.exports = Linx.module('Tracks.Views',
     'initialize': function () {
       if (typeof this.model.attributes.clips === 'string') {
         var clipId = this.model.attributes.clips;
-        this.clipsView = new App.Samples.Views.SampleView({
+        this.clipsView = new App.Samples.Views.SampleClipView({
           'model': App.Samples.sampler.sampleList.get(clipId)
         });
       }
@@ -74,9 +74,5 @@ module.exports = Linx.module('Tracks.Views',
         this.$el.removeClass('editing');
       }
     },
-
-    
-    
   });
-
 });

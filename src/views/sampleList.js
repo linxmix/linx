@@ -30,12 +30,8 @@ module.exports = Linx.module('Samples.Views',
     },
 
     'create': function (file) {
-      // save the given blob (if any) as an attachment
-      var sample = new App.Samples.Sample();
-      console.log(file, sample.attach);
-      sample.attach(file, file.name, file.type, function (err, result) {
-        if (err) throw err;
-        App.Samples.sampler.sampleList.create(sample);
+      App.Samples.sampler.sampleList.create({
+        'file': file,
       });
     },    
 
