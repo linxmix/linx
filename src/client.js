@@ -45,10 +45,12 @@ require('./models/clip.js');
 require('./models/sample.js');
 
 require('./views/track.js')
+require('./views/simpleTrack.js')
 require('./views/clip.js')
 require('./views/sample.js')
 
 require('./views/trackList.js')
+require('./views/simpleTrackList.js')
 require('./views/sampleList.js')
 
 require('./controllers/librarian.js');

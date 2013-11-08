@@ -65,6 +65,7 @@ module.exports = Linx.module('Samples.Views',
     'template': require('templates')['sampleClip'],
     'modelEvents': {
       'change': 'render',
+      'destroy': 'close',
     },
 
     'initialize': function () {

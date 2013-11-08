@@ -17,7 +17,7 @@ module.exports = Linx.module('Players.Views',
       // wait for trackList to sync
       self.model.trackList.once('sync', function (model, resp, options) {
         // add track list view
-        self.trackListView = new App.Tracks.Views.TrackListView({
+        self.trackListView = new App.Tracks.Views.SimpleTrackListView({
           'collection': self.model.trackList,
         });
         // render self

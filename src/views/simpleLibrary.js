@@ -26,7 +26,6 @@ module.exports = Linx.module('Library.Views',
     },
 
     'show': function() {
-      console.log(this);
       if (this.sampleListView) {
         this.samples.show(this.sampleListView);
       }

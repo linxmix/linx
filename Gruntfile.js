@@ -15,9 +15,10 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-hashres');
 
   grunt.registerTask('default', ['dev']);
-  grunt.registerTask('css', ['less']);
-  grunt.registerTask('js', ['jst', 'browserify']);
-  grunt.registerTask('build', ['clean', 'js','sprite', 'css', 'concat', 'assets']);
+  grunt.registerTask('html', ['jst', 'browserify:jst']);
+  grunt.registerTask('css', ['sprite', 'less']);
+  grunt.registerTask('js', ['browserify:vendor', 'browserify:app']);
+  grunt.registerTask('build', ['clean', 'html', 'js', 'css', 'assets']);
   grunt.registerTask('assets', ['copy:assets']);
   grunt.registerTask('server', ['express']);
   grunt.registerTask('dev', ['build', 'server', 'watch']);
@@ -63,6 +64,7 @@ module.exports = function (grunt) {
         'src': jsVendors,
         'dest': 'build/js/vendor.js',
         'options': {
+          'debug': true,
           'shim': {
             'jquery': {
               'path': jsVendors[0],
@@ -85,7 +87,7 @@ module.exports = function (grunt) {
           },
         },
       },
-      'templates': {
+      'jst': {
         'src': 'build/js/templates.js',
         'dest': 'build/js/templates.js',
         'options': {
@@ -141,16 +143,6 @@ module.exports = function (grunt) {
         'dest': 'build',
         'expand': true,
       }
-    },
-
-    'concat': {
-      'options': {
-        'banner': defaultBanner,
-      },
-      'build': {
-        'src': ['build/js/vendor.js', 'build/js/templates.js', 'build/js/app.js'],
-        'dest': 'build/js/index.js',
-      },
     },
 
     'express': {

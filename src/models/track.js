@@ -8,7 +8,6 @@ module.exports = Linx.module('Tracks', function (Tracks, App, Backbone) {
       var order = App.Players.conductor.player.trackList.nextOrder();
       return {
         'type': 'track',
-        'name': "track" + order,
         'order': order,
         'clips': undefined, // a single id string or a map of ids
       };

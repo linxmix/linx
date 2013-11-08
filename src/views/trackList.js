@@ -16,14 +16,5 @@ module.exports = Linx.module('Tracks.Views',
       App.Players.conductor.player.trackList.create();
     },
 
-    // create a new track for given clip
-    'addClip': function (clip) {
-      this.create({
-        'clips': clip._id
-      });
-
-    }
-
   });
-
 });
