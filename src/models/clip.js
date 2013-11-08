@@ -4,19 +4,12 @@ module.exports = Linx.module('Tracks', function (Tracks, App, Backbone) {
 
   Tracks.Clip = Backbone.Model.extend({
   
-    defaults: function () {
+    'defaults': function () {
       return {
         'type': 'clip',
-        'name': "unnamed clip",
+        'clipType': undefined,
       };
     },
 
-    initialize: function () {
-      if (! this.get("name")) {
-        this.set({
-          name: this.defaults.name,
-        });
-      }
-    },
   });
 });

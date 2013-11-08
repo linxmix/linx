@@ -13,7 +13,6 @@ Linx.addRegions({
 });
 
 Linx.on('initialize:after', function () {
-
 });
 
 module.exports = Linx;

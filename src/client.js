@@ -6,6 +6,7 @@ Marionette.$ = $;
 Backbone = require('backbone.marionette/node_modules/backbone');
 Backbone.$ = $;
 _ = require('underscore');
+Math.uuid = require('node-uuid').v4;
 
 var Linx = require('./app.js');
 
@@ -35,17 +36,18 @@ $(function () {
 
 
 require('./models/track.js');
-require('./models/sample.js');
 require('./models/clip.js');
+require('./models/sample.js');
 
 require('./views/track.js')
-require('./views/sample.js')
 require('./views/clip.js')
+require('./views/sample.js')
+
 require('./views/trackList.js')
 require('./views/sampleList.js')
 
-require('./controllers/tracker.js');
 require('./controllers/sampler.js');
+require('./controllers/tracker.js');
 
 require('./collections/trackList.js');
 require('./collections/sampleList.js');

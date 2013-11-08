@@ -34,12 +34,8 @@ module.exports = Linx.module('Samples.Views',
 
     'onEditFocusout': function () {
       var sampleText = this.ui.edit.val().trim();
-      if (sampleText) {
-        this.model.set('name', sampleText).save();
-        this.$el.removeClass('editing');
-      } else {
-        this.destroy();
-      }
+      this.model.set('name', sampleText).save();
+      this.$el.removeClass('editing');
     },
 
     'onEditKeypress': function (e) {

@@ -3,7 +3,7 @@ var Linx = require('../app.js');
 module.exports = Linx.module('Tracks.Views',
   function (Views, App, Backbone, Marionette, $) {
 
-  Views.TrackView = Marionette.ItemView.extend({
+  Views.TrackView = Marionette.Layout.extend({
     'tagName': 'li',
     'template': '#template-track',
 
@@ -19,7 +19,30 @@ module.exports = Linx.module('Tracks.Views',
     },
 
     'modelEvents': {
-      'change': 'render',
+      'change:name': 'changeName',
+    },
+
+    'regions': {
+      'clips': '#track-clips'
+    },
+
+    'initialize': function () {
+      if (typeof this.model.attributes.clips === 'string') {
+        var clipId = this.model.attributes.clips;
+        this.clipsView = new App.Samples.Views.SampleView({
+          'model': App.Samples.sampler.sampleList.get(clipId)
+        });
+      }
+    },
+
+    'changeName': function () {
+      this.$el.find('#name').text(this.model.attributes.name);
+    },
+
+    'onShow': function() {
+      if (this.clipsView) {
+        this.clips.show(this.clipsView);
+      }
     },
 
     'destroy': function () {
@@ -34,12 +57,8 @@ module.exports = Linx.module('Tracks.Views',
 
     'onEditFocusout': function () {
       var trackText = this.ui.edit.val().trim();
-      if (trackText) {
-        this.model.set('name', trackText).save();
-        this.$el.removeClass('editing');
-      } else {
-        this.destroy();
-      }
+      this.model.set('name', trackText).save();
+      this.$el.removeClass('editing');
     },
 
     'onEditKeypress': function (e) {
@@ -54,7 +73,10 @@ module.exports = Linx.module('Tracks.Views',
         this.ui.edit.val(this.model.get('name'));
         this.$el.removeClass('editing');
       }
-    }
+    },
+
+    
+    
   });
 
 });

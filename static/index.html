@@ -5,6 +5,7 @@
 </head>
 <body>
   <header id="header"></header>
+  <div id="waves" style="display: none;"></div>
   <section id="tracks"></section>
   <section id="samples"></section>
   <footer id="footer"></footer>
@@ -13,14 +14,16 @@
   "></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js
   "></script>
+  <script src="https://raw.github.com/katspaugh/wavesurfer.js/master/build/wavesurfer.min.js"></script>
   <script src="/js/index.js"></script>
 
   <script type="text/html" id="template-track">
     <div class="view">
-      <label><%- name %></label>
+      <label id="name"><%- name %></label>
       <button class="destroy">x</button>
     </div>
     <input class="edit" value="<%- name %>">
+    <ul id="track-clips"></ul>
   </script>
 
   <script type="text/html" id="template-clip">
@@ -45,7 +48,7 @@
   </script>
 
   <script type="text/html" id="template-sampleList">
-    <button class="create">+</button>
+    <div class="sampleDrop"></div>
     <ul id="sample-list"></ul>
   </script>
 

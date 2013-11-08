@@ -1,23 +1,27 @@
 var Linx = require('../app.js');
+var BackbonePouch = require('backbone-pouch');
+
+var attachments = BackbonePouch.attachments();
 
 module.exports = Linx.module('Samples', function (Samples, App, Backbone) {
 
-  Samples.Sample = Backbone.Model.extend({
+  Samples.Sample = App.Tracks.Clip.extend({
   
-    defaults: function () {
+    'defaults': function () {
       return {
         'type': 'sample',
         'name': "unnamed sample",
       };
     },
 
-    initialize: function () {
-      if (! this.get("name")) {
-        this.set({
-          'type': this.defaults.type,
-          'name': this.defaults.name,
-        });
-      }
+    'getWave': function () {
+      // TODO: return wave made from attachment
     },
+
+    // extend with PouchDB attachment functionality
+    'attach': attachments.attach,
+    'attachments': attachments.attachments,
+    'attachment': attachments.attachment,
+
   });
 });

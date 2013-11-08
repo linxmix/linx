@@ -14,7 +14,16 @@ module.exports = Linx.module('Tracks.Views',
 
     'create': function () {
       App.Tracks.tracker.trackList.create();
+    },
+
+    // create a new track for given clip
+    'addClip': function (clip) {
+      this.create({
+        'clips': clip._id
+      });
+
     }
+
   });
 
 });
