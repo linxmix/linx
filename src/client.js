@@ -1,4 +1,7 @@
+
 // create globals to play with on client
+$ = require('jquery')
+WaveSurfer = require('wavesurfer');
 PouchDB = require('pouchdb');
 BackbonePouch = require('backbone-pouch');
 Marionette = require('backbone.marionette');

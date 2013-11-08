@@ -1,6 +1,9 @@
-/static/songs
-/static/transitions
-
-/static/css/index.css
+/build
 
 node_modules
+bower_components
+
+/assets/songs
+/assets/transitions
+
+*.swp
