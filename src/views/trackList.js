@@ -13,7 +13,7 @@ module.exports = Linx.module('Tracks.Views',
     },
 
     'create': function () {
-      App.Tracks.tracker.trackList.create();
+      App.Players.conductor.player.trackList.create();
     },
 
     // create a new track for given clip

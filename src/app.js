@@ -4,15 +4,20 @@ var Backbone = require('backbone.marionette/node_modules/backbone');
 
 var Linx = new Backbone.Marionette.Application();
 
-
 Linx.addRegions({
   header: '#header',
-  tracks: '#tracks',
-  samples: '#samples',
+  player: '#player',
+  library: '#library',
   footer: '#footer',
 });
 
-Linx.on('initialize:after', function () {
+Linx.on('initialize:before', function () {
+  // add global audio context
+  try {
+    Linx.audioContext = new (window.AudioContext || window.webkitAudioContext);
+  } catch (e) {
+    alert("This browser does not support Web Audio API. Try the latest version of Chrome!");
+  }
 });
 
 module.exports = Linx;

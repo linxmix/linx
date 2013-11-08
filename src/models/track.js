@@ -5,7 +5,7 @@ module.exports = Linx.module('Tracks', function (Tracks, App, Backbone) {
   Tracks.Track = Backbone.Model.extend({
   
     'defaults': function () {
-      var order = App.Tracks.tracker.trackList.nextOrder();
+      var order = App.Players.conductor.player.trackList.nextOrder();
       return {
         'type': 'track',
         'name': "track" + order,

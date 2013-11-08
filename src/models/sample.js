@@ -45,6 +45,37 @@ module.exports = Linx.module('Samples', function (Samples, App, Backbone, Marion
       this.attachment(this.attachments()[0], callback);
     },
 
+    'getWave': function (options, callback) {
+
+      // get this sample's blob
+      this.getBlob(function (err, blob) {
+
+        // init our wave
+        var wave = Object.create(WaveSurfer);
+        wave.init(options);
+
+        // create file reader / load with events
+        var reader = new FileReader();
+        reader.addEventListener('progress', function (e) {
+          wave.onProgress(e);
+        });
+        reader.addEventListener('load', function (e) {
+          wave.loadBuffer(e.target.result);
+        });
+        reader.addEventListener('error', function (err) {
+          throw err;
+        });
+
+        if (blob) {
+          wave.empty();
+          reader.readAsArrayBuffer(blob);
+        } else {
+          return callback(new Error('no blob given to getWave'));
+        }
+        return callback(null, wave);
+      });
+    },
+
     // extend with PouchDB attachment functionality
     'attach': attachments.attach,
     'attachments': attachments.attachments,

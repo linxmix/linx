@@ -5,9 +5,8 @@
 </head>
 <body>
   <header id="header"></header>
-  <div id="waves" style="display: none;"></div>
-  <section id="tracks"></section>
-  <section id="samples"></section>
+  <section id="player"></section>
+  <section id="library"></section>
   <footer id="footer"></footer>
 
   <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js
@@ -60,6 +59,14 @@
   <script type="text/html" id="template-sampleList">
     <div class="sampleDrop"></div>
     <ul id="sample-list"></ul>
+  </script>
+
+  <script type="text/html" id="template-simple-player">
+    <div class="tracks"></div>
+  </script>
+
+  <script type="text/html" id="template-simple-library">
+    <div class="samples"></div>
   </script>
 
 </body>

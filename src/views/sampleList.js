@@ -30,7 +30,7 @@ module.exports = Linx.module('Samples.Views',
     },
 
     'create': function (file) {
-      App.Samples.sampler.sampleList.create({
+      App.Library.librarian.library.sampleList.create({
         'file': file,
       });
     },    

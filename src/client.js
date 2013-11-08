@@ -46,8 +46,14 @@ require('./views/sample.js')
 require('./views/trackList.js')
 require('./views/sampleList.js')
 
-require('./controllers/sampler.js');
-require('./controllers/tracker.js');
+require('./controllers/librarian.js');
+require('./controllers/conductor.js');
+
+require('./models/simplePlayer.js');
+require('./models/simpleLibrary.js');
+
+require('./views/simplePlayer.js');
+require('./views/simpleLibrary.js');
 
 require('./collections/trackList.js');
 require('./collections/sampleList.js');

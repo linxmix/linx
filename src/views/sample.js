@@ -28,7 +28,7 @@ module.exports = Linx.module('Samples.Views',
     },
 
     'queue': function () {
-      App.Tracks.tracker.trackList.create({
+      App.Players.conductor.player.trackList.create({
         clips: this.model.attributes._id
       });
     },
@@ -69,41 +69,13 @@ module.exports = Linx.module('Samples.Views',
 
     'initialize': function () {
       var self = this;
-      this.getWave({ 'container': '.wave' }, function (err, wave) {
-        if (err) throw err;
-        self['wave'] = wave;
-      });
-    },
-
-    'getWave': function (options, callback) {
-      var self = this;
-
-      // get this sample's blob
-      this.model.getBlob(function (err, blob) {
-
-        // init our wave
-        var wave = Object.create(WaveSurfer);
-        wave.init(options);
-
-        // create file reader / load with events
-        var reader = new FileReader();
-        reader.addEventListener('progress', function (e) {
-          wave.onProgress(e);
+      self.once('render', function () {
+        self.model.getWave({
+          'container': this.$('.wave')[0]
+        }, function (err, wave) {
+          if (err) throw err;
+          self['wave'] = wave;
         });
-        reader.addEventListener('load', function (e) {
-          wave.loadBuffer(e.target.result);
-        });
-        reader.addEventListener('error', function (err) {
-          throw err;
-        });
-
-        if (blob) {
-          wave.empty();
-          reader.readAsArrayBuffer(blob);
-        } else {
-          return callback(new Error('no blob given to getWave'));
-        }
-        return callback(null, wave);
       });
     },
 

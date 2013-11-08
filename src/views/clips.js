@@ -67,7 +67,7 @@ module.exports = Linx.module('Tracks.Views',
     },
 
     create: function () {
-      App.Tracks.tracker.trackList.create();
+      App.Players.conductor.player.trackList.create();
     }
   });
 
