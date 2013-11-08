@@ -11,6 +11,8 @@ Backbone.$ = $;
 _ = require('underscore');
 Math.uuid = require('node-uuid').v4;
 
+templates = require('templates');
+
 var Linx = require('./app.js');
 
 // load the application once the DOM is ready, using `jQuery.ready`:

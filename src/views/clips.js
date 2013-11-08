@@ -5,7 +5,7 @@ module.exports = Linx.module('Tracks.Views',
 
   Views.ItemView = Marionette.ItemView.extend({
     tagName: 'li',
-    template: '#template-track',
+    template: require('templates')['track'],
 
     ui: {
       edit: '.edit'
@@ -58,9 +58,9 @@ module.exports = Linx.module('Tracks.Views',
   });
 
   Views.ListView = Backbone.Marionette.CompositeView.extend({
-    template: '#template-trackList',
+    template: require('templates')['trackList'],
     itemView: Views.ItemView,
-    itemViewContainer: '#track-list',
+    itemViewContainer: '#trackList',
 
     events: {
       'click .create': 'create',

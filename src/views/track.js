@@ -5,7 +5,7 @@ module.exports = Linx.module('Tracks.Views',
 
   Views.TrackView = Marionette.Layout.extend({
     'tagName': 'li',
-    'template': '#template-track',
+    'template': require('templates')['track'],
 
     'ui': {
       'edit': '.edit'

@@ -4,65 +4,13 @@
   <link rel="stylesheet" href="/css/index.css">
 </head>
 <body>
+  
   <header id="header"></header>
   <section id="player"></section>
   <section id="library"></section>
   <footer id="footer"></footer>
 
   <script src="/js/index.js"></script>
-
-  <script type="text/html" id="template-track">
-    <div class="view">
-      <label id="name"><%- name %></label>
-      <button class="destroy">x</button>
-    </div>
-    <input class="edit" value="<%- name %>">
-    <ul id="track-clips"></ul>
-  </script>
-
-  <script type="text/html" id="template-clip">
-    <div class="view">
-      <label><%- name %></label>
-      <button class="destroy">x</button>
-    </div>
-    <input class="edit" value="<%- name %>">
-  </script>
-
-  <script type="text/html" id="template-sample">
-    <div class="view">
-      <label><%- name %></label>
-      <button class="destroy">x</button>
-      <button class="queue">+</button>
-    </div>
-    <input class="edit" value="<%- name %>">
-  </script>
-
-  <script type="text/html" id="template-sample-clip">
-    <div class="view">
-      <div class="wave"></div>
-      <label><%- name %></label>
-      <button class="play-pause">play/pause</button>
-      <button class="stop">stop</button>
-    </div>
-  </script>
-
-  <script type="text/html" id="template-trackList">
-    <button class="create">+</button>
-    <ul id="track-list"></ul>
-  </script>
-
-  <script type="text/html" id="template-sampleList">
-    <div class="sampleDrop"></div>
-    <ul id="sample-list"></ul>
-  </script>
-
-  <script type="text/html" id="template-simple-player">
-    <div class="tracks"></div>
-  </script>
-
-  <script type="text/html" id="template-simple-library">
-    <div class="samples"></div>
-  </script>
 
 </body>
 </html>

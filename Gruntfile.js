@@ -1,4 +1,28 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
+
+  grunt.loadNpmTasks('grunt-contrib-clean');
+  grunt.loadNpmTasks('grunt-contrib-jst');
+  grunt.loadNpmTasks('grunt-browserify');
+  grunt.loadNpmTasks('grunt-contrib-less');
+  grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-cssmin');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
+  grunt.loadNpmTasks('grunt-contrib-watch');
+  grunt.loadNpmTasks('grunt-express');
+  grunt.loadNpmTasks('grunt-gh-pages');
+  grunt.loadNpmTasks('grunt-spritesmith');
+  grunt.loadNpmTasks('grunt-hashres');
+
+  grunt.registerTask('default', ['dev']);
+  grunt.registerTask('css', ['less']);
+  grunt.registerTask('js', ['jst', 'browserify']);
+  grunt.registerTask('build', ['clean', 'js','sprite', 'css', 'concat', 'assets']);
+  grunt.registerTask('assets', ['copy:assets']);
+  grunt.registerTask('server', ['express']);
+  grunt.registerTask('dev', ['build', 'server', 'watch']);
+  grunt.registerTask('minify', ['cssmin', 'uglify']);
+  grunt.registerTask('deploy', ['build', 'minify', 'hashres', 'gh-pages']);
 
   var jsVendors = [
     'bower_components/jquery/jquery.js',
@@ -19,6 +43,21 @@ module.exports = function(grunt) {
   grunt.initConfig({
     'pkg': grunt.file.readJSON('package.json'),
     'clean': ['build'],
+    'jst': {
+      'build': {
+        'options': {
+          'templateSettings': {
+            'interpolate' : /\{\{(.+?)\}\}/g
+          },
+          'processName': function (filename) {
+            return filename.replace(/^src\/templates\//, '').replace(/.html$/, '');
+          },
+          'prettify': true,
+        },
+        'src': 'src/templates/**/*.html',
+        'dest': 'build/js/templates.js',
+      },
+    },
     'browserify': {
       'vendor': {
         'src': jsVendors,
@@ -46,12 +85,25 @@ module.exports = function(grunt) {
           },
         },
       },
+      'templates': {
+        'src': 'build/js/templates.js',
+        'dest': 'build/js/templates.js',
+        'options': {
+          'shim': {
+            'templates': {
+              'path': 'build/js/templates.js',
+              'exports': 'JST',
+            },
+          },
+        },
+      },
       'app': {
         'src': 'src/client.js',
         'dest': 'build/js/app.js',
         'options': {
+          'debug': true,
           'transform': ['brfs'],
-          'external': ['jquery', 'wavesurfer'],
+          'external': ['jquery', 'wavesurfer', 'templates'],
         },
       },
     },
@@ -85,7 +137,7 @@ module.exports = function(grunt) {
       },
       'assets': {
         'cwd': 'assets',
-        'src': '**',
+        'src': '**/*',
         'dest': 'build',
         'expand': true,
       }
@@ -96,7 +148,7 @@ module.exports = function(grunt) {
         'banner': defaultBanner,
       },
       'build': {
-        'src': ['build/js/vendor.js', 'build/js/app.js'],
+        'src': ['build/js/vendor.js', 'build/js/templates.js', 'build/js/app.js'],
         'dest': 'build/js/index.js',
       },
     },
@@ -118,17 +170,17 @@ module.exports = function(grunt) {
         'tasks': ['build'],
       },
       'js': {
-        'files': ['src/**.js'],
+        'files': ['src/**/*.js'],
         'tasks': ['js'],
       },
       'css': {
-        'files': ['src/less/**.less'],
+        'files': ['src/less/**/*.less'],
         'tasks': ['css']
       },
-      /*'assets': {
-        'files': ['assets/**'],
-        'tasks': ['assets']
-      },*/
+      //'assets': {
+      //  'files': ['assets/**/*'],
+      //  'tasks': ['assets']
+      //},
     },
 
     'cssmin': {
@@ -170,28 +222,4 @@ module.exports = function(grunt) {
       },
     },
   });
-
-  grunt.loadNpmTasks('grunt-contrib-clean');
-  grunt.loadNpmTasks('grunt-browserify');
-  grunt.loadNpmTasks('grunt-contrib-less');
-  grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-contrib-concat');
-  grunt.loadNpmTasks('grunt-contrib-cssmin');
-  grunt.loadNpmTasks('grunt-contrib-uglify');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-express');
-  grunt.loadNpmTasks('grunt-gh-pages');
-  grunt.loadNpmTasks('grunt-spritesmith');
-  grunt.loadNpmTasks('grunt-hashres');
-
-  grunt.registerTask('default', ['dev']);
-  grunt.registerTask('css', ['less']);
-  grunt.registerTask('js', ['browserify'])
-  grunt.registerTask('build', ['clean', 'js','sprite', 'css', 'concat', 'assets']);
-  grunt.registerTask('assets', ['copy:assets']);
-  grunt.registerTask('server', ['express']);
-  grunt.registerTask('dev', ['build', 'server', 'watch']);
-  grunt.registerTask('minify', ['cssmin', 'uglify']);
-  grunt.registerTask('deploy', ['build', 'minify', 'hashres', 'gh-pages']);
-
 };

@@ -5,7 +5,7 @@ module.exports = Linx.module('Library.Views',
 
   Views.SimpleLibrary = Marionette.Layout.extend({
     'tagName': 'div',
-    'template': '#template-simple-library',
+    'template': require('templates')['simpleLibrary'],
 
     'regions': {
       'samples': '.samples'

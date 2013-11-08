@@ -5,7 +5,7 @@ module.exports = Linx.module('Players.Views',
 
   Views.SimplePlayer = Marionette.Layout.extend({
     'tagName': 'div',
-    'template': '#template-simple-player',
+    'template': require('templates')['simplePlayer'],
 
     'regions': {
       'tracks': '.tracks'

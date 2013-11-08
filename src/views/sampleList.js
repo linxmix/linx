@@ -4,9 +4,9 @@ module.exports = Linx.module('Samples.Views',
   function (Views, App, Backbone, Marionette, $) {
 
   Views.SampleListView = Backbone.Marionette.CompositeView.extend({
-    'template': '#template-sampleList',
+    'template': require('templates')['sampleList'],
     'itemView': Views.SampleView,
-    'itemViewContainer': '#sample-list',
+    'itemViewContainer': '#sampleList',
 
     'events': {
       'drop .sampleDrop': 'onDrop',

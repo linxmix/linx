@@ -5,7 +5,7 @@ module.exports = Linx.module('Samples.Views',
 
   Views.SampleView = Marionette.ItemView.extend({
     'tagName': 'li',
-    'template': '#template-sample',
+    'template': require('templates')['sample'],
 
     'ui': {
       'edit': '.edit'
@@ -62,7 +62,7 @@ module.exports = Linx.module('Samples.Views',
 
   Views.SampleClipView = Marionette.ItemView.extend({
     'tagName': 'li',
-    'template': '#template-sample-clip',
+    'template': require('templates')['sampleClip'],
     'modelEvents': {
       'change': 'render',
     },

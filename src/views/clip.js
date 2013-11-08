@@ -5,6 +5,6 @@ module.exports = Linx.module('Tracks.Views',
 
   Views.ItemView = Marionette.ItemView.extend({
     'tagName': 'li',
-    'template': '#template-clip',
+    'template': require('templates')['clip'],
   });
 });
