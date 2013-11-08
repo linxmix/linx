@@ -52,6 +52,9 @@ module.exports = Linx.module('Samples', function (Samples, App, Backbone, Marion
 
         // init our wave
         var wave = Object.create(WaveSurfer);
+        _.defaults(options, {
+          'audioContext': App.audioContext,
+        });
         wave.init(options);
 
         // create file reader / load with events
