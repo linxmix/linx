@@ -1,6 +1,6 @@
 var Linx = require('../app.js');
 
-module.exports = Linx.module('Tracks', function (Tracks, App, Backbone) {
+module.exports = Linx.module('Players.Tracks', function (Tracks, App, Backbone) {
 
   Tracks.Track = Backbone.Model.extend({
 
@@ -19,7 +19,7 @@ module.exports = Linx.module('Tracks', function (Tracks, App, Backbone) {
     //
 
     'defaults': function () {
-      var order = App.Players.conductor.player.trackList.nextOrder();
+      var order = App.Players.player.trackList.nextOrder();
       return {
         'type': 'track',
         'state': 'stop',
@@ -30,11 +30,11 @@ module.exports = Linx.module('Tracks', function (Tracks, App, Backbone) {
 
     'initialize': function () {
       // make this track's clipList
-      this.clipList = new App.Tracks.ClipList();
+      this.clipList = new App.Players.Tracks.Clips.ClipList();
       // ask the player what state it wants this track in
       if (!debug) console.log('initing track', this);
       this.set('state',
-        App.Players.conductor.player.getTrackState(this));
+        App.Players.player.getTrackState(this));
       this.on('all', function (name) {
         if (debug) console.log("track event: "+name);
       });

@@ -39,7 +39,7 @@ module.exports = Linx.module('Samples', function (Samples, App, Backbone, Marion
     },
 
     'queue': function () {
-      App.Players.conductor.player.queue(this);
+      App.Players.player.queue(this);
     },
 
     'getWave': function (options, callback) {

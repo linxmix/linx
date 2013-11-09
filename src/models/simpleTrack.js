@@ -1,35 +1,36 @@
 var Linx = require('../app.js');
 
-module.exports = Linx.module('Tracks', function (Tracks, App, Backbone) {
+module.exports = Linx.module('Players.Tracks', function (Tracks, App, Backbone, Marionette, $, _) {
 
   Tracks.SimpleTrack = Tracks.Track.extend({
 
     'initialize': function () {
       Tracks.Track.prototype.initialize.call(this);
-      // this track should have a single clip
+
       var self = this;
-      var clipId = self.get('clips');
+      var defer = $.Deferred();
+      self.ready = defer.promise();
 
-      if (typeof clipId === 'string') {
+      self.clipList = new Tracks.Clips.ClipList();
+      // start player when all submodules are loaded
+      $.when([self.clipList.ready]).done(function() {
+        var clipId = self.get('clips');
+        var clip = self.clips = self.clipList.get(clipId);
+        if (!debug) console.log(clipId, clip);
 
-        // load clip on sync
-        clipList.on('sync', function () {
-          var clip = self.clips = clipList.get(clipId);
-          if (!debug) console.log(clipId, clip);
+        // if this clip exists, view it
+        if (clip) {
+          // when this track's clip is destroyed, destroy the track
+          self.listenTo(clip, 'destroy', self.destroy);
+          self.trigger('loadClips', clip);
+        }
 
-          // if this clip exists, view it
-          if (clip) {
-            // when this track's clip is destroyed, destroy the track
-            self.listenTo(clip, 'destroy', self.destroy);
-            self.trigger('loadClips', clip);
-          }
-
-          // clip doesn't exist -> log it as error
-          else {
-            console.error("WARNING: clip no longer exists: "+clipId);
-          }
-        });
-      }
+        // clip doesn't exist -> log it as error
+        else {
+          console.error("WARNING: clip no longer exists: "+clipId);
+        }
+        defer.resolve();
+      });
     },
 
     'assertState': function () {

@@ -1,6 +1,6 @@
 var Linx = require('../app.js');
 
-module.exports = Linx.module('Players', function (Players, App, Backbone) {
+module.exports = Linx.module('Players', function (Players, App, Backbone, Marionette, $, _) {
 
   Players.SimplePlayer = Players.Player.extend({
 
@@ -13,8 +13,14 @@ module.exports = Linx.module('Players', function (Players, App, Backbone) {
     },
 
     'initialize': function () {
-      this.trackList = new App.Tracks.SimpleTrackList();
       Players.Player.prototype.initialize.call(this);
+
+      var defer = $.Deferred();
+      this.ready = defer.promise();
+
+      this.trackList = new App.Players.Tracks.SimpleTrackList();
+      // start player when all submodules are loaded
+      $.when([this.trackList.ready]).done(defer.resolve);
     },
 
     'assertState': function () {
@@ -37,10 +43,11 @@ module.exports = Linx.module('Players', function (Players, App, Backbone) {
     'queue': function (source) {
       if (debug) console.log('player queueing source', source);
       // create new track
-      this.trackList.create({}, { 'success': function (track) {
+      this.trackList.create({}, function (err, track) {
+        if (err) throw err;
         // create new clip for that track
         track.clipList.create({ 'source': source.get('_id'), });
-      }});
+      });
     },
 
   });

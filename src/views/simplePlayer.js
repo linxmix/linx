@@ -12,31 +12,12 @@ module.exports = Linx.module('Players.Views',
     },
 
     'initialize': function () {
-      var self = this;
-      var samplesReady = $.Deferred();
-      var tracksReady = $.Deferred();
-
-      App.on("initialize:after", function () {
-        // wait for trackList to sync
-        self.model.trackList.once('sync', function (model, resp, options) {
-          tracksReady.resolve();
-        });
-
-        // wait for sampleList to sync
-        App.Library.librarian.library.sampleList.once('sync', function (model, resp, options) {
-          samplesReady.resolve();
-        });
-
-        // after sampleList and trackList have been synced,
-        $.when(samplesReady, tracksReady).done(function () {
-          // add track list view
-          self.trackListView = new App.Tracks.Views.SimpleTrackListView({
-            'collection': self.model.trackList,
-          });
-          // render self
-          self.show();
-        });
+      // initialize track list view
+      this.trackListView = new App.Players.Tracks.Views.SimpleTrackListView({
+        'collection': this.model.trackList,
       });
+      // render this
+      this.show();
     },
 
     'playPause': function() {

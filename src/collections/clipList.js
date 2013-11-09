@@ -1,10 +1,10 @@
 var Linx = require('../app.js');
 
-module.exports = Linx.module('Tracks', function (Tracks, App, Backbone) {
+module.exports = Linx.module('Players.Tracks.Clips', function (Clips, App, Backbone) {
 
-  Tracks.ClipList = Backbone.Collection.extend({
+  Clips.ClipList = Backbone.Collection.extend({
 
-    'model': Tracks.Clip,
+    'model': Clips.Clip,
 
     // include documents in Map Reduce response.
     'pouch': {

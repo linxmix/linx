@@ -1,6 +1,6 @@
 var Linx = require('../app.js');
 
-module.exports = Linx.module('Players', function (Players, App, Backbone) {
+module.exports = Linx.module('Players', function (Players, App, Backbone, Marionette, $, _) {
 
   Players.Player = Backbone.Model.extend({
 
@@ -31,8 +31,6 @@ module.exports = Linx.module('Players', function (Players, App, Backbone) {
     },
 
     'initialize': function () {
-      if (!this.trackList) { this.trackList = new App.Tracks.TrackList(); }
-      this.trackList.fetch();
       this.on('all', function (name) {
         console.log("player event: "+name);
       });

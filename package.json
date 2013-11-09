@@ -22,7 +22,8 @@
     "backbone-pouch": "git+https://github.com/jo/backbone-pouch",
     "underscore": "~1.5.2",
     "node-uuid": "~1.4.1",
-    "waaclock": "~0.3.0"
+    "waaclock": "~0.3.0",
+    "backbone-callbacks": "~0.1.5"
   },
   "devDependencies": {
     "grunt-contrib-clean": "~0.5.0",

@@ -13,7 +13,7 @@ module.exports = Linx.module('Players.Views',
 
     'initialize': function () {
       // add track list view
-      this.trackListView = new App.Tracks.Views.TrackListView({
+      this.trackListView = new App.Players.Tracks.Views.TrackListView({
         'collection': this.model.trackList,
       });
       // render this

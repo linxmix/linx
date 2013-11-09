@@ -1,6 +1,6 @@
 var Linx = require('../app.js');
 
-module.exports = Linx.module('Tracks.Views',
+module.exports = Linx.module('Players.Tracks.Views',
   function (Views, App, Backbone, Marionette, $) {
 
   Views.TrackView = Marionette.Layout.extend({

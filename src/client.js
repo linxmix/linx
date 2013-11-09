@@ -8,6 +8,7 @@ Marionette = require('backbone.marionette');
 Marionette.$ = $;
 Backbone = require('backbone.marionette/node_modules/backbone');
 Backbone.$ = $;
+require('backbone-callbacks').attach(Backbone);
 _ = require('underscore');
 Math.uuid = require('node-uuid').v4;
 
@@ -23,6 +24,12 @@ $(function () {
 
   // adjust id attribute to the one PouchDB uses.
   Backbone.Model.prototype.idAttribute = '_id';
+
+  var func = Marionette.Module._addModuleDefinition;
+  Marionette.Module._addModuleDefinition = function(parentModule, module) {
+      module.parent = parentModule;
+      func.apply(this, arguments);
+  };
 
   Backbone.sync = BackbonePouch.sync({
     // suffix with version in case of necessary upgrade.
@@ -51,7 +58,9 @@ require('./collections/sampleList.js');
 
 // controllers
 require('./controllers/librarian.js');
-require('./controllers/conductor.js');
+
+// modules
+require('./modules/players.js')
 
 // views
 require('./views/track.js')

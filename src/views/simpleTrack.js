@@ -1,6 +1,6 @@
 var Linx = require('../app.js');
 
-module.exports = Linx.module('Tracks.Views',
+module.exports = Linx.module('Players.Tracks.Views',
   function (Views, App, Backbone, Marionette, $) {
 
   Views.SimpleTrackView = Views.TrackView.extend({
@@ -12,7 +12,7 @@ module.exports = Linx.module('Tracks.Views',
       var onLoadClips = function (clip) {
         if (!debug) console.log("clip loaded", clip);
 
-        self.clipsView = new App.Tracks.Views.ClipView({
+        self.clipsView = new Views.ClipView({
           'model': clip,
         });
       };
