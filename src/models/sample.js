@@ -1,11 +1,8 @@
 var Linx = require('../app.js');
-var BackbonePouch = require('backbone-pouch');
-
-var attachments = BackbonePouch.attachments();
 
 module.exports = Linx.module('Samples', function (Samples, App, Backbone, Marionette, $, _) {
 
-  Samples.Sample = App.Tracks.Clip.extend({
+  Samples.Sample = App.Library.Source.extend({
   
     'constructor': function (attributes, options) {
       // if constructor called with file attribute
@@ -32,6 +29,7 @@ module.exports = Linx.module('Samples', function (Samples, App, Backbone, Marion
       } else {
         Backbone.Model.apply(this, arguments);
       }
+      console.log(this);
     },
 
     'defaults': function () {
@@ -41,20 +39,15 @@ module.exports = Linx.module('Samples', function (Samples, App, Backbone, Marion
       };
     },
 
-    'getBlob': function (callback) {
-      this.attachment(this.attachments()[0], callback);
-    },
-
     'getWave': function (options, callback) {
+
+      console.log(options, callback);
 
       // get this sample's blob
       this.getBlob(function (err, blob) {
 
         // init our wave
         var wave = Object.create(WaveSurfer);
-        _.defaults(options, {
-          'audioContext': App.audioContext,
-        });
         wave.init(options);
 
         // create file reader / load with events
@@ -78,11 +71,5 @@ module.exports = Linx.module('Samples', function (Samples, App, Backbone, Marion
         return callback(null, wave);
       });
     },
-
-    // extend with PouchDB attachment functionality
-    'attach': attachments.attach,
-    'attachments': attachments.attachments,
-    'attachment': attachments.attachment,
-
   });
 });

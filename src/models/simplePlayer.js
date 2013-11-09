@@ -13,6 +13,7 @@ module.exports = Linx.module('Players', function (Players, App, Backbone) {
     },
 
     'initialize': function () {
+      this.clipList = new App.Tracks.ClipList();
       this.trackList = new App.Tracks.SimpleTrackList();
       Players.Player.prototype.initialize.call(this);
     },

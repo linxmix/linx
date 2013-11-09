@@ -28,8 +28,16 @@ module.exports = Linx.module('Samples.Views',
     },
 
     'queue': function () {
-      App.Players.conductor.player.trackList.create({
-        'clips': this.model.get('_id'),
+      // TODO move code to model
+      App.Players.conductor.player.clipList.create({
+        'source': this.model.get('_id'),
+      }, {
+        'success': function (clip) {
+          console.log(clip);
+          App.Players.conductor.player.trackList.create({
+            'clips': clip.get('_id'),
+          });
+        }
       });
     },
 
@@ -60,40 +68,4 @@ module.exports = Linx.module('Samples.Views',
     }
   });
 
-  Views.SampleClipView = Marionette.ItemView.extend({
-    'tagName': 'li',
-    'template': require('templates')['sampleClip'],
-    'modelEvents': {
-      'destroy': 'close',
-    },
-
-    'initialize': function () {
-      var self = this;
-      self.on('all', function (e) { console.log("sample event: ", e) });
-      // rerender wave on reach new render
-      // TODO: optimize (or remove) this
-      self.on('render', function () {
-        self.model.getWave({
-          'container': self.$('.wave')[0],
-        }, function (err, wave) {
-          if (err) throw err;
-          self['wave'] = wave;
-        });
-      });
-    },
-
-    'events': {
-      'click .play-pause': 'onPlayPause',
-      'click .stop': 'onStop',
-    },
-
-    'onPlayPause': function () {
-      this.wave.playPause();
-    },
-
-    'onStop': function () {
-      this.wave.stop();
-    },
-
-  });
 });

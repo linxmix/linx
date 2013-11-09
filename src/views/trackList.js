@@ -7,14 +7,5 @@ module.exports = Linx.module('Tracks.Views',
     'template': require('templates')['trackList'],
     'itemView': Views.TrackView,
     'itemViewContainer': '#trackList',
-
-    'events': {
-      'click .create': 'create',
-    },
-
-    'create': function () {
-      App.Players.conductor.player.trackList.create();
-    },
-
   });
 });

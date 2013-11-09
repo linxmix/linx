@@ -30,7 +30,7 @@ module.exports = Linx.module('Tracks.Views',
       
       if (typeof this.model.clips === 'string') {
         var clipId = this.model.get('clips');
-        this.clipsView = new App.Samples.Views.SampleClipView({
+        this.clipsView = new App.Samples.Views.ClipView({
           'model': App.Library.librarian.library.sampleList.get(clipId)
         });
       }

@@ -6,12 +6,14 @@ module.exports = Linx.module('Library', function (Library, App, Backbone) {
 
     'defaults': function () {
       return {
-        'type': 'player',
+        'type': 'library',
         'libraryType': 'simple',
       };
     },
 
     'initialize': function () {
+      this.index = new Library.Index();
+      this.index.fetch();
       this.sampleList = new App.Samples.SampleList();
       this.sampleList.fetch();
     },

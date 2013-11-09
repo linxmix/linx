@@ -7,7 +7,8 @@ module.exports = Linx.module('Tracks', function (Tracks, App, Backbone) {
     'defaults': function () {
       return {
         'type': 'clip',
-        'clipType': undefined,
+        'state': 'stop',
+        'source': undefined,
       };
     },
 

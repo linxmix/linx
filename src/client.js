@@ -11,7 +11,7 @@ Backbone.$ = $;
 _ = require('underscore');
 Math.uuid = require('node-uuid').v4;
 
-var Linx = require('./app.js');
+Linx = require('./app.js');
 
 // load the application once the DOM is ready, using `jQuery.ready`:
 $(function () {
@@ -31,6 +31,7 @@ $(function () {
 });
 
 // models
+require('./models/source.js');
 require('./models/track.js');
 require('./models/simpleTrack.js');
 require('./models/clip.js');
@@ -40,6 +41,8 @@ require('./models/simpleLibrary.js');
 require('./models/simplePlayer.js');
 
 // collections
+require('./collections/index.js');
+require('./collections/clipList.js');
 require('./collections/trackList.js');
 require('./collections/simpleTrackList.js');
 require('./collections/sampleList.js');
