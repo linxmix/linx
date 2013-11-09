@@ -15,9 +15,8 @@ module.exports = Linx.module('Tracks', function (Tracks, App, Backbone) {
           'include_docs': true,
           'fun': {
             'map': function (doc) {
-              if (doc.type === 'clip') {
-                emit(doc.name, null);
-              }
+              console.log(doc)
+              emit(doc, null);
             },
           },
         },

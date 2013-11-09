@@ -10,12 +10,17 @@ module.exports = Linx.module('Tracks.Views',
       var self = this;
       // when the clip is (re-)loaded, view it
       var onLoadClips = function (clip) {
+        if (!debug) console.log("clip loaded", clip);
+
         self.clipsView = new App.Tracks.Views.ClipView({
           'model': clip,
         });
       };
-      if (self.clips) onLoadClips(self.model.clips);
-      else self.model.on('loadClips', onLoadClips);
+      // if we have clips now, load them
+      if (self.model.clips) onLoadClips(self.model.clips);
+      // on event, load clips
+      self.model.on('loadClips', onLoadClips);
+      // call parent constructor
       Views.TrackView.prototype.initialize.call(self);
     },
     

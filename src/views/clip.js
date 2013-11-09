@@ -12,14 +12,14 @@ module.exports = Linx.module('Tracks.Views',
 
     'initialize': function () {
       var self = this;
-      self.on('all', function (e) { console.log("clip event: ", e) });
+      self.on('all', function (e) { if (!debug) console.log("clip event: ", e) });
       // rerender wave on each new render
       // TODO: optimize (or remove) this
-      console.log(this);
       self.on('render', function () {
         // TODO: generalize arguments for retrieving source
-        var source = App.Library.librarian.library.index.get(self.model.get('source'));
-        console.log('src', self.$('.source')[0]);
+        if (!debug) console.log('clip rendering source', self);
+        var thisSource = self.model.get('source');
+        var source = App.Library.librarian.library.index.get(thisSource);
         source.getSource({
           'container': self.$('.source')[0],
           'audioContext': App.audioContext,

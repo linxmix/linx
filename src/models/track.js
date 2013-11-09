@@ -29,11 +29,14 @@ module.exports = Linx.module('Tracks', function (Tracks, App, Backbone) {
     },
 
     'initialize': function () {
+      // make this track's clipList
+      this.clipList = new App.Tracks.ClipList();
       // ask the player what state it wants this track in
+      if (!debug) console.log('initing track', this);
       this.set('state',
         App.Players.conductor.player.getTrackState(this));
       this.on('all', function (name) {
-        console.log("track event: "+name);
+        if (debug) console.log("track event: "+name);
       });
       // reassert state on state change
       this.on('change:state', this.assertState);

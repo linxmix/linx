@@ -28,17 +28,7 @@ module.exports = Linx.module('Samples.Views',
     },
 
     'queue': function () {
-      // TODO move code to model
-      App.Players.conductor.player.clipList.create({
-        'source': this.model.get('_id'),
-      }, {
-        'success': function (clip) {
-          console.log(clip);
-          App.Players.conductor.player.trackList.create({
-            'clips': clip.get('_id'),
-          });
-        }
-      });
+      this.model.queue();
     },
 
     'onEditClick': function () {

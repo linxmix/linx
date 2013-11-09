@@ -14,6 +14,10 @@ module.exports = Linx.module('Players', function (Players, App, Backbone) {
     'getTrackState': function (track) {
       throw new Error("Player.getTrackState not implemented");
     },
+
+    'queue': function (source) {
+      throw new Error("Player.queue not implemented");
+    },
     //
     // / must be implemented by inheriters
     //

@@ -5,26 +5,30 @@ module.exports = Linx.module('Tracks', function (Tracks, App, Backbone) {
   Tracks.SimpleTrack = Tracks.Track.extend({
 
     'initialize': function () {
+      Tracks.Track.prototype.initialize.call(this);
       // this track should have a single clip
       var self = this;
       var clipId = self.get('clips');
 
       if (typeof clipId === 'string') {
-        var index = App.Library.librarian.library.index;
-        var clip = self.clips = index.get(clipId);
 
-        // if this clip exists, view it
-        if (clip) {
-          // when this track's clip is destroyed, destroy the track
-          self.listenTo(clip, 'destroy', self.destroy);
-          Tracks.Track.prototype.initialize.call(self);
-          self.trigger('loadClips', clip);
-        }
+        // load clip on sync
+        clipList.on('sync', function () {
+          var clip = self.clips = clipList.get(clipId);
+          if (!debug) console.log(clipId, clip);
 
-        // clip doesn't exist -> log it as error
-        else {
-          console.error("clip no longer exists: "+clipId);
-        }
+          // if this clip exists, view it
+          if (clip) {
+            // when this track's clip is destroyed, destroy the track
+            self.listenTo(clip, 'destroy', self.destroy);
+            self.trigger('loadClips', clip);
+          }
+
+          // clip doesn't exist -> log it as error
+          else {
+            console.error("WARNING: clip no longer exists: "+clipId);
+          }
+        });
       }
     },
 

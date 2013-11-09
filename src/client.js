@@ -13,6 +13,8 @@ Math.uuid = require('node-uuid').v4;
 
 Linx = require('./app.js');
 
+debug = false
+
 // load the application once the DOM is ready, using `jQuery.ready`:
 $(function () {
 
@@ -24,7 +26,7 @@ $(function () {
 
   Backbone.sync = BackbonePouch.sync({
     // suffix with version in case of necessary upgrade.
-    db: PouchDB('linx1'),
+    db: PouchDB('linx2'),
   });
 
   Linx.start();

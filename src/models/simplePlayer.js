@@ -13,7 +13,6 @@ module.exports = Linx.module('Players', function (Players, App, Backbone) {
     },
 
     'initialize': function () {
-      this.clipList = new App.Tracks.ClipList();
       this.trackList = new App.Tracks.SimpleTrackList();
       Players.Player.prototype.initialize.call(this);
     },
@@ -33,6 +32,15 @@ module.exports = Linx.module('Players', function (Players, App, Backbone) {
       } else {
         return 'stop';
       }
+    },
+
+    'queue': function (source) {
+      if (debug) console.log('player queueing source', source);
+      // create new track
+      this.trackList.create({}, { 'success': function (track) {
+        // create new clip for that track
+        track.clipList.create({ 'source': source.get('_id'), });
+      }});
     },
 
   });

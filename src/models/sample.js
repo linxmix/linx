@@ -29,7 +29,6 @@ module.exports = Linx.module('Samples', function (Samples, App, Backbone, Marion
       } else {
         Backbone.Model.apply(this, arguments);
       }
-      console.log(this);
     },
 
     'defaults': function () {
@@ -37,6 +36,10 @@ module.exports = Linx.module('Samples', function (Samples, App, Backbone, Marion
         'type': 'sample',
         'name': "unnamed sample",
       };
+    },
+
+    'queue': function () {
+      App.Players.conductor.player.queue(this);
     },
 
     'getWave': function (options, callback) {
