@@ -11,8 +11,6 @@ Backbone.$ = $;
 _ = require('underscore');
 Math.uuid = require('node-uuid').v4;
 
-templates = require('templates');
-
 var Linx = require('./app.js');
 
 // load the application once the DOM is ready, using `jQuery.ready`:
@@ -32,35 +30,32 @@ $(function () {
   Linx.start();
 });
 
-/*Backbone.Marionette.TemplateCache.prototype.loadTemplate = function (templateId) {
-  // load your template here, returning the data needed for the compileTemplate
-  // function. For example, you have a function that creates templates based on the
-  // value of templateId
-  return fs.readFileSync(templateId);
-}*/
-
-
+// models
 require('./models/track.js');
+require('./models/simpleTrack.js');
 require('./models/clip.js');
 require('./models/sample.js');
+require('./models/player.js');
+require('./models/simpleLibrary.js');
+require('./models/simplePlayer.js');
 
+// collections
+require('./collections/trackList.js');
+require('./collections/simpleTrackList.js');
+require('./collections/sampleList.js');
+
+// controllers
+require('./controllers/librarian.js');
+require('./controllers/conductor.js');
+
+// views
 require('./views/track.js')
 require('./views/simpleTrack.js')
 require('./views/clip.js')
 require('./views/sample.js')
-
 require('./views/trackList.js')
 require('./views/simpleTrackList.js')
 require('./views/sampleList.js')
-
-require('./controllers/librarian.js');
-require('./controllers/conductor.js');
-
-require('./models/simplePlayer.js');
-require('./models/simpleLibrary.js');
-
-require('./views/simplePlayer.js');
+require('./views/player.js');
 require('./views/simpleLibrary.js');
-
-require('./collections/trackList.js');
-require('./collections/sampleList.js');
+require('./views/simplePlayer.js');

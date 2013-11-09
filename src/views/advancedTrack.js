@@ -23,15 +23,21 @@ module.exports = Linx.module('Tracks.Views',
     },
 
     'regions': {
-      'clips': '#track-clips'
+      'clips': '#trackClips'
     },
 
     'initialize': function () {
-      if (typeof this.model.attributes.clips === 'string') {
-        var clipId = this.model.attributes.clips;
+      
+      if (typeof this.model.clips === 'string') {
+        var clipId = this.model.get('clips');
         this.clipsView = new App.Samples.Views.SampleClipView({
           'model': App.Library.librarian.library.sampleList.get(clipId)
         });
+      }
+
+      // otherwise, if we have an object with clips
+      else if (typeof this.model.attributes.clips === 'object') {
+        // TODO
       }
     },
 

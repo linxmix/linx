@@ -3,36 +3,48 @@ var Linx = require('../app.js');
 module.exports = Linx.module('Players.Views',
   function (Views, App, Backbone, Marionette, $) {
 
-  Views.SimplePlayer = Marionette.Layout.extend({
-    'tagName': 'div',
+  Views.SimplePlayer = Views.Player.extend({
     'template': require('templates')['simplePlayer'],
 
-    'regions': {
-      'tracks': '.tracks'
+    'events': {
+      'click .playPause': 'playPause',
+      'click .stop': 'stop',
     },
 
     'initialize': function () {
       var self = this;
+      var samplesReady = $.Deferred();
+      var tracksReady = $.Deferred();
 
-      // wait for trackList to sync
-      self.model.trackList.once('sync', function (model, resp, options) {
-        // add track list view
-        self.trackListView = new App.Tracks.Views.SimpleTrackListView({
-          'collection': self.model.trackList,
+      App.on("initialize:after", function () {
+        // wait for trackList to sync
+        self.model.trackList.once('sync', function (model, resp, options) {
+          tracksReady.resolve();
         });
-        // render self
-        self.show();
+
+        // wait for sampleList to sync
+        App.Library.librarian.library.sampleList.once('sync', function (model, resp, options) {
+          samplesReady.resolve();
+        });
+
+        // after sampleList and trackList have been synced,
+        $.when(samplesReady, tracksReady).done(function () {
+          // add track list view
+          self.trackListView = new App.Tracks.Views.SimpleTrackListView({
+            'collection': self.model.trackList,
+          });
+          // render self
+          self.show();
+        });
       });
     },
 
-    'show': function() {
-      if (this.trackListView) {
-        this.tracks.show(this.trackListView);
-      }
+    'playPause': function() {
+      this.model.playPause();
     },
 
-    'destroy': function () {
-      this.model.destroy();
+    'stop': function() {
+      this.model.stop();
     },
   });
 });

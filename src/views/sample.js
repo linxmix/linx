@@ -29,7 +29,7 @@ module.exports = Linx.module('Samples.Views',
 
     'queue': function () {
       App.Players.conductor.player.trackList.create({
-        clips: this.model.attributes._id
+        'clips': this.model.get('_id'),
       });
     },
 
@@ -64,15 +64,17 @@ module.exports = Linx.module('Samples.Views',
     'tagName': 'li',
     'template': require('templates')['sampleClip'],
     'modelEvents': {
-      'change': 'render',
       'destroy': 'close',
     },
 
     'initialize': function () {
       var self = this;
-      self.once('render', function () {
+      self.on('all', function (e) { console.log("sample event: ", e) });
+      // rerender wave on reach new render
+      // TODO: optimize (or remove) this
+      self.on('render', function () {
         self.model.getWave({
-          'container': this.$('.wave')[0]
+          'container': self.$('.wave')[0],
         }, function (err, wave) {
           if (err) throw err;
           self['wave'] = wave;

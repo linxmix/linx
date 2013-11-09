@@ -161,6 +161,10 @@ module.exports = function (grunt) {
         'files': ['Gruntfile.js'],
         'tasks': ['build'],
       },
+      'html': {
+        'files': ['src/**/*.html'],
+        'tasks': ['html'],
+      },
       'js': {
         'files': ['src/**/*.js'],
         'tasks': ['js'],

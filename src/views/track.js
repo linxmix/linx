@@ -11,8 +11,12 @@ module.exports = Linx.module('Tracks.Views',
       'click .destroy': 'destroy',
     },
 
+    'modelEvents': {
+      'loadClips': 'onShow',
+    },
+
     'regions': {
-      'clips': '#track-clips'
+      'clips': '#trackClips'
     },
 
     'initialize': function () {
