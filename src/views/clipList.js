@@ -6,7 +6,7 @@ module.exports = Linx.module('Players.Tracks.Clips.Views',
   Views.ClipListView = Backbone.Marionette.CompositeView.extend({
     'template': require('templates')['clipList'],
     'itemView': Views.ClipView,
-    'itemViewContainer': '#clipList',
+    'itemViewContainer': '.clipList',
     
     'initialize': function () {
       if (debug) {

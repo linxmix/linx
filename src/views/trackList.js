@@ -6,7 +6,7 @@ module.exports = Linx.module('Players.Tracks.Views',
   Views.TrackListView = Backbone.Marionette.CompositeView.extend({
     'template': require('templates')['trackList'],
     'itemView': Views.TrackView,
-    'itemViewContainer': '#trackList',
+    'itemViewContainer': '.trackList',
     
     'initialize': function () {
       if (debug) {

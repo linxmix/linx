@@ -23,7 +23,7 @@ module.exports = Linx.module('Players.Tracks.Views',
     },
 
     'regions': {
-      'clips': '#trackClips'
+      'clips': '.trackClips'
     },
 
     'initialize': function () {
