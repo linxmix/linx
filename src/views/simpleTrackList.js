@@ -5,13 +5,6 @@ module.exports = Linx.module('Players.Tracks.Views',
 
   Views.SimpleTrackListView = Views.TrackListView.extend({
     'itemView': Views.SimpleTrackView,
-
-    // create a new track for given clip
-    'addClip': function (clip) {
-      this.create({
-        'clips': clip._id
-      });
-    },
-
   });
+  
 });

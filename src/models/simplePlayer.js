@@ -18,13 +18,16 @@ module.exports = Linx.module('Players', function (Players, App, Backbone, Marion
       var defer = $.Deferred();
       this.ready = defer.promise();
 
-      this.trackList = new App.Players.Tracks.SimpleTrackList();
-      // start player when all submodules are loaded
-      $.when([this.trackList.ready]).done(defer.resolve);
+      // player is ready when its trackList is ready
+      var self = this;
+      $.when(this.trackList.ready).done(function () {
+        if (debug) console.log("player ready", self);
+        defer.resolve();
+      });
     },
 
     'assertState': function () {
-      console.log("asserting state on player model", this.get('state'));
+      if (debug) console.log("asserting state on player model", this.get('state'));
       // player's state should be reflected on 0th track
       var firstTrack = this.trackList.models[0];
       (firstTrack && firstTrack.set('state', this.get('state')));
@@ -43,10 +46,15 @@ module.exports = Linx.module('Players', function (Players, App, Backbone, Marion
     'queue': function (source) {
       if (debug) console.log('player queueing source', source);
       // create new track
-      this.trackList.create({}, function (err, track) {
-        if (err) throw err;
-        // create new clip for that track
-        track.clipList.create({ 'source': source.get('_id'), });
+      this.trackList.create({}, {
+        'success': function (track) {
+          if (debug) console.log("track", track);
+          // create new clip for that track
+          track.queue(source.get('_id'));
+        },
+        'error': function (error) {
+          throw error;
+        },
       });
     },
 

@@ -15,8 +15,9 @@ module.exports = Linx.module('Players.Tracks.Clips', function (Clips, App, Backb
           'include_docs': true,
           'fun': {
             'map': function (doc) {
-              console.log(doc)
-              emit(doc, null);
+              if (doc.type === 'clip') {
+                emit(doc, null);
+              }
             },
           },
         },
@@ -27,6 +28,32 @@ module.exports = Linx.module('Players.Tracks.Clips', function (Clips, App, Backb
           }
         },
       },
+    },
+
+    'initialize': function () {
+      var self = this;
+      if (debug) { console.log("initing clipList", self); }
+
+      // clipList is ready after fetching and each clip is ready
+      var defer = $.Deferred();
+      self.ready = defer.promise();
+      self.fetch({
+        'success': function (coll) {
+          if (debug) console.log("clipList fetched", self);
+          // accumulate all clip.ready's into array
+          var readys = _.map(self.models, function (clip) {
+            return clip.ready;
+          });
+          // wait for all readys till resolution
+          $.when.apply(this, readys).done(function () {
+            if (debug) console.log("clipList ready", self);
+            defer.resolve();
+          });          
+        },
+        'error': function (err) {
+          throw err;
+        },
+      });
     },
 
     // parse view result, use doc property injected via `include_docs`

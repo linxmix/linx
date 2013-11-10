@@ -14,7 +14,7 @@ Math.uuid = require('node-uuid').v4;
 
 Linx = require('./app.js');
 
-debug = false
+debug = true
 
 // load the application once the DOM is ready, using `jQuery.ready`:
 $(function () {
@@ -33,7 +33,7 @@ $(function () {
 
   Backbone.sync = BackbonePouch.sync({
     // suffix with version in case of necessary upgrade.
-    db: PouchDB('linx2'),
+    db: PouchDB('linx3'),
   });
 
   Linx.start();
@@ -42,18 +42,16 @@ $(function () {
 // models
 require('./models/source.js');
 require('./models/track.js');
-require('./models/simpleTrack.js');
 require('./models/clip.js');
 require('./models/sample.js');
 require('./models/player.js');
-require('./models/simpleLibrary.js');
+require('./models/library.js');
 require('./models/simplePlayer.js');
 
 // collections
 require('./collections/index.js');
 require('./collections/clipList.js');
 require('./collections/trackList.js');
-require('./collections/simpleTrackList.js');
 require('./collections/sampleList.js');
 
 // controllers
@@ -62,14 +60,19 @@ require('./controllers/librarian.js');
 // modules
 require('./modules/players.js')
 
-// views
+// player views
+require('./views/clip.js')
+require('./views/simpleClip.js')
+require('./views/clipList.js')
+require('./views/simpleClipList.js')
 require('./views/track.js')
 require('./views/simpleTrack.js')
-require('./views/clip.js')
-require('./views/sample.js')
 require('./views/trackList.js')
 require('./views/simpleTrackList.js')
-require('./views/sampleList.js')
 require('./views/player.js');
-require('./views/simpleLibrary.js');
 require('./views/simplePlayer.js');
+
+// library views
+require('./views/sample.js')
+require('./views/sampleList.js')
+require('./views/library.js');

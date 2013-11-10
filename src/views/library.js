@@ -3,9 +3,9 @@ var Linx = require('../app.js');
 module.exports = Linx.module('Library.Views',
   function (Views, App, Backbone, Marionette, $) {
 
-  Views.SimpleLibrary = Marionette.Layout.extend({
+  Views.Library = Marionette.Layout.extend({
     'tagName': 'div',
-    'template': require('templates')['simpleLibrary'],
+    'template': require('templates')['library'],
 
     'regions': {
       'samples': '.samples'

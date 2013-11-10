@@ -31,9 +31,14 @@ module.exports = Linx.module('Players', function (Players, App, Backbone, Marion
     },
 
     'initialize': function () {
-      this.on('all', function (name) {
-        console.log("player event: "+name);
-      });
+      if (debug) {
+        console.log('initing player', this);
+        this.on('all', function (name) {
+          console.log("player event: ", name);
+        });
+      }
+      // make this player's trackList
+      this.trackList = new App.Players.Tracks.TrackList();
       // reassert state on state change
       this.on('change:state', this.assertState);
     },

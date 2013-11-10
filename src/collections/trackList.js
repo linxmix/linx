@@ -30,6 +30,33 @@ module.exports = Linx.module('Players.Tracks', function (Tracks, App, Backbone) 
       },
     },
 
+    // start trackList when all submodules are loaded
+    'initialize': function () {
+      var self = this;
+      if (debug) { console.log("initing trackList", self); }
+
+      // trackList is ready after fetching and each track is ready
+      var defer = $.Deferred();
+      self.ready = defer.promise();
+      self.fetch({
+        'success': function (coll) {
+          if (debug) console.log("trackList fetched", self);
+          // accumulate all track.ready's into array
+          var readys = _.map(self.models, function (track) {
+            return track.ready;
+          });
+          // wait for all readys till resolution
+          $.when.apply(this, readys).done(function () {
+            if (debug) console.log("trackList ready", self);
+            defer.resolve();
+          }); 
+        },
+        'error': function (err) {
+          throw err;
+        },
+      });
+    },
+
     // parse view result, use doc property injected via `include_docs`
     'parse': function (result) {
       return _.pluck(result.rows, 'doc');

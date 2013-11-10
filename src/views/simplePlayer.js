@@ -12,12 +12,12 @@ module.exports = Linx.module('Players.Views',
     },
 
     'initialize': function () {
-      // initialize track list view
+      Views.Player.prototype.initialize.call(this);
+
+      // initialize this player's trackList view
       this.trackListView = new App.Players.Tracks.Views.SimpleTrackListView({
         'collection': this.model.trackList,
       });
-      // render this
-      this.show();
     },
 
     'playPause': function() {
@@ -27,5 +27,6 @@ module.exports = Linx.module('Players.Views',
     'stop': function() {
       this.model.stop();
     },
+    
   });
 });

@@ -20,12 +20,17 @@ module.exports = Linx.module('Players.Tracks.Views',
     },
 
     'initialize': function () {
+      if (debug) {
+        console.log("initing track view", this);
+        this.on('all', function (e) { console.log("track view event: ", e); });
+      }
     },
 
     // display any clips
     'onShow': function() {
-      if (this.clipsView) {
-        this.clips.show(this.clipsView);
+      if (this.clipListView) {
+        if (debug) console.log("track showing clips", this.clipListView);
+        this.clips.show(this.clipListView);
       }
     },
 

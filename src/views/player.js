@@ -12,16 +12,15 @@ module.exports = Linx.module('Players.Views',
     },
 
     'initialize': function () {
-      // add track list view
-      this.trackListView = new App.Players.Tracks.Views.TrackListView({
-        'collection': this.model.trackList,
-      });
-      // render this
-      this.show();
+      if (debug) {
+        console.log("initing player view", this);
+        this.on('all', function (e) { console.log("player view event: ", e); });
+      }
     },
 
-    'show': function() {
+    'onShow': function() {
       if (this.trackListView) {
+        if (debug) console.log("player showing tracks", this.trackListView);
         this.tracks.show(this.trackListView);
       }
     },

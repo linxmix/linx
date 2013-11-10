@@ -5,7 +5,7 @@ Linx.module('Library', function (Library, App, Backbone, Marionette, $, _) {
   Library.Librarian = Marionette.Controller.extend(
   {
     'initialize': function () {
-      this.library = new App.Library.SimpleLibrary();
+      this.library = new App.Library.Library();
     },
 
     'start': function () {
@@ -14,7 +14,7 @@ Linx.module('Library', function (Library, App, Backbone, Marionette, $, _) {
     },  
 
     'show': function () {
-      App.library.show(new App.Library.Views.SimpleLibrary({
+      App.library.show(new App.Library.Views.Library({
         'model': this.library,
       }));
     },

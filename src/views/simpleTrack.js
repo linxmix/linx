@@ -7,22 +7,13 @@ module.exports = Linx.module('Players.Tracks.Views',
     'template': require('templates')['simpleTrack'],
 
     'initialize': function () {
-      var self = this;
-      // when the clip is (re-)loaded, view it
-      var onLoadClips = function (clip) {
-        if (!debug) console.log("clip loaded", clip);
+      Views.TrackView.prototype.initialize.call(this);
 
-        self.clipsView = new Views.ClipView({
-          'model': clip,
-        });
-      };
-      // if we have clips now, load them
-      if (self.model.clips) onLoadClips(self.model.clips);
-      // on event, load clips
-      self.model.on('loadClips', onLoadClips);
-      // call parent constructor
-      Views.TrackView.prototype.initialize.call(self);
+      // initialize this track's clipList view
+      this.clipListView = new App.Players.Tracks.Clips.Views.SimpleClipListView({
+        'collection': this.model.clipList,
+      });
     },
-    
+
   });
 });
