@@ -31,9 +31,13 @@ $(function () {
       func.apply(this, arguments);
   };
 
+  // credentials for CouchDB
+  XMLHttpRequest.withCredentials = true
+  // PouchDB.sync replaces default backbone sync
   Backbone.sync = BackbonePouch.sync({
     // suffix with version in case of necessary upgrade.
     db: PouchDB('linx3'),
+    //db: PouchDB('http://localhost:5984/linx0'),
   });
 
   Linx.start();

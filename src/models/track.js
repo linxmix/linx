@@ -48,6 +48,7 @@ module.exports = Linx.module('Players.Tracks', function (Tracks, App, Backbone) 
       var self = this;
       self.clipList.create({
         'source': source,
+        'track': self.get('_id'),
       }, {
         'success': function (clip) {
           // when this track's clip is destroyed, destroy the track

@@ -59,6 +59,7 @@ module.exports = Linx.module('Players.Tracks', function (Tracks, App, Backbone) 
 
     // parse view result, use doc property injected via `include_docs`
     'parse': function (result) {
+      if (debug) { console.log("parsing trackList", result); }
       return _.pluck(result.rows, 'doc');
     },
 

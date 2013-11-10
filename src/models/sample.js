@@ -44,7 +44,7 @@ module.exports = Linx.module('Samples', function (Samples, App, Backbone, Marion
 
     'getWave': function (options, callback) {
 
-      console.log(options, callback);
+      if (debug) { console.log("getting wave", options, callback); }
 
       // get this sample's blob
       this.getBlob(function (err, blob) {
