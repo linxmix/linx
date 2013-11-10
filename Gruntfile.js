@@ -23,7 +23,7 @@ module.exports = function (grunt) {
   grunt.registerTask('server', ['express']);
   grunt.registerTask('dev', ['build', 'server', 'watch']);
   grunt.registerTask('minify', ['cssmin', 'uglify']);
-  grunt.registerTask('deploy', ['build', 'minify', 'hashres', 'gh-pages']);
+  grunt.registerTask('deploy', ['build', /*'minify',*/ 'hashres', 'gh-pages']);
 
   var jsVendors = [
     'bower_components/jquery/jquery.js',
