@@ -6,30 +6,6 @@ module.exports = Linx.module('Players.Tracks.Clips', function (Clips, App, Backb
 
     'model': Clips.Clip,
 
-    // include documents in Map Reduce response.
-    'pouch': {
-      'listen': true,
-      'fetch': 'query',
-      'options': {
-        'query': {
-          'include_docs': true,
-          'fun': {
-            'map': function (doc) {
-              if (doc.type === 'clip') {
-                emit(doc, null);
-              }
-            },
-          },
-        },
-        'changes': {
-          'include_docs': true,
-          'filter': function(doc) {
-            return doc._deleted || doc.type === 'clip';
-          }
-        },
-      },
-    },
-
     'initialize': function () {
       var self = this;
       if (debug) { console.log("initing clipList", self); }
