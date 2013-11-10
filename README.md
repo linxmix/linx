@@ -1,10 +1,20 @@
 # linx
 
+### EXPERIMENTAL 0.0.0
+
 a music player that plays like a dj mix.
 
 - interleaves songs with prerecorded transitions
 - integration with existing music marketplaces to allow users to buy popular samples
 - provide music marketplace of user-contributed samples and transitions
+
+## how to use
+
+drag and drop audio files to the box to create samples.
+
+queue samples to a track with the +
+
+play samples!
 
 ## how to develop
 
