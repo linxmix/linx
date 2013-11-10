@@ -184,7 +184,10 @@ module.exports = function (grunt) {
         'banner': defaultBanner,
         'report': 'min',
       },
-      'build/css/main.css': 'build/css/main.css',
+      'deploy': {
+        'src': 'build/css/index.css',
+        'dest': 'build/css/index.css',
+      },
     },
 
     'uglify': {
@@ -192,15 +195,23 @@ module.exports = function (grunt) {
         'banner': defaultBanner,
         'report': 'min',
       },
-      'build/js/main.js': 'build/js/main.js',
+      'deploy': {
+        'files': {
+          'build/js/vendor.js': 'build/js/vendor.js',
+          'build/js/templates.js': 'build/js/templates.js',
+          'build/js/app.js': 'build/js/app.js',
+        },
+      },
     },
 
     'hashres': {
       'options': {},
       'deploy': {
         'src': [
-          'build/js/index.js',
           'build/css/index.css',
+          'build/js/vendor.js',
+          'build/js/templates.js',
+          'build/js/app.js',
         ],
         'dest': 'build/index.html',
       },
