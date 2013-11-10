@@ -18,7 +18,7 @@ module.exports = Linx.module('Players.Tracks.Clips.Views',
       // TODO: optimize (or remove) this
       self.on('render', function () {
         // TODO: generalize arguments for retrieving source
-        if (debug) console.log('clip rendering source', self);
+        if (debug) console.log('clip rendering source', self.model['source']);
         self.model['source'].getSource({
           'container': self.$('.source')[0],
           'audioContext': App.audioContext,
