@@ -23,7 +23,7 @@ module.exports = Linx.module('Players.Tracks.Clips', function (Clips, App, Backb
       // get and attach source before ready
       var defer = $.Deferred();
       this.ready = defer.promise();
-      this.source = App.Library.librarian.library.index.get(this.get('source'));
+      this.source = App.Library.library.index.get(this.get('source'));
       if (debug) console.log("clip ready", self);
       defer.resolve();
     },

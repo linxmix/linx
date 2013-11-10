@@ -8,6 +8,16 @@ module.exports = Linx.module('Samples.Views',
     'itemView': Views.SampleView,
     'itemViewContainer': '.sampleList',
 
+    'initialize': function () {
+      if (debug) {
+        console.log("initing sampleList view", this);
+        this.on('all', function (e) { console.log("sampleList view event: ", e); });
+      }
+    },
+
+    // 
+    // sample drop
+    // 
     'events': {
       'drop .sampleDrop': 'onDrop',
       'dragenter': 'onDragenter',
@@ -18,7 +28,11 @@ module.exports = Linx.module('Samples.Views',
       e.stopPropagation();
       e.preventDefault();
       var dataTransfer = e.originalEvent.dataTransfer;
-      this.create((dataTransfer && dataTransfer.files) && dataTransfer.files[0]);
+      // create sample from given file
+      var file = (dataTransfer && dataTransfer.files) && dataTransfer.files[0];
+      this.collection.create({
+        'file': file,
+      });
     },
     'onDragover': function (e) {
       e.stopPropagation();
@@ -28,13 +42,9 @@ module.exports = Linx.module('Samples.Views',
       e.stopPropagation();
       e.preventDefault();
     },
-
-    'create': function (file) {
-      App.Library.librarian.library.sampleList.create({
-        'file': file,
-      });
-    },    
+    // 
+    // /sample drop
+    // 
 
   });
-
 });

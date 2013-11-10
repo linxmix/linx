@@ -7,15 +7,30 @@ module.exports = Linx.module('Library', function (Library, App, Backbone) {
     'defaults': function () {
       return {
         'type': 'library',
-        'libraryType': 'simple',
       };
     },
 
     'initialize': function () {
+      if (debug) {
+        console.log('initing library', this);
+        this.on('all', function (name) {
+          console.log("library event: ", name);
+        });
+      }
+
+      // create sub-models
       this.index = new Library.Index();
-      this.index.fetch();
       this.sampleList = new App.Samples.SampleList();
-      this.sampleList.fetch();
+      var submodels = [this.index, this.sampleList];
+
+      // player is ready when its sub-models are ready
+      var defer = $.Deferred();
+      this.ready = defer.promise();
+      var self = this;
+      $.when.apply(this, _.pluck(submodels, 'ready')).done(function () {
+        if (debug) console.log("library ready", self);
+        defer.resolve();
+      });
     },
 
   });

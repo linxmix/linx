@@ -23,6 +23,13 @@ module.exports = Linx.module('Samples.Views',
       'change': 'render',
     },
 
+    'initialize': function () {
+      if (debug) {
+        console.log("initing sample view", this);
+        this.on('all', function (e) { console.log("sample view event: ", e); });
+      }
+    },
+
     'destroy': function () {
       this.model.destroy();
     },

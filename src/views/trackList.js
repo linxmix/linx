@@ -10,7 +10,7 @@ module.exports = Linx.module('Players.Tracks.Views',
     
     'initialize': function () {
       if (debug) {
-        console.log("initing trackListView", this);
+        console.log("initing trackList view", this);
         this.on('all', function (e) { console.log("trackList view event: ", e); });
       }
     },

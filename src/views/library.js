@@ -8,25 +8,23 @@ module.exports = Linx.module('Library.Views',
     'template': require('templates')['library'],
 
     'regions': {
-      'samples': '.samples'
+      'samples': '.samples',
     },
 
     'initialize': function () {
-      var self = this;
-
-      // wait for sampleList to sync
-      self.model.sampleList.once('sync', function (model, resp, options) {
-        // add track list view
-        self.sampleListView = new App.Samples.Views.SampleListView({
-          'collection': self.model.sampleList,
-        });
-        // render self
-        self.show();
+      if (debug) {
+        console.log("initing library view", this);
+        this.on('all', function (e) { console.log("library view event: ", e); });
+      }
+      // initialize this library's sampleList view
+      this.sampleListView = new App.Samples.Views.SampleListView({
+        'collection': this.model.sampleList,
       });
     },
 
-    'show': function() {
+    'onShow': function() {
       if (this.sampleListView) {
+        if (debug) console.log("library showing samples", this.sampleListView);
         this.samples.show(this.sampleListView);
       }
     },
@@ -34,5 +32,6 @@ module.exports = Linx.module('Library.Views',
     'destroy': function () {
       this.model.destroy();
     },
+
   });
 });

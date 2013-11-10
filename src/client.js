@@ -14,7 +14,7 @@ Math.uuid = require('node-uuid').v4;
 
 Linx = require('./app.js');
 
-debug = true
+debug = true;
 
 // load the application once the DOM is ready, using `jQuery.ready`:
 $(function () {
@@ -58,10 +58,8 @@ require('./collections/clipList.js');
 require('./collections/trackList.js');
 require('./collections/sampleList.js');
 
-// controllers
-require('./controllers/librarian.js');
-
 // modules
+require('./modules/library.js');
 require('./modules/players.js')
 
 // player views

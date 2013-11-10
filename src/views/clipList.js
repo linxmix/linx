@@ -10,7 +10,7 @@ module.exports = Linx.module('Players.Tracks.Clips.Views',
     
     'initialize': function () {
       if (debug) {
-        console.log("initing clipListView", this);
+        console.log("initing clipList view", this);
         this.on('all', function (e) { console.log("clipList view event: ", e); });
       }
     },

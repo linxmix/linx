@@ -30,6 +30,24 @@ module.exports = Linx.module('Samples', function (Samples, App, Backbone) {
       },
     },
 
+    'initialize': function () {
+      var self = this;
+      if (debug) { console.log("initing sampleList", self); }
+
+      // sampleList is ready after fetch
+      var defer = $.Deferred();
+      self.ready = defer.promise();
+      self.fetch({
+        'success': function (coll) {
+          if (debug) console.log("sampleList fetched and ready", self);
+          defer.resolve();
+        },
+        'error': function (err) {
+          throw err;
+        },
+      });
+    },
+
     // parse view result, use doc property injected via `include_docs`
     'parse': function (result) {
       return _.pluck(result.rows, 'doc');

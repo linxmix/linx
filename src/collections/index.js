@@ -21,6 +21,24 @@ module.exports = Linx.module('Library', function (Library, App, Backbone) {
       },
     },
 
+    'initialize': function () {
+      var self = this;
+      if (debug) { console.log("initing index", self); }
+
+      // index is ready after fetch
+      var defer = $.Deferred();
+      self.ready = defer.promise();
+      self.fetch({
+        'success': function (coll) {
+          if (debug) console.log("index fetched and ready", self);
+          defer.resolve();
+        },
+        'error': function (err) {
+          throw err;
+        },
+      });
+    },
+
     // parse view result, use doc property injected via `include_docs`
     'parse': function (result) {
       return _.pluck(result.rows, 'doc');
