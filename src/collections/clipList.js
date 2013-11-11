@@ -32,7 +32,12 @@ module.exports = Linx.module('Players.Tracks.Clips', function (Clips, App, Backb
 
     'initialize': function () {
       var self = this;
-      if (debug) { console.log("initing clipList", self); }
+      if (debug) {
+        console.log('initing clipList', self);
+        self.on('all', function (name) {
+          console.log("clipList event: ", name);
+        });
+      }
 
       // clipList is ready after fetching and each clip is ready
       var defer = $.Deferred();

@@ -32,7 +32,12 @@ module.exports = Linx.module('Samples', function (Samples, App, Backbone) {
 
     'initialize': function () {
       var self = this;
-      if (debug) { console.log("initing sampleList", self); }
+      if (debug) {
+        console.log('initing sampleList', self);
+        self.on('all', function (name) {
+          console.log("sampleList event: ", name);
+        });
+      }
 
       // sampleList is ready after fetch
       var defer = $.Deferred();

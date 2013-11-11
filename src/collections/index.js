@@ -23,7 +23,12 @@ module.exports = Linx.module('Library', function (Library, App, Backbone) {
 
     'initialize': function () {
       var self = this;
-      if (debug) { console.log("initing index", self); }
+      if (debug) {
+        console.log('initing index', self);
+        self.on('all', function (name) {
+          console.log("index event: ", name);
+        });
+      }
 
       // index is ready after fetch
       var defer = $.Deferred();

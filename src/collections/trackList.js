@@ -33,7 +33,12 @@ module.exports = Linx.module('Players.Tracks', function (Tracks, App, Backbone) 
     // start trackList when all submodules are loaded
     'initialize': function () {
       var self = this;
-      if (debug) { console.log("initing trackList", self); }
+      if (debug) {
+        console.log('initing trackList', self);
+        self.on('all', function (name) {
+          console.log("trackList event: ", name);
+        });
+      }
 
       // trackList is ready after fetching and each track is ready
       var defer = $.Deferred();

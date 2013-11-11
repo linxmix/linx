@@ -53,13 +53,24 @@ module.exports = Linx.module('Players.Tracks', function (Tracks, App, Backbone) 
         'success': function (clip) {
           // when this track's clip is destroyed, destroy the track
           self.listenTo(clip, 'destroy', self.destroy);
-          // trigger that we just loaded a clip
-          self.trigger('loadClips', clip);
+          console.log(self.clipList.remove);
         },
         'error': function (error) {
           throw error;
         },
       });
+    },
+
+    'destroy': function () {
+      if (!debug) console.log("destroying track", this);
+      var self = this;
+      // before track is destroyed, destroy all its clips
+      _.each(self.clipList.models, function (clip) {
+        if (!debug) console.log("removing clip from clipList", clip);
+        clip.destroy();
+      });
+      // destroy this track
+      Backbone.Model.prototype.destroy.call(self);
     },
 
   });

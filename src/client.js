@@ -14,7 +14,7 @@ Math.uuid = require('node-uuid').v4;
 
 Linx = require('./app.js');
 
-debug = true;
+debug = false;
 
 // load the application once the DOM is ready, using `jQuery.ready`:
 $(function () {
