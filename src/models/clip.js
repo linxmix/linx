@@ -15,8 +15,8 @@ module.exports = Linx.module('Players.Tracks.Clips', function (Clips, App, Backb
     'initialize': function () {
       if (debug) {
         console.log('initing clip', this);
-        this.on('all', function (name) {
-          console.log("clip event: ", name);
+        this.on('all', function () {
+          console.log("clip event: ", arguments);
         });
       }
 

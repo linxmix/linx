@@ -49,8 +49,11 @@ module.exports = Linx.module('Players', function (Players, App, Backbone, Marion
       this.trackList.create({}, {
         'success': function (track) {
           if (debug) console.log("track", track);
-          // create new clip for that track
-          track.queue(source.get('_id'));
+          // when the track is ready
+          $.when(track.ready).done(function () {
+            // create new clip for that track
+            track.queue(source.get('_id'));
+          });
         },
         'error': function (error) {
           throw error;

@@ -1,6 +1,7 @@
 var Linx = require('../app.js');
 
-module.exports = Linx.module('Players.Tracks', function (Tracks, App, Backbone) {
+module.exports = Linx.module('Players.Tracks',
+  function (Tracks, App, Backbone, Marionette, $, _) {
 
   Tracks.Track = Backbone.Model.extend({
 
@@ -10,7 +11,6 @@ module.exports = Linx.module('Players.Tracks', function (Tracks, App, Backbone) 
         'type': 'track',
         'state': 'stop',
         'order': order,
-        'clips': undefined, // a single id string or a map of ids
       };
     },
 
@@ -52,8 +52,12 @@ module.exports = Linx.module('Players.Tracks', function (Tracks, App, Backbone) 
       }, {
         'success': function (clip) {
           // when this track's clip is destroyed, destroy the track
-          self.listenTo(clip, 'destroy', self.destroy);
-          console.log(self.clipList.remove);
+          self.listenTo(clip, 'destroy', function () {
+            if (debug) { console.log("track's clip destroyed", self, clip); }
+            if (self.clipList.models.length === 0) {
+              self.destroy();
+            }
+          });
         },
         'error': function (error) {
           throw error;
@@ -62,15 +66,17 @@ module.exports = Linx.module('Players.Tracks', function (Tracks, App, Backbone) 
     },
 
     'destroy': function () {
-      if (!debug) console.log("destroying track", this);
+      if (debug) console.log("destroying track", this);
+
+      // before this track is destroyed, destroy all its clips
       var self = this;
-      // before track is destroyed, destroy all its clips
-      _.each(self.clipList.models, function (clip) {
-        if (!debug) console.log("removing clip from clipList", clip);
+      var clips = this.clipList.models.slice();
+      _.each(clips, function (clip) {
+        if (debug) console.log("removing clip from clipList", clip);
         clip.destroy();
       });
       // destroy this track
-      Backbone.Model.prototype.destroy.call(self);
+      Backbone.Model.prototype.destroy.call(this);
     },
 
   });
