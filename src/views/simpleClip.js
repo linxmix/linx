@@ -12,25 +12,39 @@ module.exports = Linx.module('Players.Tracks.Clips.Views',
 
     'initialize': function () {
       Views.ClipView.prototype.initialize.call(this);
-
-      var self = this;
-      // rerender wave on each new render
-      // TODO: optimize (or remove) this
-      self.on('render', function () {
-        // TODO: generalize arguments for retrieving source
-        if (debug) console.log('clip rendering source', self.model['source']);
-        self.model['source'].getSource({
-          'container': self.$('.source')[0],
-          'audioContext': App.audioContext,
-        }, function (err, wave) {
-          if (err) throw err;
-          self['wave'] = wave;
-        });
-      });
+      if (this.model.ready.state() === 'pending') {
+        $.when(this.model.ready).done(this.render);
+      }
     },
 
+    'render': function () {
+      if (debug) console.log('clip rendering source', this);
+      // render the ClipView template
+      this.$el.html(this.template(this.model.attributes));
+
+      // if the model has a wave, render it
+      var wave = this.model.wave;
+      if (wave) {
+        // set the wave container to be within our template
+        var self = this;
+        wave.setContainer = function () {
+          wave.params.container = self.$('.source')[0];
+          wave.createDrawer();
+          wave.fireEvent('redraw');
+          wave.drawBuffer();
+        }
+        // TODO: figure out why this only works after a delay
+        setTimeout(function () {
+          if (debug) { console.log("redrawing wave", wave); }
+          wave.setContainer();
+        }, 1000);
+      }
+      return this;
+      },
+
+
     'onPlayPause': function () {
-      this.wave.playPause();
+      this.model.wave.playPause();
     },
 
     'onStop': function () {

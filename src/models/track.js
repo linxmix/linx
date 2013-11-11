@@ -31,6 +31,9 @@ module.exports = Linx.module('Players.Tracks',
         if (debug) console.log("track ready", self);
         defer.resolve();
       });
+
+      // reassert state on state change
+      this.on('change:state', this.assertState);
     },
 
     'assertState': function () {
@@ -39,7 +42,7 @@ module.exports = Linx.module('Players.Tracks',
       (this.clips && this.clips.set('state', this.get('state')));
     },
 
-    'getClipState': function (clip) {
+    'getClipState': function (clipId) {
       // simple tracks have 1 sampleClip whose state is a reflection of the track state
       return this.get('state');
     },
@@ -49,6 +52,7 @@ module.exports = Linx.module('Players.Tracks',
       self.clipList.create({
         'source': source,
         'track': self.get('_id'),
+        'state': self.getClipState()
       }, {
         'success': function (clip) {
           // when this track's clip is destroyed, destroy the track

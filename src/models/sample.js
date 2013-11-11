@@ -38,13 +38,22 @@ module.exports = Linx.module('Samples', function (Samples, App, Backbone, Marion
       };
     },
 
+    'initialize': function () {
+      if (debug) {
+        console.log('initing sample', this);
+        this.on('all', function (name) {
+          console.log("sample event: ", name);
+        });
+      }
+    },
+
     'queue': function () {
       App.Players.player.queue(this);
     },
 
-    'getWave': function (options, callback) {
+    'makeWave': function (options, callback) {
 
-      if (debug) { console.log("getting wave", options, callback); }
+      if (debug) { console.log("making wave", options, callback); }
 
       // get this sample's blob
       this.getBlob(function (err, blob) {
@@ -58,6 +67,7 @@ module.exports = Linx.module('Samples', function (Samples, App, Backbone, Marion
         reader.addEventListener('progress', function (e) {
           wave.onProgress(e);
         });
+        // on file load, load buffer, then call callback
         reader.addEventListener('load', function (e) {
           wave.loadBuffer(e.target.result);
         });
@@ -67,11 +77,14 @@ module.exports = Linx.module('Samples', function (Samples, App, Backbone, Marion
 
         if (blob) {
           wave.empty();
+          wave.once('ready', function () {
+            if (debug) { console.log("wave ready", wave); }
+            callback(null, wave);
+          });
           reader.readAsArrayBuffer(blob);
         } else {
-          return callback(new Error('no blob given to getWave'));
+          return callback(new Error('no blob given to makeWave'));
         }
-        return callback(null, wave);
       });
     },
   });
