@@ -15,11 +15,11 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-hashres');
 
   grunt.registerTask('default', ['dev']);
-  grunt.registerTask('html', ['jst', 'browserify:jst']);
+  grunt.registerTask('html', ['copy:index', 'jst', 'browserify:jst']);
   grunt.registerTask('css', ['sprite', 'less']);
   grunt.registerTask('js', ['browserify:vendor', 'browserify:app']);
   grunt.registerTask('build', ['clean', 'html', 'js', 'css', 'assets']);
-  grunt.registerTask('assets', ['copy:assets']);
+  grunt.registerTask('assets', ['copy:assets', 'copy:fonts']);
   grunt.registerTask('server', ['express']);
   grunt.registerTask('dev', ['build', 'server', 'watch']);
   grunt.registerTask('minify', ['cssmin', 'uglify']);
@@ -34,7 +34,7 @@ module.exports = function (grunt) {
   var defaultBanner = '/*! <%= pkg.name %> <%= pkg.version %> <%= grunt.template.today("yyyy-mm-dd") %> */\n';
   var lessPaths = [
     'node_modules/bootstrap/less/',
-    'src/less/',
+    'src/',
   ];
   var fontFiles = [
     'node_modules/bootstrap/fonts/*',
@@ -51,11 +51,11 @@ module.exports = function (grunt) {
             'interpolate' : /\{\{(.+?)\}\}/g
           },
           'processName': function (filename) {
-            return filename.replace(/^src\/templates\//, '').replace(/.html$/, '');
+            return filename.replace(/^src\//, '').replace(/.html$/, '');
           },
           'prettify': true,
         },
-        'src': 'src/templates/**/*.html',
+        'src': 'src/**/*.html',
         'dest': 'build/js/templates.js',
       },
     },
@@ -124,12 +124,16 @@ module.exports = function (grunt) {
         'compress': false,
       },
       'build': {
-        'src': 'src/less/index.less',
+        'src': 'src/index.less',
         'dest': 'build/css/index.css',
       },
     },
 
     'copy': {
+      'index': {
+        'src': 'src/index.html',
+        'dest': 'build/index.html',
+      },
       'fonts': {
         'src': fontFiles,
         'dest': 'build/fonts/',
@@ -170,9 +174,10 @@ module.exports = function (grunt) {
         'tasks': ['js'],
       },
       'css': {
-        'files': ['src/less/**/*.less'],
+        'files': ['src/**/*.less'],
         'tasks': ['css']
       },
+      // TODO watch assets
       //'assets': {
       //  'files': ['assets/**/*'],
       //  'tasks': ['assets']

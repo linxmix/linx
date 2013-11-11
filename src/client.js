@@ -12,7 +12,7 @@ require('backbone-callbacks').attach(Backbone);
 _ = require('underscore');
 Math.uuid = require('node-uuid').v4;
 
-Linx = require('./app.js');
+Linx = require('./');
 
 debug = true;
 
@@ -44,37 +44,37 @@ $(function () {
 });
 
 // models
-require('./models/source.js');
-require('./models/track.js');
-require('./models/clip.js');
-require('./models/sample.js');
-require('./models/player.js');
-require('./models/library.js');
-require('./models/simplePlayer.js');
+require('./library/Source.js');
+require('./players/tracks/Track.js');
+require('./players/clips/Clip.js');
+require('./library/samples/Sample.js');
+require('./players/Player.js');
+require('./library/Library.js');
+require('./players/SimplePlayer.js');
 
 // collections
-require('./collections/index.js');
-require('./collections/clipList.js');
-require('./collections/trackList.js');
-require('./collections/sampleList.js');
+require('./library/Index.js');
+require('./players/clips/ClipList.js');
+require('./players/tracks/TrackList.js');
+require('./library/samples/SampleList.js');
 
 // modules
-require('./modules/library.js');
-require('./modules/players.js')
+require('./library/');
+require('./players/')
 
 // player views
-require('./views/clip.js')
-require('./views/simpleClip.js')
-require('./views/clipList.js')
-require('./views/simpleClipList.js')
-require('./views/track.js')
-require('./views/simpleTrack.js')
-require('./views/trackList.js')
-require('./views/simpleTrackList.js')
-require('./views/player.js');
-require('./views/simplePlayer.js');
+require('./players/clips/ClipView.js')
+require('./players/clips/SimpleClipView.js')
+require('./players/clips/ClipListView.js')
+require('./players/clips/SimpleClipListView.js')
+require('./players/tracks/TrackView.js')
+require('./players/tracks/SimpleTrackView.js')
+require('./players/tracks/TrackListView.js')
+require('./players/tracks/SimpleTrackListView.js')
+require('./players/PlayerView.js');
+require('./players/SimplePlayerView.js');
 
 // library views
-require('./views/sample.js')
-require('./views/sampleList.js')
-require('./views/library.js');
+require('./library/samples/SampleView.js')
+require('./library/samples/SampleListView.js')
+require('./library/LibraryView.js');
