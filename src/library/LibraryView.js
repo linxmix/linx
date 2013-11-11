@@ -1,37 +1,36 @@
-var Linx = require('../');
+var Backbone = require('backbone.marionette/node_modules/backbone');
+var Marionette = require('backbone.marionette');
+var _ = require('underscore');
+var $ = require('jquery');
 
-module.exports = Linx.module('Library.Views',
-  function (Views, App, Backbone, Marionette, $) {
+module.exports = Marionette.Layout.extend({
+  'tagName': 'div',
+  'template': require('templates')['library/Library'],
 
-  Views.Library = Marionette.Layout.extend({
-    'tagName': 'div',
-    'template': require('templates')['library/Library'],
+  'regions': {
+    'samples': '.samples',
+  },
 
-    'regions': {
-      'samples': '.samples',
-    },
+  'initialize': function () {
+    if (debug) {
+      console.log("initing library view", this);
+      this.on('all', function (e) { console.log("library view event: ", e); });
+    }
+    // initialize this library's sampleList view
+    this.sampleListView = require('./samples').SampleListView({
+      'collection': this.model.sampleList,
+    });
+  },
 
-    'initialize': function () {
-      if (debug) {
-        console.log("initing library view", this);
-        this.on('all', function (e) { console.log("library view event: ", e); });
-      }
-      // initialize this library's sampleList view
-      this.sampleListView = new App.Samples.Views.SampleListView({
-        'collection': this.model.sampleList,
-      });
-    },
+  'onShow': function() {
+    if (this.sampleListView) {
+      if (debug) console.log("library showing samples", this.sampleListView);
+      this.samples.show(this.sampleListView);
+    }
+  },
 
-    'onShow': function() {
-      if (this.sampleListView) {
-        if (debug) console.log("library showing samples", this.sampleListView);
-        this.samples.show(this.sampleListView);
-      }
-    },
+  'destroy': function () {
+    this.model.destroy();
+  },
 
-    'destroy': function () {
-      this.model.destroy();
-    },
-
-  });
 });
