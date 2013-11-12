@@ -21,7 +21,8 @@ module.exports = Linx.module('Library', function (Library, App, Backbone) {
       // create sub-models
       this.index = new Library.Index();
       this.sampleList = new App.Samples.SampleList();
-      var submodels = [this.index, this.sampleList];
+      this.transitionList = new App.Samples.TransitionList();
+      var submodels = [this.index, this.sampleList, this.transitionList];
 
       // player is ready when its sub-models are ready
       var defer = $.Deferred();

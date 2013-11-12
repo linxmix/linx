@@ -21,6 +21,12 @@ module.exports = Linx.module('Players', function (Players, App, Backbone, Marion
       // player is ready when its trackList is ready
       var self = this;
       $.when(this.trackList.ready).done(function () {
+
+        // listen to events for each track
+        _.each(self.trackList.models, function (track) {
+          self.setupTrackListens(track);
+        });
+
         if (debug) console.log("player ready", self);
         defer.resolve();
       });
@@ -38,10 +44,8 @@ module.exports = Linx.module('Players', function (Players, App, Backbone, Marion
 
           case 'play':
             // if there is a secondTrack, schedule it's play on firstTrack's end
-            var self = this;
-            this.addEvent(function () { self.cycle(); },
-              firstTrack.getTimeRemaining());
-            firstTrack.play(); break;
+            firstTrack.play();
+            this.scheduleNextTrack(); break;
 
           case 'pause':
             this.clearEvents();
@@ -57,12 +61,29 @@ module.exports = Linx.module('Players', function (Players, App, Backbone, Marion
       }
     },
 
+    // schedules the next track to start after the current track hits its end
+    'scheduleNextTrack': function () {
+      var self = this;
+      this.addEvent(function () {
+        self.cycle();
+      }, this.trackList.models[0].getTimeRemaining());
+    },
+
     'cycle': function () {
       if (debug) console.log("player cycling tracks", this);
-      //this.trackList.models[0].destroy();
-      // start playing second track
+      var prevTrack = this.trackList.models[0];
       var nextTrack = this.trackList.models[1];
-      (nextTrack && nextTrack.play());
+      // stop and destroy previous track
+      if (prevTrack) {
+        prevTrack.stop();
+        prevTrack.destroy();
+      }
+      // start playing second track
+      if (nextTrack) {
+        (nextTrack && nextTrack.play());
+        // continue cycle
+        this.scheduleNextTrack();
+      }
     },
 
     // create and return new event from given callback and time
@@ -94,8 +115,11 @@ module.exports = Linx.module('Players', function (Players, App, Backbone, Marion
       // when track seeks, update events
       var self = this;
       this.listenTo(track, 'seek', function (percent) {
-        // TODO: fix this
-        if (typeof self.lastTimePlayed !== 'undefined') {
+        // if playing and this track is the head track,
+        if ((self.get('state') === 'play') &&
+          (self.trackList.models[0].id === track.id)) {
+          if (debug) console.log("player rescheduling from track seek", percent, track, self);
+          // reschedule events in accordance with the seek
           self.clearEvents();
           self.addEvent(function () { self.cycle(); },
             track.getTimeRemaining());

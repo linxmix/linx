@@ -48,6 +48,7 @@ require('./library/Source.js');
 require('./players/tracks/Track.js');
 require('./players/clips/Clip.js');
 require('./library/samples/Sample.js');
+require('./library/samples/Transition.js');
 require('./players/Player.js');
 require('./library/Library.js');
 require('./players/SimplePlayer.js');
@@ -57,6 +58,7 @@ require('./library/Index.js');
 require('./players/clips/ClipList.js');
 require('./players/tracks/TrackList.js');
 require('./library/samples/SampleList.js');
+require('./library/samples/TransitionList.js');
 
 // modules
 require('./library/');
@@ -77,4 +79,5 @@ require('./players/SimplePlayerView.js');
 // library views
 require('./library/samples/SampleView.js')
 require('./library/samples/SampleListView.js')
+require('./library/samples/TransitionListView.js')
 require('./library/LibraryView.js');

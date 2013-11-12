@@ -34,6 +34,7 @@ module.exports = Linx.module('Samples', function (Samples, App, Backbone, Marion
     'defaults': function () {
       return {
         'type': 'sample',
+        'sampleType': 'sample',
         'name': "unnamed sample",
       };
     },

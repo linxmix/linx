@@ -60,15 +60,21 @@ module.exports = Linx.module('Players.Tracks',
         }
       };
 
+      // create this track's clipList
       var TrackClipList = Tracks.Clips.ClipList.extend({
         'pouch': makePouch(this),
       })
       this.clipList = new TrackClipList();
 
+      // track is ready when its clipList is ready
       var self = this;
       $.when(self.clipList.ready).done(function() {
-        // setup events for each clip
-        _.each(self.clipList.models, function (clip) { self.setupClipListens(clip); });
+
+        // setup listen events for each clip
+        _.each(self.clipList.models, function (clip) {
+          self.setupClipListens(clip);
+        });
+
         if (debug) console.log("track ready", self);
         defer.resolve();
       });

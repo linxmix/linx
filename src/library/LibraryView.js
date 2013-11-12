@@ -9,6 +9,7 @@ module.exports = Linx.module('Library.Views',
 
     'regions': {
       'samples': '.samples',
+      'transitions': '.transitions',
     },
 
     'initialize': function () {
@@ -20,12 +21,20 @@ module.exports = Linx.module('Library.Views',
       this.sampleListView = new App.Samples.Views.SampleListView({
         'collection': this.model.sampleList,
       });
+      // initialize this library's transitionList view
+      this.transitionListView = new App.Samples.Views.TransitionListView({
+        'collection': this.model.transitionList,
+      });
     },
 
     'onShow': function() {
       if (this.sampleListView) {
         if (debug) console.log("library showing samples", this.sampleListView);
         this.samples.show(this.sampleListView);
+      }
+      if (this.transitionListView) {
+        if (debug) console.log("library showing transitions", this.transitionListView);
+        this.transitions.show(this.transitionListView);
       }
     },
 
