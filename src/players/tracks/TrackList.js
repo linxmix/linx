@@ -36,7 +36,7 @@ module.exports = Linx.module('Players.Tracks', function (Tracks, App, Backbone) 
       if (debug) {
         console.log('initing trackList', self);
         self.on('all', function (name) {
-          console.log("trackList event: ", name);
+          console.log("trackList event: ", arguments);
         });
       }
 

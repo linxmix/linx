@@ -14,7 +14,7 @@ module.exports = Linx.module('Library', function (Library, App, Backbone) {
       if (debug) {
         console.log('initing library', this);
         this.on('all', function (name) {
-          console.log("library event: ", name);
+          console.log("library event: ", arguments);
         });
       }
 

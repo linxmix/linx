@@ -11,6 +11,8 @@ Linx.addRegions({
   footer: '#footer',
 });
 
+var waaclock = require('waaclock');
+
 Linx.on('initialize:before', function () {
   // add global audio context
   try {
@@ -18,6 +20,7 @@ Linx.on('initialize:before', function () {
   } catch (e) {
     alert("This browser does not support Web Audio API. Try the latest version of Chrome!");
   }
+  Linx.clock = new waaclock(Linx.audioContext);
 });
 
 module.exports = Linx;

@@ -9,6 +9,7 @@ module.exports = Linx.module('Players.Views',
     'events': {
       'click .playPause': 'playPause',
       'click .stop': 'stop',
+      'click .destroyTracks': 'destroyTracks',
     },
 
     'initialize': function () {
@@ -20,12 +21,16 @@ module.exports = Linx.module('Players.Views',
       });
     },
 
-    'playPause': function() {
+    'playPause': function () {
       this.model.playPause();
     },
 
-    'stop': function() {
+    'stop': function () {
       this.model.stop();
+    },
+
+    'destroyTracks': function () {
+      this.model.destroyTracks();
     },
     
   });

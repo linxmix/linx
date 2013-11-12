@@ -5,11 +5,6 @@ module.exports = Linx.module('Players.Tracks.Clips.Views',
 
   Views.SimpleClipView = Views.ClipView.extend({
 
-    'events': {
-      'click .play-pause': 'onPlayPause',
-      'click .stop': 'onStop',
-    },
-
     'initialize': function () {
       Views.ClipView.prototype.initialize.call(this);
       if (this.model.ready.state() === 'pending') {

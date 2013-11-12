@@ -26,7 +26,7 @@ module.exports = Linx.module('Library', function (Library, App, Backbone) {
       if (debug) {
         console.log('initing index', self);
         self.on('all', function (name) {
-          console.log("index event: ", name);
+          console.log("index event: ", arguments);
         });
       }
 

@@ -11,7 +11,7 @@ module.exports = Linx.module('Library', function (Library, App, Backbone, Marion
       if (debug) {
         console.log('initing source', this);
         this.on('all', function (name) {
-          console.log("source event: ", name);
+          console.log("source event: ", arguments);
         });
       }
     },

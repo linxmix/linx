@@ -35,7 +35,7 @@ module.exports = Linx.module('Samples', function (Samples, App, Backbone) {
       if (debug) {
         console.log('initing sampleList', self);
         self.on('all', function (name) {
-          console.log("sampleList event: ", name);
+          console.log("sampleList event: ", arguments);
         });
       }
 

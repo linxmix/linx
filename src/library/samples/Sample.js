@@ -42,7 +42,7 @@ module.exports = Linx.module('Samples', function (Samples, App, Backbone, Marion
       if (debug) {
         console.log('initing sample', this);
         this.on('all', function (name) {
-          console.log("sample event: ", name);
+          console.log("sample event: ", arguments);
         });
       }
     },

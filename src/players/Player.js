@@ -11,10 +11,6 @@ module.exports = Linx.module('Players', function (Players, App, Backbone, Marion
       throw new Error("Player.assertState not implemented");
     },
 
-    'getTrackState': function (track) {
-      throw new Error("Player.getTrackState not implemented");
-    },
-
     'queue': function (source) {
       throw new Error("Player.queue not implemented");
     },
@@ -34,7 +30,7 @@ module.exports = Linx.module('Players', function (Players, App, Backbone, Marion
       if (debug) {
         console.log('initing player', this);
         this.on('all', function (name) {
-          console.log("player event: ", name);
+          console.log("player event: ", arguments);
         });
       }
       // make this player's trackList
@@ -47,16 +43,41 @@ module.exports = Linx.module('Players', function (Players, App, Backbone, Marion
     'playPause': function () {
       switch (this.get('state')) {
         case 'pause': case 'stop':
-          this.set('state', 'play'); break;
+          this.play(); break;
         case 'play':
-          this.set('state', 'pause'); break;
+          this.pause(); break;
         default:
           console.error("WARNING: player in unknown state");
       }
     },
 
+    'play': function () {
+      this.set('state', 'play');
+    },
+
+    'pause': function () {
+      this.set('state', 'pause');
+    },
+
     'stop': function () {
       this.set({ 'state': 'stop'});
+    },
+
+    // TODO: move this into collection
+    'destroyTracks': function () {
+      var self = this;
+      var tracks = this.trackList.models.slice();
+      _.each(tracks, function (track) {
+        track.destroy();
+      });
+    },
+
+    'destroy': function () {
+      if (debug) console.log("destroying player", this);
+      // before this player is destroyed, destroy all its tracks
+      this.destroyTracks();
+      // destroy this player
+      Backbone.Model.prototype.destroy.call(this);
     },
 
   });
