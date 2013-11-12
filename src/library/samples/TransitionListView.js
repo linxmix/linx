@@ -4,6 +4,7 @@ module.exports = Linx.module('Samples.Views',
   function (Views, App, Backbone, Marionette, $) {
 
   Views.TransitionListView = Views.SampleListView.extend({
+    'template': require('templates')['library/samples/TransitionList'],
 
     'initialize': function () {
       if (debug) {
@@ -12,15 +13,6 @@ module.exports = Linx.module('Samples.Views',
       }
     },
 
-    // 
-    // transition drop
-    // 
-    'events': {
-      'drop .sampleDrop': 'onDrop',
-      'dragenter': 'onDragenter',
-      'dragleave': 'onDragleave',
-      'dragover': 'onDragover',
-    },
     'onDrop': function (e) {
       console.log("TRANSITION LIST CREATE CALLED");
       e.stopPropagation();
