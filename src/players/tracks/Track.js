@@ -27,7 +27,47 @@ module.exports = Linx.module('Players.Tracks',
       // track is ready after its clipList is ready
       var defer = $.Deferred();
       this.ready = defer.promise();
-      this.clipList = new Tracks.Clips.ClipList();
+
+      // dynamically generate pouch function
+      var makePouch = function (trackId) {
+        if (debug) { console.log("making pouch for trackId", trackId); }
+        return {
+          'listen': true,
+          'fetch': 'query',
+          'options': {
+            'query': {
+              'include_docs': true,
+              'key': trackId,
+              'fun': {
+                'map': function (doc) {
+                  if (doc.type === 'clip') {
+                    emit(doc.trackId, null);
+                  }
+                },
+              },
+            },
+            'changes': {
+              'include_docs': true,
+              'query_params': {
+                'trackId': trackId,
+              },
+              'filter': function(doc, req) {
+                if (debug) {
+                  console.log("filtering", doc.type, req.query.trackId, doc.trackId, doc.trackId === req.query.trackId, doc, req);
+                }
+                return doc._deleted || (doc.type === 'clip' && doc.trackId === req.query.trackId);
+              },
+            },
+          },
+        }
+      };
+
+      if (debug) { console.log("track ID!", this.get('_id'), this.id); }
+      var TrackClipList = Tracks.Clips.ClipList.extend({
+        'pouch': makePouch(this.get('_id')),
+      })
+      this.clipList = new TrackClipList();
+
       var self = this;
       $.when(self.clipList.ready).done(function() {
         // setup events for each clip
@@ -112,7 +152,7 @@ module.exports = Linx.module('Players.Tracks',
       var self = this;
       self.clipList.create({
         'source': source,
-        'track': self.get('_id'),
+        'trackId': self.get('_id'),
       }, {
         'success': function (clip) {
           self.setupClipListens(clip);
