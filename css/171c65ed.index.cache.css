@@ -5954,10 +5954,34 @@ td.visible-print {
     display: none !important;
   }
 }
-.sampleDrop {
+.drop {
   border: solid black 1px;
   height: 100px;
   width: 100px;
+}
+.samples {
+  position: relative;
+  min-height: 1px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+@media (min-width: 768px) {
+  .samples {
+    float: left;
+    width: 50%;
+  }
+}
+.transitions {
+  position: relative;
+  min-height: 1px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+@media (min-width: 768px) {
+  .transitions {
+    float: left;
+    width: 50%;
+  }
 }
 #emptyWaves {
   display: none;
