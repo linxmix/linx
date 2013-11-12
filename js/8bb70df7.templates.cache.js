@@ -8,7 +8,7 @@ this["JST"]["library/Library"] = function(obj) {obj || (obj = {});var __t, __p =
 
 this["JST"]["library/samples/Sample"] = function(obj) {obj || (obj = {});var __t, __p = '', __e = _.escape;with (obj) {__p += '<div class="view">\n  <label>' +((__t = ( name )) == null ? '' : __t) +'</label>\n  <button class="destroy">x</button>\n  <button class="queue">+</button>\n</div>\n<input class="edit" value="' +((__t = ( name )) == null ? '' : __t) +'">';}return __p};
 
-this["JST"]["library/samples/SampleList"] = function(obj) {obj || (obj = {});var __t, __p = '', __e = _.escape;with (obj) {__p += '<div class="sampleDrop"></div>\n<ul class="sampleList"></ul>\n';}return __p};
+this["JST"]["library/samples/SampleList"] = function(obj) {obj || (obj = {});var __t, __p = '', __e = _.escape;with (obj) {__p += '<div>\n  <p>add a new sample via drag n\' drop!</p>\n  <div class="sampleDrop"></div>\n</div>\n<ul class="sampleList"></ul>\n';}return __p};
 
 this["JST"]["players/Player"] = function(obj) {obj || (obj = {});var __t, __p = '', __e = _.escape;with (obj) {__p += '<ul class="tracks"></ul>';}return __p};
 
