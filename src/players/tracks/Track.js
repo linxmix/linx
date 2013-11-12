@@ -8,6 +8,7 @@ module.exports = Linx.module('Players.Tracks',
     'defaults': function () {
       var order = App.Players.player.trackList.nextOrder();
       return {
+        '_id': Math.uuid(),
         'type': 'track',
         'order': order,
         'pos': 0, // internal track position
@@ -23,21 +24,21 @@ module.exports = Linx.module('Players.Tracks',
           console.log("track event: ", arguments);
         });
       }
+      Backbone.Model.prototype.initialize.apply(this, arguments);
 
       // track is ready after its clipList is ready
       var defer = $.Deferred();
       this.ready = defer.promise();
 
       // dynamically generate pouch function
-      var makePouch = function (trackId) {
-        if (debug) { console.log("making pouch for trackId", trackId); }
+      var makePouch = function (track) {
         return {
           'listen': true,
           'fetch': 'query',
           'options': {
             'query': {
               'include_docs': true,
-              'key': trackId,
+              'key': track.id,
               'fun': {
                 'map': function (doc) {
                   if (doc.type === 'clip') {
@@ -49,12 +50,9 @@ module.exports = Linx.module('Players.Tracks',
             'changes': {
               'include_docs': true,
               'query_params': {
-                'trackId': trackId,
+                'trackId': track.id,
               },
               'filter': function(doc, req) {
-                if (debug) {
-                  console.log("filtering", doc.type, req.query.trackId, doc.trackId, doc.trackId === req.query.trackId, doc, req);
-                }
                 return doc._deleted || (doc.type === 'clip' && doc.trackId === req.query.trackId);
               },
             },
@@ -62,9 +60,8 @@ module.exports = Linx.module('Players.Tracks',
         }
       };
 
-      if (debug) { console.log("track ID!", this.get('_id'), this.id); }
       var TrackClipList = Tracks.Clips.ClipList.extend({
-        'pouch': makePouch(this.get('_id')),
+        'pouch': makePouch(this),
       })
       this.clipList = new TrackClipList();
 
@@ -149,6 +146,7 @@ module.exports = Linx.module('Players.Tracks',
     'loop': function () {},
 
     'queue': function (source) {
+      if (debug) { console.log("track queuing source", this, source); }
       var self = this;
       self.clipList.create({
         'source': source,
