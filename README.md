@@ -8,16 +8,12 @@
 
 - it's basically an app that plays a live dj mix, except that you choose the songs
 
-- it is deployed and testable here: beatfn.meteor.com
+- it is deployed and testable here: linx.meteor.com
 
 - you have to use it in chrome - i'm using web audio api, and i've only made sure chrome works
 
 - since it's illegal to stream music for which i'm not paying royalties, i prevent streaming unless logged into the test account.
-the test account is only to be used for testing purposes.
-
-  + *uname*: test
-
-  + *pword*: fairuse
+the test account is only to be used for testing purposes. if you would like access to the content, please email me: wolfbiter -at- gmail.com
 
 - double click either a song name (on the right) or a song in the graph (one of the red circles) to play a song
 - it takes a bit to load, so be somewhat patient
