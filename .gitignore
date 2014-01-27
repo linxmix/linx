@@ -1,1 +1,5 @@
 /public
+/build
+/bower_components
+/node_modules
+/.grunt
