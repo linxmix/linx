@@ -24,7 +24,10 @@ Modal = {
     // if another modal is queued to open, do that
     var nextModal = Modal.queuedModals.shift();
     if (nextModal) {
-      Modal.openModal(nextModal['name'], nextModal['waveId']);
+      // add pause so modals don't bug
+      Meteor.setTimeout(function () {
+        Modal.openModal(nextModal['name'], nextModal['waveId']);
+      }, 1000);
     }
   },
 
