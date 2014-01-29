@@ -94,7 +94,7 @@ function makeWave(id, loadText, isSongWave) {
         if (!marker.played) {
           if (marker.position <= time && marker.position >= prevTime) {
             // Prevent firing the event more than once per playback
-            marker.played = true;  
+            marker.played = true;
 
             my.fireEvent('mark', marker);
             marker.fireEvent('reached', time);
@@ -104,6 +104,24 @@ function makeWave(id, loadText, isSongWave) {
       prevTime = time;
     });
   };
+  // /hack
+  wave.loadArrayBuffer = function(blob) {
+    var my = wave;
+    // Create file reader
+    var reader = new FileReader();
+    reader.addEventListener('progress', function (e) {
+      my.onProgress(e);
+    });
+    reader.addEventListener('load', function (e) {
+      wave.loadBuffer(e.target.result);
+    });
+    reader.addEventListener('error', function () {
+      my.fireEvent('error', 'Error reading file');
+    });
+    reader.readAsArrayBuffer(blob);
+  };
+  // hack to add loadArrayBuffer method
+
   // /hack
 
   //
