@@ -1,4 +1,17 @@
 //
+// global Graph object
+//
+
+Graph = {
+
+  // forces redraw of the graph
+  'redraw': function () {
+    Session.set("lastGraphUpdate", new Date());
+  },
+  
+}
+
+//
 // d3 stuff
 //
 
@@ -7,16 +20,29 @@ Template.graph.destroyed = function () {
   this.drawGraph.stop();
 };
 
+Template.graph.lastUpdate = function () {
+  return Session.get('lastGraphUpdate');
+}
+
 Template.graph.rendered = function () {
+  console.log("GRAPH RERENDERED");
+
+  // set graph width and height to be that of client's screen
+  $('#graph').width($(window).width() - 50)
+  $('#graph').height($(window).height() - 96)
+  console.log($('#graph').height())
+  console.log($('#graph').width())
+
+
   var width = $("#graph").width(),
       height = $("#graph").height();
 
   // enable overscroll
-  $('.graph-wrapper').overscroll({
-      'hoverThumbs': true,
-      'scrollLeft': width / 2 - $(window).width() / 2,
-      'scrollTop': height / 2 - ($(window).height() - 51) / 2,
-    });
+  //$('.graph-wrapper').overscroll({
+  //    'hoverThumbs': true,
+  //    'scrollLeft': width / 2.0 - $(window).width() / 2.0,
+  //    'scrollTop': height / 2.0 - ($(window).height() - 51) / 2.0,
+  //  });
 
   // redraw graph whenever receiving new information
   this.drawGraph = Meteor.autorun(function () {
@@ -39,31 +65,56 @@ Template.graph.rendered = function () {
 
     // if we have a currSong, draw graph in view mix mode
     if (currSong) {
+      var lastSong = queuedSongs[queuedSongs.length - 1];
+      var x0 = width / 2.0;
+      var y0 = height / 2.0;
+      var r = height / 2.5;
 
-      // define current song as center node
-      currSong["fixed"] = true;
-      currSong["px"] = width / 2;
-      currSong["py"] = height / 2;
-      currSong["color"] = 2;
-      nodes[currSong._id] = currSong;
+      // place and color queued songs
+      for (var i = 0; i < queuedSongs.length; i++) {
+        var song = queuedSongs[i];
+        song['fixed'] = true;
+        song['px'] = 30 * i + 30;
+        song['py'] = height - 30;
+        song['color'] = (i == 0) ? 2 : 1;
 
-      // process nodes of queued transitions
-      queuedTransitions.forEach(function (transition) {
-        if (transition) {
-          var endSong = Songs.findOne(transition.endSong);
-          endSong["color"] = 1;
-          nodes[endSong._id] = endSong;
+        // place endSong in center of screen
+        if (i == (queuedSongs.length - 1)) {
+          song['px'] = x0;
+          song['py'] = y0;
         }
+
+        // add song to nodes
+        nodes[song._id] = song;
+      }
+
+      // compute queueable songs
+      var endSongTransitions = Transitions.find({
+        'startSong': lastSong._id,
+        'startSongEnd': { $gt: startTime },
+        // exclude songs already in the queue
+        'endSong': { $nin: queuedSongs.map(function (song) { return song._id; }) }
+      }).fetch();
+      var queueableSongs = endSongTransitions.map(function (transition) {
+        return Songs.findOne(transition.endSong);
       });
 
+      // place queueable songs in a circle around lastSong
+      for (var i = 0; i < queueableSongs.length; i++) {
+        var song = queueableSongs[i];
+        var theta = (i / queueableSongs.length) * (2.0 * Math.PI);
+        song['px'] = x0 + r * Math.cos(theta);
+        song['py'] = y0 + r * Math.sin(theta);
+        song['fixed'] = true;
+
+        // add song to nodes
+        nodes[song._id] = song;
+      }
+
       // get all links in queue + all possible links coming from last song in queue
-      var lastSong = queuedSongs[queuedSongs.length - 1];
       var startTime = (lastSong._id === currSong._id) ?
         Mixer.getCurrentPosition() : lastSong.startTime;
-      links = queuedTransitions.concat(Transitions.find({
-        'startSong': lastSong._id,
-        'startSongEnd': { $gt: startTime }
-      }).fetch());
+      links = queuedTransitions.concat(endSongTransitions);
 
     // no currSong, so draw graph in view all mode
     } else {
@@ -110,8 +161,7 @@ Template.graph.rendered = function () {
     .on("tick", tick)
     .start();
 
-    // destroy old stuff
-    var graphWrapper = d3.select("#graph").text("");
+    var graphWrapper = d3.select("#graph");
 
     // init new stuff
     var svg = graphWrapper.append("svg")
@@ -149,25 +199,35 @@ Template.graph.rendered = function () {
     // define the nodes
     var node = svg.selectAll(".node")
     .data(force.nodes())
-    .enter().append("g")
+    .enter().append("svg:g")
     .attr("class", "node")
-    .attr("id", function(d) { return d._id; })
-    .call(force.drag);
-
-    // add nodes's circles
-    node.append("circle")
-    .attr("r", 10)
-    .style("fill", colorNode)
+    // play or queue node on double click
     .on("dblclick", function (d) {
       if (d.transition_info) {
         Mixer.queue({
           'sample': d.transition_info['transition'],
           'index': d.transition_info['index'],
         });
+        // animate node moving
+        //console.log("TRANSITIONING", this)
+        //d3.select(this).transition()
+        //.attr("transform", function(d) {
+        //  return "translate(" + 30 + "," + 30 + ")";
+        //})
+        //.style("fill", function (d) { return colorNode({ color: 1 }); });
       } else if (!currSong) {
         Mixer.play(d);
+        // force graph redraw
+        Graph.redraw();
       }
     })
+    console.log("NODE", svg.selectAll(".node"))
+
+    // add nodes's circles
+    node.append("circle")
+    .attr("r", 10)
+    .style("fill", colorNode)
+    // color and grow node on mouseover
     .on("mouseover", function (d) {
       var color = (currSong && (d._id == currSong._id)) ? 2 : 1;
       d3.select(this).transition()
@@ -232,5 +292,5 @@ Template.graph.rendered = function () {
         return "translate(" + d.x + "," + d.y + ")";
       });
     }
-  });
+  }); // end Meteor.autorun
 };

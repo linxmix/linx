@@ -1,0 +1,15 @@
+.graph-wrapper {
+  overflow: scroll;
+  position: fixed !important;
+  position: absolute;
+  top: 51px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin-bottom: 0;
+}
+
+#graph {
+  width: 2000px;
+  height: 1500px;
+}
