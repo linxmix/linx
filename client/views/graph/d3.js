@@ -5,19 +5,290 @@
 Graph = {
 
   // forces redraw of the graph
-  'redraw': function () {
+  'forceRedraw': function () {
     Session.set("lastGraphUpdate", new Date());
   },
-  
+
+  // queue song as an upNext node in the graph
+  'queue': function(node) {
+    // TODO
+  },
+
+  // determine which songs and transitions are upNext
+  'computeUpNext': function() {
+    var queuedSongs = Graph['queuedSongs'];
+    var lastSong = queuedSongs[queuedSongs.length - 1]
+    var queuedSongIds = queuedSongs.map(function (song) {
+      return song._id;
+    });
+    // find all transitions out of lastSong
+    var startTime = (lastSong._id === Graph['currSong']._id) ?
+        Mixer.getCurrentPosition() : lastSong.startTime;
+    Graph['transitionsUpNext'] = Transitions.find({
+      'startSong': lastSong._id,
+      'startSongEnd': { $gt: startTime },
+      // exclude songs already in the queue
+      'endSong': { $nin: queuedSongIds }
+    }).fetch();
+    // add endSong of each transition to upNext
+    Graph['upNext'] =
+      Graph['transitionsUpNext'].map(function (transition) {
+        var song = Songs.findOne(transition.endSong);
+        song['transition'] = transition;
+        return song;
+    });
+  },
+
+  // place upNext songs in a circle around lastSong
+  'updateUpNextPositions': function() {
+    var upNext = Graph.upNext;
+    for (var i = 0; i < upNext.length; i++) {
+      var song = upNext[i];
+      var theta = (i / upNext.length) * (2.0 * Math.PI);
+      song['x'] = Graph['x0'] + Graph['r'] * Math.cos(theta);
+      song['y'] = Graph['y0'] + Graph['r'] * Math.sin(theta);
+    }
+  },
+
+  // place and color queued songs
+  'updateQueuePositions': function() {
+    var queuedSongs = Graph.queuedSongs;
+    for (var i = 0; i < queuedSongs.length; i++) {
+      var song = queuedSongs[i];
+      song['x'] = 30 * i + 30;
+      song['y'] = Graph.height - 30;
+      song['color'] = (i == 0) ? 2 : 1;
+    }
+
+    // place lastSong in center of screen
+    var lastSong = queuedSongs[queuedSongs.length - 1];
+    if (lastSong) {
+      lastSong['x'] = Graph['x0'];
+      lastSong['y'] = Graph['y0'];
+    }
+  },
+
+  // draw a fresh version of the Graph
+  'redraw': function() {
+    console.log("redrawing graph");
+
+    // determine Graph's song and transition queue data
+    Graph['queuedTransitions'] = Mixer.getQueue('transition');
+    Graph['queuedSongs'] = Mixer.getQueue('song');
+    Graph['currSong'] = Graph['queuedSongs'][0];
+
+    // if we have a currSong, draw graph in view mix mode
+    if (Graph['currSong']) {
+
+      // position queued songs
+      Graph.updateQueuePositions();
+
+      // compute and position upNext songs
+      Graph.computeUpNext();
+      Graph.updateUpNextPositions();
+
+      // update links and nodes
+      Graph['links'] = Graph['queuedTransitions'].concat(
+        Graph['transitionsUpNext']);
+      Graph['nodes'] = Graph['queuedSongs'].concat(
+        Graph['upNext']);
+
+      // redraw links and nodes
+      Graph.updateNodes();
+      Graph.updateLinks();
+
+    } // end view mix mode
+
+    // no currSong, so draw graph in view all mode
+    else {
+      var queuedTransitions = Graph['queuedTransitions'];
+      var currTransition = queuedTransitions[0];
+      var dj = Session.get("graph_filter_query");
+      var options = dj ? { 'dj': dj } : {};
+      var links = Graph['links'] =
+        Transitions.find(options).fetch();
+      var nodes = Graph['nodes'];
+
+      // compute distinct nodes from links
+      links.forEach(function (link) {
+        link.source = nodes[link.startSong] ||
+          (nodes[link.startSong] = Songs.findOne(link.startSong));
+        link.target = nodes[link.endSong] ||
+          (nodes[link.endSong] = Songs.findOne(link.endSong));
+
+        // color links
+        if (link._id == (currTransition && currTransition._id)) {
+          link.color = 2;
+        } else {
+          queuedTransitions.forEach(function (transition) {
+            if (link._id == transition._id) {
+              link.color = 1;
+            }
+          });
+        }
+      });
+
+      // use force graph
+      var force = d3.layout.force()
+        .nodes(d3.values(nodes))
+        .links(links)
+        .size([Graph.width, Graph.height])
+        .gravity(0.05)
+        .linkDistance(100)
+        .charge(-350)
+        //.on("tick", tick)
+        .start();
+
+      // redraw links and nodes
+      Graph.updateNodes(force.nodes());
+      Graph.updateLinks(force.links());
+
+    } // end view all mode
+
+  }, // end redraw
+
+  // sync displayed svg with node data
+  'updateNodes': function(nodes) {
+    if (typeof nodes === 'undefined') { nodes = Graph.nodes; }
+
+    //
+    // JOIN new data to old nodes using _id as the key
+    //
+    var node = Graph.svg.selectAll(".node")
+      // TODO: does this update existing nodes with new data?
+      .data(nodes, function (d) { return d._id; });
+
+    // 
+    // ENTER new data as new nodes
+    //
+    var enter = node.enter().append("svg:g")
+      .attr("class", "node")
+      // initial position
+      .attr("transform", function(d) {
+        return "translate(" + d.x + "," + d.y + ")";
+      })
+      // play or queue node on double click
+      .on("dblclick", function (d) {
+        if (d.transition) {
+          Mixer.queue({
+            'sample': d.transition,
+            'index': d.transition['index'],
+          });
+          // animate node moving
+          console.log("TRANSITIONING", this)
+          d3.select(this).transition()
+          .attr("transform", function(d) {
+            return "translate(" + 30 + "," + 30 + ")";
+          })
+          .style("fill", function (d) { return colorNode({ color: 1 }); });
+        } else if (!Graph['currSong']) {
+          Mixer.play(d);
+          // force graph redraw
+          Graph.forceRedraw();
+        }
+      });
+
+    // add the circles
+    enter.append("circle")
+      .attr("r", 10)
+      .style("fill", colorNode)
+      // color and grow node on mouseover
+      .on("mouseover", function (d) {
+        var color = (Graph['currSong'] && (d._id == Graph['currSong']._id)) ? 2 : 1;
+        d3.select(this).transition()
+          .duration(300)
+          .attr("r", 15)
+          .style("fill", function (d) { return colorNode({ color: color }); });
+      })
+      .on("mouseout", function (d) {
+        d3.select(this).transition()
+          .duration(300)
+          .attr("r", 10)
+          .style("fill", colorNode);
+      });
+
+    // add the text 
+    enter.append("text")
+      .attr("x", 12)
+      .attr("dy", ".35em")
+      .text(function(d) { return d.name; });
+
+    //
+    // EXIT old nodes
+    //
+    node.exit()
+      .remove();
+
+  },
+
+  // sync displayed svg with link data
+  'updateLinks': function(links) {
+    if (typeof links === 'undefined') { links = Graph.links; }
+
+    //
+    // JOIN new data to old links using _id as the key
+    //
+    console.log("links", links)
+    var path = Graph.svg.selectAll(".link")
+      .data(links, function (d) { return d._id; });
+
+    //
+    // ENTER new data as new links
+    //
+    path.enter().append("svg:path")
+      .attr("class", "link")
+      // make soft transitions dashed
+      .style("stroke-dasharray", function (d) {
+        return ((d.transitionType !== 'soft') ? "" : ("3,3"));
+      })
+      // add link's arrow
+      .attr("marker-end", "url(#end)")
+      .style("stroke", colorLink);
+
+    //
+    // EXIT old links
+    //
+    path.exit()
+      .remove();
+
+  },
+
+
+  // animate addition of given node to graph
+  'arrive': function(node) {
+    // todo
+  },
+
+  // animate removal of given node from graph 
+  'depart': function(node) {
+    // todo
+  },
+
+  //
+  // Graph Vars
+  //
+  'currSong': {},
+  'queuedSongs': [],
+  'queuedTransitions': [],
+  'upNext': [],
+  'transitionsUpNext': [],
+  'nodes': [],
+  'links': [],
+  // set graph width and height to be that of client's screen
+  'width': $(window).width() - 50,
+  'height': $(window).height() - 96,
+  'svg': {},
 }
+Graph['x0'] = Graph.width / 2.0;
+Graph['y0'] = Graph.height / 2.0;
+Graph['r'] = Graph.height / 2.5;
 
 //
 // d3 stuff
 //
 
 Template.graph.destroyed = function () {
-  console.log("GRAPH DESTROYED! this.drawGraph: "+this.drawGraph);
-  this.drawGraph.stop();
+  console.log("GRAPH DESTROYED!");
 };
 
 Template.graph.lastUpdate = function () {
@@ -25,151 +296,18 @@ Template.graph.lastUpdate = function () {
 }
 
 Template.graph.rendered = function () {
-  console.log("GRAPH RERENDERED");
 
   // set graph width and height to be that of client's screen
-  $('#graph').width($(window).width() - 50)
-  $('#graph').height($(window).height() - 96)
-  console.log($('#graph').height())
-  console.log($('#graph').width())
+  $('#graph').width($(window).width() - 50);
+  $('#graph').height($(window).height() - 96);
 
+  // create svg
+  Graph.svg = d3.select("#graph").append("svg")
+    .attr("width", Graph.width)
+    .attr("height", Graph.height);
 
-  var width = $("#graph").width(),
-      height = $("#graph").height();
-
-  // enable overscroll
-  //$('.graph-wrapper').overscroll({
-  //    'hoverThumbs': true,
-  //    'scrollLeft': width / 2.0 - $(window).width() / 2.0,
-  //    'scrollTop': height / 2.0 - ($(window).height() - 51) / 2.0,
-  //  });
-
-  // redraw graph whenever receiving new information
-  this.drawGraph = Meteor.autorun(function () {
-
-    var nodes = {},
-        links = [],
-        charge = $('#chargeSlider').slider('getValue');
-
-    //console.log("CHARGE: "+charge);
-    //console.log("width: "+$("#graph").width());
-    //console.log("height: "+$("#graph").height());
-
-    //
-    // preprocess nodes and links
-    //
-    var queuedTransitions = Mixer.getQueue('transition');
-    var currTransition = queuedTransitions[0];
-    var queuedSongs = Mixer.getQueue('song');
-    var currSong = queuedSongs[0];
-
-    // if we have a currSong, draw graph in view mix mode
-    if (currSong) {
-      var lastSong = queuedSongs[queuedSongs.length - 1];
-      var x0 = width / 2.0;
-      var y0 = height / 2.0;
-      var r = height / 2.5;
-
-      // place and color queued songs
-      for (var i = 0; i < queuedSongs.length; i++) {
-        var song = queuedSongs[i];
-        song['fixed'] = true;
-        song['px'] = 30 * i + 30;
-        song['py'] = height - 30;
-        song['color'] = (i == 0) ? 2 : 1;
-
-        // place endSong in center of screen
-        if (i == (queuedSongs.length - 1)) {
-          song['px'] = x0;
-          song['py'] = y0;
-        }
-
-        // add song to nodes
-        nodes[song._id] = song;
-      }
-
-      // compute queueable songs
-      var endSongTransitions = Transitions.find({
-        'startSong': lastSong._id,
-        'startSongEnd': { $gt: startTime },
-        // exclude songs already in the queue
-        'endSong': { $nin: queuedSongs.map(function (song) { return song._id; }) }
-      }).fetch();
-      var queueableSongs = endSongTransitions.map(function (transition) {
-        return Songs.findOne(transition.endSong);
-      });
-
-      // place queueable songs in a circle around lastSong
-      for (var i = 0; i < queueableSongs.length; i++) {
-        var song = queueableSongs[i];
-        var theta = (i / queueableSongs.length) * (2.0 * Math.PI);
-        song['px'] = x0 + r * Math.cos(theta);
-        song['py'] = y0 + r * Math.sin(theta);
-        song['fixed'] = true;
-
-        // add song to nodes
-        nodes[song._id] = song;
-      }
-
-      // get all links in queue + all possible links coming from last song in queue
-      var startTime = (lastSong._id === currSong._id) ?
-        Mixer.getCurrentPosition() : lastSong.startTime;
-      links = queuedTransitions.concat(endSongTransitions);
-
-    // no currSong, so draw graph in view all mode
-    } else {
-      var dj = Session.get("graph_filter_query");
-      var options = dj ? { 'dj': dj } : {};
-      links = Transitions.find(options).fetch();
-    }
-
-    // compute distinct nodes from links
-    links.forEach(function (link) {
-      link.source = nodes[link.startSong] || (nodes[link.startSong] = Songs.findOne(link.startSong));
-      link.target = nodes[link.endSong] || (nodes[link.endSong] = Songs.findOne(link.endSong));
-
-      // color links
-      if (link._id == (currTransition && currTransition._id)) {
-        link.color = 2;
-      } else {
-        queuedTransitions.forEach(function (transition) {
-          if (link._id == transition._id) {
-            link.color = 1;
-          }
-        });
-      }
-    });
-
-    // compute appropriate link for each node
-    if (currSong) {
-      for (var node_id in nodes) {
-        var node = nodes[node_id];
-        node.transition_info = Mixer.getNearestValidTransition(node);
-      }
-    }
-    //
-    // end preprocess
-    //
-
-    var force = d3.layout.force()
-    .nodes(d3.values(nodes))
-    .links(links)
-    .size([width, height])
-    .gravity(0.05)
-    .linkDistance(100)
-    .charge(-350)
-    .on("tick", tick)
-    .start();
-
-    var graphWrapper = d3.select("#graph");
-
-    // init new stuff
-    var svg = graphWrapper.append("svg")
-    .attr("width", width)
-    .attr("height", height);
-
-    // build the arrow.
-    svg.append("svg:defs").selectAll("marker")
+  // build the arrow.
+  Graph.svg.append("svg:defs").selectAll("marker")
     .data(["end"])
     .enter().append("svg:marker")
     .attr("id", String)
@@ -182,115 +320,55 @@ Template.graph.rendered = function () {
     .append("svg:path")
     .attr("d", "M0,-5L10,0L0,5");
 
-    // add the links and the arrows
-    var path = svg.append("svg:g").selectAll("path")
-    .data(force.links())
-    .enter().append("svg:path")
-    .attr("class", "link")
-    // make soft transitions dashed
-    .style("stroke-dasharray", function (d) {
-      return ((d.transitionType !== 'soft') ? "" : ("3,3"));
-    })
-    .attr("marker-end", "url(#end)")
-    // TODO: will the following be a problem for soft transitions w/ dupe ids?
-    .attr("id", function(d) { return d._id; })
-    .style("stroke", colorLink);
-
-    // define the nodes
-    var node = svg.selectAll(".node")
-    .data(force.nodes())
-    .enter().append("svg:g")
-    .attr("class", "node")
-    // play or queue node on double click
-    .on("dblclick", function (d) {
-      if (d.transition_info) {
-        Mixer.queue({
-          'sample': d.transition_info['transition'],
-          'index': d.transition_info['index'],
-        });
-        // animate node moving
-        //console.log("TRANSITIONING", this)
-        //d3.select(this).transition()
-        //.attr("transform", function(d) {
-        //  return "translate(" + 30 + "," + 30 + ")";
-        //})
-        //.style("fill", function (d) { return colorNode({ color: 1 }); });
-      } else if (!currSong) {
-        Mixer.play(d);
-        // force graph redraw
-        Graph.redraw();
-      }
-    })
-    console.log("NODE", svg.selectAll(".node"))
-
-    // add nodes's circles
-    node.append("circle")
-    .attr("r", 10)
-    .style("fill", colorNode)
-    // color and grow node on mouseover
-    .on("mouseover", function (d) {
-      var color = (currSong && (d._id == currSong._id)) ? 2 : 1;
-      d3.select(this).transition()
-      .duration(300)
-      .attr("r", 15)
-      .style("fill", function (d) { return colorNode({ color: color }); });
-    })
-    .on("mouseout", function (d) {
-      d3.select(this).transition()
-      .duration(300)
-      .attr("r", 10)
-      .style("fill", colorNode);
-    });
-
-    // add the text 
-    node.append("text")
-    .attr("x", 12)
-    .attr("dy", ".35em")
-    .text(function(d) { return d.name; });
-
-    function colorNode(d) {
-      var colors = ["#ff0000", "#00ff00", "#0000ff"], // red, green, blue
-          color = (d && d.color) || 0;
-      return colors[color];
-    }
-
-    function colorLink(d) {
-      var colors = ["#666", "#2ca02c", "#1f77b4"], // red, green, blue
-          color = (d && d.color) || 0;
-      return colors[color];
-    }
-
-    // add the curvy lines
-    function tick() {
-      path.attr("d", function(d) {
-
-        /*
-        // recenter path's circle
-        var pathSel = d3.select(this);
-        var pathEl = d3.select(this).node();
-        var midPoint = pathEl.getPointAtLength(pathEl.getTotalLength()/2.0);
-        pathSel.select("circle")
-        .attr("r", 50)
-        .attr("cx", midPoint.x)
-        .attr("cy", midPoint.y);
-        console.log(pathSel.select("circle").node());
-        */        
-
-        // redraw path
-        var dx = d.target.x - d.source.x,
-        dy = d.target.y - d.source.y,
-        dr = Math.sqrt(dx * dx + dy * dy);
-        return "M" +
-        d.source.x + "," +
-        d.source.y + "A" +
-        dr + "," + dr + " 0 0,1 " +
-        d.target.x + "," +
-        d.target.y;
-      });
-
-      node.attr("transform", function(d) {
-        return "translate(" + d.x + "," + d.y + ")";
-      });
-    }
-  }); // end Meteor.autorun
+  // draw graph
+  Graph.redraw();
 };
+
+//
+// Utility Functions
+//
+
+function colorNode(d) {
+  var colors = ["#ff0000", "#00ff00", "#0000ff"], // red, green, blue
+      color = (d && d.color) || 0;
+  return colors[color];
+}
+
+function colorLink(d) {
+  var colors = ["#666", "#2ca02c", "#1f77b4"], // red, green, blue
+      color = (d && d.color) || 0;
+  return colors[color];
+}
+
+// add the curvy lines
+function tick() {
+  Graph.svg.selectAll(".link").attr("d", function(d) {
+
+    /*
+    // recenter path's circle
+    var pathSel = d3.select(this);
+    var pathEl = d3.select(this).node();
+    var midPoint = pathEl.getPointAtLength(pathEl.getTotalLength()/2.0);
+    pathSel.select("circle")
+    .attr("r", 50)
+    .attr("cx", midPoint.x)
+    .attr("cy", midPoint.y);
+    console.log(pathSel.select("circle").node());
+    */        
+
+    // redraw path
+    var dx = d.target.x - d.source.x,
+    dy = d.target.y - d.source.y,
+    dr = Math.sqrt(dx * dx + dy * dy);
+    return "M" +
+    d.source.x + "," +
+    d.source.y + "A" +
+    dr + "," + dr + " 0 0,1 " +
+    d.target.x + "," +
+    d.target.y;
+  });
+
+  Graph.svg.selectAll(".node").attr("transform", function(d) {
+    return "translate(" + d.x + "," + d.y + ")";
+  });
+}
