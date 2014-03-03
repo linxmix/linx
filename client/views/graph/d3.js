@@ -2,6 +2,10 @@
 // global Graph object
 //
 
+// TODO: make it so links are drawn naturally instead of in tick
+// TODO: fix linx map view, broken because using "x" instead of "px"?
+// TODO: update positions when song changes
+
 Graph = {
 
   // forces redraw of the graph
@@ -41,7 +45,7 @@ Graph = {
 
   // place upNext songs in a circle around lastSong
   'updateUpNextPositions': function() {
-    var upNext = Graph.upNext;
+    var upNext = Graph['upNext'];
     for (var i = 0; i < upNext.length; i++) {
       var song = upNext[i];
       var theta = (i / upNext.length) * (2.0 * Math.PI);
@@ -52,7 +56,7 @@ Graph = {
 
   // place and color queued songs
   'updateQueuePositions': function() {
-    var queuedSongs = Graph.queuedSongs;
+    var queuedSongs = Graph['queuedSongs'];
     for (var i = 0; i < queuedSongs.length; i++) {
       var song = queuedSongs[i];
       song['x'] = 30 * i + 30;
@@ -69,8 +73,8 @@ Graph = {
   },
 
   // draw a fresh version of the Graph
-  'redraw': function() {
-    console.log("redrawing graph");
+  'update': function() {
+    console.log("updateing graph");
 
     // determine Graph's song and transition queue data
     Graph['queuedTransitions'] = Mixer.getQueue('transition');
@@ -145,7 +149,7 @@ Graph = {
 
     } // end view all mode
 
-  }, // end redraw
+  }, // end update
 
   // sync displayed svg with node data
   'updateNodes': function(nodes) {
@@ -165,7 +169,9 @@ Graph = {
       .attr("class", "node")
       // initial position
       .attr("transform", function(d) {
-        return "translate(" + d.x + "," + d.y + ")";
+        var x = Graph.width / 2;
+        var y = 0;
+        return "translate(" + x + "," + y + ")";
       })
       // play or queue node on double click
       .on("dblclick", function (d) {
@@ -174,18 +180,19 @@ Graph = {
             'sample': d.transition,
             'index': d.transition['index'],
           });
-          // animate node moving
-          console.log("TRANSITIONING", this)
-          d3.select(this).transition()
-          .attr("transform", function(d) {
-            return "translate(" + 30 + "," + 30 + ")";
-          })
-          .style("fill", function (d) { return colorNode({ color: 1 }); });
+          // update graph
+          Graph.update();
         } else if (!Graph['currSong']) {
           Mixer.play(d);
           // force graph redraw
           Graph.forceRedraw();
         }
+      });
+
+    // animate flying in
+    enter.transition(1000)
+      .attr("transform", function(d) {
+        return "translate(" + d.x + "," + d.y + ")";
       });
 
     // add the circles
@@ -212,6 +219,19 @@ Graph = {
       .attr("x", 12)
       .attr("dy", ".35em")
       .text(function(d) { return d.name; });
+
+    // 
+    // UPDATE existing nodes
+    // 
+    node.transition()
+      .duration(1000)
+      .attr("transform", function(d) {
+        console.log("updating node: ", d);
+        return "translate(" + d.x + "," + d.y + ")";
+      })
+      .select("circle")
+      // recolor node's circle
+      .style("fill", function (d) { return colorNode(d); });
 
     //
     // EXIT old nodes
@@ -244,6 +264,23 @@ Graph = {
       // add link's arrow
       .attr("marker-end", "url(#end)")
       .style("stroke", colorLink);
+
+      // TODO: fix this. problem is finding source and target x and y.
+      /*.attr("d", function(d) {
+        console.log("drawing path", d);
+        // draw path
+        var startSong = Graph.nodes[d['startSong']];
+        var endSong = Graph.nodes[d['endSong']];
+        var dx = endSong.x - startSong.x,
+        dy = endSong.y - startSong.y,
+        dr = Math.sqrt(dx * dx + dy * dy);
+        return "M" +
+        d.source.x + "," +
+        d.source.y + "A" +
+        dr + "," + dr + " 0 0,1 " +
+        d.target.x + "," +
+        d.target.y;
+      });*/
 
     //
     // EXIT old links
@@ -300,7 +337,6 @@ Template.graph.rendered = function () {
   // set graph width and height to be that of client's screen
   $('#graph').width($(window).width() - 50);
   $('#graph').height($(window).height() - 96);
-
   // create svg
   Graph.svg = d3.select("#graph").append("svg")
     .attr("width", Graph.width)
@@ -321,7 +357,7 @@ Template.graph.rendered = function () {
     .attr("d", "M0,-5L10,0L0,5");
 
   // draw graph
-  Graph.redraw();
+  Graph.update();
 };
 
 //
