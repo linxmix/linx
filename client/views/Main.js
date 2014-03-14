@@ -10,7 +10,7 @@ module.exports = React.createClass({
 
     return (
       <main>
-        {this.props.me.tracks}
+        {this.props.tracks}
       </main>
     );
   },

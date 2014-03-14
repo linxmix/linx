@@ -2,11 +2,12 @@ var Backbone = require('backbone');
 var React = require('react');
 var $ = Backbone.$ = require('jquery');
 
+var config = require('./config');
 var Router = require('./Router');
 
 SC.initialize({
-  client_id: "977ed530a2104a95eaa87f26fa710941",
-  redirect_uri: "http://localhost:5000/callback.html",
+  client_id: config.clientId,
+  redirect_uri: config.redirectUri,
 });
 
 $(function () {

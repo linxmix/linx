@@ -11,4 +11,10 @@ module.exports = Backbone.Model.extend({
     };
   },
 
+  tracks: function () {
+    return new Tracks({
+      userId: this.id,
+    });
+  },
+
 });

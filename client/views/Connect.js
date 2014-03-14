@@ -15,7 +15,9 @@ module.exports = React.createClass({
   },
 
   login: function () {
-    this.getModel().me.login();
+    var me = this.getModel().me;
+    var tracks = this.getCollection().tracks
+    me.login(tracks);
   },
 
   logout: function () {
