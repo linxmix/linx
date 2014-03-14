@@ -7,7 +7,7 @@ module.exports = React.createClass({
   mixins: [ReactBackboneMixin],
 
   render: function () {
-    if (!this.props.id) {
+    if (!this.props.me.id) {
       return <img src="http://connect.soundcloud.com/2/btn-connect-l.png" onClick={this.login} />
     } else {
       return <img src="http://connect.soundcloud.com/2/btn-disconnect-l.png" onClick={this.logout} />
@@ -15,6 +15,8 @@ module.exports = React.createClass({
   },
 
   login: function () {
+    // login and send Tracks collection so function
+    // can add user's Tracks.
     var me = this.getModel().me;
     var tracks = this.getCollection().tracks
     me.login(tracks);

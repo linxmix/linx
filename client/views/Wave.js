@@ -22,18 +22,33 @@ module.exports = React.createClass({
     );
   },
 
+  // rendered component has been mounted to a DOM element
   componentDidMount: function () {
-    console.log(this.props.track.id, this.$('#wave').get(0), this.props.track.uri);
+
+    // initialize a wavesurfer object
     var wavesurfer = Object.create(WaveSurfer);
     wavesurfer.init({
       container: this.$('#wave').get(0),
       waveColor: 'violet',
       progressColor: 'purple',
     });
+
+    // load the track stream
     wavesurfer.load(
+      // use a CORS-proxy URL
       "http://localhost:5001/" + this.props.track.stream_url.replace(/^https:\/\//, '') + "?client_id=" + clientId
     );
+
+    // store this wavesurfer instance
     this.wavesurfer = wavesurfer;
+  },
+
+  // component will be unmounted from the DOM
+  componentWillUnmount: function () {
+
+    // clean up the wavesurfer
+    this.wavesurfer.destroy();
+    delete this.wavesurfer;
   },
 
   play: function () {

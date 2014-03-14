@@ -10,6 +10,7 @@ module.exports = React.createClass({
 
   render: function () {
 
+    // make a Wave for every Track
     var waves = this.props.tracks.map(function (track) {
       return <Wave track={track} />
     });
