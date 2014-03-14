@@ -1,11 +1,14 @@
 var Backbone = require('backbone');
 var React = require('react');
 
+var App = require('./views/App');
+
 module.exports = Backbone.Router.extend({
   routes: {
-    "actions": "all",
+    "*path": "default",
   },
-  all: function () {
-    console.log("wwoooo!");
+  default: function () {
+    var app = new App();
+    React.renderComponent(app, document.body);
   },
 });

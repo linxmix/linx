@@ -2,7 +2,6 @@ var Backbone = require('backbone');
 var React = require('react');
 var $ = Backbone.$ = require('jquery');
 
-var HeaderView = require('./views/Header');
 var Router = require('./Router');
 
 SC.initialize({
@@ -11,11 +10,6 @@ SC.initialize({
 });
 
 $(function () {
-
-  var headerView = new HeaderView();
-  var headerEl = document.querySelector('body > header');
-  React.renderComponent(headerView, headerEl);
-
   new Router();
   Backbone.history.start();
 });

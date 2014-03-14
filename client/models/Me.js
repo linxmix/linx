@@ -1,3 +1,5 @@
+var Backbone = require('backbone')
+
 var User = require('./User');
 
 module.exports = User.extend({
