@@ -1,0 +1,6 @@
+/README.md
+/static
+/client
+*.less
+.git
+*.swp

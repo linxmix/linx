@@ -1,0 +1,50 @@
+{
+  "name": "linx",
+  "version": "0.0.0",
+  "description": "",
+  "main": "server/index.js",
+  "browser": "client/index.js",
+  "scripts": {
+    "test-server": "(export NODE_ENV=test; npm run migrate && mocha -R spec -t 10s test/{server,both}/*.js)",
+    "test-client": "(export NODE_ENV=test; testling)",
+    "test": "npm run test-server && (if [ -z \"$TRAVIS\" ]; then npm run test-client; fi)",
+    "develop": "(export NODE_ENV=development; gulp develop & nodemon .)",
+    "start": "gulp && node ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/wolfbiter/linx.git"
+  },
+  "author": "",
+  "license": "AGPLv3",
+  "bugs": {
+    "url": "https://github.com/wolfbiter/linx/issues"
+  },
+  "homepage": "https://github.com/wolfbiter/linx",
+  "browserify": {
+    "transform": [
+      "reactify"
+    ]
+  },
+  "devDependencies": {
+    "watchify": "^0.6.1",
+    "tiny-lr": "0.0.5",
+    "gulp-livereload": "^1.2.0",
+    "vinyl-source-stream": "^0.1.1",
+    "gulp": "^3.5.6",
+    "gulp-less": "^1.2.3",
+    "browserify": "^3.32.1",
+    "nodemon": "^1.0.15",
+    "reactify": "^0.10.0",
+    "uglifyify": "^2.0.0"
+  },
+  "dependencies": {
+    "backbone": "^1.1.2",
+    "backbone-react-component": "git://github.com/magalhas/backbone-react-component#mixin",
+    "envify": "^1.2.1",
+    "react": "^0.9.0",
+    "jquery": "^2.1.0",
+    "ecstatic": "^0.4.13",
+    "feathers": "^0.3.1"
+  }
+}

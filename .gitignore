@@ -1,3 +1,5 @@
-packages
-public
-.meteor
+node_modules
+/static/index.js
+/static/index.css
+npm-debug.log
+*.swp
