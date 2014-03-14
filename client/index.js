@@ -2,7 +2,7 @@ var Backbone = require('backbone');
 var React = require('react');
 var $ = Backbone.$ = require('jquery');
 
-var HeaderView = require('./HeaderView');
+var HeaderView = require('./views/Header');
 var Router = require('./Router');
 
 SC.initialize({

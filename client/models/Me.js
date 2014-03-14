@@ -1,11 +1,8 @@
-var Backbone = require('backbone');
+var User = require('./User');
 
-module.exports = Backbone.Model.extend({
-  defaults: function () {
-    return {
-      id: null,
-    };
-  },
+module.exports = User.extend({
+
+  url: "https://api.soundcloud.com/me",
 
   login: function () {
     SC.connect(function () {
@@ -18,4 +15,4 @@ module.exports = Backbone.Model.extend({
   logout: function () {
     this.clear();
   },
-})
+});
