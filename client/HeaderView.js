@@ -1,16 +1,23 @@
 /** @jsx React.DOM */
 var React = require('react');
+var ReactBackboneMixin = require('backbone-react-component').mixin;
+
+var User = require('./User');
 
 module.exports = React.createClass({
   
-  getInitialState: function () {
+  mixins: [ReactBackboneMixin],
+
+  getDefaultProps: function () {
     return {
-      userId: null,
+      model: {
+        user: new User(),
+      },
     };
   },
 
   render: function () {
-    if (!this.state.userId) {
+    if (!this.props.user.id) {
       return <img src="http://connect.soundcloud.com/2/btn-connect-l.png" onClick={this.login} />
     } else {
       return <img src="http://connect.soundcloud.com/2/btn-disconnect-l.png" onClick={this.logout} />
@@ -18,18 +25,11 @@ module.exports = React.createClass({
   },
 
   login: function () {
-    SC.connect(function () {
-      SC.get('/me', function (me) {
-        this.setState({
-          userId: me.id,
-        });
-      }.bind(this));
-    }.bind(this));
+    console.log(this.getModel());
+    this.getModel().user.login();
   },
 
   logout: function () {
-    this.setState({
-      userId: null,
-    });
+    this.getModel().user.logout();
   },
 });
