@@ -2,7 +2,7 @@
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
-var Mixer = require('./Mixer');
+var Wave = require('./Wave');
 
 module.exports = React.createClass({
   
@@ -10,10 +10,14 @@ module.exports = React.createClass({
 
   render: function () {
 
+    var waves = this.props.tracks.map(function (track) {
+      return <Wave track={track} />
+    });
+
     return (
-      <main>
-        <Mixer tracks={this.props.tracks} />
-      </main>
+      <div>
+        {waves}
+      </div>
     );
   },
 });

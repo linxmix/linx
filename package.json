@@ -46,6 +46,7 @@
     "jquery": "^2.1.0",
     "ecstatic": "^0.4.13",
     "feathers": "^0.3.1",
-    "wavesurfer": "git://github.com/ahdinosaur/wavesurfer.js"
+    "wavesurfer": "git://github.com/ahdinosaur/wavesurfer.js",
+    "cors-anywhere": "^0.1.9"
   }
 }
