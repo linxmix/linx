@@ -25,7 +25,6 @@ module.exports = React.createClass({
   },
 
   login: function () {
-    console.log(this.getModel());
     this.getModel().user.login();
   },
 
