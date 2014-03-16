@@ -7,7 +7,7 @@ var refresh = require('gulp-livereload');
 var lr = require('tiny-lr');
 var server = lr();
 
-gulp.task('js-build', function () {
+gulp.task('build', function () {
   return browserify('./')
     .transform({
       global: true,
@@ -17,7 +17,7 @@ gulp.task('js-build', function () {
     .pipe(gulp.dest('./static'))
 });
 
-gulp.task('js-watch', function () {
+gulp.task('watch', function () {
   var bundler = watchify('./')
   var rebundle = function () {
     return bundler.bundle({ debug: true })
@@ -28,30 +28,11 @@ gulp.task('js-watch', function () {
   bundler.on('update', rebundle);
   return rebundle();
 });
-
-gulp.task('css-watch', function () {
-  return gulp.src('./client/index.less')
-    .pipe(less())
-    .pipe(gulp.dest('static'))
-    .pipe(refresh(server));
-});
-
-gulp.task('css-build', function () {
-  return gulp.src('./client/index.less')
-    .pipe(less({
-      compress: true
-    }))
-    .pipe(gulp.dest('static'))
-});
  
 gulp.task('lr-server', function (cb) {
   server.listen(35729, cb);
 });
- 
-gulp.task('watch', function () {
-  gulp.watch('./client/**/*.less', ['css-watch']);
-});
 
-gulp.task('develop', ['lr-server', 'js-watch', 'css-watch', 'watch']);
+gulp.task('develop', ['lr-server', 'watch']);
 
-gulp.task('default', ['js-build', 'css-build']);
+gulp.task('default', ['build']);

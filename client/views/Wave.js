@@ -14,7 +14,11 @@ module.exports = React.createClass({
 
     return (
       <div>
-        <div id="wave"></div>
+        <div className="wave">
+          <div className="ui active teal progress">
+            <div className="bar"></div>
+          </div>
+        </div>
         <button onClick={this.play}>play</button>
         <button onClick={this.pause}>pause</button>
         <button onClick={this.stop}>stop</button>
@@ -25,10 +29,28 @@ module.exports = React.createClass({
   // rendered component has been mounted to a DOM element
   componentDidMount: function () {
 
-    // initialize a wavesurfer object
+    // create wavesurfer object
     var wavesurfer = Object.create(WaveSurfer);
+
+    // setup progress bar
+    var progressDiv = this.$('.progress');
+    var progressBar = progressDiv.children('.bar');
+
+    var showProgress = function (percent) {
+      progressDiv.css('display', 'block');
+      progressBar.css('width', percent + '%');
+    };
+    var hideProgress = function () {
+      progressDiv.css('display', 'none');
+    };
+    wavesurfer.on('loading', showProgress);
+    wavesurfer.on('ready', hideProgress);
+    wavesurfer.on('destroy', hideProgress);
+    wavesurfer.on('error', hideProgress);
+
+    // initialize
     wavesurfer.init({
-      container: this.$('#wave').get(0),
+      container: this.$('.wave').get(0),
       waveColor: 'violet',
       progressColor: 'purple',
     });

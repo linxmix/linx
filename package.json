@@ -23,7 +23,8 @@
   "homepage": "https://github.com/wolfbiter/linx",
   "browserify": {
     "transform": [
-      "reactify"
+      "reactify",
+      "lessify"
     ]
   },
   "devDependencies": {
@@ -32,7 +33,6 @@
     "gulp-livereload": "^1.2.0",
     "vinyl-source-stream": "^0.1.1",
     "gulp": "^3.5.6",
-    "gulp-less": "^1.2.3",
     "browserify": "^3.32.1",
     "nodemon": "^1.0.15",
     "reactify": "^0.10.0",
@@ -46,7 +46,9 @@
     "jquery": "^2.1.0",
     "ecstatic": "^0.4.13",
     "feathers": "^0.3.1",
-    "wavesurfer": "git://github.com/ahdinosaur/wavesurfer.js",
-    "cors-anywhere": "^0.1.9"
+    "cors-anywhere": "^0.1.9",
+    "wavesurfer.js": "0.0.6",
+    "semantic": "git://github.com/Semantic-Org/Semantic-UI#0.15.1",
+    "lessify": "^0.3.0"
   }
 }

@@ -1,3 +1,5 @@
+require('./index.less');
+
 var Backbone = require('backbone');
 var React = require('react');
 var $ = Backbone.$ = require('jquery');
