@@ -1,4 +1,5 @@
 /** @jsx React.DOM */
+var debug = require('debug')('views:App')
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
@@ -31,7 +32,7 @@ module.exports = React.createClass({
   },
 
   changePage: function(newPage) {
-    console.log("changePage", newPage)
+    debug("changePage: " + newPage)
     this.setState({
       page: newPage,
     });

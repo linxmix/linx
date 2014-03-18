@@ -1,4 +1,5 @@
 /** @jsx React.DOM */
+var debug = require('debug')('views:Main')
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
@@ -17,7 +18,7 @@ module.exports = React.createClass({
         renderedPage = Me(this.props);
         break;
       default:
-        console.log("new page:",this.props.page);
+        debug("new page: " + this.props.page);
     }
 
     return (

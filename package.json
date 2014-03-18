@@ -23,6 +23,7 @@
   "homepage": "https://github.com/wolfbiter/linx",
   "browserify": {
     "transform": [
+      "envify",
       "reactify",
       "lessify"
     ]
@@ -54,6 +55,7 @@
     "lessify": "^0.3.0",
     "wavesurfer.js": "0.0.6",
     "semantic": "git://github.com/Semantic-Org/Semantic-UI#0.15.1",
-    "seraph": "~0.9.4"
+    "seraph": "~0.9.4",
+    "debug": "^0.7.4"
   }
 }

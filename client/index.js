@@ -1,5 +1,9 @@
 require('./index.less');
 
+if (process.env.NODE_ENV === "development") {
+  require('debug').enable('*');
+}
+
 var Backbone = require('backbone');
 var React = require('react');
 var $ = Backbone.$ = require('jquery');
