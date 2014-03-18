@@ -10,8 +10,8 @@ describe("#edges", function () {
       db = db; // seraph object pointing to a real DB!
       neo = neo; // neo4j-supervisor object
 
-      var app = require('feathers')()
-        .service('/edges', require('../../../server/services/edges')(db));
+      var app = require('express')();
+      require('../../../server/routes/edges')(app, db);
 
       done();
     });
@@ -20,7 +20,7 @@ describe("#edges", function () {
   describe("GET /edges", function () {
     it('responds with json', function (done) {
       request(app)
-        .get('/edges')
+        .get('/edges/0')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200, done);

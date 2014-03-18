@@ -2,7 +2,6 @@ var gulp = require('gulp');
 var source = require('vinyl-source-stream');
 var browserify = require('browserify');
 var watchify = require('watchify');
-var less = require('gulp-less');
 var refresh = require('gulp-livereload');
 var lr = require('tiny-lr');
 var server = lr();
