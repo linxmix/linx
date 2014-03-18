@@ -2,7 +2,7 @@
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
-var Wave = require('./Wave');
+var Wave = require('../Wave');
 
 module.exports = React.createClass({
   

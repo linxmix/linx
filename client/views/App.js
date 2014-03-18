@@ -24,12 +24,37 @@ module.exports = React.createClass({
     };
   },
 
-  render: function () {
+  getInitialState: function () {
+    return {
+      page: 'upNext',
+    }
+  },
 
+  changePage: function(newPage) {
+    console.log("changePage", newPage)
+    this.setState({
+      page: newPage,
+    });
+  },
+
+  render: function () {
+    // TODO: instead of Main, have different pages
     return (
       <div>
-        {Header(this.props)}
-        {Main(this.props)}
+        <Header
+          me={this.props.me}
+          tracks={this.props.tracks}
+          page={this.state.page}
+          changePage={this.changePage}
+        />
+
+        <Main 
+          me={this.props.me}
+          tracks={this.props.tracks}
+          page={this.state.page}
+          changePage={this.changePage}
+        />
+
       </div>
     );
   },
