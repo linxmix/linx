@@ -23,8 +23,15 @@ npm run develop
 
 ## how to test
 
-TODO
+install [oracle java 7](https://github.com/flexiondotorg/oab-java6)
 
 ```
-npm test
+npm run test-server
+```
+
+OR
+
+TODO
+```
+npm run test-client
 ```

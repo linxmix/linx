@@ -5,7 +5,7 @@
   "main": "server/index.js",
   "browser": "client/index.js",
   "scripts": {
-    "test-server": "(export NODE_ENV=test; npm run migrate && mocha -R spec -t 10s test/{server,both}/*.js)",
+    "test-server": "(export NODE_ENV=test; mocha -R spec -s 500 -t 360000 test/server/**/*.js)",
     "test-client": "(export NODE_ENV=test; testling)",
     "test": "npm run test-server && (if [ -z \"$TRAVIS\" ]; then npm run test-client; fi)",
     "develop": "(export NODE_ENV=development; gulp develop & nodemon .)",
@@ -31,24 +31,28 @@
     "watchify": "^0.6.1",
     "tiny-lr": "0.0.5",
     "gulp-livereload": "^1.2.0",
+    "nodemon": "^1.0.15",
+    "chai": "~1.9.0",
+    "mocha": "~1.18.0",
+    "disposable-seraph": "~0.3.0",
+    "supertest": "~0.9.2"
+  },
+  "dependencies": {
+    "feathers": "^0.3.1",
+    "ecstatic": "^0.4.13",
+    "cors-anywhere": "^0.1.9",
+    "backbone": "^1.1.2",
+    "jquery": "^2.1.0",
+    "backbone-react-component": "^0.6.0",
+    "react": "^0.9.0",
+    "reactify": "^0.10.0",
+    "envify": "^1.2.1",
+    "uglifyify": "^2.0.0",
     "vinyl-source-stream": "^0.1.1",
     "gulp": "^3.5.6",
     "browserify": "^3.32.1",
-    "nodemon": "^1.0.15",
-    "reactify": "^0.10.0",
-    "uglifyify": "^2.0.0"
-  },
-  "dependencies": {
-    "backbone": "^1.1.2",
-    "backbone-react-component": "git://github.com/magalhas/backbone-react-component#mixin",
-    "envify": "^1.2.1",
-    "react": "^0.9.0",
-    "jquery": "^2.1.0",
-    "ecstatic": "^0.4.13",
-    "feathers": "^0.3.1",
-    "cors-anywhere": "^0.1.9",
+    "lessify": "^0.3.0",
     "wavesurfer.js": "0.0.6",
-    "semantic": "git://github.com/Semantic-Org/Semantic-UI#0.15.1",
-    "lessify": "^0.3.0"
+    "semantic": "git://github.com/Semantic-Org/Semantic-UI#0.15.1"
   }
 }
