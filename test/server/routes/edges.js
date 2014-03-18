@@ -20,7 +20,7 @@ describe("#edges", function () {
   describe("GET /edges", function () {
     it('responds with json', function (done) {
       request(app)
-        .get('/edges/0')
+        .get('/tracks/0/edges')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200, done);
