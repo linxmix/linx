@@ -3,3 +3,5 @@ node_modules
 /static/index.css
 npm-debug.log
 *.swp
+.meteor
+packages
