@@ -2,7 +2,7 @@
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
-var Connect = require('./Connect');
+var NavBar = require('./nav/NavBar');
 
 module.exports = React.createClass({
   
@@ -19,7 +19,7 @@ module.exports = React.createClass({
     return (
       <header>
         {greeting}
-        <Connect me={this.props.me} />
+        <NavBar me={this.props.me} />
       </header>
     );
   },
