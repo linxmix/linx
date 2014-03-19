@@ -4,6 +4,7 @@ var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var Me = require('./pages/Me');
+var Library = require('./pages/Library');
 
 module.exports = React.createClass({
   
@@ -16,6 +17,9 @@ module.exports = React.createClass({
     switch (this.props.page) {
       case 'me':
         renderedPage = Me(this.props);
+        break;
+      case 'library':
+        renderedPage = Library(this.props);
         break;
       default:
         debug("new page: " + this.props.page);

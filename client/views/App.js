@@ -28,6 +28,7 @@ module.exports = React.createClass({
   getInitialState: function () {
     return {
       page: 'upNext',
+      playlist: 'me',
     }
   },
 
@@ -38,24 +39,26 @@ module.exports = React.createClass({
     });
   },
 
+  changePlaylist: function(newPlaylist) {
+    console.log("changePlaylist", newPlaylist)
+    this.setState({
+      playlist: newPlaylist,
+    });
+  },
+
   render: function () {
-    // TODO: instead of Main, have different pages
+    var props = {
+      'me': this.props.me,
+      'tracks': this.props.tracks,
+      'page': this.state.page,
+      'playlist': this.state.playlist,
+      'changePage': this.changePage,
+      'changePlaylist': this.changePlaylist,
+    }
     return (
       <div>
-        <Header
-          me={this.props.me}
-          tracks={this.props.tracks}
-          page={this.state.page}
-          changePage={this.changePage}
-        />
-
-        <Main 
-          me={this.props.me}
-          tracks={this.props.tracks}
-          page={this.state.page}
-          changePage={this.changePage}
-        />
-
+        {Header(props)}
+        {Main(props)}
       </div>
     );
   },

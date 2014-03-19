@@ -3,7 +3,7 @@ var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var Connect = require('./Connect');
-var NavTab = require('./NavTab');
+var Tab = require('./Tab');
 
 module.exports = React.createClass({
   
@@ -13,7 +13,7 @@ module.exports = React.createClass({
     return {
       navTabs: [
         {key: 'me', name: 'Me'},
-        {key: 'playlists', name: 'Playlists'},
+        {key: 'library', name: 'Library'},
         {key: 'upNext', name: "Up Next"},
         {key: 'linxMap', name: "Linx Map"},
       ]
@@ -25,21 +25,23 @@ module.exports = React.createClass({
     // make navTabs
     var navTabs = this.props.navTabs.map(function(navTab) {
       return (
-        NavTab({
+        Tab({
           'active': (navTab.key === this.props.page),
           'key': navTab.key,
           'name': navTab.name,
-          'changePage': this.props.changePage,
+          'activeClass': 'active item',
+          'inactiveClass': 'item',
+          'handleClick': this.props.changePage,
         })
       )
     }.bind(this));
 
     // render navBar
     return (
-      <div className="ui menu inverted" role="navigation">
-        <div className="header item">Linx</div>
+      <div className="ui inverted menu" role="navigation">
+        <a className="header item">Linx</a>
         {navTabs}
-        <div className="item">
+        <div className="right menu">
           <Connect me={this.props.me} />
         </div>
       </div>

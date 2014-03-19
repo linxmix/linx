@@ -2,12 +2,14 @@
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
-var Wave = require('../Wave');
+var Tracks_Wave = require('../track/Tracks_Wave');
 
 module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
+  // TODO: display user profile soundcloud widget
+  // TODO: make this only display Me's tracks
   render: function () {
 
     // if the user is logged in, say hello!
@@ -16,15 +18,10 @@ module.exports = React.createClass({
       greeting = "Hello " + this.props.me.username + "!";
     }
 
-    // make a Wave for every Track
-    var waves = this.props.tracks.map(function (track) {
-      return <Wave track={track} />
-    });
-
     return (
       <div>
         {greeting}
-        {waves}
+        {Tracks_Wave(this.props)}
       </div>
     );
   },

@@ -2,23 +2,20 @@
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
-var Wave = require('../Wave');
+var clientId = require('../../config').clientId;
 
 module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
   render: function () {
-
-    // make a Wave for every Track
-    var waves = this.props.tracks.map(function (track) {
-      return <Wave track={track} />
-    });
+    var track = this.props.track;
 
     return (
       <div>
-        {waves}
+        <div class="ui label">{track.title}</div>
       </div>
     );
   },
+
 });

@@ -6,14 +6,15 @@ module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
-  // on click, change page to this tab
   handleClick: function(e) {
     e.preventDefault();
-    this.props.changePage(this.props.key);
+    this.props.handleClick(this.props.key);
   },
 
   render: function () {
-    var className = this.props.active ? 'active item' : 'item';
+    // check if tab active
+    var className = this.props.active ?
+      this.props.activeClass : this.props.inactiveClass;
 
     return (
       <a className={className} onClick={this.handleClick}>
