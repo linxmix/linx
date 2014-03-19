@@ -20,6 +20,10 @@ module.exports = React.createClass({
     };
   },
 
+  handleClick: function(navTab) {
+    this.props.changePage(navTab.key);
+  },
+
   render: function () {
 
     // make navTabs
@@ -31,7 +35,7 @@ module.exports = React.createClass({
           'name': navTab.name,
           'activeClass': 'active item',
           'inactiveClass': 'item',
-          'handleClick': this.props.changePage,
+          'handleClick': this.handleClick,
         })
       )
     }.bind(this));

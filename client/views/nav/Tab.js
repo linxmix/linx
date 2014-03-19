@@ -8,7 +8,7 @@ module.exports = React.createClass({
 
   handleClick: function(e) {
     e.preventDefault();
-    this.props.handleClick(this.props.key);
+    this.props.handleClick(this.props);
   },
 
   render: function () {

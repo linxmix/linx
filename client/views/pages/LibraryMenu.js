@@ -17,8 +17,11 @@ module.exports = React.createClass({
     };
   },
 
-  render: function () {
+  handleClick: function(trackViewTab) {
+    this.props.changeTrackView(trackViewTab.key);
+  },
 
+  render: function () {
 
     // make trackViewTabs
     var trackViewTabs = this.props.trackViewTabs.map(function(trackViewTab) {
@@ -29,35 +32,21 @@ module.exports = React.createClass({
           'name': trackViewTab.name,
           'activeClass': 'ui orange button',
           'inactiveClass': 'ui inverted button',
-          'handleClick': this.props.changeTrackView,
+          'handleClick': this.handleClick,
         })
       )
     }.bind(this));
 
+    // TODO: dropdown for what list we're viewing
     return (
       <div className="eight wide column">
         <div className="ui inverted teal segment">
-
           <div className="ui buttons">
             {trackViewTabs[0]}
             <div className="or"></div>
             {trackViewTabs[1]}
           </div>
         </div>
-
-        // TODO: dropdown for what list we're viewing
-          /*<div className="ui teal buttons">
-            <div className="ui button">Save</div>
-            <div className="ui teal floating dropdown icon button">
-              <i className="dropdown icon"></i>
-              <div className="menu">
-                <div className="item">Edit Post</div>
-                <div className="item">Remove Post</div>
-                <div className="item">Hide Post</div>
-              </div>
-            </div>
-          </div>*/
-
       </div>
     );
   },

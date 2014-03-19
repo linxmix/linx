@@ -5,6 +5,7 @@ var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var Me = require('./pages/Me');
 var Library = require('./pages/Library');
+var UpNext = require('./pages/UpNext');
 
 module.exports = React.createClass({
   
@@ -20,6 +21,9 @@ module.exports = React.createClass({
         break;
       case 'library':
         renderedPage = Library(this.props);
+        break;
+      case 'upNext':
+        renderedPage = UpNext(this.props);
         break;
       default:
         debug("new page: " + this.props.page);

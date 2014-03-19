@@ -9,6 +9,7 @@ var Tracks = require('../collections/Tracks');
 
 var Header = require('./Header');
 var Main = require('./Main');
+var Footer = require('./Footer');
 
 module.exports = React.createClass({
   
@@ -29,6 +30,7 @@ module.exports = React.createClass({
     return {
       page: 'upNext',
       playlist: 'me',
+      playState: 'stop',
     }
   },
 
@@ -39,8 +41,15 @@ module.exports = React.createClass({
     });
   },
 
+  changePlayState: function(newPlayState) {
+    debug("changePlayState: " + newPlayState)
+    this.setState({
+      playState: newPlayState,
+    });
+  },
+
   changePlaylist: function(newPlaylist) {
-    console.log("changePlaylist", newPlaylist)
+    debug("changePlaylist" + newPlaylist)
     this.setState({
       playlist: newPlaylist,
     });
@@ -51,14 +60,17 @@ module.exports = React.createClass({
       'me': this.props.me,
       'tracks': this.props.tracks,
       'page': this.state.page,
+      'playState': this.state.playState,
       'playlist': this.state.playlist,
       'changePage': this.changePage,
+      'changePlayState': this.changePlayState,
       'changePlaylist': this.changePlaylist,
     }
     return (
       <div>
         {Header(props)}
         {Main(props)}
+        {Footer(props)}
       </div>
     );
   },
