@@ -86,6 +86,8 @@ module.exports = React.createClass({
     // TODO: make widget model with accessors to:
     //       widget's API, loaded track's id for sync fn
 
+    // TODO: put all widgets in a Widgets collection
+
   // rendered component has been mounted to a DOM element
   componentDidMount: function () {
     debug("component mounted");
