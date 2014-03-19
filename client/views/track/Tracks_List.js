@@ -15,8 +15,11 @@ module.exports = React.createClass({
 
     // make a Track_List for every track
     var track_lists = this.props.tracks.map(function (track) {
-      return <Track_List track={track} />
-    });
+      return Track_List({
+        'track': track,
+        'changePlayState': this.props.changePlayState,
+      });
+    }.bind(this));
 
     return (
       <div>

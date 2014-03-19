@@ -32,6 +32,7 @@ module.exports = React.createClass({
       case 'list':
         tracks = Tracks_List({
           tracks: this.props.tracks,
+          changePlayState: this.props.changePlayState,
         });
         break;
       case 'wave':

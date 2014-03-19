@@ -16,12 +16,14 @@ module.exports = React.createClass({
   mixins: [ReactBackboneMixin],
 
   getDefaultProps: function () {
+    var appQueue = new Tracks();
     return {
       model: {
         me: new Me(),
       },
       collection: {
         tracks: new Tracks(),
+        queue: appQueue,
       },
     };
   },
@@ -30,7 +32,8 @@ module.exports = React.createClass({
     return {
       page: 'upNext',
       playlist: 'me',
-      playState: 'stop',
+      playState: 'pause',
+      widget: 0,
     }
   },
 
@@ -55,16 +58,26 @@ module.exports = React.createClass({
     });
   },
 
+  changeWidget: function(newWidget) {
+    debug("changeWidget" + newWidget)
+    this.setState({
+      widget: newWidget,
+    });
+  },
+
   render: function () {
     var props = {
       'me': this.props.me,
       'tracks': this.props.tracks,
+      'queue': this.props.queue,
       'page': this.state.page,
       'playState': this.state.playState,
       'playlist': this.state.playlist,
+      'widget': this.state.widget,
       'changePage': this.changePage,
       'changePlayState': this.changePlayState,
       'changePlaylist': this.changePlaylist,
+      'changeWidget': this.changeWidget,
     }
     return (
       <div>
