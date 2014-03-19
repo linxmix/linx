@@ -1,0 +1,11 @@
+web:
+  build: .
+  command: npm run develop
+  volumes:
+    - .:/code
+  links:
+    - db
+  ports:
+    - "5000:5000"
+db:
+  image: tpires/neo4j
