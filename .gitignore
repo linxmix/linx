@@ -1,6 +1,7 @@
 node_modules
 /static/index.js
 /static/index.css
+/static/fonts
 npm-debug.log
 *.swp
 .meteor

@@ -6,6 +6,11 @@ var refresh = require('gulp-livereload');
 var lr = require('tiny-lr');
 var server = lr();
 
+gulp.task('fonts', function () {
+  return gulp.src(['./node_modules/semantic/src/fonts/*'])
+    .pipe(gulp.dest('./static/fonts/'));
+});
+
 gulp.task('build', function () {
   return browserify('./')
     .transform({
@@ -32,6 +37,6 @@ gulp.task('lr-server', function (cb) {
   server.listen(35729, cb);
 });
 
-gulp.task('develop', ['lr-server', 'watch']);
+gulp.task('develop', ['lr-server', 'fonts', 'watch']);
 
-gulp.task('default', ['build']);
+gulp.task('default', ['fonts', 'build']);
