@@ -79,9 +79,13 @@ module.exports = React.createClass({
   },
 
 
+    // TODO: make inactive widgets display:none instead of
+    //       having 0 height. will this fix the z indexing..?
+
     // TODO: bind queue add and remove to fn syncQueue.
     // TODO: make widget model with accessors to:
-    //       widget's API, loaded track's id, etc
+    //       widget's API, loaded track's id for sync fn
+
   // rendered component has been mounted to a DOM element
   componentDidMount: function () {
     debug("component mounted");
