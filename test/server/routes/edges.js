@@ -2,25 +2,18 @@ var request = require('supertest');
 
 describe("#edges", function () {
 
-  var db, neo, app;
+  var app;
   
-  before(function (done) {
-    require('../db')(function (err, db, neo) {
-      if (err) { throw err; }
-      db = db; // seraph object pointing to a real DB!
-      neo = neo; // neo4j-supervisor object
-
-      var app = require('express')();
-      require('../../../server/routes/edges')(app, db);
-
-      done();
-    });
+  before(function () {
+    var db = require('../../../server/db');
+    app = require('express')();
+    require('../../../server/routes/edges')(app, db);
   });
 
-  describe("GET /edges", function () {
+  describe("GET /tracks/0/out", function () {
     it('responds with json', function (done) {
       request(app)
-        .get('/tracks/0/edges')
+        .get('/tracks/0/out')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200, done);
