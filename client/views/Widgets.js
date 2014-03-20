@@ -3,7 +3,9 @@ var React = require('react');
 var debug = require('debug')('views:Widgets');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
-var WidgetView = require('./Widget');
+// TODO: is there a better way to write this?
+var WidgetView = (require('../config').widgetModel === 'SC') ?
+  require('../track/Track_SC') : require('../track/Track_Wave');
 
 module.exports = React.createClass({
   

@@ -5,10 +5,8 @@ var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var Tab = require('./nav/Tab');
 
-var WidgetModel = require('../models/Widget');
 var Widgets = require('../collections/Widgets');
 var WidgetsView = require('./Widgets');
-
 
 // TODO: make soundbar not cover main section
 module.exports = React.createClass({

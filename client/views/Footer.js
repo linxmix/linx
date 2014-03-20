@@ -2,8 +2,6 @@
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
-var Widgets = require('../collections/Widgets');
-
 var SoundBar = require('./SoundBar');
 
 module.exports = React.createClass({

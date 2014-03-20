@@ -4,8 +4,6 @@ var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var WaveSurfer = require('wavesurfer.js');
 
-var clientId = require('../../config').clientId;
-
 module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],

@@ -1,6 +1,6 @@
 /** @jsx React.DOM */
 var React = require('react');
-var debug = require('debug')('views:Widget');
+var debug = require('debug')('views:track/Track_SCWidget');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 module.exports = React.createClass({
@@ -40,7 +40,9 @@ module.exports = React.createClass({
       'widget': widget,
     });
 
+    //
     // bind SC widget handlers to bubble state up
+    //
     widget.bind(SC.Widget.Events.PLAY, function (e) {
       if (this.props.active && 
         (this.props.playState !== 'play')) {
@@ -69,6 +71,9 @@ module.exports = React.createClass({
       // cycle queue
       this.getCollection().queue.shift();
     }.bind(this));
+    //
+    // /bind
+    //
 
   },
 

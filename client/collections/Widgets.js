@@ -1,7 +1,9 @@
 var Backbone = require('backbone');
 var debug = require('debug')('collections:Widgets')
 
-var Widget_SC = require('../models/Widget_SC');
+// TODO: is there a better way to write this?
+var Widget = (require('../config').widgetModel === 'SC') ?
+  require('../models/Widget_SC') : require('../models/Widget_Wave');
 
 module.exports = Backbone.Collection.extend({
 
@@ -12,5 +14,5 @@ module.exports = Backbone.Collection.extend({
     this.options = options;
   },
 
-  model: Widget_SC,
+  model: Widget,
 });

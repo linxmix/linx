@@ -2,8 +2,6 @@
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
-var clientId = require('../../config').clientId;
-
 module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
