@@ -46,25 +46,18 @@ module.exports = React.createClass({
 
   assertPlayState: function () {
     var playState = this.props.playState;
-    var activeWidget = this.state.activeWidget;
-    var widget = this.getCollection().widgets.models[activeWidget].get('widget');
     debug('asserting play state: ' + playState);
-    widget.isPaused(function (isPaused) {
-      console.log("widget isPaused: ", isPaused);
-      if (isPaused) {
-        if (playState === 'play') {
-          widget.play();
-        }
-      } else { // widget is playing
-        if (playState === 'pause') {
-          widget.pause();
-        }
-      }
-    });
+    var widgets = this.getCollection().widgets;
+    var widgetModel = widgets.models[this.state.activeWidget];
+    (widgetModel && widgetModel.assertPlayState(playState));
   },
 
   // use queue to preload widgets
+  isSyncing: false,
   syncQueue: function (e, track) {
+    if (this.isSyncing) { return; }
+    this.isSyncing = true;
+
     debug("syncQueue called");
     console.log(e, track);
     var activeWidget = this.state.activeWidget,
@@ -93,6 +86,8 @@ module.exports = React.createClass({
       }
 
     }.bind(this));
+
+    this.isSyncing = false;
 
   },
 

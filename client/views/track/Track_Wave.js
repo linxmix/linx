@@ -1,17 +1,27 @@
 /** @jsx React.DOM */
 var React = require('react');
+var debug = require('debug')('views:track/Track_Wave');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var WaveSurfer = require('wavesurfer.js');
 
+// TODO: import all my functions from old linx project
 module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
-  render: function () {
+  getDefaultProps: function () {
+    return {
+      active: true,
+    }
+  },
 
+  render: function () {
+    debug("render");
+    // only display if active
+    var className = (this.props.active) ? "" : "hidden";
     return (
-      <div>
+      <div className={className}>
         <div className="wave">
           <div className="ui active teal progress">
             <div className="bar"></div>
@@ -24,11 +34,24 @@ module.exports = React.createClass({
     );
   },
 
+  // rendered component has updated
+  componentDidUpdate: function () {
+    //this.widget.redraw();
+    //debug('component updated');
+    // bind this wavesurfer to the new DOM, then redraw
+    //var wavesurfer = this.wavesurfer;
+    //console.log(this.$('.wave'));
+    //wavesurfer.params.container = this.$('.wave').get(0);
+    //if (wavesurfer.backend.buffer) {
+    //  wavesurfer.createDrawer();
+    //}
+  },
+
   // rendered component has been mounted to a DOM element
   componentDidMount: function () {
 
-    // create wavesurfer object
-    var wavesurfer = Object.create(WaveSurfer);
+    // create and save wavesurfer object
+    var wavesurfer = this.wavesurfer = Object.create(WaveSurfer);
 
     // setup progress bar
     var progressDiv = this.$('.progress');
@@ -53,18 +76,39 @@ module.exports = React.createClass({
       progressColor: 'purple',
     });
 
-    // load the track stream
-    wavesurfer.load(
-      // use a CORS-proxy URL
-      "http://localhost:5001/" + this.props.track.stream_url.replace(/^https:\/\//, '') + "?client_id=" + clientId
-    );
+    // add wavesurfer to collection
+    var widgets = this.getCollection().widgets;
+    var widget = this.widget = widgets.add({
+      'id': this.props.id,
+      'index': this.props.index,
+      'widget': wavesurfer,
+    });
 
-    // store this wavesurfer instance
-    this.wavesurfer = wavesurfer;
+    // if track given, load the track stream
+    var track = this.props.track;
+    (track && widget.load(track));
+
+    // if this is a widget wave, bind to finish event
+    if (typeof this.props.index !== 'undefined') {
+      wavesurfer.on('finish', function() {
+        debug("widget event: FINISH", wavesurfer);
+        // update activeWidget
+        var nextWidget = (this.props.index + 1) % widgets.length;
+        this.props.setActiveWidget(nextWidget);
+        // cycle queue
+        this.getCollection().queue.shift();
+      }.bind(this));
+    }
+
   },
 
   // component will be unmounted from the DOM
   componentWillUnmount: function () {
+    debug("componentWillUnmount");
+
+    // delete model
+    var widgets = this.getCollection().widgets;
+    widgets.remove(this.widget);
 
     // clean up the wavesurfer
     this.wavesurfer.destroy();
@@ -72,15 +116,18 @@ module.exports = React.createClass({
   },
 
   play: function () {
-    this.wavesurfer.play();
+    this.widget.play();
+    this.props.changePlayState('play');
   },
 
   pause: function () {
-    this.wavesurfer.pause();
+    this.widget.pause();
+    this.props.changePlayState('pause');
   },
 
   stop: function () {
-    this.wavesurfer.stop();
+    this.props.changePlayState('stop');
+    this.widget.stop();
   },
 
 });

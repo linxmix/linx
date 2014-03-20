@@ -1,19 +1,24 @@
 /** @jsx React.DOM */
 var React = require('react');
-var debug = require('debug')('views:track/Track_SCWidget');
+var debug = require('debug')('views:track/Track_SC');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
+  // BUG: debug why collection waves view isnt working
+  // BUG: debug why "finish" event is being called on entire queue
+  // TODO: add buttons to switch between soundcloud widgets and
+  //       wavesurfer widgets
   // TODO: make able to queue song more than once?
-  // TODO: make empty widget display none
-  // TODO: make it so widget plays immediately on shift
   /* TODO: height should not be fixed in pixels */
   render: function () {
+    debug("render");
+    // only display if active
+    var className = (this.props.active) ? "" : "hidden";
     return (
-      <div>
+      <div className={className}>
         <iframe id={this.props.id} width="100%" height="160px"
           scrolling="no" frameBorder="yes"></iframe>
       </div>
@@ -23,7 +28,6 @@ module.exports = React.createClass({
 
   // rendered component has been mounted to a DOM element
   componentDidMount: function () {
-    debug("component mounted");
     var widgets = this.getCollection().widgets;
 
     // setup SC widget
@@ -31,10 +35,10 @@ module.exports = React.createClass({
     var url = urlBase + "?url=http://api.soundcloud.com/users/1539950/favorites&amp;show_playcount=true&amp;show_comments=true&amp;download=true&amp;buying=true&amp;sharing=true&amp;show_bpm=true&amp;liking=true&amp;theme_color=333333";
     var widgetFrame = this.$('iframe').get(0);
     widgetFrame.setAttribute("src", url);
-    var widget = this.widget = SC.Widget(widgetFrame);
+    var widget = SC.Widget(widgetFrame);
 
     // add widget to collection
-    widgets.add({
+    this.widget = widgets.add({
       'id': this.props.id,
       'index': this.props.index,
       'widget': widget,

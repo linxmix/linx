@@ -3,7 +3,7 @@ var React = require('react');
 var debug = require('debug')('views:Widgets');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
-// TODO: is there a better way to write this?
+// TODO: make a generic widget view which wraps this + hide logic
 var WidgetView = (require('../config').widgetModel === 'SC') ?
   require('./track/Track_SC') : require('./track/Track_Wave');
 
@@ -12,10 +12,11 @@ module.exports = React.createClass({
   mixins: [ReactBackboneMixin],
 
   render: function () {
+    debug("render");
     
     // make widgetViews
     var widgetViews = this.props.widgets.map(function (widget) {
-      return WidgetView({
+      return widgetView = WidgetView({
         'id': widget.id,
         'index': widget.index,
         'active': (widget.index === this.props.activeWidget),
