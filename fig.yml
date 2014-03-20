@@ -9,3 +9,5 @@ web:
     - "5000:5000"
 db:
   image: tpires/neo4j
+  ports:
+    - "7474:7474"
