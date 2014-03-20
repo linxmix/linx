@@ -31,7 +31,6 @@ npm run test-server
 
 OR
 
-TODO
 ```
 npm run test-client
 ```
