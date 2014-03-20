@@ -11,7 +11,6 @@ module.exports = React.createClass({
   mixins: [ReactBackboneMixin],
 
   render: function () {
-    console.log("rendering Tracks_List:", this.props);
 
     // make a Track_List for every track
     var track_lists = this.props.tracks.map(function (track) {
@@ -21,8 +20,13 @@ module.exports = React.createClass({
       });
     }.bind(this));
 
+    // set default message
+    var defaultMessage = (track_lists.length === 0) ?
+      'No tracks found.' : '';
+
     return (
       <div>
+        {defaultMessage}
         {track_lists}
       </div>
     );

@@ -1,5 +1,6 @@
 /** @jsx React.DOM */
 var React = require('react');
+var debug = require('debug')('views:Library');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var Tracks_List = require('../track/Tracks_List');
@@ -18,7 +19,7 @@ module.exports = React.createClass({
   },
 
   changeTrackView: function(newTrackView) {
-    console.log("changeTrackView", newTrackView)
+    debug("changeTrackView: " + newTrackView);
     this.setState({
       trackView: newTrackView,
     });
@@ -27,7 +28,7 @@ module.exports = React.createClass({
   render: function () {
     // determine which tracks view to use
     var tracks;
-    console.log("rendering library");
+    debug("rendering library");
     switch(this.state.trackView) {
       case 'list':
         tracks = Tracks_List({

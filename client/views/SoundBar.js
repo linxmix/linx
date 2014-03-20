@@ -1,20 +1,23 @@
 /** @jsx React.DOM */
-var debug = require('debug')('views:SoundBar')
+var debug = require('debug')('views:SoundBar');
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
-var Widget = require('./Widget');
 var Tab = require('./nav/Tab');
+
+var WidgetModel = require('../models/Widget');
+var Widgets = require('../collections/Widgets');
+var WidgetsView = require('./Widgets');
 
 module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
-  handleClick: function(soundTab) {
+  handleClick: function (soundTab) {
     this.props.changePlayState(soundTab.key);
   },
 
-  getDefaultProps: function() {
+  getDefaultProps: function () {
     return {
       soundTabs: [
         {key: 'play', name: 'Play'},
@@ -25,14 +28,27 @@ module.exports = React.createClass({
         {id: 'widget1', index: 1},
         {id: 'widget2', index: 2},
       ],
-    };
+    }
+  },
+
+  getInitialState: function () {
+    return {
+      activeWidget: 0,
+    }
+  },
+
+  setActiveWidget: function(newWidget) {
+    debug("setActiveWidget" + newWidget)
+    this.setState({
+      activeWidget: newWidget,
+    });
   },
 
   assertPlayState: function () {
-    var widget = this.widget,
-        playState = this.props.playState;
+    var playState = this.props.playState,
+        activeWidget = this.state.activeWidget,
+        widget = this.getCollection().widgets.models[activeWidget].get('widget');
     debug('asserting play state: ' + playState)
-    if (!widget) return;
     switch (playState) {
       case 'play':
         widget.play();
@@ -43,8 +59,43 @@ module.exports = React.createClass({
     }
   },
 
+  // use queue to preload widgets
+  syncQueue: function (e, track) {
+    debug("syncQueue called");
+    console.log(e, track);
+    var activeWidget = this.state.activeWidget,
+        collections = this.getCollection(),
+        queue = collections.queue,
+        widgets = collections.widgets;
+
+    // make sure each widget has correct track loaded
+    widgets.forEach(function (widget) {
+      var widgetIndex = widget.get('index'),
+          queueIndex = (widgetIndex + activeWidget) %
+            widgets.length;
+
+      // quit if queue index is beyond queue
+      if (queueIndex >= queue.length) { return; }
+
+      // if incorrect track, load correct track
+      var track = queue.models[queueIndex],
+          trackId = track.get('id');
+      if (trackId !== widget.get('trackId')) {
+        console.log("widget and track were unsynced:",
+          widget, track);
+        widget.get('widget').load(track.get('uri'));
+        // update widget with new trackId
+        widget.set({ 'trackId': trackId });
+      }
+
+    // finally, make sure active widget reflects playState
+    this.assertPlayState()
+
+    }.bind(this));
+
+  },
+
   render: function () {
-    var queue = this.getCollection().queue;
 
     // make soundTabs
     var soundTabs = this.props.soundTabs.map(function(soundTab) {
@@ -60,80 +111,44 @@ module.exports = React.createClass({
       )
     }.bind(this));
 
-    // make widgets
-    var widgets = this.props.widgets.map(function(widget) {
-      return (
-        Widget({
-          'active': (widget.index === this.props.widget),
-          'id': widget.id,
-        })
-      )
-    }.bind(this));
+    // make WidgetsWiew
+    var widgetsView = WidgetsView({
+      'widgets': this.props.widgets,
+      'activeWidget': this.state.activeWidget,
+      'setActiveWidget': this.setActiveWidget,
+      'changePlayState': this.props.changePlayState,
+    });
 
     // render SoundBar
     return (
       <div className="bottom-menu">
-        {widgets}
+        {widgetsView}
       </div>
     );
   },
 
-
-    // TODO: make inactive widgets display:none instead of
-    //       having 0 height. will this fix the z indexing..?
-
-    // TODO: bind queue add and remove to fn syncQueue.
-    // TODO: make widget model with accessors to:
-    //       widget's API, loaded track's id for sync fn
-
-    // TODO: put all widgets in a Widgets collection
+  // TODO: bind queue add and remove to fn syncQueue.
 
   // rendered component has been mounted to a DOM element
   componentDidMount: function () {
     debug("component mounted");
+
+    // setup queue listeners
     var queue = this.getCollection().queue;
-
-    // setup SC widgets
-    var urlBase = "https://w.soundcloud.com/player/"
-    var url = urlBase + "?url=http://api.soundcloud.com/users/1539950/favorites&amp;show_playcount=true&amp;show_comments=true&amp;download=true&amp;buying=true&amp;sharing=true&amp;show_bpm=true&amp;liking=true&amp;theme_color=333333";
-    var widgetFrames = this.$('iframe');
-    var widgets = this.widgets = [];
-    for (var i = 0; i < widgetFrames.length; i++) {
-      var frame = widgetFrames.get(i);
-      frame.setAttribute("src", url);
-      var widget = SC.Widget(frame);
-      widgets.push(widget);
-
-      // bind SC widget handlers to bubble state up
-      /*widget.bind(SC.Widget.Events.PLAY, function (e) {
-        this.props.changePlayState('play');
-      }.bind(this));
-
-      widget.bind(SC.Widget.Events.PAUSE, function (e) {
-        this.props.changePlayState('pause');
-      }.bind(this));*/
-
-      // setup mixer functions
-      widget.bind(SC.Widget.Events.FINISH, function (e) {
-        console.log("widget finished", widget);
-        queue.shift();
-        var newWidget = (this.props.widget + 1) %
-          (this.props.widgets.length);
-          var activeWidget = widgets[newWidget];
-          activeWidget.play();
-          this.props.changeWidget(newWidget);
-      }.bind(this));
-    }
-
     queue.on('add', function (track) {
+      return this.syncQueue('add', track)
+    }.bind(this));
+    queue.on('remove', function (track) {
+      return this.syncQueue('remove', track)
+    }.bind(this));
+    /*function (track) {
       var index = queue.models.indexOf(track);
       debug("queuing track " + track.get('title') +
         "at index " + index);
       if (index < this.props.widgets.length) {
         widgets[index].load(track.get('uri'));
       }
-    }.bind(this));
-
+    }.bind(this));*/
   },
 
 });

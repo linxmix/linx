@@ -4,7 +4,7 @@ var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var Tracks_List = require('../track/Tracks_List');
 var Tracks_Wave = require('../track/Tracks_Wave');
-
+  
 var LibraryMenu = require('./LibraryMenu');
 
 module.exports = React.createClass({
@@ -25,9 +25,9 @@ module.exports = React.createClass({
   },
 
   render: function () {
+      
     // determine which tracks view to use
     var tracks;
-    console.log("rendering library");
     switch(this.state.trackView) {
       case 'list':
         tracks = Tracks_List({

@@ -26,7 +26,7 @@ module.exports = React.createClass({
         renderedPage = UpNext(this.props);
         break;
       default:
-        debug("new page: " + this.props.page);
+        debug("warning, unknown page: " + this.props.page);
     }
 
     return (
