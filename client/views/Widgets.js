@@ -5,7 +5,7 @@ var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 // TODO: is there a better way to write this?
 var WidgetView = (require('../config').widgetModel === 'SC') ?
-  require('../track/Track_SC') : require('../track/Track_Wave');
+  require('./track/Track_SC') : require('./track/Track_Wave');
 
 module.exports = React.createClass({
   
