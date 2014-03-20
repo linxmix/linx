@@ -17,6 +17,7 @@ module.exports = React.createClass({
         'id': widget.id,
         'index': widget.index,
         'active': (widget.index === this.props.activeWidget),
+        'playState': this.props.playState,
         'setActiveWidget': this.props.setActiveWidget,
         'changePlayState': this.props.changePlayState,
       });

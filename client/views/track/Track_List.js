@@ -24,6 +24,7 @@ module.exports = React.createClass({
   // remove track from queue
   dequeue: function(e) {
     var queue = this.getCollection().queue;
+    var index = queue.models.indexOf(this.props.track);
     queue.remove(this.props.track);
   },
 

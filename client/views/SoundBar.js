@@ -28,7 +28,7 @@ module.exports = React.createClass({
       widgets: [
         {id: 'widget0', index: 0},
         {id: 'widget1', index: 1},
-        {id: 'widget2', index: 2},
+        //{id: 'widget2', index: 2},
       ],
     }
   },
@@ -39,26 +39,30 @@ module.exports = React.createClass({
     }
   },
 
-  setActiveWidget: function(newWidget) {
-    debug("setActiveWidget" + newWidget)
+  setActiveWidget: function (newWidget) {
+    debug("setActiveWidget: " + newWidget);
     this.setState({
       activeWidget: newWidget,
     });
   },
 
   assertPlayState: function () {
-    var playState = this.props.playState,
-        activeWidget = this.state.activeWidget,
-        widget = this.getCollection().widgets.models[activeWidget].get('widget');
-    debug('asserting play state: ' + playState)
-    switch (playState) {
-      case 'play':
-        widget.play();
-        break;
-      case 'pause':
-        widget.pause();
-        break;
-    }
+    var playState = this.props.playState;
+    var activeWidget = this.state.activeWidget;
+    var widget = this.getCollection().widgets.models[activeWidget].get('widget');
+    debug('asserting play state: ' + playState);
+    widget.isPaused(function (isPaused) {
+      console.log("widget isPaused: ", isPaused);
+      if (isPaused) {
+        if (playState === 'play') {
+          widget.play();
+        }
+      } else { // widget is playing
+        if (playState === 'pause') {
+          widget.pause();
+        }
+      }
+    });
   },
 
   // use queue to preload widgets
@@ -84,14 +88,11 @@ module.exports = React.createClass({
           trackId = track.get('id');
       if (trackId !== widget.get('trackId')) {
         console.log("widget and track were unsynced:",
-          widget, track);
-        widget.get('widget').load(track.get('uri'));
-        // update widget with new trackId
-        widget.set({ 'trackId': trackId });
+          widget.get('index'), track.get('title'));
+        widget.load(track, {
+          'callback': this.assertPlayState,
+        });
       }
-
-    // finally, make sure active widget reflects playState
-    this.assertPlayState()
 
     }.bind(this));
 
@@ -118,6 +119,7 @@ module.exports = React.createClass({
       'widgets': this.props.widgets,
       'activeWidget': this.state.activeWidget,
       'setActiveWidget': this.setActiveWidget,
+      'playState': this.props.playState,
       'changePlayState': this.props.changePlayState,
     });
 
@@ -136,9 +138,11 @@ module.exports = React.createClass({
     // setup queue listeners
     var queue = this.getCollection().queue;
     queue.on('add', function (track) {
+      this.assertPlayState();
       return this.syncQueue('add', track)
     }.bind(this));
     queue.on('remove', function (track) {
+      this.assertPlayState();
       return this.syncQueue('remove', track)
     }.bind(this));
   },

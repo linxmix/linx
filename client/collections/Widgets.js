@@ -1,7 +1,7 @@
 var Backbone = require('backbone');
 var debug = require('debug')('collections:Widgets')
 
-var Widget = require('../models/Widget');
+var Widget_SC = require('../models/Widget_SC');
 
 module.exports = Backbone.Collection.extend({
 
@@ -12,5 +12,5 @@ module.exports = Backbone.Collection.extend({
     this.options = options;
   },
 
-  model: Widget,
+  model: Widget_SC,
 });
