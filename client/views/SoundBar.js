@@ -9,6 +9,8 @@ var WidgetModel = require('../models/Widget');
 var Widgets = require('../collections/Widgets');
 var WidgetsView = require('./Widgets');
 
+
+// TODO: make soundbar not cover main section
 module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
@@ -127,8 +129,6 @@ module.exports = React.createClass({
     );
   },
 
-  // TODO: bind queue add and remove to fn syncQueue.
-
   // rendered component has been mounted to a DOM element
   componentDidMount: function () {
     debug("component mounted");
@@ -141,14 +141,6 @@ module.exports = React.createClass({
     queue.on('remove', function (track) {
       return this.syncQueue('remove', track)
     }.bind(this));
-    /*function (track) {
-      var index = queue.models.indexOf(track);
-      debug("queuing track " + track.get('title') +
-        "at index " + index);
-      if (index < this.props.widgets.length) {
-        widgets[index].load(track.get('uri'));
-      }
-    }.bind(this));*/
   },
 
 });

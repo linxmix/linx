@@ -7,6 +7,7 @@ module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
+  // TODO: make it so clicking play instead of queue works
   // TODO: make able to queue song more than once?
   // TODO: make empty widget display none
   // TODO: make it so widget plays immediately on shift
