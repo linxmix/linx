@@ -10,6 +10,9 @@ module.exports = Widget.extend({
   // load given track into widget
   load: function (track, options) {
 
+    // add defaults to options
+    if (typeof options !== 'object') { options = {}; }
+
     // make CORS-proxy URL
     // TODO: how to know track is a model?
     if (track && track.get) {

@@ -13,7 +13,11 @@ module.exports = React.createClass({
     // make a Track_List for every track
     var track_lists = this.props.tracks.map(function (track) {
       return Track_List({
-        'track': track,
+        'model': {
+          'track': track,
+        },
+        // TODO: figure out if this helps or not.
+        'collection': this.getCollection(),
         'changePlayState': this.props.changePlayState,
       });
     }.bind(this));

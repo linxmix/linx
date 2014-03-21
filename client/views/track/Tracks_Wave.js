@@ -13,8 +13,14 @@ module.exports = React.createClass({
 
     // make a Track_Wave for every track
     var track_waves = this.props.tracks.map(function (track) {
-      return <Track_Wave track={track} />
-    });
+      return Track_Wave({
+        'model': {
+          'track': track,
+        },
+        // TODO: figure out if this helps or not.
+        'collection': this.getCollection(),
+      });
+    }.bind(this));
 
     return (
       <div>
