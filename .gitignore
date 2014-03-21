@@ -6,3 +6,4 @@ npm-debug.log
 *.swp
 .meteor
 packages
+linx-pitch.txt
