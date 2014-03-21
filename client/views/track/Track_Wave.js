@@ -77,7 +77,7 @@ module.exports = React.createClass({
     });
 
     // add wavesurfer to collection
-    var widgets = this.getCollection().widgets;
+    var widgets = this.widgets = this.getCollection().widgets;
     var widget = this.widget = widgets.add({
       'id': this.props.id,
       'index': this.props.index,
@@ -107,8 +107,7 @@ module.exports = React.createClass({
     debug("componentWillUnmount");
 
     // delete model
-    var widgets = this.getCollection().widgets;
-    widgets.remove(this.widget);
+    this.widgets.remove(this.widget);
 
     // clean up the wavesurfer
     this.wavesurfer.destroy();

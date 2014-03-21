@@ -16,8 +16,6 @@ module.exports = React.createClass({
         'model': {
           'track': track,
         },
-        // TODO: figure out if this helps or not.
-        'collection': this.getCollection(),
         'changePlayState': this.props.changePlayState,
       });
     }.bind(this));

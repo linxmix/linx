@@ -27,7 +27,7 @@ module.exports = React.createClass({
   },
 
   render: function () {
-    var track = this.props.track;
+    var track = this.props.model.track;
 
     return (
       <div>
