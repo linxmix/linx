@@ -1,6 +1,8 @@
 /** @jsx React.DOM */
 var React = require('react');
 var debug = require('debug')('views:track/Track_Wave');
+var Backbone = require('backbone');
+
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var WaveSurfer = require('wavesurfer.js');
@@ -12,7 +14,7 @@ module.exports = React.createClass({
 
   getDefaultProps: function () {
     return {
-      active: true,
+      'active': true,
     }
   },
 
@@ -85,8 +87,10 @@ module.exports = React.createClass({
     });
 
     // if track given, load the track stream
-    var track = this.props.track;
-    (track && widget.load(track));
+    console.log("checking track load", this.props);
+    if (this.props.track) {
+      widget.load(this.props.track);
+    }
 
     // if this is a widget wave, bind to finish event
     if (typeof this.props.index !== 'undefined') {

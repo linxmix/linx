@@ -9,17 +9,15 @@ module.exports = Widget.extend({
 
   // load given track into widget
   load: function (track, options) {
+    debug("loading track into widget", track);
 
     // add defaults to options
     if (typeof options !== 'object') { options = {}; }
 
     // make CORS-proxy URL
-    // TODO: how to know track is a model?
-    if (track && track.get) {
-      var url = "http://localhost:5001/" +
-        track.get('stream_url').replace(/^https:\/\//, '') +
-        "?client_id=" + clientId;
-    }
+    var url = "http://localhost:5001/" +
+      track.attributes['stream_url'].replace(/^https:\/\//, '') +
+      "?client_id=" + clientId;
 
     // load track into wave
     var wave = this.get('widget');
@@ -32,7 +30,7 @@ module.exports = Widget.extend({
     }
 
     // update widget with new trackId
-    this.set({ 'trackId': track.get('id') });
+    this.set({ 'trackId': track.attributes['id'] });
   },
 
   play: function () {

@@ -19,7 +19,6 @@ module.exports = React.createClass({
   },
 
   changeTrackView: function(newTrackView) {
-    debug("changeTrackView: " + newTrackView);
     this.setState({
       trackView: newTrackView,
     });
@@ -28,17 +27,16 @@ module.exports = React.createClass({
   render: function () {
     // determine which tracks view to use
     var tracks;
-    debug("rendering library");
     switch(this.state.trackView) {
       case 'list':
         tracks = Tracks_List({
-          tracks: this.props.tracks,
-          changePlayState: this.props.changePlayState,
+          'tracks': this.getCollection().tracks.models,
+          'changePlayState': this.props.changePlayState,
         });
         break;
       case 'wave':
         tracks = Tracks_Wave({
-          tracks: this.props.tracks,
+          'tracks': this.getCollection().tracks.models,
         });
         break;
     }

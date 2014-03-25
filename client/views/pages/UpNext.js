@@ -13,14 +13,13 @@ module.exports = React.createClass({
 
   getInitialState: function() {
     return {
-      trackView: 'list',
+      'trackView': 'list',
     }
   },
 
   changeTrackView: function(newTrackView) {
-    console.log("changeTrackView", newTrackView)
     this.setState({
-      trackView: newTrackView,
+      'trackView': newTrackView,
     });
   },
 
@@ -31,13 +30,13 @@ module.exports = React.createClass({
     switch(this.state.trackView) {
       case 'list':
         tracks = Tracks_List({
-          tracks: this.props.queue,
-          changePlayState: this.props.changePlayState,
+          'tracks': this.getCollection().queue.models,
+          'changePlayState': this.props.changePlayState,
         });
         break;
       case 'wave':
         tracks = Tracks_Wave({
-          tracks: this.props.queue,
+          'tracks': this.getCollection().queue.models,
         });
         break;
     }
@@ -46,8 +45,8 @@ module.exports = React.createClass({
       <div className="ui grid">
         <div className="sixteen wide column">
           {LibraryMenu({
-            trackView: this.state.trackView,
-            changeTrackView: this.changeTrackView,
+            'trackView': this.state.trackView,
+            'changeTrackView': this.changeTrackView,
           })}
         </div>
         <div className="sixteen wide column">
