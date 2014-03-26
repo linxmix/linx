@@ -63,8 +63,6 @@ module.exports = React.createClass({
   render: function () {
     var props = {
       'me': this.props.me,
-      'tracks': this.props.tracks,
-      'queue': this.props.queue,
       'page': this.state.page,
       'playState': this.state.playState,
       'playlist': this.state.playlist,
