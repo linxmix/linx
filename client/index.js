@@ -12,7 +12,6 @@ var config = require('./config');
 var Router = require('./Router');
 
 // why does this not work?
-var echojs = require('echojs');
 
 /*
 var echo = echojs({

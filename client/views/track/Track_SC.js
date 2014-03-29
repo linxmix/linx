@@ -7,11 +7,6 @@ module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
-  // BUG: debug why collection waves view isnt working
-  // BUG: debug why "finish" event is being called on entire queue
-  // TODO: add buttons to switch between soundcloud widgets and
-  //       wavesurfer widgets
-  // TODO: make able to queue song more than once?
   /* TODO: height should not be fixed in pixels */
   render: function () {
     debug("render");

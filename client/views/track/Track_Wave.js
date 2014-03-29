@@ -7,6 +7,11 @@ var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var WaveSurfer = require('wavesurfer.js');
 
+  // TODO: add buttons to switch between soundcloud widgets and
+  //       wavesurfer widgets
+  // TODO: make able to queue song more than once?
+  // TODO: make it so only one widget can be playing at any given time.
+
 // TODO: import all my functions from old linx project
 module.exports = React.createClass({
   
@@ -87,7 +92,6 @@ module.exports = React.createClass({
     });
 
     // if track given, load the track stream
-    console.log("checking track load", this.props);
     if (this.props.track) {
       widget.load(this.props.track);
     }

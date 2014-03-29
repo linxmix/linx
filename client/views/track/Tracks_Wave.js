@@ -15,6 +15,7 @@ module.exports = React.createClass({
     var track_waves = this.props.tracks.map(function (track) {
       return Track_Wave({
         'track': track,
+        'changePlayState': this.props.changePlayState,
       });
     }.bind(this));
 

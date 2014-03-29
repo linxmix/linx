@@ -37,6 +37,7 @@ module.exports = React.createClass({
       case 'wave':
         tracks = Tracks_Wave({
           'tracks': this.getCollection().tracks.models,
+          'changePlayState': this.props.changePlayState,
         });
         break;
     }

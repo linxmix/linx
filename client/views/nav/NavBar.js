@@ -14,6 +14,7 @@ module.exports = React.createClass({
       navTabs: [
         {key: 'me', name: 'Me'},
         {key: 'library', name: 'Library'},
+        {key: 'playlists', name: 'Playlists'},
         {key: 'upNext', name: "Up Next"},
         {key: 'linxMap', name: "Linx Map"},
       ]

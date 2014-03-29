@@ -21,13 +21,13 @@ module.exports = Widget.extend({
 
     // load track into wave
     var wave = this.get('widget');
-    wave.load(url);
     // call callback on load if callback exists
     if (options.callback) {
       wave.once('loaded', function () {
         { options.callback(); }
       });
     }
+    wave.load(url);
 
     // update widget with new trackId
     this.set({ 'trackId': track.attributes['id'] });

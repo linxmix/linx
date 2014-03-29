@@ -21,7 +21,10 @@ module.exports = React.createClass({
     return (
       <div>
         {greeting}
-        {Tracks_Wave(this.props)}
+        {Tracks_Wave({
+          'tracks': this.getCollection().tracks,
+          'changePlayState': this.props.changePlayState,
+        })}
       </div>
     );
   },

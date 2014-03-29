@@ -6,6 +6,7 @@ var ReactBackboneMixin = require('backbone-react-component').mixin;
 var Me = require('./pages/Me');
 var Library = require('./pages/Library');
 var UpNext = require('./pages/UpNext');
+var Playlists = require('./pages/Playlists');
 
 module.exports = React.createClass({
   
@@ -15,6 +16,7 @@ module.exports = React.createClass({
     var renderedPage;
 
     // render the current page
+    // TODO: make it so that this.props.page determines the require?
     switch (this.props.page) {
       case 'me':
         renderedPage = Me(this.props);
@@ -24,6 +26,9 @@ module.exports = React.createClass({
         break;
       case 'upNext':
         renderedPage = UpNext(this.props);
+        break;
+      case 'playlists':
+        renderedPage = Playlists(this.props);
         break;
       default:
         debug("warning, unknown page: " + this.props.page);

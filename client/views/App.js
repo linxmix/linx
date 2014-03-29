@@ -34,7 +34,6 @@ module.exports = React.createClass({
   getInitialState: function () {
     return {
       page: 'upNext',
-      playlist: 'me',
       playState: 'pause',
     }
   },
@@ -53,23 +52,15 @@ module.exports = React.createClass({
     });
   },
 
-  changePlaylist: function(newPlaylist) {
-    debug("changePlaylist" + newPlaylist)
-    this.setState({
-      playlist: newPlaylist,
-    });
-  },
-
   render: function () {
     var props = {
       'me': this.props.me,
       'page': this.state.page,
       'playState': this.state.playState,
-      'playlist': this.state.playlist,
       'changePage': this.changePage,
       'changePlayState': this.changePlayState,
-      'changePlaylist': this.changePlaylist,
     }
+
     return (
       <div>
         {Header(props)}
@@ -77,5 +68,6 @@ module.exports = React.createClass({
         {Footer(props)}
       </div>
     );
+    
   },
 });
