@@ -11,7 +11,7 @@ module.exports = React.createClass({
 
   getDefaultProps: function() {
     return {
-      'navTabs': ['Me', 'TasteProfiles', 'Playlists', 'Mixes', 'Queue'],
+      'navTabs': ['Me', 'TasteProfiles', 'Playlists', 'Mixes', 'Search', 'Queue'],
     };
   },
 
