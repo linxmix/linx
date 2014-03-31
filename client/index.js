@@ -24,12 +24,12 @@ echo('song/search').get({
 }, function (err, json) {
   console.log(json.response);
 });
-*/
 
 SC.initialize({
   client_id: config.clientId,
   redirect_uri: config.redirectUri,
 });
+*/
 
 $(function () {
   new Router();

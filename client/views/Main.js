@@ -4,8 +4,9 @@ var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var Me = require('./pages/Me');
-var Library = require('./pages/Library');
-var UpNext = require('./pages/UpNext');
+var Mixes = require('./pages/Mixes');
+var TasteProfiles = require('./pages/TasteProfiles');
+var Queue = require('./pages/Queue');
 var Playlists = require('./pages/Playlists');
 
 module.exports = React.createClass({
@@ -16,19 +17,23 @@ module.exports = React.createClass({
     var renderedPage;
 
     // render the current page
-    // TODO: make it so that this.props.page determines the require?
+    // TODO: make it so that this.props.page determines
+    //       page by string variable selection instead of switch
     switch (this.props.page) {
-      case 'me':
+      case 'Me':
         renderedPage = Me(this.props);
         break;
-      case 'library':
-        renderedPage = Library(this.props);
+      case 'Queue':
+        renderedPage = Queue(this.props);
         break;
-      case 'upNext':
-        renderedPage = UpNext(this.props);
-        break;
-      case 'playlists':
+      case 'Playlists':
         renderedPage = Playlists(this.props);
+        break;
+      case 'Mixes':
+        renderedPage = Mixes(this.props);
+        break;
+      case 'TasteProfiles':
+        renderedPage = TasteProfiles(this.props);
         break;
       default:
         debug("warning, unknown page: " + this.props.page);

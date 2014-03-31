@@ -1,12 +1,11 @@
 /** @jsx React.DOM */
 var React = require('react');
-var debug = require('debug')('views:Library');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var Tracks_List = require('../track/Tracks_List');
 var Tracks_Wave = require('../track/Tracks_Wave');
-
-var LibraryMenu = require('./LibraryMenu');
+  
+var QueueMenu = require('./QueueMenu');
 
 module.exports = React.createClass({
   
@@ -14,43 +13,49 @@ module.exports = React.createClass({
 
   getInitialState: function() {
     return {
-      trackView: 'list',
+      'trackView': 'list',
     }
   },
 
   changeTrackView: function(newTrackView) {
     this.setState({
-      trackView: newTrackView,
+      'trackView': newTrackView,
     });
   },
 
   render: function () {
+      
     // determine which tracks view to use
     var tracks;
     switch(this.state.trackView) {
       case 'list':
         tracks = Tracks_List({
-          'tracks': this.getCollection().tracks.models,
+          'tracks': this.getCollection().queue,
           'changePlayState': this.props.changePlayState,
         });
         break;
       case 'wave':
         tracks = Tracks_Wave({
-          'tracks': this.getCollection().tracks.models,
+          'tracks': this.getCollection().queue,
           'changePlayState': this.props.changePlayState,
         });
         break;
     }
 
+    // set default message
+    var defaultMessage = (this.getCollection().queue.length === 0) ?
+      'No tracks queued.' : '';
+
     return (
       <div className="ui grid">
         <div className="sixteen wide column">
-          {LibraryMenu({
-            trackView: this.state.trackView,
-            changeTrackView: this.changeTrackView,
+          {QueueMenu({
+            'trackView': this.state.trackView,
+            'changeTrackView': this.changeTrackView,
           })}
         </div>
         <div className="sixteen wide column">
+          {defaultMessage}
           {tracks}
         </div>
       </div>

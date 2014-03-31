@@ -9,7 +9,6 @@ module.exports = React.createClass({
   mixins: [ReactBackboneMixin],
 
   // TODO: display user profile soundcloud widget
-  // TODO: make this only display Me's tracks
   render: function () {
 
     // if the user is logged in, say hello!
@@ -22,7 +21,7 @@ module.exports = React.createClass({
       <div>
         {greeting}
         {Tracks_Wave({
-          'tracks': this.getCollection().tracks,
+          'tracks': this.getCollection().myTracks,
           'changePlayState': this.props.changePlayState,
         })}
       </div>

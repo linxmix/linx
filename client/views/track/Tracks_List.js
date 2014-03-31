@@ -18,13 +18,8 @@ module.exports = React.createClass({
       });
     }.bind(this));
 
-    // set default message
-    var defaultMessage = (track_lists.length === 0) ?
-      'No tracks found.' : '';
-
     return (
       <div>
-        {defaultMessage}
         {track_lists}
       </div>
     );

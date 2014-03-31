@@ -5,9 +5,9 @@ var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var Me = require('../models/Me');
 
-var Tracks = require('../collections/Tracks');
 var Queue = require('../collections/Queue');
 var Widgets = require('../collections/Widgets');
+var Tracks = require('../collections/Tracks');
 
 var Header = require('./Header');
 var Main = require('./Main');
@@ -19,36 +19,36 @@ module.exports = React.createClass({
 
   getDefaultProps: function () {
     return {
-      model: {
+      'model': {
         me: new Me(),
       },
-      collection: {
-        tracks: new Tracks(),
-        queue: new Queue(),
+      'collection': {
+        'queue': new Queue(),
+        'myTracks': new Tracks(),
         // TODO: move this into soundbar?
-        widgets: new Widgets(),
+        'widgets': new Widgets(),
       },
     };
   },
 
   getInitialState: function () {
     return {
-      page: 'upNext',
-      playState: 'pause',
+      'page': 'Queue',
+      'playState': 'pause',
     }
   },
 
   changePage: function(newPage) {
     debug("changePage: " + newPage)
     this.setState({
-      page: newPage,
+      'page': newPage,
     });
   },
 
   changePlayState: function(newPlayState) {
     debug("changePlayState: " + newPlayState)
     this.setState({
-      playState: newPlayState,
+      'playState': newPlayState,
     });
   },
 

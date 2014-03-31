@@ -11,13 +11,7 @@ module.exports = React.createClass({
 
   getDefaultProps: function() {
     return {
-      navTabs: [
-        {key: 'me', name: 'Me'},
-        {key: 'library', name: 'Library'},
-        {key: 'playlists', name: 'Playlists'},
-        {key: 'upNext', name: "Up Next"},
-        {key: 'linxMap', name: "Linx Map"},
-      ]
+      'navTabs': ['Me', 'TasteProfiles', 'Playlists', 'Mixes', 'Queue'],
     };
   },
 
@@ -31,9 +25,9 @@ module.exports = React.createClass({
     var navTabs = this.props.navTabs.map(function(navTab) {
       return (
         Tab({
-          'active': (navTab.key === this.props.page),
-          'key': navTab.key,
-          'name': navTab.name,
+          'active': (navTab === this.props.page),
+          'key': navTab,
+          'name': navTab,
           'activeClass': 'active item',
           'inactiveClass': 'item',
           'handleClick': this.handleClick,

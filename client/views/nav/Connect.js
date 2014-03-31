@@ -15,11 +15,7 @@ module.exports = React.createClass({
   },
 
   login: function () {
-    // login and send Tracks collection so function
-    // can add user's Tracks.
-    var me = this.getModel().me;
-    var tracks = this.getCollection().tracks
-    me.login(tracks);
+    this.getModel().me.login(this.getCollection().myTracks);
   },
 
   logout: function () {

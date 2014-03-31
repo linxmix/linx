@@ -41,11 +41,17 @@ module.exports = React.createClass({
     return (
       <div className="eight wide column">
         <div className="ui inverted teal segment">
-          <div className="ui buttons">
+
+          <a className="ui green button">
+            Add Song(s)
+          </a>
+
+          <div className="ui pull-right buttons">
             {trackViewTabs[0]}
             <div className="or"></div>
             {trackViewTabs[1]}
           </div>
+
         </div>
       </div>
     );
