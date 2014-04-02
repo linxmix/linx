@@ -52,6 +52,7 @@ module.exports = React.createClass({
           {QueueMenu({
             'trackView': this.state.trackView,
             'changeTrackView': this.changeTrackView,
+            'changePage': this.props.changePage,
           })}
         </div>
         <div className="sixteen wide column">
