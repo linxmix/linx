@@ -3,8 +3,7 @@ var React = require('react');
 var debug = require('debug')('views:Search');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
-var config = require('../../config');
-var echojs = require('echojs');
+var SearchBar = require('./SearchBar');
 
 module.exports = React.createClass({
   
@@ -12,21 +11,25 @@ module.exports = React.createClass({
 
   render: function () {
 
-    /* UNCOMMENTING THIS SECTION CAUSES ERROR when loading searchpage
-    var echo = echojs({
-      key: config.echoId,
+    SC.get('/tracks', { q: 'buskers', license: 'cc-by-sa' }, function(tracks) {
+      console.log(tracks);
     });
 
-    echo('song/search').get({
-      artist: 'radiohead',
-      title: 'karma police'
-    }, function (err, json) {
-      console.log(json.response);
+    /*
+    this.props.collection.echoNest.search({
+      'url': "song/search",
+      'query': {},
+      'success': function (collection, response, options) {
+        console.log("SUCCESS", collection, response, options);
+      },
     });
     */
 
     return (
       <div className="ui grid">
+        <div className="sixteen wide column">
+          {SearchBar(this.props)}
+        </div>
         <div className="sixteen wide column">
         TODO
         </div>
