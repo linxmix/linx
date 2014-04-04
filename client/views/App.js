@@ -41,14 +41,14 @@ module.exports = React.createClass({
   },
 
   changePage: function(newPage) {
-    debug("changePage: " + newPage)
+    debug("changePage", newPage)
     this.setState({
       'page': newPage,
     });
   },
 
   changePlayState: function(newPlayState) {
-    debug("changePlayState: " + newPlayState)
+    debug("changePlayState", newPlayState)
     this.setState({
       'playState': newPlayState,
     });

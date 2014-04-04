@@ -57,7 +57,7 @@ var SearchResults = Backbone.Collection.extend({
 module.exports = Backbone.Collection.extend({
 
   // called with {query, url, success, error}
-  search: function(options) {
+  search: function (options) {
     debug("searching echonest", options)
     var results = new SearchResults(options);
     results.fetch({
@@ -66,6 +66,20 @@ module.exports = Backbone.Collection.extend({
         debug("Error with search", response);
       }
     });
+  },
+
+  searchSongs: function (options) {
+    if (typeof options !== 'object') {
+      options['url'] = 'song/search';
+    }
+    this.search(options);
+  },
+
+  searchArtists: function (options) {
+    if (typeof options !== 'object') {
+      options['url'] = 'artist/search';
+    }
+    this.search(options);
   },
 
 });
