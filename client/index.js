@@ -6,7 +6,7 @@ if (process.env.NODE_ENV === "development") {
 
 var Backbone = require('backbone');
 var React = require('react');
-var $ = Backbone.$ = require('jquery');
+var $ = Backbone.$ = jQuery = require('jquery');
 
 var config = require('./config');
 var Router = require('./Router');
