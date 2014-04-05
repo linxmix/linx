@@ -65,11 +65,40 @@ module.exports = React.createClass({
 
     return (
       <div>
+        <div className="ui red vertical demo sidebar menu">
+          <a className="item">
+            <i className="home icon"></i>
+            Home
+          </a>
+          <a className="active item">
+            <i className="heart icon"></i>
+            Current Section
+          </a>
+          <a className="item">
+            <i className="facebook icon"></i>
+            Like us on Facebook
+          </a>
+          <div className="item">
+            <b>More</b>
+            <div className="menu">
+              <a className="item">About</a>
+              <a className="item">Contact Us</a>
+            </div>
+          </div>
+        </div>
+        <button className="sidebar toggle">toggle sidebar</button>
         {Header(props)}
         {Main(props)}
         {Footer(props)}
       </div>
     );
     
+  },
+
+  componentDidMount: function () {
+    this.$('.sidebar.toggle').unbind('click');
+    this.$('.sidebar.toggle').click(function () {
+      this.$('.ui.sidebar').sidebar('toggle');
+    }.bind(this));
   },
 });
