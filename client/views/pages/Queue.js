@@ -2,8 +2,7 @@
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
-var Tracks_List = require('../track/Tracks_List');
-var Tracks_Wave = require('../track/Tracks_Wave');
+var Tracks = require('../track/Tracks');
   
 var QueueMenu = require('./QueueMenu');
 
@@ -13,7 +12,7 @@ module.exports = React.createClass({
 
   getInitialState: function() {
     return {
-      'trackView': 'list',
+      'trackView': 'list-sc',
     }
   },
 
@@ -25,22 +24,12 @@ module.exports = React.createClass({
 
   render: function () {
       
-    // determine which tracks view to use
-    var tracks;
-    switch(this.state.trackView) {
-      case 'list':
-        tracks = Tracks_List({
-          'tracks': this.getCollection().queue,
-          'changePlayState': this.props.changePlayState,
-        });
-        break;
-      case 'wave':
-        tracks = Tracks_Wave({
-          'tracks': this.getCollection().queue,
-          'changePlayState': this.props.changePlayState,
-        });
-        break;
-    }
+    // create tracks view
+    var tracks = Tracks({
+      'tracks': this.getCollection().queue,
+      'trackView': this.state.trackView,
+      'changePlayState': this.props.changePlayState,
+    });
 
     // set default message
     var defaultMessage = (this.getCollection().queue.length === 0) ?

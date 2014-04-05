@@ -8,21 +8,10 @@ module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
-  /*
-
-                <div className="item"></div>
-                <div className="item"></div>
-                <div className="item">- By Artist</div>
-                <div className="item">- By Genre</div>
-                <div className="item"></div>
-                <div className="item"></div>
-                <div className="item"></div>
-                */
-
   getDefaultProps: function() {
     return {
       trackViewTabs: [
-        {key: 'list', name: 'List View'},
+        {key: 'list-sc', name: 'List View'},
         {key: 'wave', name: 'Wave View'},
       ],
       dropdownTabs: [

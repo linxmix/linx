@@ -37,7 +37,6 @@ var SearchResults = Backbone.Collection.extend({
   },
 
   parse: function (response) {
-    debug("parsing response", response);
     response = response['response'];
     // extract the part of the response that is not the status
     var results = [];
@@ -70,15 +69,17 @@ module.exports = Backbone.Collection.extend({
 
   searchSongs: function (options) {
     if (typeof options !== 'object') {
-      options['url'] = 'song/search';
+      options = {};
     }
+    options['url'] = 'song/search';
     this.search(options);
   },
 
   searchArtists: function (options) {
     if (typeof options !== 'object') {
-      options['url'] = 'artist/search';
+      options = {};
     }
+    options['url'] = 'artist/search';
     this.search(options);
   },
 

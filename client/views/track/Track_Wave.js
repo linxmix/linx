@@ -7,12 +7,10 @@ var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var WaveSurfer = require('wavesurfer.js');
 
-  // TODO: add buttons to switch between soundcloud widgets and
-  //       wavesurfer widgets
   // TODO: make able to queue song more than once?
   // TODO: make it so only one widget can be playing at any given time.
+  // TODO: import all my functions from old linx project
 
-// TODO: import all my functions from old linx project
 module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
@@ -24,11 +22,13 @@ module.exports = React.createClass({
   },
 
   render: function () {
-    debug("render");
+    var track = this.props.track;
+    debug("render track_wave", track);
     // only display if active
     var className = (this.props.active) ? "" : "hidden";
     return (
       <div className={className}>
+        <p>{track && track.get('title')}</p>
         <div className="wave">
           <div className="ui active teal progress">
             <div className="bar"></div>
@@ -86,7 +86,7 @@ module.exports = React.createClass({
     // add wavesurfer to collection
     var widgets = this.widgets = this.getCollection().widgets;
     var widget = this.widget = widgets.add({
-      'id': this.props.id,
+      'soundBarId': this.props.soundBarId,
       'index': this.props.index,
       'widget': wavesurfer,
     });
@@ -97,7 +97,7 @@ module.exports = React.createClass({
     }
 
     // if this is a widget wave, bind to finish event
-    if (typeof this.props.index !== 'undefined') {
+    if (typeof this.props.soundBarId !== 'undefined') {
       wavesurfer.on('finish', function() {
         debug("widget event: FINISH", wavesurfer);
         // update activeWidget

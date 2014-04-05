@@ -15,12 +15,14 @@ module.exports = React.createClass({
     debug("render");
     
     // make widgetViews
+    var Widgets = this.getCollection().widgets;
     var widgetViews = this.props.widgets.map(function (widget) {
+      var Widget = Widgets.where({ 'soundBarId': widget.soundBarId })[0];
       return widgetView = WidgetView({
-        'id': widget.id,
+        'track': (Widget && Widget.get('track')),
+        'soundBarId': widget.soundBarId,
         'index': widget.index,
         'active': (widget.index === this.props.activeWidget),
-        'playState': this.props.playState,
         'setActiveWidget': this.props.setActiveWidget,
         'changePlayState': this.props.changePlayState,
       });

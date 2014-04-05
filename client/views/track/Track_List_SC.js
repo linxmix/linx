@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
-var debug = require('debug')('views:track/Track_List');
+var debug = require('debug')('views:track/Track_List_SC');
 
 module.exports = React.createClass({
   
@@ -33,15 +33,24 @@ module.exports = React.createClass({
     queue.remove(track);
   },
 
+  // TODO
+  // view this track
+  viewTrack: function () {
+    var track = this.props.track;
+    debug("viewing track", track);
+  },
+
+
   render: function () {
     var track = this.props.track;
 
     return (
-      <div>
+      <div className="ui secondary inverted orange segment">
         <div className="ui label">{track.get('title')}</div>
         <div className="ui small button" onClick={this.play}>Play</div>
         <div className="ui small button" onClick={this.queue}>Queue</div>
         <div className="ui small button" onClick={this.dequeue}>Dequeue</div>
+        <div className="ui small button" onClick={this.viewTrack}>View Track</div>
       </div>
     );
   },

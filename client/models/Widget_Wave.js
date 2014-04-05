@@ -7,6 +7,7 @@ var Widget = require('./Widget');
 
 module.exports = Widget.extend({
 
+  // TODO: why does track.attributes work while track.get doesnt?
   // load given track into widget
   load: function (track, options) {
     debug("loading track into widget", track);
@@ -23,14 +24,14 @@ module.exports = Widget.extend({
     var wave = this.get('widget');
     // call callback on load if callback exists
     if (options.callback) {
-      wave.once('loaded', function () {
+      wave.once('ready', function () {
         { options.callback(); }
       });
     }
     wave.load(url);
 
-    // update widget with new trackId
-    this.set({ 'trackId': track.attributes['id'] });
+    // update widget with new track
+    this.set({ 'track': track });
   },
 
   play: function () {

@@ -24,9 +24,9 @@ module.exports = React.createClass({
         {key: 'pause', name: 'Pause'},
       ],
       widgets: [
-        {id: 'widget0', index: 0},
-        {id: 'widget1', index: 1},
-        //{id: 'widget2', index: 2},
+        {soundBarId: 'widget0', index: 0},
+        {soundBarId: 'widget1', index: 1},
+        //{soundBarId: 'widget2', index: 2},
       ],
     }
   },
@@ -75,9 +75,10 @@ module.exports = React.createClass({
       if (queueIndex >= queue.length) { return; }
 
       // if incorrect track, load correct track
-      var track = queue.models[queueIndex],
-          trackId = track.get('id');
-      if (trackId !== widget.get('trackId')) {
+      var track = queue.models[queueIndex];
+      var trackId = track.get('id');
+      var widgetTrack = widget.get('track');
+      if (trackId !== (widgetTrack && widgetTrack.get('id'))) {
         console.log("widget and track were unsynced:",
           widget.get('index'), track.get('title'));
         widget.load(track, {
@@ -107,7 +108,7 @@ module.exports = React.createClass({
       )
     }.bind(this));
 
-    // make WidgetsWiew
+    // make WidgetsView
     var widgetsView = WidgetsView({
       'widgets': this.props.widgets,
       'activeWidget': this.state.activeWidget,

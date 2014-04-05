@@ -5,18 +5,27 @@
 @import "../node_modules/semantic/src/elements/label.less";
 @import "../node_modules/semantic/src/elements/segment.less";
 @import "../node_modules/semantic/src/elements/basic.icon.less";
-
+@import "../node_modules/semantic/src/elements/input.less";
+@import "../node_modules/semantic/src/elements/divider.less";
 
 @import "../node_modules/semantic/src/collections/menu.less";
+@import "../node_modules/semantic/src/collections/form.less";
+@import "../node_modules/semantic/src/collections/grid.less";
 
 @import "../node_modules/semantic/src/modules/dropdown.less";
+@import "../node_modules/semantic/src/modules/dimmer.less";
+
+.bold {
+  font-weight:900;
+}
 
 .wave {
   position: relative;
 }
 
-.add-song-drop:hover {
-  color: #E96633;
+/* had to be specific enough to override semantic's thing */
+.clickable, .ui.icon.input > .clickable {
+  cursor: pointer;
 }
 
 .progress {
