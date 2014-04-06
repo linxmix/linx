@@ -18,6 +18,7 @@ describe("#edges", function () {
     in: 'in',
     id: '0',
     out: 'out',
+    sample: "link to sample"
   };
   
   before(function (done) {
@@ -66,6 +67,41 @@ describe("#edges", function () {
         .expect('Content-Type', /json/)
         .expect(200)
         .expect(edge0, done);
+    });
+  });
+
+  describe("PUT /edges/0", function () {
+
+    edge0.sample = "link to other sample";
+
+    it('responds with edge object', function (done) {
+      request(app)
+        .put('/edges/0')
+        .send(edge0)
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .expect(edge0, done);
+    });
+  });
+
+  describe("DELETE /edges/0", function () {
+    it("responds with success", function (done) {
+      request(app)
+        .del('/edges/0')
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200, done);
+    });
+  });
+
+  describe("GET /edges/0", function () {
+    it("responds with 404", function (done) {
+      request(app)
+        .get('/edges/0')
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(404, done);
     });
   });
 

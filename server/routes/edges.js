@@ -1,4 +1,5 @@
 var uuid = require('node-uuid');
+var _ = require('underscore');
 
 module.exports = function (app, db, graphdb) {
   
@@ -13,7 +14,6 @@ module.exports = function (app, db, graphdb) {
     if (edgeOut) query.object = edgeOut;
 
     graphdb.get(query, function (err, results) {
-
       if (err) { return next(err); }
     
       res.json(200, results);
@@ -37,9 +37,6 @@ module.exports = function (app, db, graphdb) {
     }
 
     graphdb.put(edge, function (err) {
-
-      console.log(arguments);
-
       if (err) { return next(err); }
 
       res.json(200, edge);
@@ -54,7 +51,6 @@ module.exports = function (app, db, graphdb) {
     };
 
     graphdb.get(query, function (err, results) {
-
       if (err) { return next(err); }
 
       if (results.length === 0) {
@@ -63,11 +59,12 @@ module.exports = function (app, db, graphdb) {
 
       } else {
 
+        var edge = results[0];
         var result = {
-          in: results[0].subject,
-          id: results[0].predicate,
-          out: results[0].object,
-          sample: results[0].sample,
+          in: edge.subject,
+          id: edge.predicate,
+          out: edge.object,
+          sample: edge.sample,
         };
         res.json(200, result);
       }
@@ -75,8 +72,68 @@ module.exports = function (app, db, graphdb) {
   });
 
   // update model
-  app.put("/edges/:edgeId", function (req, res, next) {});
+  app.put("/edges/:edgeId", function (req, res, next) {
+
+    var edgeId = req.params.edgeId;
+
+    var query = {
+      predicate: req.params.edgeId,
+    };
+
+    graphdb.get(query, function (err, results) {
+      if (err) { return next(err); }
+
+      if (results.length === 0) {
+
+        res.json(404, undefined);
+
+      } else {
+
+        var edge = results[0];
+        
+        graphdb.del(edge, function (err) {
+          if (err) { return next(err); }
+
+          edge.subject = req.body.subject || edge.subject;
+          edge.object = req.body.object || edge.object;
+          edge.sample = req.body.sample || edge.sample;
+
+          console.log(edge);
+
+          graphdb.put(edge, function (err) {
+            if (err) { return next(err); }
+
+            var result = {
+              in: edge.subject,
+              id: edge.predicate,
+              out: edge.object,
+              sample: edge.sample,
+            };
+
+            res.json(200, result);
+          });
+        });
+      }
+    });
+  });
 
   // delete model
-  app.delete("/edges/:edgeId", function (req, res, next) {});
+  app.delete("/edges/:edgeId", function (req, res, next) {
+    var edgeId = req.params.edgeId;
+    var edge = {
+      predicate: edgeId,
+    };
+
+    graphdb.get(edge, function (err, results) {
+      if (err) { return next(err); }
+
+      edge = results[0];
+
+      graphdb.del(edge, function (err) {
+        if (err) { return next(err); }
+      
+        res.json(200, undefined);
+      });
+    });
+  });
 };
