@@ -66,7 +66,7 @@
     "vinyl-source-stream": "^0.1.1",
     "gulp": "^3.5.6",
     "browserify": "^3.32.1",
-    "lessify": "^0.3.0",
+    "lessify": "git://github.com/ahdinosaur/lessify",
     "wavesurfer.js": "0.0.6",
     "semantic": "git://github.com/Semantic-Org/Semantic-UI#0.15.4",
     "seraph": "~0.9.4",

@@ -2,6 +2,8 @@
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
+require('semantic/src/modules/dropdown');
+
 var Tab = require('../nav/Tab');
 
 module.exports = React.createClass({
@@ -68,12 +70,11 @@ module.exports = React.createClass({
       <div className="eight wide column">
         <div className="ui inverted teal segment">
 
-          <div className="ui compact menu">
-            <div className="ui simple orange dropdown button">
-              Add Song(s)<i className="dropdown icon"></i>
-              <div className="menu">
-                {dropdownTabs}
-              </div>
+          <div className="ui dropdown">
+            <div className="text">Add Song(s)</div>
+            <i className="dropdown icon"></i>
+            <div className="menu">
+              {dropdownTabs}
             </div>
           </div>
 
@@ -86,6 +87,10 @@ module.exports = React.createClass({
         </div>
       </div>
     );
+  },
+
+  componentDidMount: function () {
+    this.$('.ui.dropdown').dropdown();
   },
 
 });
