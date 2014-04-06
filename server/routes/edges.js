@@ -1,7 +1,10 @@
 var uuid = require('node-uuid');
 var _ = require('underscore');
+var Promise = require('bluebird');
 
 module.exports = function (app, db, graphdb) {
+
+  graphdb = Promise.promisifyAll(graphdb);
   
   // read collection
   app.get("/edges", function (req, res, next) {
@@ -13,10 +16,11 @@ module.exports = function (app, db, graphdb) {
     if (edgeIn) query.subject = edgeIn;
     if (edgeOut) query.object = edgeOut;
 
-    graphdb.get(query, function (err, results) {
-      if (err) { return next(err); }
-    
+    graphdb.getAsync(query).then(function (results) {
+      console.log(results);
       res.json(200, results);
+    }).catch(function (err) {
+      return next(err);
     });
   });
 
@@ -36,10 +40,10 @@ module.exports = function (app, db, graphdb) {
       sample: sample,
     }
 
-    graphdb.put(edge, function (err) {
-      if (err) { return next(err); }
-
+    graphdb.putAsync(edge).then(function () {
       res.json(200, edge);
+    }).catch(function (err) {
+      return next(err);
     });
   });
 
@@ -50,24 +54,24 @@ module.exports = function (app, db, graphdb) {
       predicate: req.params.edgeId,
     };
 
-    graphdb.get(query, function (err, results) {
-      if (err) { return next(err); }
+    graphdb.getAsync(query).then(function (results) {
 
       if (results.length === 0) {
-
-        res.json(404, undefined);
-
-      } else {
-
-        var edge = results[0];
-        var result = {
-          in: edge.subject,
-          id: edge.predicate,
-          out: edge.object,
-          sample: edge.sample,
-        };
-        res.json(200, result);
+        return res.json(404, undefined);
       }
+
+      var edge = results[0];
+      var result = {
+        in: edge.subject,
+        id: edge.predicate,
+        out: edge.object,
+        sample: edge.sample,
+      };
+
+      res.json(200, result);
+
+    }).catch(function (err) {
+      return next(err);
     });
   });
 
@@ -79,41 +83,37 @@ module.exports = function (app, db, graphdb) {
     var query = {
       predicate: req.params.edgeId,
     };
+    var edge;
 
-    graphdb.get(query, function (err, results) {
-      if (err) { return next(err); }
+    graphdb.getAsync(query).then(function (results) {
 
       if (results.length === 0) {
-
         res.json(404, undefined);
-
-      } else {
-
-        var edge = results[0];
-        
-        graphdb.del(edge, function (err) {
-          if (err) { return next(err); }
-
-          edge.subject = req.body.subject || edge.subject;
-          edge.object = req.body.object || edge.object;
-          edge.sample = req.body.sample || edge.sample;
-
-          console.log(edge);
-
-          graphdb.put(edge, function (err) {
-            if (err) { return next(err); }
-
-            var result = {
-              in: edge.subject,
-              id: edge.predicate,
-              out: edge.object,
-              sample: edge.sample,
-            };
-
-            res.json(200, result);
-          });
-        });
       }
+
+      edge = results[0];
+      
+      return graphdb.delAsync(edge);
+    }).then(function () {
+
+      edge.subject = req.body.subject || edge.subject;
+      edge.object = req.body.object || edge.object;
+      edge.sample = req.body.sample || edge.sample;
+
+      return graphdb.putAsync(edge);
+    }).then(function () {
+
+      var result = {
+        in: edge.subject,
+        id: edge.predicate,
+        out: edge.object,
+        sample: edge.sample,
+      };
+
+      res.json(200, result);
+
+    }).catch(function (err) {
+      return next(err);
     });
   });
 
@@ -124,16 +124,19 @@ module.exports = function (app, db, graphdb) {
       predicate: edgeId,
     };
 
-    graphdb.get(edge, function (err, results) {
-      if (err) { return next(err); }
+    graphdb.getAsync(edge).then(function (results) {
+
+      if (results.length === 0) {
+        res.json(404, undefined);
+      }
 
       edge = results[0];
 
-      graphdb.del(edge, function (err) {
-        if (err) { return next(err); }
-      
+      return graphdb.delAsync(edge);
+    }).then(function () {
         res.json(200, undefined);
-      });
+    }).catch(function (err) {
+      if (err) { return next(err); }
     });
   });
 };

@@ -78,6 +78,7 @@
     "node-uuid": "^1.4.1",
     "morgan": "^1.0.0",
     "body-parser": "^1.0.1",
-    "compression": "^1.0.1"
+    "compression": "^1.0.1",
+    "bluebird": "^1.2.1"
   }
 }
