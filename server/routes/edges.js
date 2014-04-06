@@ -1,6 +1,37 @@
-var uuid = require('node-uuid');
 var _ = require('underscore');
 var Promise = require('bluebird');
+var tv4 = require('tv4');
+
+var schema = {
+  "type": "object",
+  "properties": {
+    "in": {
+      "description": "id of track in to edge",
+      "type": "string",
+    },
+    "id": {
+      "description": "id of edge track",
+      "type": "string",
+    },
+    "out": {
+      "description": "id of track out of edge",
+      "type": "string"
+    },
+    "start": {
+      "description": "start sample of track in",
+      "type": "number",
+    },
+    "end": {
+      "description": "end sample of track out",
+      "type": "number",
+    },
+  },
+  "required": ["in", "out", "id", "start", "end"],
+};
+
+// functionalize edgeToGraphEdge
+// functionalize graphEdgetoEdge
+// functionalize validation of either
 
 module.exports = function (app, db, graphdb) {
 
@@ -17,7 +48,6 @@ module.exports = function (app, db, graphdb) {
     if (edgeOut) query.object = edgeOut;
 
     graphdb.getAsync(query).then(function (results) {
-      console.log(results);
       res.json(200, results);
     }).catch(function (err) {
       return next(err);
@@ -27,20 +57,25 @@ module.exports = function (app, db, graphdb) {
   // create model
   app.post("/edges", function (req, res, next) {
 
-    var edgeIn = req.body.in;
+    var edge = req.body;
 
-    var edgeId = req.body.id || uuid();
-    var edgeOut = req.body.out;
-    var sample = req.body.sample;
+    var validation = tv4.validateMultiple(edge, schema, true);
 
-    var edge = {
-      subject: edgeIn,
-      predicate: edgeId,
-      object: edgeOut,
-      sample: sample,
+    console.log(validation);
+
+    if (!validation.valid) {
+      return res.json(400, validation.errors);
     }
 
-    graphdb.putAsync(edge).then(function () {
+    var graphEdge = {
+      subject: edge.in,
+      predicate: edge.id,
+      object: edge.out,
+      start: edge.start,
+      end: edge.end,
+    };
+
+    graphdb.putAsync(graphEdge).then(function () {
       res.json(200, edge);
     }).catch(function (err) {
       return next(err);
@@ -60,15 +95,17 @@ module.exports = function (app, db, graphdb) {
         return res.json(404, undefined);
       }
 
-      var edge = results[0];
-      var result = {
-        in: edge.subject,
-        id: edge.predicate,
-        out: edge.object,
-        sample: edge.sample,
+      var graphEdge = results[0];
+
+      var edge = {
+        in: graphEdge.subject,
+        id: graphEdge.predicate,
+        out: graphEdge.object,
+        start: graphEdge.start,
+        end: graphEdge.end,
       };
 
-      res.json(200, result);
+      res.json(200, edge);
 
     }).catch(function (err) {
       return next(err);
@@ -78,12 +115,10 @@ module.exports = function (app, db, graphdb) {
   // update model
   app.put("/edges/:edgeId", function (req, res, next) {
 
-    var edgeId = req.params.edgeId;
-
     var query = {
       predicate: req.params.edgeId,
     };
-    var edge;
+    var graphEdge;
 
     graphdb.getAsync(query).then(function (results) {
 
@@ -91,26 +126,28 @@ module.exports = function (app, db, graphdb) {
         res.json(404, undefined);
       }
 
-      edge = results[0];
+      graphEdge = results[0];
       
-      return graphdb.delAsync(edge);
+      return graphdb.delAsync(graphEdge);
     }).then(function () {
 
-      edge.subject = req.body.subject || edge.subject;
-      edge.object = req.body.object || edge.object;
-      edge.sample = req.body.sample || edge.sample;
+      graphEdge.subject = req.body.in || graphEdge.subject;
+      graphEdge.object = req.body.out || graphEdge.object;
+      graphEdge.start = req.body.start || graphEdge.start;
+      graphEdge.end = req.body.end || graphEdge.end;
 
-      return graphdb.putAsync(edge);
+      return graphdb.putAsync(graphEdge);
     }).then(function () {
 
-      var result = {
-        in: edge.subject,
-        id: edge.predicate,
-        out: edge.object,
-        sample: edge.sample,
+      var edge = {
+        in: graphEdge.subject,
+        id: graphEdge.predicate,
+        out: graphEdge.object,
+        start: graphEdge.start,
+        end: graphEdge.end,
       };
 
-      res.json(200, result);
+      res.json(200, edge);
 
     }).catch(function (err) {
       return next(err);

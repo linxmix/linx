@@ -15,10 +15,11 @@ describe("#edges", function () {
 
   var db, graphdb, app;
   var edge0 = {
-    in: 'in',
+    in: '1',
     id: '0',
-    out: 'out',
-    sample: "link to sample"
+    out: '2',
+    start: 123,
+    end: 321,
   };
   
   before(function (done) {
@@ -72,7 +73,7 @@ describe("#edges", function () {
 
   describe("PUT /edges/0", function () {
 
-    edge0.sample = "link to other sample";
+    edge0.start = 135;
 
     it('responds with edge object', function (done) {
       request(app)
