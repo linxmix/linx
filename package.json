@@ -5,7 +5,7 @@
   "main": "server/index.js",
   "browser": "client/index.js",
   "scripts": {
-    "test-server": "(export NODE_ENV=test; mocha -R spec -s 500 -t 360000 test/server/**/*.js)",
+    "test-server": "(export NODE_ENV=test; mocha -R spec test/server/**/*.js)",
     "test-client": "(export NODE_ENV=test; testling)",
     "test": "npm run test-server && (if [ -z \"$TRAVIS\" ]; then npm run test-client; fi)",
     "develop": "(export NODE_ENV=development; gulp develop & nodemon .)",
@@ -69,10 +69,15 @@
     "lessify": "git://github.com/ahdinosaur/lessify",
     "wavesurfer.js": "0.0.6",
     "semantic": "git://github.com/Semantic-Org/Semantic-UI#0.15.4",
-    "seraph": "~0.9.4",
     "debug": "^0.7.4",
     "echojs": "git://github.com/ahdinosaur/echojs",
     "URIjs": "^1.12.1",
-    "underscore": "^1.6.0"
+    "underscore": "^1.6.0",
+    "level": "^0.18.0",
+    "levelgraph": "^0.8.2",
+    "node-uuid": "^1.4.1",
+    "morgan": "^1.0.0",
+    "body-parser": "^1.0.1",
+    "compression": "^1.0.1"
   }
 }

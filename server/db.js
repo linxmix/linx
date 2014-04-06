@@ -1,1 +1,7 @@
-module.exports = require("seraph")("http://localhost:7474");
+var levelup = require("level");
+
+var dbName = (process.env.NODE_ENV === 'test')
+  ? 'testdb'
+  : 'db';
+
+module.exports = levelup(dbName);

@@ -8,3 +8,5 @@ npm-debug.log
 packages
 linx-pitch.txt
 linx description.txt
+/db
+/testdb
