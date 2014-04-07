@@ -5,7 +5,7 @@ var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var _ = require('underscore');
 
-var Tab = require('../nav/Tab');
+var Tab = require('../bars/nav/Tab');
 
 module.exports = React.createClass({
   

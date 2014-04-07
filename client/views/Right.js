@@ -2,17 +2,19 @@
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
-var SoundBar = require('./bars/sound/SoundBar');
+var PinBar = require('./bars/PinBar');
 
 module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
   render: function () {
+    // determine if this should be hidden
+    var hidden = (this.props.rightBar) ? '' : 'hidden';
     return (
-      <footer>
-        {SoundBar(this.props)}
-      </footer>
+      <div className={hidden}>
+        {PinBar(this.props)}
+      </div>
     );
   },
 });

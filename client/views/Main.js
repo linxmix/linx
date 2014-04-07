@@ -51,7 +51,12 @@ module.exports = React.createClass({
   },
 
   componentDidMount: function () {
+    var playlists = this.getCollection().playlists;
+    playlists.add({});
+    playlists.add({ 'name': 'Caio\'s Stuff' });
+    playlists.add({ 'name': 'pole songs' });
 
+/*
     var tasteProfiles = this.getCollection().tasteProfiles;
     console.log("FETCHING TasteProfiles", tasteProfiles);
     tasteProfiles.fetch({
@@ -62,5 +67,7 @@ module.exports = React.createClass({
         console.log("ERROR", collection, response, options);
       },
     });
+  */
   },
+
 });

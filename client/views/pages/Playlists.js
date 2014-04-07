@@ -10,17 +10,19 @@ module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
-  getDefaultProps: function () {
-    return {
-      'sliders': [
-        {text: 'Hotttnesss'},
-        {text: 'Energy'},
-      ]
-    }
-  },
-
   render: function () {
     return (
+      <div>
+        Playlists TODO
+      </div>
+    );
+
+  },
+
+});
+
+/*
+
       <div>
         {PlaylistSidebar}
         <div className="ui divider"></div>
@@ -46,8 +48,13 @@ module.exports = React.createClass({
         </div>
 
       </div>
-    );
 
+  getDefaultProps: function () {
+    return {
+      'sliders': [
+        {text: 'Hotttnesss'},
+        {text: 'Energy'},
+      ]
+    }
   },
-
-});
+*/

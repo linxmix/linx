@@ -8,7 +8,7 @@ module.exports = Backbone.Model.extend({
       country: false,
       region: false
     };
-  }
+  },
 
   "sync": mySyncFunction,
 

@@ -2,7 +2,7 @@
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
-var NavBar = require('./nav/NavBar');
+var NavBar = require('./bars/nav/NavBar');
 
 module.exports = React.createClass({
   

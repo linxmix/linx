@@ -11,6 +11,7 @@
 @import "../node_modules/semantic/src/collections/menu.less";
 @import "../node_modules/semantic/src/collections/form.less";
 @import "../node_modules/semantic/src/collections/grid.less";
+@import "../node_modules/semantic/src/collections/table.less";
 
 @import "../node_modules/semantic/src/modules/dropdown.less";
 @import "../node_modules/semantic/src/modules/sidebar.less";
@@ -18,12 +19,26 @@
 /* transition must be last */
 @import '../node_modules/semantic/src/modules/transition.less';
 
+.ui.grid > .row > .tight-right {
+  padding-right: 0%;
+}
+
+.ui.grid > .row > .tight-left {
+  padding-left: 0%;
+}
+
 .bold {
   font-weight:900;
 }
 
 .wave {
   position: relative;
+}
+
+.left-sidebar {
+  position: fixed;
+  top: 10%;
+  z-index: 1;
 }
 
 /* had to be specific enough to override semantic's thing */
@@ -43,10 +58,6 @@
 .pull-right {
   position: absolute;
   right: 0.5%;
-}
-
-.semantic-orange {
-  color: #E96633;
 }
 
 .bottom-menu {

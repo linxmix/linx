@@ -4,7 +4,7 @@ var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 require('semantic/src/modules/dropdown');
 
-var Tab = require('../nav/Tab');
+var Tab = require('../bars/nav/Tab');
 
 module.exports = React.createClass({
   
@@ -67,7 +67,7 @@ module.exports = React.createClass({
 
     // TODO: dropdown for what list we're viewing
     return (
-      <div className="eight wide column">
+      <div className="eight wide column">z
         <div className="ui inverted teal segment">
 
           <div className="ui dropdown">

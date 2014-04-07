@@ -1,11 +1,11 @@
 /** @jsx React.DOM */
-var debug = require('debug')('views:SoundBar');
+var debug = require('debug')('views:bars/sound/SoundBar');
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
-var Tab = require('./nav/Tab');
+var Tab = require('../nav/Tab');
 
-var Widgets = require('../collections/Widgets');
+var Widgets = require('../../../collections/Widgets');
 var WidgetsView = require('./Widgets');
 
 // TODO: make soundbar not cover main section

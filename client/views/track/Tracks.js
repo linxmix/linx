@@ -6,6 +6,8 @@ var Track_List_SC = require('./Track_List_SC');
 var Track_List_Echo = require('./Track_List_Echo');
 var Track_Wave = require('./Track_Wave');
 
+// TODO: turn this into a semantic table
+
 module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
