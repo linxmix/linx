@@ -3,27 +3,48 @@ var React = require('react');
 var debug = require('debug')('views:Playlists');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
+var PlaylistSidebar = require('./PlaylistSidebar');
+var Slider = require('./Slider');
+
 module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
+  getDefaultProps: function () {
+    return {
+      'sliders': [
+        {text: 'Hotttnesss'},
+        {text: 'Energy'},
+      ]
+    }
+  },
+
   render: function () {
-
-    // get all SC playlists with >= 100 likes
-    /*
-    SC.get('/playlists', { playback_count: 50 }, function(playlists, error) {
-      if (error) { alert('Error: ' + error.message); }
-      else {
-        console.log(playlists);
-      }
-    });
-    */
-
     return (
-      <div className="ui grid">
-        <div className="sixteen wide column">
-          TODO
+      <div>
+        {PlaylistSidebar}
+        <div className="ui divider"></div>
+        <div className="ui two column middle aligned relaxed grid basic inverted purple segment">
+          <div className="center aligned column">
+            <div className="huge green ui button">Build Playlist</div>
+          </div>
+          <div className="ui inverted vertical divider">
+            Or
+          </div>
+          <div className="center aligned column">
+            <div className="huge teal ui button">
+              Generate Playlist
+            </div>
+          </div>
         </div>
+        <div className="ui divider"></div>
+        <div className="ui column">
+          {Slider({
+            'text': 'Hotttnesss',
+            'value': 0
+          })}
+        </div>
+
       </div>
     );
 

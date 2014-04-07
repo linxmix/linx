@@ -9,6 +9,7 @@ var Queue = require('../collections/Queue');
 var Widgets = require('../collections/Widgets');
 var Tracks = require('../collections/Tracks');
 var EchoNest = require('../collections/EchoNest');
+var TasteProfiles = require('../collections/TasteProfiles');
 
 var Header = require('./Header');
 var Main = require('./Main');
@@ -26,6 +27,7 @@ module.exports = React.createClass({
       'collection': {
         'queue': new Queue(),
         'echoNest': new EchoNest(),
+        'tasteProfiles': new TasteProfiles(),
         'myTracks': new Tracks(),
         // TODO: move this into soundbar?
         'widgets': new Widgets(),

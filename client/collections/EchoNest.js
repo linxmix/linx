@@ -4,8 +4,6 @@ var debug = require('debug')('collections:EchoNest')
 var echoApiKey = require('../config').echoApiKey;
 var URI = require('URIjs');
 
-var Track = require('../models/Track');
-
 // collection which lifts the weight of searching
 var SearchResults = Backbone.Collection.extend({
 

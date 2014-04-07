@@ -99,6 +99,7 @@ module.exports = React.createClass({
                 placeholder="Search Selected..."
                 value={this.props.searchText}
                 ref="searchText"
+                autofocus
                 onChange={this.handleChange}>
                 {searchIcon}
               </input>

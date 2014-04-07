@@ -23,7 +23,7 @@ module.exports = React.createClass({
 
   render: function () {
     var track = this.props.track;
-    debug("render track_wave", track);
+    //debug("render track_wave", track);
     // only display if active
     var className = (this.props.active) ? "" : "hidden";
     return (

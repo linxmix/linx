@@ -49,4 +49,18 @@ module.exports = React.createClass({
       </main>
     );
   },
+
+  componentDidMount: function () {
+
+    var tasteProfiles = this.getCollection().tasteProfiles;
+    console.log("FETCHING TasteProfiles", tasteProfiles);
+    tasteProfiles.fetch({
+      'success': function(collection, response, options) {
+        console.log("SUCCESS", collection, response, options);
+      },
+      'error': function(collection, response, options) {
+        console.log("ERROR", collection, response, options);
+      },
+    });
+  },
 });
