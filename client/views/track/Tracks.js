@@ -2,8 +2,8 @@
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
-var Track_List_SC = require('./Track_List_SC');
-var Track_List_Echo = require('./Track_List_Echo');
+var Track_Table_SC = require('./Track_Table_SC');
+var Track_Table_Echo = require('./Track_Table_Echo');
 var Track_Wave = require('./Track_Wave');
 
 // TODO: turn this into a semantic table
@@ -17,8 +17,8 @@ module.exports = React.createClass({
     // determine which view to use
     var Track;
     switch (this.props.trackView) {
-      case 'list-sc': Track = Track_List_SC; break;
-      case 'list-echo': Track = Track_List_Echo; break;
+      case 'table-sc': Track = Track_Table_SC; break;
+      case 'table-echo': Track = Track_Table_Echo; break;
       case 'wave': Track = Track_Wave; break;
       default: debug("WARNING: unknown trackView", this.props.trackView);
     }

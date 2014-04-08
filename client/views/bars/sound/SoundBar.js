@@ -118,11 +118,7 @@ module.exports = React.createClass({
     });
 
     // render SoundBar
-    return (
-      <div className="bottom-menu">
-        {widgetsView}
-      </div>
-    );
+    return widgetsView;
   },
 
   // rendered component has been mounted to a DOM element

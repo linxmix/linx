@@ -2,7 +2,7 @@
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
-var Tracks = require('../track/Tracks');
+var Tracks_Table = require('../track/Tracks_Table');
   
 var QueueMenu = require('./QueueMenu');
 
@@ -12,7 +12,7 @@ module.exports = React.createClass({
 
   getInitialState: function() {
     return {
-      'trackView': 'list-sc',
+      'trackView': 'table-sc',
     }
   },
 
@@ -25,7 +25,7 @@ module.exports = React.createClass({
   render: function () {
       
     // create tracks view
-    var tracks = Tracks({
+    var tracks = Tracks_Table({
       'tracks': this.getCollection().queue,
       'trackView': this.state.trackView,
       'changePlayState': this.props.changePlayState,

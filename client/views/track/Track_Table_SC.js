@@ -1,7 +1,11 @@
 /** @jsx React.DOM */
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
-var debug = require('debug')('views:track/Track_List_SC');
+var debug = require('debug')('views:track/Track_Table_SC');
+
+var _ = require('underscore');
+
+var Row = require('../bars/nav/Row');
 
 module.exports = React.createClass({
   
@@ -40,7 +44,20 @@ module.exports = React.createClass({
     debug("viewing track", track);
   },
 
+  render: function () {
+    var track = this.props.track;
+    return Row(_.extend({}, track, {
+        'data': [track.get('title')],
+        'active': this.props.active,
+        'activeClass': 'positive',
+        'inactiveClass': '',
+        'handleClick': this.props.handleClick,
+        'handleDblClick': this.queue,
+    }));
+  },
 
+});
+/*
   render: function () {
     var track = this.props.track;
 
@@ -54,5 +71,4 @@ module.exports = React.createClass({
       </div>
     );
   },
-
-});
+*/

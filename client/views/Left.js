@@ -29,6 +29,12 @@ module.exports = React.createClass({
           icon: 'list layout icon',
           className: '.playlist-sidebar'
         },
+        {
+          key: 'linx-map',
+          name: 'LinxMap',
+          icon: 'globe icon',
+          className: '.linxMap-sidebar'
+        },
       ],
     }
   },

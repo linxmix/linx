@@ -4,8 +4,6 @@ var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var Playlist_Table = require('./Playlist_Table');
 
-// TODO: turn this into a semantic table
-
 module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
@@ -27,6 +25,7 @@ module.exports = React.createClass({
       });
     }.bind(this));
 
+    // TODO: determine headers via arguments
     return (
       <table className={this.props.className}>
         <thead>

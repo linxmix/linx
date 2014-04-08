@@ -6,6 +6,7 @@ var ReactBackboneMixin = require('backbone-react-component').mixin;
 var _ = require('underscore');
 
 var Me = require('../models/Me');
+var Playlist = require('../models/Playlist');
 
 var Queue = require('../collections/Queue');
 var Widgets = require('../collections/Widgets');
@@ -25,15 +26,21 @@ module.exports = React.createClass({
   mixins: [ReactBackboneMixin],
 
   getDefaultProps: function () {
+    var queue = new Queue();
+    var queuePlaylist = new Playlist({
+      'name': 'Queue',
+      'tracks': queue,
+    });
+    var playlists = new Playlists([queuePlaylist]);
     return {
       'model': {
         me: new Me(),
       },
       'collection': {
-        'queue': new Queue(),
+        'queue': queue,
         'echoNest': new EchoNest(),
         'tasteProfiles': new TasteProfiles(),
-        'playlists': new Playlists(),
+        'playlists': playlists,
         'myTracks': new Tracks(),
         // TODO: move this into soundbar?
         'widgets': new Widgets(),

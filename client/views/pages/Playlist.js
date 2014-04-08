@@ -3,7 +3,7 @@ var React = require('react');
 var debug = require('debug')('views:pages/Playlist');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
-var Tracks = require('../track/Tracks');
+var Tracks_Table = require('../track/Tracks_Table');
 
 module.exports = React.createClass({
   
@@ -11,7 +11,7 @@ module.exports = React.createClass({
 
   getInitialState: function() {
     return {
-      'trackView': 'list-sc',
+      'trackView': 'table-sc',
     }
   },
 
@@ -27,7 +27,7 @@ module.exports = React.createClass({
     var activePlaylist = this.props.activePlaylist;
     var tracks = (activePlaylist && activePlaylist.get('tracks'));
     // create tracks view
-    return Tracks({
+    return Tracks_Table({
       'tracks': tracks,
       'trackView': this.state.trackView,
       'changePlayState': this.props.changePlayState,

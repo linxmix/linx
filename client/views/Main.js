@@ -22,10 +22,10 @@ module.exports = React.createClass({
       case 'Me':
         renderedPage = Me(this.props);
         break;
-      case 'Queue':
-        renderedPage = Queue(this.props);
-        break;
-      case 'Playlist':
+      //case 'Queue':
+      //  renderedPage = Queue(this.props);
+      //  break;
+      case 'Playlist': case 'Queue':
         renderedPage = Playlist(this.props);
         break;
       case 'Search':

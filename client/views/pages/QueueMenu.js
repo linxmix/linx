@@ -13,7 +13,7 @@ module.exports = React.createClass({
   getDefaultProps: function() {
     return {
       trackViewTabs: [
-        {key: 'list-sc', name: 'List View'},
+        {key: 'table-sc', name: 'List View'},
         {key: 'wave', name: 'Wave View'},
       ],
       dropdownTabs: [

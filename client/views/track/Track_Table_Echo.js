@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
-var debug = require('debug')('views:track/Track_List_SC');
+var debug = require('debug')('views:track/Track_Table_SC');
 
 module.exports = React.createClass({
   

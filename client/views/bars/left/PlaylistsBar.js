@@ -10,10 +10,7 @@ module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
-  handleClick: function (row) {
-    // get this row's playlist collection
-    var playlist = this.getCollection().playlists.get(row.key);
-    // update active playlist
+  handleClick: function (playlist) {
     this.props.setActivePlaylist(playlist);
   },
 

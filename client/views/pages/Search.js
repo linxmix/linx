@@ -3,7 +3,7 @@ var React = require('react');
 var debug = require('debug')('views:Search');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
-var Tracks = require('../track/Tracks');
+var Tracks_Table = require('../track/Tracks_Table');
 
 var Track = require('../../models/Track');
 
@@ -111,7 +111,7 @@ module.exports = React.createClass({
           })}
         </div>
         <div className="fourteen wide column">
-          {Tracks({
+          {Tracks_Table({
             'tracks': this.state.searchResults,
             'trackView': 'list-' + this.state.activeSearchTab['parent'],
             'changePlayState': this.props.changePlayState,

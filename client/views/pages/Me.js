@@ -2,7 +2,7 @@
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
-var Tracks = require('../track/Tracks');
+var Tracks_Table = require('../track/Tracks_Table');
 var Connect = require('./Connect');
 
 module.exports = React.createClass({
@@ -22,7 +22,7 @@ module.exports = React.createClass({
       <div>
         <Connect me={this.props.me} />
         {greeting}
-        {Tracks({
+        {Tracks_Table({
           'tracks': this.getCollection().myTracks,
           'trackView': 'wave',
           'changePlayState': this.props.changePlayState,
