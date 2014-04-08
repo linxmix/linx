@@ -10,19 +10,25 @@ module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
+  getDefaultProps: function () {
+    return {
+      'className': "ui table segment",
+    }
+  },
+
   render: function () {
 
     // make a Playlist_Table for every playlist
     var playlists = this.props.playlists.map(function (playlist) {
       return Playlist_Table({
-        'active': (playlist.cid === this.props.activePlaylist),
+        'active': (playlist.cid === this.props.activePlaylist.cid),
         'playlist': playlist,
         'handleClick': this.props.handleClick,
       });
     }.bind(this));
 
     return (
-      <table className="ui table segment">
+      <table className={this.props.className}>
         <thead>
           <tr>
           <th>Playlist Name</th>

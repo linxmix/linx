@@ -3,10 +3,12 @@ var React = require('react');
 var debug = require('debug')('views:Left')
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
+var _ = require('underscore');
+
 var Tab = require('./bars/nav/Tab');
 
-var PlaylistBar = require('./bars/left/PlaylistBar');
-var Search = require('./bars/left/Search');
+var PlaylistsBar = require('./bars/left/PlaylistsBar');
+var SearchBar = require('./bars/left/SearchBar');
 
 module.exports = React.createClass({
   
@@ -16,14 +18,16 @@ module.exports = React.createClass({
     return {
       'tabs': [
         {
-          key: 'playlists',
-          name: 'Playlists',
-          icon: 'list layout icon',
-        },
-        {
           key: 'search',
           name: 'Search',
           icon: 'search icon',
+          className: '.search-sidebar'
+        },
+        {
+          key: 'playlists',
+          name: 'Playlists',
+          icon: 'list layout icon',
+          className: '.playlist-sidebar'
         },
       ],
     }
@@ -31,39 +35,15 @@ module.exports = React.createClass({
 
   getInitialState: function () {
     return {
-      'activeTab': '',
+      'activeTab': 'search',
     }
   },
 
-  changeTab: function (tabKey) {
-    this.setState({
-      'activeTab': tabKey,
-    });
-  },
-
-  toggleBar: function (tabKey) {
-    this.props.changeBar({
-      'leftBar': (this.props.leftBar) ? 0 : 2,
-    });
-    this.changeTab(tabKey);
-  },
-
-  // TODO: fix this logic
   tabClick: function (tab) {
-    console.log("TAB CLICK", tab.key, this.state.activeTab);
-    // if this tab is active, toggle bar closed
-    if (this.state.activeTab == tab.key) {
-      this.toggleBar('');
-    // if this tab is not active
-    } else {
-      // and bar is open, switch tabs
-      if (this.state.leftBar) {
-        this.changeTab(tab.key);
-      // else if bar is closed, toggle bar and set active tab
-      } else {
-        this.toggleBar(tab.key);
-      }
-    }
+    this.$(tab.className).sidebar('toggle');
+    this.setState({
+      'activeTab': tab.key,
+    });
   },
 
   render: function () {
@@ -71,55 +51,31 @@ module.exports = React.createClass({
     // make tabs
     var tabs = this.props.tabs.map(function(tab) {
       return (
-        Tab({
-          // a tab can only be active if bar is active
-          'active': (this.props.leftBar &&
-            (tab.key == this.state.activeTab)),
-          'key': tab.key,
+        Tab(_.extend({}, tab, {
+          'active': (tab.key == this.state.activeTab),
           'name': (<i className={tab.icon}></i>),
-          'activeClass': 'active red item',
-          'inactiveClass': 'blue item',
+          'activeClass': 'purple ui icon button',
+          'inactiveClass': 'black ui icon button',
           'handleClick': this.tabClick,
-        })
+        }))
       )
     }.bind(this));
-
-    // determine which bar to render based on active tab
-    var bar;
-    switch (this.state.activeTab) {
-      case 'playlists':
-        bar = PlaylistBar(this.props); break;
-      case 'search':
-        bar = Search(this.props); break;
-      case '':
-        bar = (<div></div>); break;
-      default:
-        debug("warning, unknown tab", this.state.activeTab);
-    }
-
-    // determine if bar should be hidden
-    var hidden = (this.props.leftBar) ? '' : 'hidden';
+    
     return (
       <div>
         <div className="left-sidebar">
-          <div className="ui vertical icon menu">
+          <div className="ui vertical buttons">
             {tabs}
           </div>
         </div>
-        <div className={hidden}>
-          {bar}
-        </div>
+        {SearchBar(_.extend({
+          'className': 'search-sidebar',
+        },this.props))}
+        {PlaylistsBar(_.extend({
+          'className': 'playlist-sidebar',
+        },this.props))}
       </div>
     );
   },
 
 });
-
-/*
-            <a className="ui small black circular icon button"
-
-{PlaylistBar({
-            'activeTab': this.state.activeTab,
-            'changeTab': this.changeTab,
-          })}
-          */

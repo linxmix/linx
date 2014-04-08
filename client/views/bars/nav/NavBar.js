@@ -2,21 +2,37 @@
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
-var Connect = require('./Connect');
 var Tab = require('./Tab');
+var SearchInput = require('./SearchInput');
 
 module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
-  getDefaultProps: function() {
+  getDefaultProps: function () {
     return {
-      'navTabs': ['Me', 'TasteProfiles', 'Playlists', 'Mixes', 'Search', 'Queue'],
+      'navTabs': ['Me', 'Settings'],
     };
+  },
+
+  getInitialState: function () {
+    return {
+      'searchText': '',
+    }
   },
 
   handleClick: function(navTab) {
     this.props.changePage(navTab.key);
+  },
+
+  handleChange: function (options) {
+    this.setState({
+      'searchText': options.searchText,
+    });
+  },
+
+  handleSubmit: function () {
+    this.props.setSearchBarText(this.state.searchText)
   },
 
   render: function () {
@@ -36,15 +52,38 @@ module.exports = React.createClass({
     }.bind(this));
 
     // render navBar
+    // TODO: make menu do stuff and not be static
     return (
       <div className="ui inverted menu" role="navigation">
-        <a className="header item">Linx</a>
-        {navTabs}
-        <div className="right menu">
-          <Connect me={this.props.me} />
+        <div className="right icon menu">
+          <div className="icon item">
+            <i className="user icon"></i>
+          </div>
+          <div className="icon item">
+            <i className="settings icon"></i>
+          </div>
+          <div className="item">
+            {SearchInput({
+              'handleSubmit': this.handleSubmit,
+              'className': "ui small field icon input",
+              'placeholder': "Search Selected...",
+              'value': this.state.searchText,
+              'handleChange': this.handleChange,
+              'text': (<i className="clickable search icon"></i>),
+            })}
+          </div>
         </div>
       </div>
     );
   },
 
 });
+/*
+
+      <div className="ui inverted menu" role="navigation">
+        <div className="right menu">
+          {navTabs}
+        </div>
+      </div>
+
+      */

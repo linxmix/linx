@@ -4,7 +4,6 @@ var debug = require('debug')('views:Search');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var Tracks = require('../track/Tracks');
-var SearchBar = require('./SearchBar');
 
 var Track = require('../../models/Track');
 

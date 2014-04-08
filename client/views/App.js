@@ -34,7 +34,6 @@ module.exports = React.createClass({
         'echoNest': new EchoNest(),
         'tasteProfiles': new TasteProfiles(),
         'playlists': new Playlists(),
-        'tracks': new Tracks(),
         'myTracks': new Tracks(),
         // TODO: move this into soundbar?
         'widgets': new Widgets(),
@@ -44,14 +43,21 @@ module.exports = React.createClass({
 
   getInitialState: function () {
     return {
-      'page': 'Queue',
+      'page': 'Playlist',
       'playState': 'pause',
       'activePlaylist': '',
-      'leftBar': 0,
+      'searchBarText': '',
       'rightBar': 0,
       'bottomBar': 0,
     }
   },
+
+  setSearchBarText: function (text) {
+    this.setState({
+      'searchBarText': text,
+    });
+  },
+
 
   changePage: function (newPage) {
     debug("changePage", newPage);
@@ -67,11 +73,13 @@ module.exports = React.createClass({
     });
   },
 
-  changeActivePlaylist: function (newPlaylistId) {
-    debug("changeActivePlaylist", newPlaylistId);
+  // jump to playlists page whenever setting active playlist
+  setActivePlaylist: function (newPlaylist) {
+    debug("setActivePlaylist", newPlaylist);
     this.setState({
-      'activePlaylist': newPlaylistId,
+      'activePlaylist': newPlaylist,
     });
+    this.changePage('Playlist');
   },
 
   changeBar: function (options) {
@@ -86,53 +94,36 @@ module.exports = React.createClass({
     var props = {
       'me': this.props.me,
       'playState': this.state.playState,
+      'searchBarText': this.state.searchBarText,
+      'setSearchBarText': this.setSearchBarText,
       'changePlayState': this.changePlayState,
       'activePlaylist': this.state.activePlaylist,
-      'changeActivePlaylist': this.changeActivePlaylist,
+      'setActivePlaylist': this.setActivePlaylist,
+      'tracks': new Tracks(),
     }
-
-    // determine size of each section
-    var middleClass = widthToString(16 - left - right)
-    var leftClass = 'tight-right ' + widthToString(left);
-    var rightClass = 'tight-left ' + widthToString(right);
 
     return (
     
       <div>
-        <div className="ui grid">
-          <div className="row">
+        {Left(props)}
 
-            <div className={leftClass}>
-              {Left(_.extend({
-                'leftBar': left,
-                'changeBar': this.changeBar,
-              }, props))}
-            </div>
+        {Header(_.extend({
+          'page': this.state.page,
+          'changePage': this.changePage,
+        }, props))}
+        {Main(_.extend({
+          'page': this.state.page,
+          'changePage': this.changePage,
+        }, props))}
+        {Footer(_.extend({
+          'bottomBar': bottom,
+          'changeBar': this.changeBar,
+        }, props))}
 
-            <div className={middleClass}>
-              {Header(_.extend({
-                'page': this.state.page,
-                'changePage': this.changePage,
-              }, props))}
-              {Main(_.extend({
-                'page': this.state.page,
-                'changePage': this.changePage,
-              }, props))}
-              {Footer(_.extend({
-                'bottomBar': bottom,
-                'changeBar': this.changeBar,
-              }, props))}
-            </div>
-
-            <div className={rightClass}>
-              {Right(_.extend({
-                'rightBar': right,
-                'changeBar': this.changeBar,
-              }, props))}
-            </div>
-            
-          </div>
-        </div>
+        {Right(_.extend({
+          'rightBar': right,
+          'changeBar': this.changeBar,
+        }, props))}
       </div>
     );
     

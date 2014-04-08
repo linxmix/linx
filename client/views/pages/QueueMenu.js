@@ -22,7 +22,7 @@ module.exports = React.createClass({
         {key: '3', page: 'Search', name: '- By Artist'},
         {key: '4', page: 'Search', name: '- By Genre'},
         {key: '5', page: 'TasteProfiles', name: '- By TasteProfile'},
-        {key: '6', page: 'Playlists', name: '- By Playlist'},
+        {key: '6', page: 'Playlist', name: '- By Playlist'},
         {key: '7', page: 'Mixes', name: '- By Mix'},
       ],
     };

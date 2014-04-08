@@ -20,7 +20,6 @@ module.exports = React.createClass({
   // TODO: make it so cells can be clicked/active
   render: function () {
     // generate info from data
-    console.log("RENDERING ROW", this.props);
     var data = (this.props.data && this.props.data.map(function (datum) {
       return (<td>{datum}</td>)
     }));

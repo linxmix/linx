@@ -24,7 +24,7 @@ module.exports = React.createClass({
     }
 
     // make a Track for every track
-    var tracks = this.props.tracks.map(function (track) {
+    var tracks = this.props.tracks && this.props.tracks.map(function (track) {
       return Track({
         'track': track,
         'changePlayState': this.props.changePlayState,

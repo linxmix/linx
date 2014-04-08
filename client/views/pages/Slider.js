@@ -1,6 +1,6 @@
 /** @jsx React.DOM */
 var React = require('react');
-var debug = require('debug')('views:Playlists');
+var debug = require('debug')('views:pages/slider');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var PlaylistSidebar = require('./PlaylistSidebar');

@@ -11,7 +11,6 @@ module.exports = React.createClass({
 
   render: function () {
     var playlist = this.props.playlist;
-    console.log("RENDERING PLAYLIST", playlist);
     return Row({
         'key': playlist.cid,
         'data': [playlist.get('name')],
