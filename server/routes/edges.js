@@ -2,6 +2,8 @@ var _ = require('underscore');
 var Promise = require('bluebird');
 var tv4 = require('tv4');
 
+var edgesDb = require('../db/edges')
+
 var schema = {
   "type": "object",
   "properties": {
@@ -33,9 +35,9 @@ var schema = {
 // functionalize graphEdgetoEdge
 // functionalize validation of either
 
-module.exports = function (app, db, graphdb) {
+module.exports = function (app) {
 
-  graphdb = Promise.promisifyAll(graphdb);
+  edgesDb = Promise.promisifyAll(edgesDb);
   
   // read collection
   app.get("/edges", function (req, res, next) {
@@ -47,7 +49,7 @@ module.exports = function (app, db, graphdb) {
     if (edgeIn) query.subject = edgeIn;
     if (edgeOut) query.object = edgeOut;
 
-    graphdb.getAsync(query).then(function (results) {
+    edgesDb.getAsync(query).then(function (results) {
       res.json(200, results);
     }).catch(function (err) {
       return next(err);
@@ -75,7 +77,7 @@ module.exports = function (app, db, graphdb) {
       end: edge.end,
     };
 
-    graphdb.putAsync(graphEdge).then(function () {
+    edgesDb.putAsync(graphEdge).then(function () {
       res.json(200, edge);
     }).catch(function (err) {
       return next(err);
@@ -89,7 +91,7 @@ module.exports = function (app, db, graphdb) {
       predicate: req.params.edgeId,
     };
 
-    graphdb.getAsync(query).then(function (results) {
+    edgesDb.getAsync(query).then(function (results) {
 
       if (results.length === 0) {
         return res.json(404, undefined);
@@ -120,7 +122,7 @@ module.exports = function (app, db, graphdb) {
     };
     var graphEdge;
 
-    graphdb.getAsync(query).then(function (results) {
+    edgesDb.getAsync(query).then(function (results) {
 
       if (results.length === 0) {
         res.json(404, undefined);
@@ -128,7 +130,7 @@ module.exports = function (app, db, graphdb) {
 
       graphEdge = results[0];
       
-      return graphdb.delAsync(graphEdge);
+      return edgesDb.delAsync(graphEdge);
     }).then(function () {
 
       graphEdge.subject = req.body.in || graphEdge.subject;
@@ -136,7 +138,7 @@ module.exports = function (app, db, graphdb) {
       graphEdge.start = req.body.start || graphEdge.start;
       graphEdge.end = req.body.end || graphEdge.end;
 
-      return graphdb.putAsync(graphEdge);
+      return edgesDb.putAsync(graphEdge);
     }).then(function () {
 
       var edge = {
@@ -161,7 +163,7 @@ module.exports = function (app, db, graphdb) {
       predicate: edgeId,
     };
 
-    graphdb.getAsync(edge).then(function (results) {
+    edgesDb.getAsync(edge).then(function (results) {
 
       if (results.length === 0) {
         res.json(404, undefined);
@@ -169,7 +171,7 @@ module.exports = function (app, db, graphdb) {
 
       edge = results[0];
 
-      return graphdb.delAsync(edge);
+      return edgesDb.delAsync(edge);
     }).then(function () {
         res.json(200, undefined);
     }).catch(function (err) {
