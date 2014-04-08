@@ -8,9 +8,54 @@ module.exports = React.createClass({
 
   getDefaultProps: function () {
     return {
-      'handleClick': function () {},
-      'handleDblClick': function () {},
+      'active': false,
+      'draggable': false,
+      'dragClass': 'dragging',
+      'dragOverClass': '',
+      'onDragOver': function () {}, // no-op
+      'onDragEnter': function () {}, // no-op
+      'onDragLeave': function () {}, // no-op
+      'onDrop': function () {}, // no-op
+      'handleClick': function () {}, // no-op
+      'handleDblClick': function () {}, // no-op
     }
+  },
+
+  getInitialState: function () {
+    return {
+      'dragging': false,
+      'dragOver': false,
+    }
+  },
+
+  onDragOver: function (e) {
+    // make sure to prevent default drop event
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    this.props.onDragOver(e);
+    return false;
+  },
+
+  onDragEnter: function (e) {
+    e.preventDefault();
+    this.setState({
+      'dragOver': true,
+    });
+    this.props.onDragEnter(e);
+  },
+
+  onDragLeave: function (e) {
+    this.setState({
+      'dragOver': false,
+    });
+    this.props.onDragLeave(e);
+  },
+
+  onDrop: function (e) {
+    this.setState({
+      'dragOver': false,
+    });
+    this.props.onDrop(e);
   },
 
   handleClick: function(e) {
@@ -27,12 +72,17 @@ module.exports = React.createClass({
     // check if tab active
     var className = this.props.active ?
       this.props.activeClass : this.props.inactiveClass;
-
+    // check if being dragged over
+    className += ' ' + (this.state.dragOver ? this.props.dragOverClass : '');
     return (
       <a
         className={className}
         onClick={this.handleClick}
-        onDoubleClick={this.handleDblClick}>
+        onDoubleClick={this.handleDblClick}
+        onDragOver={this.onDragOver}
+        onDrop={this.onDrop}
+        onDragEnter={this.onDragEnter}
+        onDragLeave={this.onDragLeave}>
         {this.props.name}
       </a>
     );

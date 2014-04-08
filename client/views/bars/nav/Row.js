@@ -2,6 +2,8 @@
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
+// TODO: separate draggable into its own view with params for html
+
 module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
@@ -52,7 +54,7 @@ module.exports = React.createClass({
     this.setState({
       'dragging': false,
     });
-    this.props.onDragStart(e);
+    this.props.onDragEnd(e);
   },
 
   onDragEnter: function (e) {
