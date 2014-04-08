@@ -11,6 +11,25 @@ module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
+  // TODO: right click menu on right click.
+  handleClick: function(track, e) {
+    this.props.handleClick(track, e);
+  },
+
+  render: function () {
+    var track = this.props.track;
+    return Row(_.extend({}, track, {
+      'key': track.cid,
+      'data': [track.get('title')],
+      'active': this.props.active,
+      'activeClass': 'positive',
+      'inactiveClass': '',
+      'draggable': true,
+      'handleClick': this.props.handleClick,
+      'handleDblClick': this.play,
+    }));
+  },
+
   // add track to head of queue and play
   play: function(e) {
     var track = this.props.track;
@@ -44,31 +63,4 @@ module.exports = React.createClass({
     debug("viewing track", track);
   },
 
-  render: function () {
-    var track = this.props.track;
-    return Row(_.extend({}, track, {
-        'data': [track.get('title')],
-        'active': this.props.active,
-        'activeClass': 'positive',
-        'inactiveClass': '',
-        'handleClick': this.props.handleClick,
-        'handleDblClick': this.queue,
-    }));
-  },
-
 });
-/*
-  render: function () {
-    var track = this.props.track;
-
-    return (
-      <div className="ui secondary inverted orange segment">
-        <div className="ui label">{track.get('title')}</div>
-        <div className="ui small button" onClick={this.play}>Play</div>
-        <div className="ui small button" onClick={this.queue}>Queue</div>
-        <div className="ui small button" onClick={this.dequeue}>Dequeue</div>
-        <div className="ui small button" onClick={this.viewTrack}>View Track</div>
-      </div>
-    );
-  },
-*/

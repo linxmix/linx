@@ -19,6 +19,22 @@
 /* transition must be last */
 @import '../node_modules/semantic/src/modules/transition.less';
 
+.dragging {
+  opacity: 0.4;
+}
+
+.ui.table tr.drag-over {
+  border: 2px dashed #000;
+  outline: none;
+  border-color: #9ecaed;
+  box-shadow: 0 0 10px #9ecaed;
+}
+
+main.main-container {
+  width: 1000px;
+  margin: 0px auto;
+}
+
 .ui.grid > .row > .tight-right {
   padding-right: 0%;
 }

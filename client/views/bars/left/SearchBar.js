@@ -19,23 +19,24 @@ module.exports = React.createClass({
 
   getInitialState: function () {
     return {
-      'searchResults': [],
       'activeSearchTab': {parent: 'sc', key: 'sc-tracks', type: 'tracks', url: '/tracks', name: 'Tracks'},
       'searching': false,
     }
   },
 
-
   getDefaultProps: function() {
     return {
       Tabs_SC: [
         {parent: 'sc', key: 'sc-tracks', type: 'tracks', url: '/tracks', name: 'Tracks'},
-        //{parent: 'sc', key: 'sc-playlists', type: 'playlists', url: '/playlists', name: 'Playlists'},
+        {parent: 'sc', key: 'sc-playlists', type: 'playlists', url: '/playlists', name: 'Playlists'},
+        {parent: 'sc', key: 'sc-users', type: 'users', url: '/users', name: 'Users'},
         // TODO: users, groups, playlists
       ],
       Tabs_Echo: [
         {parent: 'echo', key: 'echo-songs', type: 'songs', url: 'song/search', name: 'Songs'},
-        ///{parent: 'echo', key: 'echo-playlists', type: 'playlists', url: 'playlist/search', name: 'Playlists'},
+        {parent: 'echo', key: 'echo-playlists', type: 'playlists', url: 'playlist/search', name: 'Playlists'},
+        {parent: 'echo', key: 'echo-genres', type: 'genres', url: 'playlist/search', name: 'Artists'},
+        {parent: 'echo', key: 'echo-artists', type: 'artists', url: 'playlist/search', name: 'Genres'},
         // TODO: genres, artists, playlists
       ],
     };
@@ -83,19 +84,19 @@ module.exports = React.createClass({
   },
 
   executeSearch: function (e) {
-    debug("executing search", this.props.searchBarText);
+    var searchText = this.props.searchBarText;
+    debug("executing search", searchText);
     this.setState({ 'searching': true });
 
     // callback which modifies this React Class's state
     var cb = function (tracks, areModels) {
       // make playlist from results
       var playlist = new Playlist({
+        'name': 'Searched: ' + this.props.searchBarText,
         'tracks': new Tracks(tracks),
       })
-      console.log("RESULTS", tracks);
       // update our state
       this.setState({
-        'searchResults': playlist.get('tracks').models,
         'searching': false,
       });
       this.props.setActivePlaylist(playlist);
@@ -199,7 +200,6 @@ module.exports = React.createClass({
       </div>
     );
   },
-
 
 });
 

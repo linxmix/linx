@@ -36,7 +36,7 @@ module.exports = React.createClass({
     }
 
     return (
-      <main>
+      <main className="main-container">
         {renderedPage}
       </main>
     );

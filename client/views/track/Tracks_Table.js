@@ -11,7 +11,7 @@ module.exports = React.createClass({
 
   getDefaultProps: function () {
     return {
-      'className': "ui table segment",
+      'className': "ui table inverted secondary segment",
     }
   },
 
@@ -21,7 +21,7 @@ module.exports = React.createClass({
     }
   },
 
-  setActivetrack: function (track) {
+  setActiveTrack: function (track) {
     this.setState({
       'activeTrack': track,
     });
@@ -37,12 +37,22 @@ module.exports = React.createClass({
       default: debug("WARNING: unknown trackView", this.props.trackView);
     }
 
+    // make sure tracks are at least length 50. if not, add blank rows
+    var tracks = this.props.tracks || [];
+    var blank_rows = [];
+    /* TODO: auto-fill screen with rows */
+    //for (var i = (tracks.length - 50); i < 0; i++) {
+    //  console.log("appending blank");
+    //  // TODO: td needs to be based on how many fields we display
+    //  blank_rows.push(<tr><td></td></tr>);
+    //}
+
     // make a Track_Table for every track
-    var tracks = this.props.tracks && this.props.tracks.map(function (track) {
+    var track_tables = tracks.map(function (track) {
       return Track_Table({
         'active': (track.cid === this.state.activeTrack.cid),
         'track': track,
-        'handleClick': this.setActivetrack,
+        'handleClick': this.setActiveTrack,
         'changePlayState': this.props.changePlayState,
       });
     }.bind(this));
@@ -52,10 +62,11 @@ module.exports = React.createClass({
       <table className={this.props.className}>
         <thead>
           <tr>
-          <th>Title</th>
+          <th>{this.props.playlistName}</th>
           </tr></thead>
         <tbody>
-          {tracks}
+          {track_tables}
+          {blank_rows}
         </tbody>
       </table>
     );

@@ -17,18 +17,13 @@ module.exports = React.createClass({
         {
           key: 'playlists',
           name: 'Playlists',
-          icon: 'list layout icon',
-        },
-        {
-          key: 'search',
-          name: 'Search',
-          icon: 'search icon',
+          icon: '',
         },
       ],
     }
   },
 
-  toggleBar: function (tabKey) {
+  toggleBar: function () {
     this.props.changeBar({
       'bottomBar': (this.props.bottomBar) ? 0 : 2,
     });
@@ -36,30 +31,29 @@ module.exports = React.createClass({
 
   tabClick: function (tab) {
     console.log("TAB CLICK", tab);
-    this.toggleBar(tab.key);
+    this.toggleBar();
   },
 
   render: function () {
 
-    // make tabs
-    var tabs = this.props.tabs.map(function(tab) {
-      return (
-        Tab({
-          'key': tab.key,
-          'name': (<i className={tab.icon}></i>),
-          'inactiveClass': 'item',
-          'handleClick': this.tabClick,
-        })
-      )
-    }.bind(this));
-    
     // determine if bar should be hidden
-    var hidden = (this.props.bottomBar) ? '' : 'hidden';
+    var isHidden = !this.props.bottomBar;
+    var hidden = (isHidden) ? 'hidden' : '';
+
+    // make tab
+    var tabName = (isHidden) ? (<i className="up arrow icon"></i>) :
+      (<i className="down arrow icon"></i>);
+    var tab = Tab({
+      'name': tabName,
+      'inactiveClass': 'item',
+      'handleClick': this.tabClick,
+    });
+
     return (
       <div className="bottom-menu">
         <div className="bottom-sidebar">
-          <div className="ui icon menu">
-            {tabs}
+          <div className="ui inverted icon menu">
+            {tab}
           </div>
         </div>
         <div className={hidden}>

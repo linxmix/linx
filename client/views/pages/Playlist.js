@@ -25,10 +25,12 @@ module.exports = React.createClass({
     // get tracks from activePlaylist
     console.log("RENDERING PLAYLIST", this.props.activePlaylist)
     var activePlaylist = this.props.activePlaylist;
-    var tracks = (activePlaylist && activePlaylist.get('tracks'));
+    var tracks = (activePlaylist && activePlaylist.tracks());
+    var name = (activePlaylist && activePlaylist.get('name'));
     // create tracks view
     return Tracks_Table({
       'tracks': tracks,
+      'playlistName': name,
       'trackView': this.state.trackView,
       'changePlayState': this.props.changePlayState,
     });;

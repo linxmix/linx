@@ -29,6 +29,7 @@ module.exports = React.createClass({
     var queue = new Queue();
     var queuePlaylist = new Playlist({
       'name': 'Queue',
+      'type': 'queue',
       'tracks': queue,
     });
     var playlists = new Playlists([queuePlaylist]);
