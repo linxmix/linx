@@ -59,7 +59,7 @@
     "backbone": "^1.1.2",
     "jquery": "^2.1.0",
     "backbone-react-component": "^0.6.0",
-    "react": "^0.10.0",
+    "react": "^0.9.0",
     "reactify": "^0.10.0",
     "envify": "^1.2.1",
     "uglifyify": "^2.0.0",
