@@ -53,6 +53,7 @@ module.exports = React.createClass({
   },
 
   // use queue to preload widgets
+  // TODO: make reorder smart on remove/insert
   isSyncing: false,
   syncQueue: function (e, track) {
     if (this.isSyncing) { return; }
@@ -118,7 +119,11 @@ module.exports = React.createClass({
     });
 
     // render SoundBar
-    return widgetsView;
+    return (
+      <div className="inverted ui segment">
+        {widgetsView}
+      </div>
+    )
   },
 
   // rendered component has been mounted to a DOM element

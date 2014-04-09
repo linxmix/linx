@@ -96,6 +96,7 @@ module.exports = React.createClass({
       widget.load(this.props.track);
     }
 
+    // TODO: use parent function
     // if this is a widget wave, bind to finish event
     if (typeof this.props.soundBarId !== 'undefined') {
       wavesurfer.on('finish', function() {
