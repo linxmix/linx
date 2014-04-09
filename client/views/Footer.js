@@ -44,13 +44,7 @@ module.exports = React.createClass({
 
     // if bar is hidden, make collapse view
     var queue = this.getCollection().queue;
-    var menu = (isHidden) ? SoundBar_Collapse(_.extend({}, this.props, {
-      'playState': this.props.playState,
-      'handlers': {
-        'playpause': this.props.changePlayState,
-        'forth': queue.shift,
-        'back': function () { debug("back"); },
-      },
+    var menu = (true) ? SoundBar_Collapse(_.extend({}, this.props, {
       'launchTab': launchTab,
     // else just make launchTab
     })) : launchTab;

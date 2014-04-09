@@ -27,13 +27,15 @@ module.exports = React.createClass({
           icon: 'step forward icon',
         },
       ],
-      'handlers': null,
     }
   },
 
   // call appropriate handler on click
   handleClick: function (tab) {
-    this.props.handlers[tab.key](tab.handle);
+    switch (tab.key) {
+      case 'playpause': this.props.changePlayState(tab.handle); break;
+      default: debug(tab.key);
+    }
   },
 
   render: function () {
@@ -59,9 +61,8 @@ module.exports = React.createClass({
       )
     }.bind(this));
     // add given launchTab
-    tabs.unshift(this.props.launchTab);
-    console.log(tabs);
-
+    var launchTab = this.props.launchTab
+    launchTab && tabs.unshift(launchTab);
 
     return (<div className="inverted ui icon menu">{tabs}</div>);
   },

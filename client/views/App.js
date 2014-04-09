@@ -81,7 +81,7 @@ module.exports = React.createClass({
     });
   },
 
-  // jump to playlists page whenever setting active playlist
+  // jump to playlist page whenever setting active playlist
   setActivePlaylist: function (newPlaylist) {
     debug("setActivePlaylist", newPlaylist);
     this.setState({

@@ -5,6 +5,8 @@ var Backbone = require('backbone');
 
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
+var Track_List_SC = require('./Track_List_SC');
+
 var WaveSurfer = require('wavesurfer.js');
 
   // TODO: make able to queue song more than once?
@@ -28,15 +30,12 @@ module.exports = React.createClass({
     var className = (this.props.active) ? "" : "hidden";
     return (
       <div className={className}>
-        <p>{track && track.get('title')}</p>
         <div className="wave">
           <div className="ui active teal progress">
             <div className="bar"></div>
           </div>
         </div>
-        <button onClick={this.play}>play</button>
-        <button onClick={this.pause}>pause</button>
-        <button onClick={this.stop}>stop</button>
+        {Track_List_SC({ 'track': track, })}
       </div>
     );
   },
