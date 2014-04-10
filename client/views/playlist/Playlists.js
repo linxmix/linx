@@ -24,7 +24,7 @@ module.exports = React.createClass({
     // make a Playlist for every playlist
     var playlists = this.props.playlists.map(function (playlist) {
       return Playlist({
-        'active': (playlist.cid === this.props.activePlaylist.cid),
+        'active': (playlist.cid === this.props.viewingPlaylist.cid),
         'playlist': playlist,
         'handleClick': this.props.handleClick,
       });

@@ -1,6 +1,6 @@
 /** @jsx React.DOM */
 var React = require('react');
-var debug = require('debug')('views:bars/sound/SoundBar_Collapse');
+var debug = require('debug')('views:bars/sound/Mixer');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var Tab = require('../nav/Tab');
@@ -34,6 +34,8 @@ module.exports = React.createClass({
   handleClick: function (tab) {
     switch (tab.key) {
       case 'playpause': this.props.changePlayState(tab.handle); break;
+      case 'back': this.props.back(); break;
+      case 'forth': this.props.forth(); break;
       default: debug(tab.key);
     }
   },

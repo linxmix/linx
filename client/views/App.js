@@ -27,12 +27,12 @@ module.exports = React.createClass({
 
   getDefaultProps: function () {
     var queue = new Queue();
-    var queuePlaylist = new Playlist({
+    var appQueue = new Playlist({
       'name': 'Queue',
       'type': 'queue',
       'tracks': queue,
     });
-    var playlists = new Playlists([queuePlaylist]);
+    var playlists = new Playlists([appQueue]);
     return {
       'model': {
         me: new Me(),
@@ -43,8 +43,6 @@ module.exports = React.createClass({
         'tasteProfiles': new TasteProfiles(),
         'playlists': playlists,
         'myTracks': new Tracks(),
-        // TODO: move this into soundbar?
-        'widgets': new Widgets(),
       },
     };
   },
@@ -53,7 +51,8 @@ module.exports = React.createClass({
     return {
       'page': 'Playlist',
       'playState': 'pause',
-      'activePlaylist': '',
+      'viewingPlaylist': ''
+      'playingPlaylist': ''
       'searchBarText': '',
       'rightBar': 0,
       'bottomBar': 0,
@@ -76,23 +75,58 @@ module.exports = React.createClass({
 
   changePlayState: function (newPlayState) {
     debug("changePlayState", newPlayState);
+    // TODO: only run change when newPlayState !== playState?
     this.setState({
       'playState': newPlayState,
-    });
+    // always reassert playState when changing
+    }, this.assertPlayState);
   },
 
-  // jump to playlist page whenever setting active playlist
-  setActivePlaylist: function (newPlaylist) {
-    debug("setActivePlaylist", newPlaylist);
+  setViewingPlaylist: function (newPlaylist) {
+    debug("setViewingPlaylist", newPlaylist);
     this.setState({
-      'activePlaylist': newPlaylist,
+      'viewingPlaylist': newPlaylist,
     });
+    // jump to playlist page whenever setting viewingPlaylist
     this.changePage('Playlist');
+  },
+
+  setPlayingPlaylist: function (newPlaylist) {
+    debug("setPlayingPlaylist", newPlaylist);
+    this.setState({
+      'playingPlaylist': newPlaylist,
+    // always reassert playState
+    }, this.assertPlayState);
   },
 
   changeBar: function (options) {
     debug("changeBar", options);
     this.setState(options);
+  },
+
+  assertPlayState: function () {
+    var playState = this.state.playState;
+    var playlist = this.state.playingPlaylist;
+    debug('asserting play state', playState, playlist);
+    if (playlist) {
+      switch (playState) {
+        case 'play': playlist.play(),
+        case 'pause': playlist.pause(),
+        case 'stop': playlist.stop(),
+      }
+    }
+  },
+
+  // skip back in the playingPlaylist
+  back: function  () {
+    var playlist = this.state.playingPlaylist;
+    playlist.back();
+  },
+
+  // skip forth in the playingPlaylist
+  forth: function  () {
+    var playlist = this.state.playingPlaylist;
+    playlist.forth();
   },
 
   render: function () {
@@ -101,13 +135,20 @@ module.exports = React.createClass({
     var bottom = this.state.bottomBar;
     var props = {
       'me': this.props.me,
+
       'playState': this.state.playState,
+      'changePlayState': this.changePlayState,
+      'forth': this.forth,
+      'back': this.back,
+
       'searchBarText': this.state.searchBarText,
       'setSearchBarText': this.setSearchBarText,
-      'changePlayState': this.changePlayState,
-      'activePlaylist': this.state.activePlaylist,
-      'setActivePlaylist': this.setActivePlaylist,
-      'tracks': new Tracks(),
+
+      'viewingPlaylist': this.state.viewingPlaylist,
+      'setViewingPlaylist': this.setViewingPlaylist,
+
+      'playingPlaylist': this.state.playingPlaylist,
+      'setViewingPlaylist': this.setViewingPlaylist,
     }
 
     return (

@@ -10,7 +10,7 @@ module.exports = React.createClass({
   mixins: [ReactBackboneMixin],
 
   handleClick: function (playlist) {
-    this.props.setActivePlaylist(playlist);
+    this.props.setViewingPlaylist(playlist);
   },
 
   generate: function (e) {
@@ -26,7 +26,7 @@ module.exports = React.createClass({
 
   remove: function (e) {
     debug("remove", this.props);
-    var playlist = this.props.activePlaylist;
+    var playlist = this.props.viewingPlaylist;
     // do not remove the queue
     if (playlist && (playlist.get('type') !== 'queue')) {
       var playlists = this.getCollection().playlists;
@@ -42,7 +42,7 @@ module.exports = React.createClass({
           <div className="header item">Playlists</div>
           {Playlists({
             'playlistView': 'tab',
-            'activePlaylist': this.props.activePlaylist,
+            'viewingPlaylist': this.props.viewingPlaylist,
             'playlists': this.getCollection().playlists,
             'handleClick': this.handleClick,
             'className': "ui table inverted secondary purple segment",

@@ -27,6 +27,10 @@ module.exports = React.createClass({
     });
   },
 
+  handleDblClick: function (track, e) {
+
+  }
+
   render: function () {
 
     // determine which view to use
@@ -50,10 +54,10 @@ module.exports = React.createClass({
     // make a Track_Table for every track
     var track_tables = tracks.map(function (track) {
       return Track_Table({
-        'active': (track.cid === this.state.activeTrack.cid),
         'track': track,
+        'active': (track.cid === this.state.activeTrack.cid),
         'handleClick': this.setActiveTrack,
-        'changePlayState': this.props.changePlayState,
+        'handleDblClick': this.props.handleDblClick,
       });
     }.bind(this));
 
@@ -62,7 +66,7 @@ module.exports = React.createClass({
       <table className={this.props.className}>
         <thead>
           <tr>
-          <th>{this.props.playlistName}</th>
+          <th>Track Title</th>
           </tr></thead>
         <tbody>
           {track_tables}

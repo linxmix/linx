@@ -1,4 +1,5 @@
 var Backbone = require('backbone');
+var debug = require('debug')('models:Playlist');
 
 var Tracks = require('../collections/Tracks');
 
@@ -20,5 +21,17 @@ module.exports = Backbone.Model.extend({
   add: function (track) {
     this.get('tracks').add(track);
   },
+
+  queueAtPos: function (track, pos) {
+    debug("queueingAtPos", track, pos)
+  },
+
+  // returns the widgets of this playlist's queue
+  getWidgets: function () {
+    debug("getting widgets");
+    return this.get('queue').get('widgets');
+  },
+
+  // TODO: playlists need a queue collection and need play, pause, stop, back, forth
 
 });

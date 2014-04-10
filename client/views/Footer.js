@@ -8,7 +8,7 @@ var Tab = require('./bars/nav/Tab');
 var _ = require('underscore');
 
 var SoundBar = require('./bars/sound/SoundBar');
-var SoundBar_Collapse = require('./bars/sound/SoundBar_Collapse');
+var Mixer = require('./bars/sound/Mixer');
 
 module.exports = React.createClass({
   
@@ -43,8 +43,7 @@ module.exports = React.createClass({
     });
 
     // if bar is hidden, make collapse view
-    var queue = this.getCollection().queue;
-    var menu = (true) ? SoundBar_Collapse(_.extend({}, this.props, {
+    var menu = (true) ? Mixer(_.extend({}, this.props, {
       'launchTab': launchTab,
     // else just make launchTab
     })) : launchTab;

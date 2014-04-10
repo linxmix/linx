@@ -5,4 +5,6 @@ var Tracks = require('./Tracks');
 
 module.exports = Tracks.extend({
 
+  // TODO: validator for 'add' method
+
 });
