@@ -8,8 +8,6 @@ var _ = require('underscore');
 var Me = require('../models/Me');
 var Playlist = require('../models/Playlist');
 
-var Queue = require('../collections/Queue');
-var Widgets = require('../collections/Widgets');
 var Tracks = require('../collections/Tracks');
 var EchoNest = require('../collections/EchoNest');
 var TasteProfiles = require('../collections/TasteProfiles');
@@ -26,24 +24,24 @@ module.exports = React.createClass({
   mixins: [ReactBackboneMixin],
 
   getDefaultProps: function () {
-    var queue = new Queue();
-    var appQueue = new Playlist({
+    // TODO: make appQueue initialize from user's stored queue
+    var playlists = new Playlists([{
       'name': 'Queue',
       'type': 'queue',
-      'tracks': queue,
-    });
-    var playlists = new Playlists([appQueue]);
+    }, {
+      'numWidgets': 2,
+    }]);
     return {
       'model': {
         me: new Me(),
       },
       'collection': {
-        'queue': queue,
         'echoNest': new EchoNest(),
         'tasteProfiles': new TasteProfiles(),
         'playlists': playlists,
         'myTracks': new Tracks(),
       },
+      'appQueue':  playlists.models[0],
     };
   },
 
@@ -51,8 +49,8 @@ module.exports = React.createClass({
     return {
       'page': 'Playlist',
       'playState': 'pause',
-      'viewingPlaylist': ''
-      'playingPlaylist': ''
+      'viewingPlaylist': '',
+      'playingPlaylist': '',
       'searchBarText': '',
       'rightBar': 0,
       'bottomBar': 0,
@@ -91,6 +89,8 @@ module.exports = React.createClass({
     this.changePage('Playlist');
   },
 
+  // TODO: if that playlist is already playing,
+  //       add given track to head or something
   setPlayingPlaylist: function (newPlaylist) {
     debug("setPlayingPlaylist", newPlaylist);
     this.setState({
@@ -108,17 +108,11 @@ module.exports = React.createClass({
     var playState = this.state.playState;
     var playlist = this.state.playingPlaylist;
     debug('asserting play state', playState, playlist);
-    if (playlist) {
-      switch (playState) {
-        case 'play': playlist.play(),
-        case 'pause': playlist.pause(),
-        case 'stop': playlist.stop(),
-      }
-    }
+    playlist && playlist.assertPlayState(playState);
   },
 
   // skip back in the playingPlaylist
-  back: function  () {
+  back: function () {
     var playlist = this.state.playingPlaylist;
     playlist.back();
   },
@@ -135,6 +129,7 @@ module.exports = React.createClass({
     var bottom = this.state.bottomBar;
     var props = {
       'me': this.props.me,
+      'appQueue': this.props.appQueue,
 
       'playState': this.state.playState,
       'changePlayState': this.changePlayState,
@@ -148,7 +143,7 @@ module.exports = React.createClass({
       'setViewingPlaylist': this.setViewingPlaylist,
 
       'playingPlaylist': this.state.playingPlaylist,
-      'setViewingPlaylist': this.setViewingPlaylist,
+      'setPlayingPlaylist': this.setPlayingPlaylist,
     }
 
     return (

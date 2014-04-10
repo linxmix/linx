@@ -5,12 +5,16 @@ var clientId = require('../config').clientId;
 
 var Widget = require('./Widget');
 
+  // TODO: import all my functions from old linx project
+
 module.exports = Widget.extend({
 
   // TODO: why does track.attributes work while track.get doesnt?
   // load given track into widget
-  load: function (track, options) {
-    debug("loading track into widget", track);
+  load: function (options) {
+    var track = this.get('track');
+    var wave = this.get('player');
+    debug("loading track into widget", track, this);
 
     // add defaults to options
     if (typeof options !== 'object') { options = {}; }
@@ -20,8 +24,8 @@ module.exports = Widget.extend({
       track.attributes['stream_url'].replace(/^https:\/\//, '') +
       "?client_id=" + clientId;
 
+    // TODO: add other handlers as params to options?
     // load track into wave
-    var wave = this.get('widget');
     // call callback on load if callback exists
     if (options.callback) {
       wave.once('ready', function () {
@@ -29,45 +33,35 @@ module.exports = Widget.extend({
       });
     }
     wave.load(url);
-
-    // update widget with new track
-    this.set({ 'track': track });
   },
 
   play: function () {
-    var wave = this.get('widget');
+    var wave = this.get('player');
     wave.play();
   },
 
   pause: function () {
-    var wave = this.get('widget');
+    var wave = this.get('player');
     wave.pause();
   },
 
   stop: function () {
-    var wave = this.get('widget');
+    var wave = this.get('player');
     wave.stop();
   },
 
+  seek: function (percent) {
+    var wave = this.get('player');
+    wave.seekTo(percent);
+  },
+
   redraw: function () {
-    var wave = this.get('widget');
+    var wave = this.get('player');
     debug("redraw", wave);
     // only draw if we have something to draw
     if (wave && wave.backend.buffer) {
       wave.fireEvent('redraw');
       wave.drawBuffer();
-    }
-  },
-
-  assertPlayState: function (playState) {
-    debug("asserting playstate", playState);
-
-    if (playState === 'play') {
-      this.play();
-    } else if (playState === 'pause') {
-      this.pause();
-    } else if (playState === 'stop') {
-      this.stop();
     }
   },
 

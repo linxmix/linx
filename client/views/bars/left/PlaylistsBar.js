@@ -43,6 +43,7 @@ module.exports = React.createClass({
           {Playlists({
             'playlistView': 'tab',
             'viewingPlaylist': this.props.viewingPlaylist,
+            'playingPlaylist': this.props.playingPlaylist,
             'playlists': this.getCollection().playlists,
             'handleClick': this.handleClick,
             'className': "ui table inverted secondary purple segment",

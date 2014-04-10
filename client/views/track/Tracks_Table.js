@@ -1,6 +1,7 @@
 /** @jsx React.DOM */
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
+var debug = require('debug')('views:track/Tracks_Table');
 
 var Track_Table_SC = require('./Track_Table_SC');
 var Track_Table_Echo = require('./Track_Table_Echo');
@@ -21,15 +22,11 @@ module.exports = React.createClass({
     }
   },
 
-  setActiveTrack: function (track) {
+  setActiveTrack: function (row) {
     this.setState({
-      'activeTrack': track,
+      'activeTrack': row.backboneModel,
     });
   },
-
-  handleDblClick: function (track, e) {
-
-  }
 
   render: function () {
 

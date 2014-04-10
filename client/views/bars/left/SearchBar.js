@@ -28,15 +28,15 @@ module.exports = React.createClass({
     return {
       Tabs_SC: [
         {parent: 'sc', key: 'sc-tracks', type: 'tracks', url: '/tracks', name: 'Tracks'},
-        {parent: 'sc', key: 'sc-playlists', type: 'playlists', url: '/playlists', name: 'Playlists'},
-        {parent: 'sc', key: 'sc-users', type: 'users', url: '/users', name: 'Users'},
+        //{parent: 'sc', key: 'sc-playlists', type: 'playlists', url: '/playlists', name: 'Playlists'},
+        //{parent: 'sc', key: 'sc-users', type: 'users', url: '/users', name: 'Users'},
         // TODO: users, groups, playlists
       ],
       Tabs_Echo: [
         {parent: 'echo', key: 'echo-songs', type: 'songs', url: 'song/search', name: 'Songs'},
-        {parent: 'echo', key: 'echo-playlists', type: 'playlists', url: 'playlist/search', name: 'Playlists'},
-        {parent: 'echo', key: 'echo-genres', type: 'genres', url: 'playlist/search', name: 'Artists'},
-        {parent: 'echo', key: 'echo-artists', type: 'artists', url: 'playlist/search', name: 'Genres'},
+        //{parent: 'echo', key: 'echo-playlists', type: 'playlists', url: 'playlist/search', name: 'Playlists'},
+        //{parent: 'echo', key: 'echo-genres', type: 'genres', url: 'playlist/search', name: 'Artists'},
+        //{parent: 'echo', key: 'echo-artists', type: 'artists', url: 'playlist/search', name: 'Genres'},
         // TODO: genres, artists, playlists
       ],
     };
@@ -93,13 +93,14 @@ module.exports = React.createClass({
       // make playlist from results
       var playlist = new Playlist({
         'name': 'Searched: ' + this.props.searchBarText,
+        'type': 'searchResults',
         'tracks': new Tracks(tracks),
       })
       // update our state
       this.setState({
         'searching': false,
       });
-      this.props.setActivePlaylist(playlist);
+      this.props.setViewingPlaylist(playlist);
     }.bind(this);
 
     // determine which source to search

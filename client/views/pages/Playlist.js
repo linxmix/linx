@@ -23,31 +23,36 @@ module.exports = React.createClass({
   },
 
   // play this playlist with given track at head
-  play: function (track, e) {
+  play: function (row, e) {
     var playlist = this.props.viewingPlaylist;
-    playlist.queue(track, 0);
-    this.props.setPlayingPlaylist(playlist);
+    var track = row.backboneModel;
+    // if viewingPlaylist is searchResults, play in queue instead
+    if (playlist.get('type') === 'searchResults') {
+      playlist = this.props.appQueue;
+    }
     this.props.changePlayState('play');
+    playlist.queueAtPos(track, 0);
+    this.props.setPlayingPlaylist(playlist);
   },
 
   render: function () {
     var playlist = this.props.viewingPlaylist;
-    console.log("RENDERING PLAYLIST", playlist);
     // get tracks from viewingPlaylist
     var tracks = (playlist && playlist.tracks());
     var name = (playlist && playlist.get('name'));
     // create tracks view
+    // TODO: display playlist name better
     return (
       <div>
-        <div className="purple ui top attached label">
+        <div className="purple ui label">
           {name}
         </div>
-        Tracks_Table({
+        {Tracks_Table({
           'tracks': tracks,
           'trackView': this.state.trackView,
           'changePlayState': this.props.changePlayState,
           'handleDblClick': this.play,
-        })
+        })}
       </div>
     )
   },

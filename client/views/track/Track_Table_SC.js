@@ -16,11 +16,12 @@ module.exports = React.createClass({
       'handleClick': function (track) { debug("click unimplemented", track); },
       'handleDblClick': function (track) { debug("dblclick unimplemented", track); },
     }
-  }
+  },
 
   render: function () {
     var track = this.props.track;
-    return Row(_.extend({}, track, {
+    return Row(_.extend({}, {
+      'backboneModel': track,
       'key': track.cid,
       'data': [track.get('title')],
       'active': this.props.active,

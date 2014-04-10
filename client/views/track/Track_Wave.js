@@ -7,15 +7,7 @@ var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var Track_List_SC = require('./Track_List_SC');
 
-// TODO: make a generic widget which wraps this + hide logic
-var Widget = (require('../../../config').widgetModel === 'SC') ?
-  require('../../models/Widget_SC') : require('../../models/Widget_Wave');
-
 var WaveSurfer = require('wavesurfer.js');
-
-  // TODO: make able to queue song more than once?
-  // TODO: make it so only one widget can be playing at any given time.
-  // TODO: import all my functions from old linx project
 
 module.exports = React.createClass({
   
@@ -59,6 +51,7 @@ module.exports = React.createClass({
 
   // rendered component has been mounted to a DOM element
   componentDidMount: function () {
+    var widget = this.props.widget;
 
     // create and save wavesurfer object
     var wavesurfer = this.wavesurfer = Object.create(WaveSurfer);
@@ -86,43 +79,30 @@ module.exports = React.createClass({
       progressColor: 'purple',
     });
 
-    // if track given, load the track stream
+    // load track if given
     if (this.props.track) {
-      widget.load(this.props.track);
+      widget.setTrack(this.props.track);
     }
 
-    // if this is a widget wave
-    if (typeof this.props.soundBarId !== 'undefined') {
-
-      // add wavesurfer to widget collection
-      var widgets = this.widgets = this.getCollection().widgets;
-      var widget = this.widget = widgets.add({
-        'soundBarId': this.props.soundBarId,
-        'index': this.props.index,
-        'widget': wavesurfer,
-      });
-
-      // TODO: add event handlers to track_wave instantiation
-      // then bind to finish event
-      wavesurfer.on('finish', function() {
-        debug("widget event: FINISH", wavesurfer);
-        // cycle queue
-        this.getCollection().queue.shift();
-      }.bind(this));
-    }
+    // add wavesurfer to widget
+    widget.setPlayer(wavesurfer);
   },
 
   // component will be unmounted from the DOM
   componentWillUnmount: function () {
     debug("componentWillUnmount");
 
-    // delete model
-    if (this.widgets) { this.widgets.remove(this.widget); }
+    // remove wavesurfer from widget
+    widget.unsetPlayer();
 
     // clean up the wavesurfer
     this.wavesurfer.destroy();
     delete this.wavesurfer;
   },
+
+});
+/*
+
 
   play: function () {
     this.widget.play();
@@ -138,5 +118,4 @@ module.exports = React.createClass({
     this.props.changePlayState('stop');
     this.widget.stop();
   },
-
-});
+  */

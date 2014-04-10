@@ -14,17 +14,22 @@ module.exports = React.createClass({
 
   render: function () {
     var playlist = this.props.playingPlaylist;
+    if (!playlist) { return (<div></div>); }
+
+    // get widgets from playingPlaylist
     var widgets = playlist.getWidgets();
+    var activeWidget = widgets.activeWidget;
     
-    // make widgetViews
+    // make widgetViews from widgets
     var widgetViews = widgets.map(function (widget) {;
       return WidgetView({
         'widget': widget,
-        'active': widget.get('isActive'),
+        'track': widget.get('track'),
+        'active': widget.get('index') === activeWidget,
       });
     }.bind(this));
 
-    // render SoundBar
+    // render SoundBar with widgets
     // TODO: add playlist name as header
     return (
       <div className="inverted ui segment">

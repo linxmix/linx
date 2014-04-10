@@ -11,6 +11,13 @@ module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
+  getDefaultProps: function () {
+    return {
+      'playing': false,
+      'active': false,
+    }
+  },
+
   getInitialState: function () {
     return {
       'editing': false,
@@ -44,9 +51,10 @@ module.exports = React.createClass({
     // recover object from json
     var obj = JSON.parse(e.nativeEvent.dataTransfer.getData('application/json'));
     // if object is a track, add it to this playlist
-    if (obj.kind === 'track') {
+    var model = obj.backboneModel;
+    if (model && model.kind === 'track') {
       console.log(this.props.playlist);
-      this.props.playlist.add(obj)
+      this.props.playlist.add(model)
     }
     // if object is a playlist, add that playlist to this
     // TODO: make playlists draggable?
@@ -71,9 +79,11 @@ module.exports = React.createClass({
       )
     }
 
+    var name = !this.props.playing ? playlist.get('name') :
+      (<div>{playlist.get('name')}<i className="play icon"></i></div>);
     return Tab(_.extend({}, playlist, {
       'active': this.props.active,
-      'name': (editing) ? edit : playlist.get('name'),
+      'name': (editing) ? edit : name,
       'dragOverClass': 'drag-over',
       'onDrop': this.onDrop,
       'activeClass': 'active item',

@@ -156,11 +156,6 @@ module.exports = React.createClass({
 
 });
 
-// hand-made mod since javascript's % doesn't play with negative numbers
-function mod(x, n) {
-  return ((x % n) + n) % n;
-}
-
 /*
 
 

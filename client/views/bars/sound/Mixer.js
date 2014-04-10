@@ -41,7 +41,6 @@ module.exports = React.createClass({
   },
 
   render: function () {
-    debug("PLAYSTATE", this.props.playState);
     var tabs = this.props.tabs;
 
     // update playpause button
