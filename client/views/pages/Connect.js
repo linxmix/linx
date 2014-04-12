@@ -6,16 +6,24 @@ module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
+  getDefaultProps: function () {
+    return {
+      'showDisconnect': true,
+    }
+  },
+
   render: function () {
-    if (!this.props.me.id) {
-      return <img src="http://connect.soundcloud.com/2/btn-connect-l.png" onClick={this.login} />
-    } else {
-      return <img src="http://connect.soundcloud.com/2/btn-disconnect-l.png" onClick={this.logout} />
+    var me = this.getModel().me;
+    if (!me.id) {
+      return <img className="clickable" src="http://connect.soundcloud.com/2/btn-connect-sc-l.png" onClick={this.login} />
+    } else if (this.props.showDisconnect) {
+      return <img className="clickable" src="http://connect.soundcloud.com/2/btn-disconnect-l.png" onClick={this.logout} />
     }
   },
 
   login: function () {
-    this.getModel().me.login(this.getCollection().myTracks);
+    var onLogin = this.props.onLogin;
+    this.getModel().me.login(this.props.myTracks, onLogin);
   },
 
   logout: function () {

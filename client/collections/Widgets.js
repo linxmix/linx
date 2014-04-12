@@ -21,12 +21,12 @@ module.exports = Backbone.Collection.extend({
   },
 
   incrementActiveWidget: function () {
-    this.activeWidget = mod(this.activeWidget + 1, widgets.length);
+    this.activeWidget = mod(this.activeWidget + 1, this.length);
     return this.activeWidget;
   },
 
   decrementActiveWidget: function () {
-    this.activeWidget = mod(this.activeWidget - 1, widgets.length);
+    this.activeWidget = mod(this.activeWidget - 1, this.length);
     return this.activeWidget;
   },
 

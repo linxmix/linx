@@ -11,8 +11,6 @@ var Tracks = require('../../../collections/Tracks');
 
 var SearchInput = require('../nav/SearchInput');
 
-var Playlist = require('../../../models/Playlist');
-
 module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
@@ -90,17 +88,18 @@ module.exports = React.createClass({
 
     // callback which modifies this React Class's state
     var cb = function (tracks, areModels) {
-      // make playlist from results
-      var playlist = new Playlist({
-        'name': 'Searched: ' + this.props.searchBarText,
-        'type': 'searchResults',
-        'tracks': new Tracks(tracks),
-      })
+      // update searchResults with results
+      var searchResults = this.props.searchResults;
+      searchResults.set({
+        'name': 'Search: ' + this.props.searchBarText,
+        'tracks': new Tracks(tracks)
+      });
       // update our state
       this.setState({
         'searching': false,
       });
-      this.props.setViewingPlaylist(playlist);
+      // set searchResults as viewingPlaylist
+      this.props.setViewingPlaylist(searchResults);
     }.bind(this);
 
     // determine which source to search

@@ -39,7 +39,9 @@ module.exports = React.createClass({
       this.props.className;
     return (
         <div className={className}>
-          <div className="header item">Playlists</div>
+          <div className="header item">
+            Playlists
+          </div>
           {Playlists({
             'playlistView': 'tab',
             'viewingPlaylist': this.props.viewingPlaylist,

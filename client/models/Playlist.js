@@ -14,16 +14,15 @@ module.exports = Backbone.Model.extend({
     return {
       'name': 'playlist ' + this['cid'],
       'type': 'playlist',
-      'playState': 'stop',
       'tracks': new Tracks(),
     };
   },
 
   // dynamically determine numWidgets
   constructor: function (attributes, options) {
-    var numWidgets = attributes['numWidgets'];
+    var numWidgets = options && options['numWidgets'];
     if (typeof numWidgets !== 'number') {
-      numWidgets = 1;
+      numWidgets = 2;
     }
     attributes['queue'] = new Queue([], {
       'numWidgets': numWidgets,
@@ -40,19 +39,11 @@ module.exports = Backbone.Model.extend({
   },
 
   add: function (track) {
-    if (this.get('type') === 'queue') {
-      this.queue(track);
-    } else {
-      this.get('tracks').add(track);
-    }
+    this.get('tracks').add(track);
   },
 
   remove: function (track) {
-    if (this.get('type') === 'queue') {
-      this.dequeue(track);
-    } else {
-      this.get('tracks').remove(track);
-    }
+    this.get('tracks').remove(track);
   },
 
   queue: function (track) {
@@ -61,11 +52,9 @@ module.exports = Backbone.Model.extend({
 
   queueAtPos: function (track, pos) {
     debug("queuing track at pos", track, pos);
-    track.set({ 'queueIndex': pos });
-    this.get('queue').add(track);
+    this.get('queue').add(track, { 'at': pos });
   },
 
-  // TODO: figure this out
   dequeue: function (track) {
     debug("dequeuing track", track);
     this.get('queue').remove(track);
@@ -73,7 +62,6 @@ module.exports = Backbone.Model.extend({
 
   // returns the widgets of this playlist's queue
   getWidgets: function () {
-    debug("getting widgets");
     return this.get('queue').getWidgets();
   },
 
@@ -83,35 +71,26 @@ module.exports = Backbone.Model.extend({
     return this.get('queue').getHistory();
   },
 
+  bindQueueListener: function (callback) {
+    this.get('queue').on('changeTrack', function (newTrack) {
+      callback(newTrack);
+    });
+  },
+
+  unbindQueueListener: function (callback) {
+    this.get('queue').off('changeTrack', function (newTrack) {
+      callback(newTrack);
+    });
+  },
+
   //
   // Mixer Functions
   //
 
-  assertPlayState: function (playState) {
-    // first sync this playlist's playState with given playState
-    if (playState) {
-      this.set('playState', playState);
-    } else {
-      playState = this.get('playState')
-    }
-    switch (playState) {
-      case 'play': this.play(); break;
-      case 'pause': this.pause(); break;
-      case 'stop': this.stop(); break;
-    }
-  },
-
-  // TODO: make sure there is a song in queue before playing
-  play: function () {
-    this.get('queue').getActiveWidget().play()
-  },
-
-  pause: function () {
-    this.get('queue').getActiveWidget().pause()
-  },
-
-  stop: function () {
-    this.get('queue').getActiveWidget().stop()
+  // TODO: play this track first, if given.
+  // TODO: if track already queued, move to head
+  play: function (track) {
+    this.queueAtPos(track, 0);
   },
 
   seek: function (percent) {

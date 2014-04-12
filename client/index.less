@@ -12,6 +12,7 @@
 @import "../node_modules/semantic/src/collections/form.less";
 @import "../node_modules/semantic/src/collections/grid.less";
 @import "../node_modules/semantic/src/collections/table.less";
+@import "../node_modules/semantic/src/collections/message.less";
 
 @import "../node_modules/semantic/src/modules/dropdown.less";
 @import "../node_modules/semantic/src/modules/sidebar.less";
@@ -19,7 +20,47 @@
 /* transition must be last */
 @import '../node_modules/semantic/src/modules/transition.less';
 
+.welcome-page {
+  background: url("http://1.bp.blogspot.com/-JkPWLmt4k9U/UWWYRTALSVI/AAAAAAAACHg/x3zcJrSeQgw/s1600/palmlix.com-night-sky-stars-background-psdgraphics.jpg") no-repeat center center fixed; 
+  background-size: cover;
+  /* Set rules to fill background */
+  min-height: 100%;
+  min-width: 1024px;
+  /* Set up proportionate scaling */
+  width: 100%;
+  height: auto;
+  /* Set up positioning */
+  position: fixed;
+  top: 0;
+  left: 0;
+}
+
+.welcome-block {
+  color: #ddd;
+  background-color: rgba(33,33,33,0.8);
+  height: 300px;
+  width: 800px;
+  margin: 0px auto;
+  margin-top: 10%;
+  margin-bottom: 5%;
+  padding: 30px;
+  
+  text-align: center;
+  font-family: "Comic Sans MS", cursive, sans-serif;
+}
+
+.welcome-header {
+  margin: 0px auto;
+  font-style: oblique;
+}
+
+.welcome-text {
+  margin: 0px auto;
+  padding: 50px;
+}
+
 body {
+  margin: 0;
   background: #9694A6;
 }
 

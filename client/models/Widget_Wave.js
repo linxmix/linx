@@ -12,6 +12,10 @@ module.exports = Widget.extend({
   // TODO: why does track.attributes work while track.get doesnt?
   // load given track into widget
   load: function (options) {
+    this.set({
+      'playState': 'stop',
+      'loaded': false,
+    });
     var track = this.get('track');
     var wave = this.get('player');
     debug("loading track into widget", track, this);
@@ -26,26 +30,28 @@ module.exports = Widget.extend({
 
     // TODO: add other handlers as params to options?
     // load track into wave
-    // call callback on load if callback exists
-    if (options.callback) {
-      wave.once('ready', function () {
-        { options.callback(); }
-      });
-    }
+    wave.once('ready', function () {
+      this.set({ 'loaded': true });
+      this.assertPlayState();
+      debug("WIDGET LOADED");
+    }.bind(this));
     wave.load(url);
   },
 
   play: function () {
+    console.log("PLAYING WIDGET", this);
     var wave = this.get('player');
     wave.play();
   },
 
   pause: function () {
+    console.log("PAUSING WIDGET", this);
     var wave = this.get('player');
     wave.pause();
   },
 
   stop: function () {
+    console.log("STOPPING WIDGET", this);
     var wave = this.get('player');
     wave.stop();
   },
@@ -53,6 +59,11 @@ module.exports = Widget.extend({
   seek: function (percent) {
     var wave = this.get('player');
     wave.seekTo(percent);
+  },
+
+  empty: function () {
+    var wave = this.get('player');
+    wave.empty();
   },
 
   redraw: function () {

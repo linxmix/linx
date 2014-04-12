@@ -16,6 +16,7 @@ module.exports = React.createClass({
   getDefaultProps: function () {
     return {
       'active': true,
+      'playing': false,
     }
   },
 
@@ -36,8 +37,43 @@ module.exports = React.createClass({
     );
   },
 
+  setWidgetPlayState: function () {
+    var widget = this.props.widget;
+    if (this.props.playing) {
+      widget.setPlayState(this.props.playState);
+    }
+  },
+
+  updateWidget: function (prevWidget) {
+    debug("updating widget");
+    var widget = this.props.widget;
+    // set widget to not loaded
+    widget.set({ 'loaded': false });
+    // make sure to remove player from previous widget
+    prevWidget && prevWidget.unsetPlayer();
+    // load track if given
+    if (this.props.track) {
+      widget.setTrack(this.props.track);
+    }
+    // remove old finish handler
+    this.wave.un('finish');
+    // add new finish handler
+    this.wave.on('finish', this.props.onFinish);
+    // add wavesurfer to widget
+    widget.setPlayer(this.wave);
+    this.setWidgetPlayState();
+  },
+
   // rendered component has updated
-  componentDidUpdate: function () {
+  componentDidUpdate: function (prevProps, prevState) {
+    this.setWidgetPlayState();
+
+    // if widget changed, load new stuff into it
+    var prevWidget = prevProps.widget;
+    if (this.props.widget.cid !== prevWidget.cid) {
+      this.updateWidget(prevWidget);
+    }
+
     //this.widget.redraw();
     //debug('component updated');
     // bind this wavesurfer to the new DOM, then redraw
@@ -51,10 +87,9 @@ module.exports = React.createClass({
 
   // rendered component has been mounted to a DOM element
   componentDidMount: function () {
-    var widget = this.props.widget;
 
     // create and save wavesurfer object
-    var wavesurfer = this.wavesurfer = Object.create(WaveSurfer);
+    var wave = this.wave = Object.create(WaveSurfer);
 
     // setup progress bar
     var progressDiv = this.$('.progress');
@@ -67,25 +102,19 @@ module.exports = React.createClass({
     var hideProgress = function () {
       progressDiv.css('display', 'none');
     };
-    wavesurfer.on('loading', showProgress);
-    wavesurfer.on('ready', hideProgress);
-    wavesurfer.on('destroy', hideProgress);
-    wavesurfer.on('error', hideProgress);
+    wave.on('loading', showProgress);
+    wave.on('ready', hideProgress);
+    wave.on('destroy', hideProgress);
+    wave.on('error', hideProgress);
 
     // initialize
-    wavesurfer.init({
+    wave.init({
       container: this.$('.wave').get(0),
       waveColor: 'violet',
       progressColor: 'purple',
     });
+    this.updateWidget();
 
-    // load track if given
-    if (this.props.track) {
-      widget.setTrack(this.props.track);
-    }
-
-    // add wavesurfer to widget
-    widget.setPlayer(wavesurfer);
   },
 
   // component will be unmounted from the DOM
@@ -93,29 +122,11 @@ module.exports = React.createClass({
     debug("componentWillUnmount");
 
     // remove wavesurfer from widget
-    widget.unsetPlayer();
+    this.props.widget.unsetPlayer();
 
     // clean up the wavesurfer
-    this.wavesurfer.destroy();
-    delete this.wavesurfer;
+    this.wave.destroy();
+    delete this.wave;
   },
 
 });
-/*
-
-
-  play: function () {
-    this.widget.play();
-    this.props.changePlayState('play');
-  },
-
-  pause: function () {
-    this.widget.pause();
-    this.props.changePlayState('pause');
-  },
-
-  stop: function () {
-    this.props.changePlayState('stop');
-    this.widget.stop();
-  },
-  */

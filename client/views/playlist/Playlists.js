@@ -5,8 +5,6 @@ var ReactBackboneMixin = require('backbone-react-component').mixin;
 var Playlist_List = require('./Playlist_List');
 var Playlist_Tab = require('./Playlist_Tab');
 
-// TODO: turn this into a semantic table
-
 module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],

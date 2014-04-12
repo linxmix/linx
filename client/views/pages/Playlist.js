@@ -26,13 +26,9 @@ module.exports = React.createClass({
   play: function (row, e) {
     var playlist = this.props.viewingPlaylist;
     var track = row.backboneModel;
-    // if viewingPlaylist is searchResults, play in queue instead
-    if (playlist.get('type') === 'searchResults') {
-      playlist = this.props.appQueue;
-    }
-    this.props.changePlayState('play');
-    playlist.queueAtPos(track, 0);
     this.props.setPlayingPlaylist(playlist);
+    this.props.changePlayState('play');
+    playlist.play(track);
   },
 
   render: function () {

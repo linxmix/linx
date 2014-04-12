@@ -6,7 +6,7 @@ module.exports = User.extend({
 
   url: "https://api.soundcloud.com/me",
 
-  login: function (appTracks) {
+  login: function (appTracks, onLogin) {
     SC.connect(function () {
       SC.get('/me', function (me) {
         this.set(me);
@@ -16,6 +16,7 @@ module.exports = User.extend({
         this.tracks().fetch({
           success: function (tracks) {
             appTracks.add(tracks.models);
+            onLogin();
           }.bind(this),
           error: function () {
             console.error("error fetching user "+this.id+"'s tracks!");

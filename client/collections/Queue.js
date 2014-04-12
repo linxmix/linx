@@ -8,8 +8,8 @@ module.exports = Tracks.extend({
 
   initialize: function(models, options) {
     this.on("add", function(track) {
-      debug("added track to queue", track.get('title'), track.get('queueIndex'));
-    });
+      debug("added track to queue", track.get('title'), this.indexOf(track));
+    }.bind(this));
     // curry options
     if (typeof options !== 'object') { options = { 'numWidgets': 1, }; }
 
@@ -51,34 +51,31 @@ module.exports = Tracks.extend({
     return false;
   },
 
-  // TODO: this needs to be called when playing widget finishes
   cycleQueue: function () {
     debug("cycleQueue");
-    // tell current widget to stop
-    var widget = this.getActiveWidget();
-    widget && widget.stop();
     // increment activeWidget
-    // TODO: should this be here?
     this.getWidgets().incrementActiveWidget();
     // shift queue
     var track = this.shift();
     // add played track to front of history
     track && this.history.unshift(track);
+    this.trigger('changeTrack', this.at(0));
   },
 
   // TODO: add ability to reorder widgets
+  // TODO: this should load widgets inorder
   // use queue to preload widgets
   isSyncing: false,
   syncWidgets: function (action, track, index) {
-    debug("syncWidgets called", action, track, index);
+    debug("syncWidgets called", action, track, index, this);
     // TODO: see if this isSyncing thing does anything
-    if (this.isSyncing) { return; }
+    //if (this.isSyncing) { return; }
     this.isSyncing = true;
 
     var widgets = this.getWidgets();
     var activeWidget = widgets.activeWidget;
 
-    /* TODO: do this
+    /* TODO: do this, be smart about cycleQueue
 
     // if adding to front, decrement activeWidget
     if (action === 'add' && index === 0) {
@@ -97,8 +94,11 @@ module.exports = Tracks.extend({
       var widgetIndex = widget.get('index');
       var queueIndex = (widgetIndex + activeWidget) % widgets.length;
 
-      // quit if queue index is beyond queue
-      if (queueIndex >= this.length) { return; }
+      // if queue index is beyond queue, empty this widget and quit
+      if (queueIndex >= this.length) {
+        widget.empty();
+        return;
+      }
 
       // if incorrect track, load correct track
       var track = this.at(queueIndex);
@@ -106,9 +106,7 @@ module.exports = Tracks.extend({
       var widgetTrack = widget.get('track');
       if (trackId !== (widgetTrack && widgetTrack.get('id'))) {
         console.log("widget and track were unsynced:", widget, track);
-        widget.setTrack(track, {
-          'callback': function () { console.log("WIDGET LOADED", widget); }
-        });
+        widget.setTrack(track);
       }
 
     }.bind(this)); // /end sync
@@ -117,6 +115,4 @@ module.exports = Tracks.extend({
 
   },
 
-  // queue is sorted by index
-  comparator: 'index',
 });

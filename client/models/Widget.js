@@ -8,6 +8,8 @@ module.exports = Backbone.Model.extend({
       index: null,
       track: null,
       player: null,
+      playState: 'stop',
+      loaded: false,
     };
   },
 
@@ -27,20 +29,29 @@ module.exports = Backbone.Model.extend({
     }
   },
 
-  unsetPlayer: function () {
-    this.unset('player');
+  setPlayState: function (newState) {
+    if (this.get('playState') !== newState) {
+      this.set({ 'playState': newState });
+      // assert playstate on change unless unloaded
+      if (this.get('player') && this.get('loaded')) {
+        this.assertPlayState();
+      }
+    }
   },
 
-  assertPlayState: function (playState) {
+  assertPlayState: function () {
+    var playState = this.get('playState');
     debug("asserting playstate", playState);
-
-    if (playState === 'play') {
-      this.play();
-    } else if (playState === 'pause') {
-      this.pause();
-    } else if (playState === 'stop') {
-      this.stop();
+    switch (playState) {
+      case 'play': this.play(); break;
+      case 'pause': this.pause(); break;
+      case 'stop': this.stop(); break;
+      default: debug("WARNING: unknown playState", playState);
     }
+  },
+
+  unsetPlayer: function () {
+    this.unset('player');
   },
 
 });

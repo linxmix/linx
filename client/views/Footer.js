@@ -21,7 +21,6 @@ module.exports = React.createClass({
   },
 
   launchTabClick: function (launchTab) {
-    console.log("TAB CLICK", launchTab);
     this.toggleBar();
   },
 
@@ -43,7 +42,11 @@ module.exports = React.createClass({
     });
 
     // if bar is hidden, make collapse view
-    var menu = (true) ? Mixer(_.extend({}, this.props, {
+    var playlist = this.props.playingPlaylist;
+    var menu = (true) ? Mixer(_.extend({
+      'forth': function () { playlist.forth(); } ,
+      'back': function () { playlist.back(); } ,
+    }, this.props, {
       'launchTab': launchTab,
     // else just make launchTab
     })) : launchTab;

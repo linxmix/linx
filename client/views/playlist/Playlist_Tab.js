@@ -26,9 +26,8 @@ module.exports = React.createClass({
   },
 
   handleDblClick: function (playlist, e) {
-    // cannot edit queue name
     var playlist = this.props.playlist;
-    if (playlist.get('type') !== 'queue') {
+    if (playlist.get('type') === 'playlist') {
       this.setState({ 'editing': true, });
     }
   },
