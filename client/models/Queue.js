@@ -16,6 +16,25 @@ module.exports = Playlist.extend({
     return this.get('queue').models;
   },
 
+  onTrackChange: function (callback) {
+    this.get('queue').on('add', function (track, options) {
+      callback('add', track, options);
+    });
+    this.get('queue').on('remove', function (track, options) {
+      callback('remove', track, options);
+    });
+  },
+
+  // TODO: make this actually work
+  offTrackChange: function (callback) {
+    this.get('queue').off('add', function (track, options) {
+      callback('add', track, options);
+    });
+    this.get('queue').off('remove', function (track, options) {
+      callback('remove', track, options);
+    });
+  },
+
   add: function (track) {
     this.queue(track);
   },

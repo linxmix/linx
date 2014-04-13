@@ -13,19 +13,29 @@ module.exports = React.createClass({
 
   getDefaultProps: function () {
     return {
+      'active': false,
+      'isPlayingTrack': false,
       'handleClick': function (track) { debug("click unimplemented", track); },
       'handleDblClick': function (track) { debug("dblclick unimplemented", track); },
     }
   },
 
   render: function () {
+    var datum;
+    if (this.props.isPlayingTrack) {
+      if (this.props.playState === 'play') {
+        datum = (<i className="volume up icon"></i>);
+      } else {
+        datum = (<i className="volume off icon"></i>);
+      }
+    }
     var track = this.props.track;
     return Row(_.extend({}, {
       'backboneModel': track,
       'key': track.cid,
-      'data': [track.get('title')],
+      'data': [datum, track.get('title')],
       'active': this.props.active,
-      'activeClass': 'positive',
+      'activeClass': 'active',
       'inactiveClass': '',
       'draggable': true,
       'handleClick': this.props.handleClick,

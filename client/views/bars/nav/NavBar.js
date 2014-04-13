@@ -12,12 +12,12 @@ module.exports = React.createClass({
   getDefaultProps: function () {
     return {
       'navTabs': ['Me', 'Settings'],
-    };
+    }
   },
 
   getInitialState: function () {
     return {
-      'searchText': '',
+      'searching': false,
     }
   },
 
@@ -26,13 +26,14 @@ module.exports = React.createClass({
   },
 
   handleChange: function (options) {
-    this.setState({
-      'searchText': options.searchText,
-    });
+    this.props.setSearchText(options.searchText);
   },
 
   handleSubmit: function () {
-    this.props.setSearchBarText(this.state.searchText)
+    this.setState({ 'searching': true });
+    this.props.executeSearch(null, function () {
+      this.setState({ 'searching': false });
+    }.bind(this));
   },
 
   render: function () {
@@ -51,6 +52,11 @@ module.exports = React.createClass({
       )
     }.bind(this));
 
+    // determine searching icon
+    var searchIcon = (this.state.searching) ?
+      (<i className="loading icon"></i>) :
+      (<i className="clickable search icon" onClick={this.handleSubmit}></i>);
+
     // render navBar
     // TODO: make menu do stuff and not be static
     return (
@@ -67,9 +73,9 @@ module.exports = React.createClass({
               'handleSubmit': this.handleSubmit,
               'className': "ui small field icon input",
               'placeholder': "Search Selected...",
-              'value': this.state.searchText,
+              'value': this.props.searchText,
               'handleChange': this.handleChange,
-              'text': (<i className="clickable search icon"></i>),
+              'text': searchIcon,
             })}
           </div>
         </div>

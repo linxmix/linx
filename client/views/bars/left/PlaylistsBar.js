@@ -44,6 +44,7 @@ module.exports = React.createClass({
           </div>
           {Playlists({
             'playlistView': 'tab',
+            'playState': this.props.playState,
             'viewingPlaylist': this.props.viewingPlaylist,
             'playingPlaylist': this.props.playingPlaylist,
             'playlists': this.getCollection().playlists,

@@ -17,12 +17,12 @@ module.exports = React.createClass({
   getDefaultProps: function () {
     return {
       'tabs': [
-        {
+        /*{
           key: 'search',
           name: 'Search',
           icon: 'search icon',
           className: '.search-sidebar'
-        },
+        },*/
         {
           key: 'playlists',
           name: 'Playlists',
@@ -42,28 +42,32 @@ module.exports = React.createClass({
   getInitialState: function () {
     return {
       'activeTab': this.props.tabs[0],
+      'sidebarClosed': true,
     }
   },
 
   launchTabClick: function (launchTab) {
-    debug("LAUNCH TAB CLICK");
-    this.$(this.state.activeTab.className).sidebar('toggle');
+    this.tabClick(this.state.activeTab);
   },
 
   tabClick: function (tab) {
-    this.$(tab.className).sidebar({
+    var selector = tab.className;
+    this.$(selector).sidebar({
       'exclusive': true,
     });
-    this.$(tab.className).sidebar('toggle');
+    // toggle tab's sidebar
+    this.$(selector).sidebar('toggle');
+    // set tab as active and report if sidebar is closed
     this.setState({
       'activeTab': tab,
+      'sidebarClosed': this.$(selector).sidebar('is closed'),
     });
   },
 
   render: function () {
 
     // make launchTab
-    var isHidden = true;
+    var isHidden = this.state.sidebarClosed;
     var launchTabName = (isHidden) ? (<i className="right arrow icon"></i>) :
       (<i className="left arrow icon"></i>);
     var launchTab = Tab({
@@ -77,7 +81,7 @@ module.exports = React.createClass({
     // make tabs
     var tabs = this.props.tabs.map(function(tab) {
       var active = (tab.key == this.state.activeTab.key);
-      var name = active ? (<i className={'orange ' + tab.icon}></i>) :
+      var name = active ? (<i className={'purple ' + tab.icon}></i>) :
         (<i className={tab.icon}></i>);
       return (
         Tab(_.extend({}, tab, {
@@ -88,8 +92,8 @@ module.exports = React.createClass({
       )
     }.bind(this));
     // add launchTab
-    //tabs.unshift(launchTab);
-    
+    tabs.unshift(launchTab);
+
     return (
       <div>
         <div className="left-sidebar">
@@ -97,9 +101,6 @@ module.exports = React.createClass({
             {tabs}
           </div>
         </div>
-        {SearchBar(_.extend({
-          'className': 'search-sidebar',
-        },this.props))}
         {PlaylistsBar(_.extend({
           'className': 'playlist-sidebar',
         },this.props))}

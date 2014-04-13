@@ -12,10 +12,16 @@ module.exports = React.createClass({
 
   getDefaultProps: function () {
     return {
-      'className': "ui table inverted secondary segment",
+      'isPlaying': false,
+      'playingTrack': null,
+      'className': "ui large inverted purple celled table segment",
+      'title': 'Track Title',
     }
   },
 
+  // TODO: turn activeTrack into array to allow for multi-selection
+  //       this includes shift for region and control for individual
+  //       maybe i should look this up?
   getInitialState: function () {
     return {
       'activeTrack': '',
@@ -28,6 +34,10 @@ module.exports = React.createClass({
     });
   },
 
+  handlePlayClick: function (e) {
+    debug("play click", this.props.isPlaying);
+  },
+
   render: function () {
 
     // determine which view to use
@@ -38,37 +48,45 @@ module.exports = React.createClass({
       default: debug("WARNING: unknown trackView", this.props.trackView);
     }
 
-    // make sure tracks are at least length 50. if not, add blank rows
-    var tracks = this.props.tracks || [];
-    var blank_rows = [];
-    /* TODO: auto-fill screen with rows */
-    //for (var i = (tracks.length - 50); i < 0; i++) {
-    //  console.log("appending blank");
-    //  // TODO: td needs to be based on how many fields we display
-    //  blank_rows.push(<tr><td></td></tr>);
-    //}
-
     // make a Track_Table for every track
+    var tracks = this.props.tracks || [];
     var track_tables = tracks.map(function (track) {
       return Track_Table({
         'track': track,
         'active': (track.cid === this.state.activeTrack.cid),
+        'isPlayingTrack': (track && (track.cid ===
+          (this.props.playingTrack && this.props.playingTrack.cid))),
+        'playState': this.props.playState,
         'handleClick': this.setActiveTrack,
         'handleDblClick': this.props.handleDblClick,
       });
     }.bind(this));
 
-    // TODO: determine headers via arguments
+    // determine extra display vars
+    var playIcon = (this.props.isPlaying) ?
+      (<i className="pause icon"></i>) :
+      (<i className="play icon"></i>);
+    var numTracksText = (tracks.length == 1) ? ' Track' : ' Tracks';
     return (
       <table className={this.props.className}>
         <thead>
           <tr>
-          <th>Track Title</th>
-          </tr></thead>
+            <th className="one wide">
+              <div className="orange ui icon button"
+                onClick={this.handleClick}>
+                {playIcon}
+              </div>
+            </th>
+            <th className="fifteen wide">{this.props.title}</th>
+        </tr></thead>
         <tbody>
           {track_tables}
-          {blank_rows}
         </tbody>
+        <tfoot>
+          <tr>
+            <th></th>
+            <th>{tracks.length}{numTracksText}</th>
+        </tr></tfoot>
       </table>
     );
   },

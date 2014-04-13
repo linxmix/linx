@@ -23,7 +23,8 @@ module.exports = React.createClass({
     var playlists = this.props.playlists.map(function (playlist) {
       return Playlist({
         'active': (playlist.cid === this.props.viewingPlaylist.cid),
-        'playing': (playlist.cid === this.props.playingPlaylist.cid),
+        'playState': this.props.playState,
+        'isPlayingPlaylist': (playlist.cid === this.props.playingPlaylist.cid),
         'playlist': playlist,
         'handleClick': this.props.handleClick,
       });

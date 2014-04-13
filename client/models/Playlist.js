@@ -38,6 +38,10 @@ module.exports = Backbone.Model.extend({
     return this.get('tracks').models;
   },
 
+  getHead: function () {
+    return this.get('queue').models[0];
+  },
+
   add: function (track) {
     this.get('tracks').add(track);
   },
@@ -77,9 +81,29 @@ module.exports = Backbone.Model.extend({
     });
   },
 
+  // TODO: make this actually work
   unbindQueueListener: function (callback) {
     this.get('queue').off('changeTrack', function (newTrack) {
       callback(newTrack);
+    });
+  },
+
+  onTrackChange: function (callback) {
+    this.get('tracks').on('add', function (track, options) {
+      callback('add', track, options);
+    });
+    this.get('tracks').on('remove', function (track, options) {
+      callback('remove', track, options);
+    });
+  },
+
+  // TODO: make this actually work
+  offTrackChange: function (callback) {
+    this.get('tracks').off('add', function (track, options) {
+      callback('add', track, options);
+    });
+    this.get('tracks').off('remove', function (track, options) {
+      callback('remove', track, options);
     });
   },
 
@@ -89,6 +113,7 @@ module.exports = Backbone.Model.extend({
 
   // TODO: play this track first, if given.
   // TODO: if track already queued, move to head
+  // TODO: play even if no track given
   play: function (track) {
     this.queueAtPos(track, 0);
   },

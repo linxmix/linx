@@ -13,7 +13,7 @@ module.exports = React.createClass({
 
   getDefaultProps: function () {
     return {
-      'playing': false,
+      'isPlayingPlaylist': false,
       'active': false,
     }
   },
@@ -77,9 +77,14 @@ module.exports = React.createClass({
         </form>
       )
     }
-
-    var name = !this.props.playing ? playlist.get('name') :
-      (<div>{playlist.get('name')}<i className="play icon"></i></div>);
+    var name = playlist.get('name');
+    if (this.props.isPlayingPlaylist) {
+      if (this.props.playState === 'play') {
+        name = (<div><i className="volume up icon"></i>{name}</div>);
+      } else {
+        name = (<div><i className="volume off icon"></i>{name}</div>);
+      }
+    }
     return Tab(_.extend({}, playlist, {
       'active': this.props.active,
       'name': (editing) ? edit : name,

@@ -36,21 +36,56 @@ module.exports = React.createClass({
     // get tracks from viewingPlaylist
     var tracks = (playlist && playlist.tracks());
     var name = (playlist && playlist.get('name'));
+    // figure out if and what we are playing
+    var playingPlaylist = this.props.playingPlaylist;
+    var isAppPlaying = (this.props.playState === 'play');
+    var isPlaying = (isAppPlaying &&
+      (playingPlaylist.cid === playlist.cid));
     // create tracks view
-    // TODO: display playlist name better
     return (
       <div>
-        <div className="purple ui label">
-          {name}
-        </div>
         {Tracks_Table({
+          'title': name,
           'tracks': tracks,
           'trackView': this.state.trackView,
+          'isPlaying': isPlaying,
+          'playState': this.props.playState,
+          'playingTrack': playingPlaylist.getHead(),
           'changePlayState': this.props.changePlayState,
           'handleDblClick': this.play,
         })}
       </div>
     )
+  },
+
+  resetListener: function (prevPlaylist) {
+    // force rerender on track change
+    var onTrackChange = function (event, track) {
+      debug('onTrackChange', event, track);
+      this.forceUpdate();
+    }.bind(this);
+    // remove handler from prevPlaylist
+    if (prevPlaylist) {
+      prevPlaylist.offTrackChange(onTrackChange);
+    }
+    // add handler to new playlist
+    var playlist = this.props.viewingPlaylist;
+    if (playlist) {
+      playlist.onTrackChange(onTrackChange);
+    }
+  },
+
+  componentDidMount: function () {
+    this.resetListener();
+  },
+
+  componentDidUpdate: function (prevProps, prevState) {
+    var prevPlaylist = prevProps.viewingPlaylist;
+    var playlist = this.props.viewingPlaylist;
+    // switch playlist listener if playlist changed
+    if (playlist && ((prevPlaylist && prevPlaylist.cid) !== playlist.cid)) {
+      this.resetListener(prevPlaylist);
+    }
   },
 
 });

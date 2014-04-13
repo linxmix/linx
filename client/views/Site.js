@@ -56,17 +56,55 @@ module.exports = React.createClass({
       'playState': 'stop',
       'viewingPlaylist': this.props.appQueue,
       'playingPlaylist': this.props.appQueue,
-      'searchBarText': '',
+      'searchText': '',
       'rightBar': 0,
       'bottomBar': 0,
     }
   },
 
-  setSearchBarText: function (text) {
+  //
+  // Search
+  //
+
+  setSearchText: function (text) {
     this.setState({
-      'searchBarText': text,
+      'searchText': text,
     });
   },
+
+  executeSearch: function (e, callback) {
+    var searchText = this.state.searchText;
+    debug("executing search", searchText);
+
+    // callback to handle search results
+    var cb = function (tracks, areModels) {
+      // update searchResults with results
+      var searchResults = this.props.searchResults;
+      searchResults.set({
+        'tracks': new Tracks(tracks)
+      });
+      // update our state
+      this.setState({
+        'searching': false,
+      });
+      // set searchResults as viewingPlaylist
+      this.setViewingPlaylist(searchResults);
+      // call callback
+      callback && callback();
+    }.bind(this);
+
+    // do search
+    var options = {
+      'q': this.state.searchText ? searchText : null,
+      'filter': 'streamable', // only return results we can stream
+    }
+    // TODO: make it so we can do /users and /playlists
+    SC.get('/tracks', options, cb)
+  },
+
+  //
+  // / Search
+  //
 
   changePage: function (newPage) {
     debug("changePage", newPage);
@@ -115,8 +153,9 @@ module.exports = React.createClass({
       'playState': this.state.playState,
       'changePlayState': this.changePlayState,
 
-      'searchBarText': this.state.searchBarText,
-      'setSearchBarText': this.setSearchBarText,
+      'searchText': this.state.searchText,
+      'setSearchText': this.setSearchText,
+      'executeSearch': this.executeSearch,
       'searchResults': this.props.searchResults,
 
       'viewingPlaylist': this.state.viewingPlaylist,

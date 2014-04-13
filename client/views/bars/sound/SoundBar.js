@@ -45,18 +45,18 @@ module.exports = React.createClass({
 
   resetListener: function (prevPlaylist) {
     // force rerender on track change
-    function onChangeTrack(newTrack) {
-      debug('onChangeTrack', this, newTrack);
+    function onQueueChange(newTrack) {
+      debug('onQueueChange', this, newTrack);
       this.forceUpdate();
     }
     // remove handler from prevPlaylist
     if (prevPlaylist) {
-      prevPlaylist.unbindQueueListener(onChangeTrack.bind(this));
+      prevPlaylist.unbindQueueListener(onQueueChange.bind(this));
     }
     // add handler to new playlist
     var playlist = this.props.playingPlaylist;
     if (playlist) {
-      playlist.bindQueueListener(onChangeTrack.bind(this));
+      playlist.bindQueueListener(onQueueChange.bind(this));
     }
   },
 
