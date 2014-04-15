@@ -12,6 +12,7 @@ module.exports = Widget.extend({
   // TODO: why does track.attributes work while track.get doesnt?
   // load given track into widget
   load: function (options) {
+    // set loading state
     this.set({
       'playState': 'stop',
       'loaded': false,

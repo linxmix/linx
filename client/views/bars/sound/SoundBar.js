@@ -12,6 +12,18 @@ module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
+  onLoadStart: function () {
+    this.props.setLoading(true);
+  },
+
+  onLoadEnd: function () {
+    this.props.setLoading(false);
+  },
+
+  onFinish: function () {
+    this.props.playingPlaylist.forth();
+  },
+
   render: function () {
     var playlist = this.props.playingPlaylist;
     if (!playlist) { return (<div></div>); }
@@ -30,7 +42,9 @@ module.exports = React.createClass({
         // active widget in soundbar is always the playing widget
         'playing': active,
         'playState': this.props.playState,
-        'onFinish': function () { playlist.forth() },
+        'onLoadStart': this.onLoadStart,
+        'onLoadEnd': this.onLoadEnd,
+        'onFinish': this.onFinish,
       });
     }.bind(this));
 

@@ -48,7 +48,12 @@ module.exports = React.createClass({
     var playpause = _.extend(tabs[1], {
       'handle': playing ? 'pause' : 'play',
     });
-    playpause['icon'] = playpause.handle + ' icon';
+    // set loading icon if loading
+    if (this.props.loading) {
+      playpause['icon'] = 'loading icon';
+    } else {
+      playpause['icon'] = playpause.handle + ' icon';
+    }
     tabs[1] = playpause;
 
     // make mixer tabs

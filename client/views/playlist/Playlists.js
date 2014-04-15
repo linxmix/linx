@@ -21,13 +21,19 @@ module.exports = React.createClass({
 
     // make a Playlist for every playlist
     var playlists = this.props.playlists.map(function (playlist) {
-      return Playlist({
-        'active': (playlist.cid === this.props.viewingPlaylist.cid),
-        'playState': this.props.playState,
-        'isPlayingPlaylist': (playlist.cid === this.props.playingPlaylist.cid),
-        'playlist': playlist,
-        'handleClick': this.props.handleClick,
-      });
+      // skip searchResults if has no tracks
+      if ((playlist.get('type') === 'searchResults') &&
+        (playlist.tracks().length === 0)) {
+        return;
+      } else {
+        return Playlist({
+          'active': (playlist.cid === this.props.viewingPlaylist.cid),
+          'playState': this.props.playState,
+          'isPlayingPlaylist': (playlist.cid === this.props.playingPlaylist.cid),
+          'playlist': playlist,
+          'handleClick': this.props.handleClick,
+        });
+      }
     }.bind(this));
 
     return (

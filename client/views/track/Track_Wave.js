@@ -45,7 +45,6 @@ module.exports = React.createClass({
   },
 
   updateWidget: function (prevWidget) {
-    debug("updating widget");
     var widget = this.props.widget;
     // set widget to not loaded
     widget.set({ 'loaded': false });
@@ -55,9 +54,21 @@ module.exports = React.createClass({
     if (this.props.track) {
       widget.setTrack(this.props.track);
     }
-    // remove old finish handler
+    var onLoadedChange = function (widget, loaded) {
+      console.log("LOADING CHANGED", widget, this.props.isPlaying, loaded);
+      if (this.props.playing) {
+        if (loaded) {
+          this.props.onLoadEnd();
+        } else {
+          this.props.onLoadStart();
+        }
+      }
+    }.bind(this);
+    // remove old handlers
+    prevWidget && prevWidget.off('change:loaded', onLoadedChange);
     this.wave.un('finish');
-    // add new finish handler
+    // add new handlers
+    widget.on('change:loaded', onLoadedChange);
     this.wave.on('finish', this.props.onFinish);
     // add wavesurfer to widget
     widget.setPlayer(this.wave);

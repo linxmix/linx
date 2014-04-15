@@ -13,7 +13,7 @@ module.exports = Playlist.extend({
   },
 
   tracks: function () {
-    return this.get('queue').models;
+    return this.get('queue');
   },
 
   onTrackChange: function (callback) {
@@ -37,9 +37,18 @@ module.exports = Playlist.extend({
 
   add: function (track) {
     this.queue(track);
+    // if queue was empty, reset activeTrack to default
+    if (this.tracks().length === 1) {
+      this.setDefaultTrack();
+    }
   },
 
   remove: function (track) {
+    // TODO: test this
+    // if removing activeTrack, reset to default
+    if (track === this.get('activeTrack')) {
+      this.setDefaultTrack();
+    }
     this.dequeue(track);
   },
 

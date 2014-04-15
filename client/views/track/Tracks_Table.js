@@ -13,29 +13,23 @@ module.exports = React.createClass({
   getDefaultProps: function () {
     return {
       'isPlaying': false,
+      'activeTrack': null,
       'playingTrack': null,
       'className': "ui large inverted purple celled table segment",
       'title': 'Track Title',
     }
   },
 
-  // TODO: turn activeTrack into array to allow for multi-selection
-  //       this includes shift for region and control for individual
-  //       maybe i should look this up?
-  getInitialState: function () {
-    return {
-      'activeTrack': '',
-    }
-  },
-
-  setActiveTrack: function (row) {
-    this.setState({
-      'activeTrack': row.backboneModel,
-    });
-  },
-
   handlePlayClick: function (e) {
-    debug("play click", this.props.isPlaying);
+    var track = this.props.playingTrack
+    if (!track || !this.props.isPlaying) {
+      track = this.props.activeTrack;
+    }
+    this.props.handlePlayClick(track, e);
+  },
+
+  handleClick: function (row) {
+    this.props.setActiveTrack(row.backboneModel);
   },
 
   render: function () {
@@ -49,15 +43,18 @@ module.exports = React.createClass({
     }
 
     // make a Track_Table for every track
+    var activeTrack = this.props.activeTrack;
+    var playingTrack = this.props.playingTrack;
     var tracks = this.props.tracks || [];
     var track_tables = tracks.map(function (track) {
       return Track_Table({
         'track': track,
-        'active': (track.cid === this.state.activeTrack.cid),
-        'isPlayingTrack': (track && (track.cid ===
-          (this.props.playingTrack && this.props.playingTrack.cid))),
+        'active': (track.cid ===
+          (activeTrack && activeTrack.cid)),
+        'isPlayingTrack': (track.cid ===
+          (playingTrack && playingTrack.cid)),
         'playState': this.props.playState,
-        'handleClick': this.setActiveTrack,
+        'handleClick': this.handleClick,
         'handleDblClick': this.props.handleDblClick,
       });
     }.bind(this));
@@ -73,7 +70,7 @@ module.exports = React.createClass({
           <tr>
             <th className="one wide">
               <div className="orange ui icon button"
-                onClick={this.handleClick}>
+                onClick={this.handlePlayClick}>
                 {playIcon}
               </div>
             </th>

@@ -15,6 +15,10 @@ module.exports = Backbone.Model.extend({
       'name': 'playlist ' + this['cid'],
       'type': 'playlist',
       'tracks': new Tracks(),
+  // TODO: turn activeTrack into array to allow for multi-selection
+  //       this includes shift for region and control for individual
+  //       maybe i should look this up? react keyboard
+      'activeTrack': null,
     };
   },
 
@@ -30,23 +34,42 @@ module.exports = Backbone.Model.extend({
     Backbone.Model.apply(this, arguments);
   },
 
+  initialize: function () {
+    this.on('change:tracks', function (playlist, tracks) {
+      playlist.setDefaultTrack();
+    });
+  },
+
   //
   // Collection Handling
   //
 
   tracks: function () {
-    return this.get('tracks').models;
+    return this.get('tracks');
   },
 
   getHead: function () {
     return this.get('queue').models[0];
   },
 
+  setDefaultTrack: function () {
+    this.set({ 'activeTrack': this.tracks().models[0] });
+  },
+
   add: function (track) {
     this.get('tracks').add(track);
+    // if tracks was empty, reset activeTrack to default
+    if (this.get('tracks').length === 1) {
+      this.setDefaultTrack();
+    }
   },
 
   remove: function (track) {
+    // TODO: test this
+    // if removing activeTrack, reset to default
+    if (track === this.get('activeTrack')) {
+      this.setDefaultTrack();
+    }
     this.get('tracks').remove(track);
   },
 

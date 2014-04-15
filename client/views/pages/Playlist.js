@@ -22,8 +22,8 @@ module.exports = React.createClass({
     });
   },
 
-  // play this playlist with given track at head
-  play: function (row, e) {
+  // play viewingPlaylist with given track at head
+  playRow: function (row, e) {
     var playlist = this.props.viewingPlaylist;
     var track = row.backboneModel;
     this.props.setPlayingPlaylist(playlist);
@@ -31,12 +31,39 @@ module.exports = React.createClass({
     playlist.play(track);
   },
 
+  // playpause viewingPlaylist
+  playViewingPlaylist: function (track, e) {
+    var playingPlaylist = this.props.playingPlaylist;
+    var playlist = this.props.viewingPlaylist;
+    var isAppPlaying = (this.props.playState === 'play');
+    var isPlaying = (isAppPlaying &&
+      (playingPlaylist.cid === playlist.cid));;
+    debug("play click", isPlaying, track)
+    if (isPlaying) {
+      this.props.changePlayState('pause');
+    } else {
+      var playlist = this.props.viewingPlaylist;
+      // play playlist and track if track exists
+      this.props.setPlayingPlaylist(playlist);
+      if (track) {
+        this.props.changePlayState('play');
+        playlist.play(track);
+      }
+    }
+  },
+
+  setActiveTrack: function (track) {
+    var playlist = this.props.viewingPlaylist;
+    playlist.set({ 'activeTrack': track });
+    this.forceUpdate();
+  },
+
   render: function () {
     var playlist = this.props.viewingPlaylist;
     // get tracks from viewingPlaylist
     var tracks = (playlist && playlist.tracks());
     var name = (playlist && playlist.get('name'));
-    // figure out if and what we are playing
+    // figure out if this playlist is playing
     var playingPlaylist = this.props.playingPlaylist;
     var isAppPlaying = (this.props.playState === 'play');
     var isPlaying = (isAppPlaying &&
@@ -50,9 +77,12 @@ module.exports = React.createClass({
           'trackView': this.state.trackView,
           'isPlaying': isPlaying,
           'playState': this.props.playState,
+          'activeTrack': playlist.get('activeTrack'),
+          'setActiveTrack': this.setActiveTrack,
           'playingTrack': playingPlaylist.getHead(),
           'changePlayState': this.props.changePlayState,
-          'handleDblClick': this.play,
+          'handlePlayClick': this.playViewingPlaylist,
+          'handleDblClick': this.playRow,
         })}
       </div>
     )

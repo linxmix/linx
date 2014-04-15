@@ -14,6 +14,19 @@ module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
+  getInitialState: function () {
+    return {
+      'loading': false,
+    }
+  },
+
+  setLoading: function (bool) {
+    debug("footer setting loading", bool);
+    this.setState({
+      'loading': bool,
+    });
+  },
+
   toggleBar: function () {
     this.props.changeBar({
       'bottomBar': (this.props.bottomBar) ? 0 : 2,
@@ -44,6 +57,7 @@ module.exports = React.createClass({
     // if bar is hidden, make collapse view
     var playlist = this.props.playingPlaylist;
     var menu = (true) ? Mixer(_.extend({
+      'loading': this.state.loading,
       'forth': function () { playlist.forth(); } ,
       'back': function () { playlist.back(); } ,
     }, this.props, {
@@ -57,7 +71,9 @@ module.exports = React.createClass({
           {menu}
         </div>
         <div className={hidden}>
-          {SoundBar(this.props)}
+          {SoundBar(_.extend({
+            'setLoading': this.setLoading,
+          }, this.props))}
         </div>
       </div>
     );
