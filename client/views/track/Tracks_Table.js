@@ -21,8 +21,9 @@ module.exports = React.createClass({
   },
 
   handlePlayClick: function (e) {
-    var track = this.props.playingTrack
-    if (!track || !this.props.isPlaying) {
+    var track = this.props.playingTrack;
+    debug("play click", track, this.props.activeTrack);
+    if (!track) {
       track = this.props.activeTrack;
     }
     this.props.handlePlayClick(track, e);
@@ -45,7 +46,7 @@ module.exports = React.createClass({
     // make a Track_Table for every track
     var activeTrack = this.props.activeTrack;
     var playingTrack = this.props.playingTrack;
-    var tracks = this.props.tracks || [];
+    var tracks = this.props.tracks;
     var track_tables = tracks.map(function (track) {
       return Track_Table({
         'track': track,
@@ -60,9 +61,14 @@ module.exports = React.createClass({
     }.bind(this));
 
     // determine extra display vars
-    var playIcon = (this.props.isPlaying) ?
-      (<i className="pause icon"></i>) :
-      (<i className="play icon"></i>);
+    var playIcon;
+    if (this.props.loading) {
+      playIcon = (<i className="loading icon"></i>);
+    } else if (this.props.isPlaying) {
+      playIcon = (<i className="play icon"></i>);
+    } else {
+      playIcon = (<i className="pause icon"></i>);
+    }
     var numTracksText = (tracks.length == 1) ? ' Track' : ' Tracks';
     return (
       <table className={this.props.className}>

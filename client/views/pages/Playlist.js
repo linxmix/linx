@@ -76,10 +76,11 @@ module.exports = React.createClass({
           'tracks': tracks,
           'trackView': this.state.trackView,
           'isPlaying': isPlaying,
+          'loading': this.props.loading,
           'playState': this.props.playState,
           'activeTrack': playlist.get('activeTrack'),
+          'playingTrack': playingPlaylist.get('playingTrack'),
           'setActiveTrack': this.setActiveTrack,
-          'playingTrack': playingPlaylist.getHead(),
           'changePlayState': this.props.changePlayState,
           'handlePlayClick': this.playViewingPlaylist,
           'handleDblClick': this.playRow,
@@ -89,19 +90,19 @@ module.exports = React.createClass({
   },
 
   resetListener: function (prevPlaylist) {
+    // remove handler from prevPlaylist
+    if (prevPlaylist && this.onPlaylistChange) {
+      prevPlaylist.offChange(this.onPlaylistChange);
+    }
     // force rerender on track change
-    var onTrackChange = function (event, track) {
-      debug('onTrackChange', event, track);
+    var onPlaylistChange = this.onPlaylistChange = function () {
+      debug('onPlaylistChange', arguments);
       this.forceUpdate();
     }.bind(this);
-    // remove handler from prevPlaylist
-    if (prevPlaylist) {
-      prevPlaylist.offTrackChange(onTrackChange);
-    }
     // add handler to new playlist
     var playlist = this.props.viewingPlaylist;
     if (playlist) {
-      playlist.onTrackChange(onTrackChange);
+      playlist.onChange(onPlaylistChange);
     }
   },
 

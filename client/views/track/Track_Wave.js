@@ -47,15 +47,24 @@ module.exports = React.createClass({
   updateWidget: function (prevWidget) {
     var widget = this.props.widget;
     // set widget to not loaded
-    widget.set({ 'loaded': false });
+    //widget.set({ 'loaded': false });
+    this.props.onLoadEnd();
     // make sure to remove player from previous widget
     prevWidget && prevWidget.unsetPlayer();
     // load track if given
     if (this.props.track) {
       widget.setTrack(this.props.track);
     }
-    var onLoadedChange = function (widget, loaded) {
-      console.log("LOADING CHANGED", widget, this.props.isPlaying, loaded);
+    // if playing track starts or stops loading, tell parent
+    // remove old handlers
+    if (prevWidget && this.onLoadedChange) {
+      prevWidget.off('change:loaded', this.onLoadedChange);
+    }
+    this.wave.un('finish');
+    // make new handlers
+    var onLoadedChange = this.onLoadedChange = function (widget, loaded) {
+      debug("onLoadedCHANGE", widget, this.props.playing, loaded)
+      // TODO: fix this because playing changes
       if (this.props.playing) {
         if (loaded) {
           this.props.onLoadEnd();
@@ -64,9 +73,6 @@ module.exports = React.createClass({
         }
       }
     }.bind(this);
-    // remove old handlers
-    prevWidget && prevWidget.off('change:loaded', onLoadedChange);
-    this.wave.un('finish');
     // add new handlers
     widget.on('change:loaded', onLoadedChange);
     this.wave.on('finish', this.props.onFinish);

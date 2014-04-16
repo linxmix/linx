@@ -19,6 +19,7 @@ module.exports = Backbone.Model.extend({
   //       this includes shift for region and control for individual
   //       maybe i should look this up? react keyboard
       'activeTrack': null,
+      'playingTrack': null,
     };
   },
 
@@ -35,9 +36,36 @@ module.exports = Backbone.Model.extend({
   },
 
   initialize: function () {
+
+    // if new tracks collection, set activeTrack to default
     this.on('change:tracks', function (playlist, tracks) {
       playlist.setDefaultTrack();
     });
+
+    // rebuffer queue on cycle
+    this.onCycle(function (newTrack) {
+      this.bufferQueue();
+    }.bind(this));
+
+    // update playingTrack on queue change
+    var updatePlayingTrack = function () {
+      var playingTrack = this.get('playingTrack');
+      var queue = this.get('queue');
+      if (queue.length === 0) {
+        this.set({ 'playingTrack': null });
+      } else {
+        var queueHead = this.get('queue').models[0];
+        if (queueHead && !playingTrack) {
+          this.set({ 'playingTrack': queueHead })
+        } else if (queueHead &&
+          (playingTrack.cid !== queueHead.cid)) {
+          this.set({ 'playingTrack': queueHead, });
+        }
+      }
+    }.bind(this);
+    this.get('queue').on('add', updatePlayingTrack);
+    this.get('queue').on('remove', updatePlayingTrack);
+
   },
 
   //
@@ -46,10 +74,6 @@ module.exports = Backbone.Model.extend({
 
   tracks: function () {
     return this.get('tracks');
-  },
-
-  getHead: function () {
-    return this.get('queue').models[0];
   },
 
   setDefaultTrack: function () {
@@ -98,36 +122,45 @@ module.exports = Backbone.Model.extend({
     return this.get('queue').getHistory();
   },
 
-  bindQueueListener: function (callback) {
-    this.get('queue').on('changeTrack', function (newTrack) {
-      callback(newTrack);
-    });
+  onCycle: function (callback) {
+    this.get('queue').on('cycle', callback);
   },
 
-  // TODO: make this actually work
-  unbindQueueListener: function (callback) {
-    this.get('queue').off('changeTrack', function (newTrack) {
-      callback(newTrack);
-    });
+  offCycle: function (callback) {
+    this.get('queue').off('cycle', callback);
   },
 
-  onTrackChange: function (callback) {
-    this.get('tracks').on('add', function (track, options) {
-      callback('add', track, options);
-    });
-    this.get('tracks').on('remove', function (track, options) {
-      callback('remove', track, options);
-    });
+  onChange: function (callback) {
+    this.tracks().on('add', callback);
+    this.tracks().on('remove', callback);
+    this.on('change:playingTrack', callback);
   },
 
-  // TODO: make this actually work
-  offTrackChange: function (callback) {
-    this.get('tracks').off('add', function (track, options) {
-      callback('add', track, options);
-    });
-    this.get('tracks').off('remove', function (track, options) {
-      callback('remove', track, options);
-    });
+  offChange: function (callback) {
+    this.tracks().off('add', callback);
+    this.tracks().off('remove', callback);
+    this.off('change:playingTrack', callback);
+  },
+
+  bufferQueue: function () {
+    debug("buffering queue", this.tracks());
+    var queue = this.get('queue');
+    var tracks = this.tracks();
+    // if queue is already of length 2, pass
+    if (queue.length >= 2) {
+      return;
+
+    // if queue has a song, buffer the next
+    } else if (queue.length === 1) {
+      var currTrack = tracks.get(queue.models[0]);
+      var nextTrack = tracks.at(tracks.indexOf(currTrack) + 1);
+      this.queue(nextTrack);
+    }
+
+    // if queue has no songs, raise question mark
+    else if (queue.length === 0) {
+      debug("trying to buffer empty queue");
+    }
   },
 
   //
@@ -138,7 +171,11 @@ module.exports = Backbone.Model.extend({
   // TODO: if track already queued, move to head
   // TODO: play even if no track given
   play: function (track) {
+    var queue = this.get('queue');
+    if (!track) { track = this.get('activeTrack'); }
+    if (!track) { debug("WARNING: no track for playlist to play"); }
     this.queueAtPos(track, 0);
+    this.bufferQueue();
   },
 
   seek: function (percent) {

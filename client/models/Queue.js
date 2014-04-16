@@ -16,6 +16,11 @@ module.exports = Playlist.extend({
     return this.get('queue');
   },
 
+  // no-op since Queue already buffers all tracks
+  bufferQueue: function () {
+    return;
+  },
+
   onTrackChange: function (callback) {
     this.get('queue').on('add', function (track, options) {
       callback('add', track, options);

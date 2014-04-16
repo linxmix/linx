@@ -50,7 +50,7 @@ module.exports = React.createClass({
     });
     // set loading icon if loading
     if (this.props.loading) {
-      playpause['icon'] = 'loading icon';
+      playpause['icon'] = 'orange loading icon';
     } else {
       playpause['icon'] = playpause.handle + ' icon';
     }

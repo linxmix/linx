@@ -31,6 +31,7 @@ module.exports = React.createClass({
     // get widgets from playlist
     var widgets = playlist.getWidgets();
     var activeWidget = widgets.activeWidget;
+    debug("SOUNDBAR RENDER", activeWidget);
     
     // make widgetViews from widgets
     var widgetViews = widgets.map(function (widget) {;
@@ -58,19 +59,19 @@ module.exports = React.createClass({
   },
 
   resetListener: function (prevPlaylist) {
-    // force rerender on track change
-    function onQueueChange(newTrack) {
-      debug('onQueueChange', this, newTrack);
-      this.forceUpdate();
-    }
     // remove handler from prevPlaylist
-    if (prevPlaylist) {
-      prevPlaylist.unbindQueueListener(onQueueChange.bind(this));
+    if (prevPlaylist && this.onCycle) {
+      prevPlaylist.offCycle(this.onCycle);
     }
+    // force rerender on track change
+    var onCycle = this.onCycle = function onCycle(newTrack) {
+      debug('onCycle', this, newTrack);
+      this.forceUpdate();
+    }.bind(this);
     // add handler to new playlist
     var playlist = this.props.playingPlaylist;
     if (playlist) {
-      playlist.bindQueueListener(onQueueChange.bind(this));
+      playlist.onCycle(onCycle);
     }
   },
 

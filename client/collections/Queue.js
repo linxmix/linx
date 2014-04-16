@@ -54,12 +54,15 @@ module.exports = Tracks.extend({
   cycleQueue: function () {
     debug("cycleQueue");
     // increment activeWidget
+    debug("INCREMENT WIDGET");
     this.getWidgets().incrementActiveWidget();
     // shift queue
+    debug("SHIFT QUEUE");
     var track = this.shift();
     // add played track to front of history
     track && this.history.unshift(track);
-    this.trigger('changeTrack', this.at(0));
+    debug("TRIGGER CYCLE");
+    this.trigger('cycle', this.at(0));
   },
 
   // TODO: add ability to reorder widgets
@@ -67,9 +70,9 @@ module.exports = Tracks.extend({
   // use queue to preload widgets
   isSyncing: false,
   syncWidgets: function (action, track, index) {
-    debug("syncWidgets called", action, track, index, this);
     // TODO: see if this isSyncing thing does anything
-    //if (this.isSyncing) { return; }
+    if (this.isSyncing) { return; }
+    debug("syncWidgets called", action, track, index, this);
     this.isSyncing = true;
 
     var widgets = this.getWidgets();

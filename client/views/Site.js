@@ -59,6 +59,7 @@ module.exports = React.createClass({
       'searchText': '',
       'rightBar': 0,
       'bottomBar': 0,
+      'loading': false,
     }
   },
 
@@ -106,6 +107,13 @@ module.exports = React.createClass({
   // / Search
   //
 
+  setLoading: function (bool) {
+    debug("setLoading", bool);
+    this.setState({
+      'loading': bool,
+    });
+  },
+
   changePage: function (newPage) {
     debug("changePage", newPage);
     this.setState({
@@ -152,6 +160,9 @@ module.exports = React.createClass({
 
       'playState': this.state.playState,
       'changePlayState': this.changePlayState,
+
+      'loading': this.state.loading,
+      'setLoading': this.setLoading,
 
       'searchText': this.state.searchText,
       'setSearchText': this.setSearchText,

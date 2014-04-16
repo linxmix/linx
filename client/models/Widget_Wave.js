@@ -29,13 +29,19 @@ module.exports = Widget.extend({
       track.attributes['stream_url'].replace(/^https:\/\//, '') +
       "?client_id=" + clientId;
 
-    // TODO: add other handlers as params to options?
-    // load track into wave
-    wave.once('ready', function () {
+    // update onReady handlers
+    if (this.onReady) {
+      wave.un('ready', this.onReady);
+    }
+    var onReady = this.onReady = function () {
       this.set({ 'loaded': true });
       this.assertPlayState();
-      debug("WIDGET LOADED");
-    }.bind(this));
+      debug("WIDGET LOADED", track.get('title'));
+      
+    }.bind(this);
+    wave.once('ready', onReady);
+
+    // load track into wave
     wave.load(url);
   },
 
@@ -64,7 +70,7 @@ module.exports = Widget.extend({
 
   empty: function () {
     var wave = this.get('player');
-    wave.empty();
+    wave && wave.empty();
   },
 
   redraw: function () {
