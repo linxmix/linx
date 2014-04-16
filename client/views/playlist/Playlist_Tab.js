@@ -52,7 +52,6 @@ module.exports = React.createClass({
     // if object is a track, add it to this playlist
     var model = obj.backboneModel;
     if (model && model.kind === 'track') {
-      console.log(this.props.playlist);
       this.props.playlist.add(model)
     }
     // if object is a playlist, add that playlist to this

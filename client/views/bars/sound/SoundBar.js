@@ -31,7 +31,6 @@ module.exports = React.createClass({
     // get widgets from playlist
     var widgets = playlist.getWidgets();
     var activeWidget = widgets.activeWidget;
-    debug("SOUNDBAR RENDER", activeWidget);
     
     // make widgetViews from widgets
     var widgetViews = widgets.map(function (widget) {;

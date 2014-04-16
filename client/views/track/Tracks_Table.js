@@ -52,7 +52,7 @@ module.exports = React.createClass({
         'track': track,
         'active': (track.cid ===
           (activeTrack && activeTrack.cid)),
-        'isPlayingTrack': (track.cid ===
+        'isPlayingTrack': this.props.isPlaying && (track.cid ===
           (playingTrack && playingTrack.cid)),
         'playState': this.props.playState,
         'handleClick': this.handleClick,
@@ -65,9 +65,9 @@ module.exports = React.createClass({
     if (this.props.loading) {
       playIcon = (<i className="loading icon"></i>);
     } else if (this.props.isPlaying) {
-      playIcon = (<i className="play icon"></i>);
-    } else {
       playIcon = (<i className="pause icon"></i>);
+    } else {
+      playIcon = (<i className="play icon"></i>);
     }
     var numTracksText = (tracks.length == 1) ? ' Track' : ' Tracks';
     return (

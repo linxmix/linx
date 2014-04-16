@@ -4,6 +4,8 @@ var debug = require('debug')('models:Playlist');
 var Tracks = require('../collections/Tracks');
 var Queue = require('../collections/Queue');
 
+var _ = require('underscore');
+
 module.exports = Backbone.Model.extend({
 
   //
@@ -27,7 +29,7 @@ module.exports = Backbone.Model.extend({
   constructor: function (attributes, options) {
     var numWidgets = options && options['numWidgets'];
     if (typeof numWidgets !== 'number') {
-      numWidgets = 2;
+      numWidgets = 1;
     }
     attributes['queue'] = new Queue([], {
       'numWidgets': numWidgets,
@@ -102,8 +104,21 @@ module.exports = Backbone.Model.extend({
   },
 
   queueAtPos: function (track, pos) {
+    if (!track) {
+      debug("ERROR: queueingAtPos with no track");
+    }
     debug("queuing track at pos", track, pos);
-    this.get('queue').add(track, { 'at': pos });
+    var queue = this.get('queue');
+    // if already queued, silently remove first
+    if (queue.get(track.id)) {
+      queue.remove(track.id, {
+        'silent': true,
+      });
+    // add track at pos
+    }
+    queue.add(track, {
+      'at': pos,
+    });
   },
 
   dequeue: function (track) {
@@ -142,11 +157,14 @@ module.exports = Backbone.Model.extend({
     this.off('change:playingTrack', callback);
   },
 
+  // TODO: make this prioritize current track
   bufferQueue: function () {
     debug("buffering queue", this.tracks());
     var queue = this.get('queue');
     var tracks = this.tracks();
-    // if queue is already of length 2, pass
+
+    // TODO: if queue is already of length 2 or greater,
+    //       remove buffer songs that are not after nextSong
     if (queue.length >= 2) {
       return;
 
@@ -167,9 +185,6 @@ module.exports = Backbone.Model.extend({
   // Mixer Functions
   //
 
-  // TODO: play this track first, if given.
-  // TODO: if track already queued, move to head
-  // TODO: play even if no track given
   play: function (track) {
     var queue = this.get('queue');
     if (!track) { track = this.get('activeTrack'); }

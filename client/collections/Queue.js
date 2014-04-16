@@ -15,10 +15,20 @@ module.exports = Tracks.extend({
 
    // setup queue listeners
     this.on('add', function (track, collection, options) {
-      return this.syncWidgets('add', track, collection.indexOf(track));
+      var index = collection.indexOf(track);
+      // if adding to front, decrement activeWidget
+      if (index === 0) {
+        this.getWidgets().decrementActiveWidget();
+      }
+      return this.syncWidgets();
     }.bind(this));
     this.on('remove', function (track, collection, options) {
-      return this.syncWidgets('remove', track, options.index);
+      var index = options.index;
+      // if removing from front, increment activeWidget
+      if (index === 0) {
+        this.getWidgets().incrementActiveWidget();
+      }
+      return this.syncWidgets();
     }.bind(this));
 
     // make widgets equal to options.numWidgets
@@ -53,9 +63,6 @@ module.exports = Tracks.extend({
 
   cycleQueue: function () {
     debug("cycleQueue");
-    // increment activeWidget
-    debug("INCREMENT WIDGET");
-    this.getWidgets().incrementActiveWidget();
     // shift queue
     debug("SHIFT QUEUE");
     var track = this.shift();
@@ -65,56 +72,55 @@ module.exports = Tracks.extend({
     this.trigger('cycle', this.at(0));
   },
 
-  // TODO: add ability to reorder widgets
-  // TODO: this should load widgets inorder
+  // TODO: add ability to reorder widgets to minimize load time
   // use queue to preload widgets
   isSyncing: false,
-  syncWidgets: function (action, track, index) {
-    // TODO: see if this isSyncing thing does anything
-    if (this.isSyncing) { return; }
-    debug("syncWidgets called", action, track, index, this);
-    this.isSyncing = true;
-
+  syncWidgets: function (isContinuation) {
+    // TODO: make this work
+    if (this.isSyncing && !isContinuation) {
+      return false;
+    }
+    debug("syncWidgets called", isContinuation);
     var widgets = this.getWidgets();
     var activeWidget = widgets.activeWidget;
 
-    /* TODO: do this, be smart about cycleQueue
-
-    // if adding to front, decrement activeWidget
-    if (action === 'add' && index === 0) {
-      activeWidget = widgets.incrementActiveWidget();
-    }
-
-    // if removing from front, increment activeWidget
-    else if (action === 'remove' && index === 0) {
-      activeWidget = widgets.decrementActiveWidget();
-    }
-    */
-
-    // now do the queue sync
-    // make sure each widget has correct track loaded
-    widgets.forEach(function (widget) {
-      var widgetIndex = widget.get('index');
+    // do the queue sync: find incorrect widget and start from there
+    var wrongWidget = null;
+    for (var i = 0; i < widgets.length; i++) {
+      var widgetIndex = (i + activeWidget) % widgets.length;
       var queueIndex = (widgetIndex + activeWidget) % widgets.length;
 
-      // if queue index is beyond queue, empty this widget and quit
+      // if queue index is beyond queue, quit
+      // TODO: make it so we empty trailing widgets
       if (queueIndex >= this.length) {
-        widget.empty();
-        return;
+        break;
       }
 
-      // if incorrect track, load correct track
+      // if incorrect track, set wrongWidget and break
+      var widget = widgets.at(widgetIndex);
       var track = this.at(queueIndex);
       var trackId = track.get('id');
       var widgetTrack = widget.get('track');
       if (trackId !== (widgetTrack && widgetTrack.get('id'))) {
-        console.log("widget and track were unsynced:", widget, track);
-        widget.setTrack(track);
+        wrongWidget = widget;
+        break;
       }
 
-    }.bind(this)); // /end sync
+    }
 
-    this.isSyncing = false;
+    // if there was an unsynced widget, start loading from there
+    if (wrongWidget) {
+      console.log("widget and track were unsynced:", widget.get('index'), track.get('title'));
+      this.isSyncing = true;
+      widget.setTrack(track, {
+        'callback': function () {
+          this.syncWidgets(true);
+        }.bind(this),
+      });
+    // otherwise, we are done syncing
+    } else {
+      this.isSyncing = false
+    }
 
   },
 

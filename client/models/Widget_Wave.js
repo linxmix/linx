@@ -19,8 +19,27 @@ module.exports = Widget.extend({
     });
     var track = this.get('track');
     var wave = this.get('player');
-    debug("loading track into widget", track, this);
+    debug("loading track into widget", this.get('index'), track.get('title'));
 
+    // cancel any previous loading
+    var xhr = this.get('xhr');
+    if (xhr) {
+      debug("CANCELLING XHR", track.get('title'))
+      xhr.abort();
+      this.unset('xhr');
+    }
+    // store new xhr
+    var onLoading = function (percent, xhr) {
+      if (xhr) {
+        this.set({ 'xhr': xhr });
+        wave.un('loading', onLoading);
+      }
+    }.bind(this);
+    wave.on('loading', onLoading);
+    // callback to remove this.xhr
+    wave.once('loaded', function () {
+      this.unset('xhr');
+    }.bind(this));
     // add defaults to options
     if (typeof options !== 'object') { options = {}; }
 
@@ -31,15 +50,17 @@ module.exports = Widget.extend({
 
     // update onReady handlers
     if (this.onReady) {
+      console.log("REMOVING ONREADY")
       wave.un('ready', this.onReady);
     }
     var onReady = this.onReady = function () {
+      this.onReady = null;
       this.set({ 'loaded': true });
       this.assertPlayState();
-      debug("WIDGET LOADED", track.get('title'));
-      
+      debug("WIDGET LOADED", track.get('title'), options.callback);
+      options.callback && options.callback();
     }.bind(this);
-    wave.once('ready', onReady);
+    wave.on('ready', onReady);
 
     // load track into wave
     wave.load(url);

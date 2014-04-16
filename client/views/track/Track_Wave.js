@@ -47,8 +47,7 @@ module.exports = React.createClass({
   updateWidget: function (prevWidget) {
     var widget = this.props.widget;
     // set widget to not loaded
-    //widget.set({ 'loaded': false });
-    this.props.onLoadEnd();
+    widget.set({ 'loaded': false });
     // make sure to remove player from previous widget
     prevWidget && prevWidget.unsetPlayer();
     // load track if given
@@ -63,7 +62,8 @@ module.exports = React.createClass({
     this.wave.un('finish');
     // make new handlers
     var onLoadedChange = this.onLoadedChange = function (widget, loaded) {
-      debug("onLoadedCHANGE", widget, this.props.playing, loaded)
+      debug("onLoadedCHANGE", widget.get('index'),
+        this.props.playing, loaded)
       // TODO: fix this because playing changes
       if (this.props.playing) {
         if (loaded) {
@@ -107,6 +107,26 @@ module.exports = React.createClass({
 
     // create and save wavesurfer object
     var wave = this.wave = Object.create(WaveSurfer);
+
+    // 
+    // 
+    //
+    wave.fireEvent = function (event) {
+      if (!this.handlers) { return; }
+
+      var handlers = this.handlers[event];
+      var args = Array.prototype.slice.call(arguments, 1);
+      if (handlers) {
+        for (var i = 0, len = handlers.length; i < len; i += 1) {
+          if (handlers[i]) { // ADDED THIS CHECK for concurrency
+            handlers[i].apply(null, args);
+          }
+        }
+      }
+    }
+    // 
+    // 
+    // 
 
     // setup progress bar
     var progressDiv = this.$('.progress');

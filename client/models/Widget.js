@@ -14,18 +14,24 @@ module.exports = Backbone.Model.extend({
   },
 
   setTrack: function (track, options) {
-    this.set({ 'track': track });
+    this.set({
+      'track': track,
+      'options': options || this.get('options'),
+    });
     // load track into widget if we have a player
     if (this.get('player')) {
-      this.load(options);
+      this.load(this.get('options'));
     }
   },
 
   setPlayer: function (player, options) {
-    this.set({ 'player': player });
+    this.set({
+      'player': player,
+      'options': options || this.get('options'),
+    });
     // load track into widget if we have a track
     if (this.get('track')) {
-      this.load(options);
+      this.load(this.get('options'));
     }
   },
 
