@@ -18,6 +18,7 @@ SC.initialize({
 
 require('semantic/src/modules/dimmer');
 require('semantic/src/modules/transition');
+require('semantic/src/modules/popup');
 require('semantic/src/modules/sidebar');
 require('semantic/src/modules/dropdown');
 
