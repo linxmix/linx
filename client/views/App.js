@@ -6,7 +6,13 @@ var ReactBackboneMixin = require('backbone-react-component').mixin;
 var _ = require('underscore');
 
 var Me = require('../models/Me');
+var Queue = require('../models/Queue');
+var SearchResults = require('../models/SearchResults');
+
 var Tracks = require('../collections/Tracks');
+var EchoNest = require('../collections/EchoNest');
+var TasteProfiles = require('../collections/TasteProfiles');
+var Playlists = require('../collections/Playlists');
 
 var Site = require('./Site');
 var Welcome = require('./Welcome');
@@ -16,17 +22,35 @@ module.exports = React.createClass({
   mixins: [ReactBackboneMixin],
 
   getDefaultProps: function () {
+    var queue = new Queue({
+      'name': 'Queue',
+    }, {
+      'numWidgets': 1,
+    });
+    var searchResults = new SearchResults({
+      'name': 'Search Results',
+    });
+    var playlists = new Playlists([searchResults, queue], {});
+    
     return {
       'model': {
         me: new Me(),
       },
-      'myTracks': new Tracks(),
+      'collection': {
+        'echoNest': new EchoNest(),
+        'tasteProfiles': new TasteProfiles(),
+        'playlists': playlists,
+        'myTracks': new Tracks(),
+      },
+      // TODO: use vars above for this. will that be the same?
+      'searchResults': searchResults,
+      'appQueue':  queue,
     }
   },
 
   getInitialState: function () {
     return {
-      'page': 'Site',
+      'page': 'Welcome',
     }
   },
 
@@ -37,16 +61,19 @@ module.exports = React.createClass({
   },
 
   render: function () {
-    var page = this.state.page;
-    var props = {
+    var props = _.extend({
       'me': this.props.me,
-      'myTracks': this.props.myTracks,
       'changePage': this.changePage,
-    }
+    }, this.props);
+
+    // determine page to render
+    var page = this.state.page;
     var renderedPage;
     switch (page) {
-      case 'Welcome': renderedPage = Welcome(props); break;
-      case 'Site': renderedPage = Site(props); break;
+      case 'Welcome':
+        renderedPage = Welcome(props); break;
+      case 'Site':
+        renderedPage = Site(props); break;
     }
     return (
       <div>

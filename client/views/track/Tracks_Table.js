@@ -3,6 +3,8 @@ var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 var debug = require('debug')('views:track/Tracks_Table');
 
+var _ = require('underscore');
+
 var Track_Table_SC = require('./Track_Table_SC');
 var Track_Table_Echo = require('./Track_Table_Echo');
 
@@ -13,7 +15,7 @@ module.exports = React.createClass({
   getDefaultProps: function () {
     return {
       'isPlaying': false,
-      'activeTrack': null,
+      'activeTracks': [],
       'playingTrack': null,
       'className': "ui large inverted purple celled table segment",
       'title': 'Track Title',
@@ -22,15 +24,72 @@ module.exports = React.createClass({
 
   handlePlayClick: function (e) {
     var track = this.props.playingTrack;
-    debug("play click", track, this.props.activeTrack);
+    debug("play click", track, this.props.activeTracks[0]);
     if (!track) {
-      track = this.props.activeTrack;
+      track = this.props.activeTracks[0];
     }
     this.props.handlePlayClick(track, e);
   },
 
-  handleClick: function (row) {
-    this.props.setActiveTrack(row.backboneModel);
+  onKeyPress: function (e) {
+    debug("KEY PRESS", e);
+  },
+
+  handleClick: function (row, e) {
+    var ctrl = e.ctrlKey || e.metaKey;
+    var shift = e.shiftKey;
+    var track = row.backboneModel;
+    debug("ROW CLICK", ctrl, shift);
+
+    // ctrl => add or remove this track
+    if (ctrl) {
+      var activeTracks = this.props.activeTracks;
+      var index = activeTracks.indexOf(track);
+      // track is in activeTracks, so remove it
+      if (index > -1) {
+        activeTracks.splice(index, 1);
+        this.props.setActiveTracks(activeTracks);
+      // track is not in activeTracks, so add it
+      } else {
+        this.props.addActiveTrack(track)
+      }
+
+    // shift => add track group
+    } else if (shift) {
+      var tracks = this.props.tracks;
+      var activeTracks = this.props.activeTracks;
+      var index = tracks.indexOf(track);
+      // if clicked track is already in activeTracks, quit
+      if (index === -1) { return; }
+      // find closest track in activeTracks
+      var closestTrack = _.min(activeTracks, function (activeTrack) {
+        return Math.abs(index - tracks.indexOf(activeTrack));
+      });
+      // add all tracks between closestTrack and track
+      var closestIndex = tracks.indexOf(closestTrack);
+      var start, end;
+      if (index > closestIndex) {
+        start = closestIndex + 1;
+        end = index;
+      } else {
+        start = index;
+        end = closestIndex - 1;
+      }
+      debug("closestTrack", closestTrack.get('title'))
+      debug("closestIndex", closestIndex)
+      debug("index", index)
+      debug("start", start)
+      debug("end", end)
+      for (var i = start; i <= end; i++) {
+        debug("adding track", tracks.at(i));
+        activeTracks.push(tracks.at(i));
+      }
+      this.props.setActiveTracks(activeTracks);
+
+    // nothing => set this track as active
+    } else {
+      this.props.setActiveTracks([track]);
+    }
   },
 
   render: function () {
@@ -44,18 +103,18 @@ module.exports = React.createClass({
     }
 
     // make a Track_Table for every track
-    var activeTrack = this.props.activeTrack;
+    var activeTracks = this.props.activeTracks;
     var playingTrack = this.props.playingTrack;
     var tracks = this.props.tracks;
     var track_tables = tracks.map(function (track) {
       return Track_Table({
         'track': track,
-        'active': (track.cid ===
-          (activeTrack && activeTrack.cid)),
-        'isPlayingTrack': this.props.isPlaying && (track.cid ===
+        'active': (activeTracks.indexOf(track) > -1),
+        'isPlayingTrack': (track.cid ===
           (playingTrack && playingTrack.cid)),
         'playState': this.props.playState,
         'handleClick': this.handleClick,
+        'handleRemoveClick': this.props.handleRemoveClick,
         'handleDblClick': this.props.handleDblClick,
       });
     }.bind(this));
@@ -71,7 +130,10 @@ module.exports = React.createClass({
     }
     var numTracksText = (tracks.length == 1) ? ' Track' : ' Tracks';
     return (
-      <table className={this.props.className}>
+      <table
+        className={this.props.className}
+        onKeyPress={this.onKeyPress}
+      >
         <thead>
           <tr>
             <th className="one wide">
@@ -80,7 +142,8 @@ module.exports = React.createClass({
                 {playIcon}
               </div>
             </th>
-            <th className="fifteen wide">{this.props.title}</th>
+            <th className="fourteen wide">{this.props.title}</th>
+            <th className="one wide"><i className="orange time icon"></i></th>
         </tr></thead>
         <tbody>
           {track_tables}
@@ -89,6 +152,7 @@ module.exports = React.createClass({
           <tr>
             <th></th>
             <th>{tracks.length}{numTracksText}</th>
+            <th></th>
         </tr></tfoot>
       </table>
     );

@@ -12,37 +12,49 @@ module.exports = Backbone.Model.extend({
   // Initialization
   //
 
+  // TODO: remove name collisions with soundcloud?
   defaults: function () {
     return {
       'name': 'playlist ' + this['cid'],
       'type': 'playlist',
       'tracks': new Tracks(),
-  // TODO: turn activeTrack into array to allow for multi-selection
-  //       this includes shift for region and control for individual
-  //       maybe i should look this up? react keyboard
-      'activeTrack': null,
+      'activeTracks': [],
       'playingTrack': null,
     };
   },
 
-  // dynamically determine numWidgets
   constructor: function (attributes, options) {
-    var numWidgets = options && options['numWidgets'];
+    attributes = attributes ? attributes : {};
+    options = options ? options : {};
+
+    // if making from a soundcloud playlist, fill args
+    if (attributes['kind'] === 'playlist') {
+      attributes['name'] = attributes['title'];
+      attributes['tracks'] = new Tracks(attributes['tracks']);
+      attributes['type'] = 'playlist';
+    }
+
+    // dynamically determine numWidgets
+    var numWidgets = options['numWidgets'];
     if (typeof numWidgets !== 'number') {
       numWidgets = 1;
     }
     attributes['queue'] = new Queue([], {
       'numWidgets': numWidgets,
     }),
+
+    // continue regular constructor
     Backbone.Model.apply(this, arguments);
   },
 
   initialize: function () {
 
-    // if new tracks collection, set activeTrack to default
+    // if new tracks collection, set activeTracks to default
+    this.setDefaultTracks();
     this.on('change:tracks', function (playlist, tracks) {
-      playlist.setDefaultTrack();
-    });
+      console.log("CHANGED TRACKS", tracks);
+      playlist.setDefaultTracks();
+    }.bind(this));
 
     // rebuffer queue on cycle
     this.onCycle(function (newTrack) {
@@ -78,25 +90,34 @@ module.exports = Backbone.Model.extend({
     return this.get('tracks');
   },
 
-  setDefaultTrack: function () {
-    this.set({ 'activeTrack': this.tracks().models[0] });
+  setDefaultTracks: function () {
+    this.set({ 'activeTracks': [this.tracks().models[0]] });
   },
 
   add: function (track) {
-    this.get('tracks').add(track);
-    // if tracks was empty, reset activeTrack to default
-    if (this.get('tracks').length === 1) {
-      this.setDefaultTrack();
+    this.tracks().add(track);
+    // if tracks was empty, reset activeTracks to default
+    if (this.tracks().length === 1) {
+      this.setDefaultTracks();
     }
   },
 
   remove: function (track) {
     // TODO: test this
-    // if removing activeTrack, reset to default
-    if (track === this.get('activeTrack')) {
-      this.setDefaultTrack();
+    // if removing an activeTrack, remove from activeTracks
+    var activeTracks = this.get('activeTracks');
+    var index = activeTracks.indexOf(track);
+    if (index > -1) {
+      this.set({
+        'activeTracks': activeTracks.splice(index, 1),
+      });
     }
-    this.get('tracks').remove(track);
+    // if no more activeTracks, reset to default
+    if (this.get('activeTracks').length === 0) {
+      this.setDefaultTracks();
+    }
+    // now remove track from playlist
+    this.tracks().remove(track);
   },
 
   queue: function (track) {
@@ -104,8 +125,8 @@ module.exports = Backbone.Model.extend({
   },
 
   queueAtPos: function (track, pos) {
-    if (!track) {
-      debug("ERROR: queueingAtPos with no track");
+    if (!track || !track.get('stream_url')) {
+      return debug("ERROR: cannot queueAtPos track", track);
     }
     debug("queuing track at pos", track, pos);
     var queue = this.get('queue');
@@ -181,14 +202,68 @@ module.exports = Backbone.Model.extend({
     }
   },
 
+  // TODO: convert from sdk to urls
+  // TODO: find out what other params SC lets us create/update
+  sync: function (method, playlist, options) {
+    var cb = function (resp, error) {
+      if (error) {
+        options.error(playlist, resp || error, options);
+      } else {
+        // TODO: call this but make it not change our playlists
+        //options.success(playlist, resp, options);
+      }
+    }
+
+    // first make sure we have something to sync
+    var changed = playlist.changedAttributes();
+    console.log("CHANGED", changed);
+    if (!changed) { return; }
+    else if (!(changed['tracks'] || changed['name'])) { return; }
+
+    // then determine what type of sync this is
+    debug("SYNC", arguments);
+    switch (method) {
+      case 'read':
+        Backbone.sync.apply(this, arguments); break;
+
+      case 'create':
+        var trackIds = playlist.tracks().models.map(function (track) {
+          return { 'id': track.id }
+        });
+        SC.post('/playlists', {
+          'playlist': {
+            'title': playlist.get('name'),
+            'tracks': trackIds,
+          }
+        }, cb);
+        break;
+
+      case 'update':
+        var trackIds = playlist.tracks().models.map(function (track) {
+          return { 'id': track.id }
+        });
+        SC.put(playlist.get('uri'), {
+          'playlist': {
+            'title': playlist.get('name'),
+            'tracks': trackIds,
+          }
+        }, cb);
+        break;
+
+      case 'delete':
+        SC.delete(playlist.get('uri'), cb);
+        break;
+
+    } // /end switch
+  },
+
   //
   // Mixer Functions
   //
 
   play: function (track) {
     var queue = this.get('queue');
-    if (!track) { track = this.get('activeTrack'); }
-    if (!track) { debug("WARNING: no track for playlist to play"); }
+    if (!track) { track = this.get('activeTracks')[0]; }
     this.queueAtPos(track, 0);
     this.bufferQueue();
   },

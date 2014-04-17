@@ -13,7 +13,12 @@ module.exports = React.createClass({
       'active': false,
       'draggable': false,
       'dragClass': 'dragging',
+      'activeClass': 'positive',
+      'inactiveClass': '',
       'dragOverClass': '',
+      'mouseOverClass': 'active mouse-over',
+      'onMouseEnter': function () {}, // no-op
+      'onMouseLeave': function () {}, // no-op
       'onDragStart': function () {}, // no-op
       'onDragEnd': function () {}, // no-op
       'onDragOver': function () {}, // no-op
@@ -29,7 +34,22 @@ module.exports = React.createClass({
     return {
       'dragging': false,
       'dragOver': false,
+      'mouseOver': false,
     }
+  },
+
+  onMouseEnter: function (e) {
+    this.setState({
+      'mouseOver': true,
+    });
+    this.props.onMouseEnter();
+  },
+
+  onMouseLeave: function (e) {
+    this.setState({
+      'mouseOver': false,
+    });
+    this.props.onMouseLeave();
   },
 
   onDragStart: function (e) {
@@ -98,6 +118,8 @@ module.exports = React.createClass({
     // check if row active
     var className = this.props.active ?
       this.props.activeClass : this.props.inactiveClass;
+    // check if being moused over
+    className += ' ' + (this.state.mouseOver ? this.props.mouseOverClass : '');
     // check if being dragged
     className += ' ' + (this.state.dragging ? this.props.dragClass : '');
     // check if being dragged over
@@ -107,6 +129,8 @@ module.exports = React.createClass({
         className={className}
         onClick={this.handleClick}
         draggable={this.props.draggable}
+        onMouseEnter={this.onMouseEnter}
+        onMouseLeave={this.onMouseLeave}
         onDragStart={this.onDragStart}
         onDragEnd={this.onDragEnd}
         onDragOver={this.onDragOver}

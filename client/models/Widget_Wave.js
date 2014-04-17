@@ -69,24 +69,24 @@ module.exports = Widget.extend({
   play: function () {
     console.log("PLAYING WIDGET", this);
     var wave = this.get('player');
-    wave.play();
+    wave && wave.play();
   },
 
   pause: function () {
     console.log("PAUSING WIDGET", this);
     var wave = this.get('player');
-    wave.pause();
+    wave && wave.pause();
   },
 
   stop: function () {
     console.log("STOPPING WIDGET", this);
     var wave = this.get('player');
-    wave.stop();
+    wave && wave.stop();
   },
 
   seek: function (percent) {
     var wave = this.get('player');
-    wave.seekTo(percent);
+    wave && wave.seekTo(percent);
   },
 
   empty: function () {

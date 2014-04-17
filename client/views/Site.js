@@ -5,14 +5,7 @@ var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var _ = require('underscore');
 
-var Me = require('../models/Me');
-var Queue = require('../models/Queue');
-var SearchResults = require('../models/SearchResults');
-
 var Tracks = require('../collections/Tracks');
-var EchoNest = require('../collections/EchoNest');
-var TasteProfiles = require('../collections/TasteProfiles');
-var Playlists = require('../collections/Playlists');
 
 var Header = require('./Header');
 var Left = require('./Left');
@@ -23,32 +16,6 @@ var Footer = require('./Footer');
 module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
-
-  getDefaultProps: function () {
-    // TODO: make appQueue initialize from user's stored queue
-    var queue = new Queue({
-      'name': 'Queue',
-    }, {
-      'numWidgets': 2,
-    });
-    var searchResults = new SearchResults({
-      'name': 'Search Results',
-    });
-    var playlists = new Playlists([searchResults, queue]);
-    return {
-      'model': {
-        me: new Me(),
-      },
-      'collection': {
-        'echoNest': new EchoNest(),
-        'tasteProfiles': new TasteProfiles(),
-        'playlists': playlists,
-      },
-      // TODO: use vars above for this. will that be the same?
-      'searchResults': playlists.models[0],
-      'appQueue':  playlists.models[1],
-    };
-  },
 
   getInitialState: function () {
     return {

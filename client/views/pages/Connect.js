@@ -23,7 +23,9 @@ module.exports = React.createClass({
 
   login: function () {
     var onLogin = this.props.onLogin;
-    this.getModel().me.login(this.props.myTracks, onLogin);
+    var colls = this.getCollection();
+    console.log("LOGGING IN", colls);
+    this.getModel().me.login(colls.myTracks, colls.playlists, onLogin);
   },
 
   logout: function () {

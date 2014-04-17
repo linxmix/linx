@@ -1,7 +1,7 @@
 var Backbone = require('backbone');
 
-var Track = require('./Track');
 var Tracks = require('../collections/Tracks');
+var Playlists = require('../collections/Playlists');
 var clientId = require('../config').clientId;
 
 module.exports = Backbone.Model.extend({
@@ -18,8 +18,14 @@ module.exports = Backbone.Model.extend({
   },
 
   tracks: function () {
-    return new Tracks({
-      userId: this.id,
+    return new Tracks([], {
+      'userId': this.id,
+    });
+  },
+
+  playlists: function () {
+    return new Playlists([], {
+      'userId': this.id,
     });
   },
 

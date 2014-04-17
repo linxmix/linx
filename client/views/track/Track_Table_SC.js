@@ -16,11 +16,24 @@ module.exports = React.createClass({
       'active': false,
       'isPlayingTrack': false,
       'handleClick': function (track) { debug("click unimplemented", track); },
+      'handleRemoveClick': function (track) { debug("removeClick unimplemented", track); },
       'handleDblClick': function (track) { debug("dblclick unimplemented", track); },
     }
   },
 
   render: function () {
+    var track = this.props.track;
+    // calculate human readable duration
+    var time = new Date(track.get('duration'));
+    var hours = time.getUTCHours();
+    var minutes = time.getUTCMinutes();
+    var seconds = duration = twoDigits(time.getUTCSeconds());
+    if (hours) {
+      duration = hours + ":" + twoDigits(minutes) + ":" + duration;
+    } else {
+      duration = minutes + ":" + duration;
+    }
+    // figure out what play icon to display
     var datum;
     if (this.props.isPlayingTrack) {
       if (this.props.playState === 'play') {
@@ -29,14 +42,12 @@ module.exports = React.createClass({
         datum = (<i className="volume off icon"></i>);
       }
     }
-    var track = this.props.track;
+    // render track row
     return Row(_.extend({}, {
       'backboneModel': track,
       'key': track.cid,
-      'data': [datum, track.get('title')],
+      'data': [datum, track.get('title'), duration],
       'active': this.props.active,
-      'activeClass': 'active',
-      'inactiveClass': '',
       'draggable': true,
       'handleClick': this.props.handleClick,
       'handleDblClick': this.props.handleDblClick,
@@ -44,3 +55,7 @@ module.exports = React.createClass({
   },
   
 });
+
+function twoDigits(n) {
+  return ("0" + n).slice(-2);
+}

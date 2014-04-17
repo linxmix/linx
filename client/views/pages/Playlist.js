@@ -52,9 +52,25 @@ module.exports = React.createClass({
     }
   },
 
-  setActiveTrack: function (track) {
+  removeTrack: function (track, e) {
+    debug("removing track", track);
+    this.props.viewingPlaylist.remove(track);
+  },
+
+  addActiveTrack: function (track) {
     var playlist = this.props.viewingPlaylist;
-    playlist.set({ 'activeTrack': track });
+    var activeTracks = playlist.get('activeTracks');
+    activeTracks.push(track);
+    this.setActiveTracks(activeTracks)
+  },
+
+  setActiveTracks: function (tracks) {
+    if (!(tracks instanceof Array)) {
+      return debug("ERROR: setActiveTracks not given array", tracks);
+    }
+    var playlist = this.props.viewingPlaylist;
+    // TODO: make sure they are in the same order as they are displayed on screen
+    playlist.set({ 'activeTracks': tracks });
     this.forceUpdate();
   },
 
@@ -78,10 +94,12 @@ module.exports = React.createClass({
           'isPlaying': isPlaying,
           'loading': this.props.loading,
           'playState': this.props.playState,
-          'activeTrack': playlist.get('activeTrack'),
-          'playingTrack': playingPlaylist.get('playingTrack'),
-          'setActiveTrack': this.setActiveTrack,
+          'activeTracks': playlist.get('activeTracks'),
+          'playingTrack': playlist.get('playingTrack'),
+          'addActiveTrack': this.addActiveTrack,
+          'setActiveTracks': this.setActiveTracks,
           'changePlayState': this.props.changePlayState,
+          'handleRemoveClick': this.removeTrack,
           'handlePlayClick': this.playViewingPlaylist,
           'handleDblClick': this.playRow,
         })}

@@ -13,9 +13,13 @@ module.exports = React.createClass({
     this.props.setViewingPlaylist(playlist);
   },
 
-  generate: function (e) {
-    debug("generate", this.props);
-    var playlists = this.getCollection().playlists;
+  save: function (e) {
+    // TODO: make this check more concrete
+    if (!this.props.me.id) {
+      alert("Sorry, but you can't save your playlists unless you're signed in!");
+    } else {
+      this.getCollection().playlists.save();
+    }
   },
 
   add: function (e) {
@@ -24,13 +28,15 @@ module.exports = React.createClass({
     playlists.add({});
   },
 
+  // TODO: dont actually delete from soundcloud yet
   remove: function (e) {
     debug("remove", this.props);
     var playlist = this.props.viewingPlaylist;
     // do not remove the queue
-    if (playlist && (playlist.get('type') !== 'queue')) {
-      var playlists = this.getCollection().playlists;
-      playlists.remove(playlist);
+    if (playlist && (playlist.get('type') === 'playlist')) {
+      var name = playlist.get('name');
+      playlist.destroy()
+      alert("Deleted Playlist " + name + " from SoundCloud.");
     }
   },
 
@@ -60,8 +66,8 @@ module.exports = React.createClass({
                 <i className="red remove icon"></i>
               </div>
             </div>
-            <div className="small circular orange ui button" onClick={this.generate}>
-              Generate
+            <div className="small circular orange ui button" onClick={this.save}>
+              Save
             </div>
           </div>
         </div>

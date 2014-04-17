@@ -43,10 +43,6 @@ module.exports = React.createClass({
   },
 
   componentDidMount: function () {
-    var playlists = this.getCollection().playlists;
-    playlists.add({});
-    playlists.add({ 'name': 'Caio\'s Stuff' });
-    playlists.add({ 'name': 'pole songs' });
 
 /*
     var tasteProfiles = this.getCollection().tasteProfiles;
