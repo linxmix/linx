@@ -128,6 +128,12 @@ module.exports = Backbone.Model.extend({
     if (!track || !track.get('stream_url')) {
       return debug("ERROR: cannot queueAtPos track", track);
     }
+    // do not queue tracks >= 30min b/c it will break the app
+    // TODO: make it so we can stream instead of DL so this works
+    if (track.get('duration') >= 1800000) {
+      alert("We're sorry, but right now SoundCloud won't let us stream tracks that are 30min or longer!");
+      return;
+    }
     debug("queuing track at pos", track, pos);
     var queue = this.get('queue');
     // if already queued, silently remove first
@@ -137,9 +143,7 @@ module.exports = Backbone.Model.extend({
       });
     // add track at pos
     }
-    queue.add(track, {
-      'at': pos,
-    });
+    queue.add(track, { 'at': pos });
   },
 
   dequeue: function (track) {
@@ -178,7 +182,7 @@ module.exports = Backbone.Model.extend({
     this.off('change:playingTrack', callback);
   },
 
-  // TODO: make this prioritize current track
+  // TODO: make this always play in order of tracks
   bufferQueue: function () {
     debug("buffering queue", this.tracks());
     var queue = this.get('queue');
@@ -205,6 +209,24 @@ module.exports = Backbone.Model.extend({
   // TODO: convert from sdk to urls
   // TODO: find out what other params SC lets us create/update
   sync: function (method, playlist, options) {
+
+    // first make sure we have something to sync
+    var changed = playlist.changedAttributes();
+    // if playlist is new, we are good
+    if (!playlist.isNew()) {
+      // we are also good if we changed something important
+      if (changed) {
+        if (!(changed['tracks'] || changed['name'])) {
+          debug("playlist not new but nothing important changed", playlist.get('name'));
+          return;
+        }
+      } else {
+        debug("playlist not new and wasn't changed", playlist.get('name'));
+        return;
+      }
+    }
+
+    // make callback to give to server
     var cb = function (resp, error) {
       if (error) {
         options.error(playlist, resp || error, options);
@@ -213,12 +235,6 @@ module.exports = Backbone.Model.extend({
         //options.success(playlist, resp, options);
       }
     }
-
-    // first make sure we have something to sync
-    var changed = playlist.changedAttributes();
-    console.log("CHANGED", changed);
-    if (!changed) { return; }
-    else if (!(changed['tracks'] || changed['name'])) { return; }
 
     // then determine what type of sync this is
     debug("SYNC", arguments);

@@ -149,6 +149,7 @@ module.exports = React.createClass({
       container: this.$('.wave').get(0),
       waveColor: 'violet',
       progressColor: 'purple',
+      dragSelection: false,
     });
     this.updateWidget();
 

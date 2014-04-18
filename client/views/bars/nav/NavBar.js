@@ -59,6 +59,8 @@ module.exports = React.createClass({
 
     // render navBar
     // TODO: make menu do stuff and not be static
+    // TODO: fix menu to top without moving to right with sidebar
+    // TODO: add linx logo to left side of menu
     return (
       <div className="ui inverted menu" role="navigation">
         <div className="right icon menu">
@@ -72,7 +74,7 @@ module.exports = React.createClass({
             {SearchInput({
               'handleSubmit': this.handleSubmit,
               'className': "ui small field icon input",
-              'placeholder': "Search Selected...",
+              'placeholder': "Search SoundCloud...",
               'value': this.props.searchText,
               'handleChange': this.handleChange,
               'text': searchIcon,

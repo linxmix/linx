@@ -36,7 +36,8 @@ module.exports = React.createClass({
     if (playlist && (playlist.get('type') === 'playlist')) {
       var name = playlist.get('name');
       playlist.destroy()
-      alert("Deleted Playlist " + name + " from SoundCloud.");
+      // TODO: make this only appear if it was actually on soundcloud
+      alert("Deleted playlist '" + name + "'' from SoundCloud.");
     }
   },
 

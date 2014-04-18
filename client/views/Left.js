@@ -29,12 +29,12 @@ module.exports = React.createClass({
           icon: 'list layout icon',
           className: '.playlist-sidebar'
         },
-        {
+        /*{
           key: 'linx-map',
           name: 'LinxMap',
           icon: 'globe icon',
           className: '.linxMap-sidebar'
-        },
+        },*/
       ],
     }
   },
@@ -46,11 +46,11 @@ module.exports = React.createClass({
     }
   },
 
-  launchTabClick: function (launchTab) {
-    this.tabClick(this.state.activeTab);
+  launchTabClick: function (launchTab, e) {
+    this.tabClick(this.state.activeTab, e);
   },
 
-  tabClick: function (tab) {
+  tabClick: function (tab, e) {
     var selector = tab.className;
     this.$(selector).sidebar({
       'exclusive': true,
@@ -64,6 +64,22 @@ module.exports = React.createClass({
     });
   },
 
+  // open sidebar on dragEnter
+  onDragEnter: function (tab, e) {
+    if (this.state.sidebarClosed) {
+      // if launchTab, do launchTabClick
+      if (tab.key === 'launchTab') {
+        this.launchTabClick(tab, e);
+      // otherwise do tab click
+      } else {
+        this.tabClick(tab, e);
+      }
+    // if sidebar is open and tab is not active, open tab
+    } else if (tab.key !== this.state.activeTab.key) {
+      this.tabClick(tab, e);
+    }
+  },
+
   render: function () {
 
     // make launchTab
@@ -71,6 +87,7 @@ module.exports = React.createClass({
     var launchTabName = (isHidden) ? (<i className="right arrow icon"></i>) :
       (<i className="left arrow icon"></i>);
     var launchTab = Tab({
+      'key': 'launchTab',
       'name': launchTabName,
       'active': isHidden,
       'activeClass': 'black ui icon active item',
@@ -80,13 +97,14 @@ module.exports = React.createClass({
 
     // make tabs
     var tabs = this.props.tabs.map(function(tab) {
-      var active = (tab.key == this.state.activeTab.key);
+      var active = (tab.key === this.state.activeTab.key);
       var name = active ? (<i className={'purple ' + tab.icon}></i>) :
         (<i className={tab.icon}></i>);
       return (
         Tab(_.extend({}, tab, {
           'name': name,
           'inactiveClass': 'icon item',
+          'onDragEnter': this.onDragEnter,
           'handleClick': this.tabClick,
         }))
       )

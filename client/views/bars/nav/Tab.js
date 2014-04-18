@@ -32,7 +32,7 @@ module.exports = React.createClass({
     // make sure to prevent default drop event
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
-    this.props.onDragOver(e);
+    this.props.onDragOver(this.props, e);
     return false;
   },
 
@@ -41,21 +41,21 @@ module.exports = React.createClass({
     this.setState({
       'dragOver': true,
     });
-    this.props.onDragEnter(e);
+    this.props.onDragEnter(this.props, e);
   },
 
   onDragLeave: function (e) {
     this.setState({
       'dragOver': false,
     });
-    this.props.onDragLeave(e);
+    this.props.onDragLeave(this.props, e);
   },
 
   onDrop: function (e) {
     this.setState({
       'dragOver': false,
     });
-    this.props.onDrop(e);
+    this.props.onDrop(this.props, e);
   },
 
   handleClick: function(e) {

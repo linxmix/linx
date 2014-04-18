@@ -45,7 +45,11 @@ module.exports = React.createClass({
     debug("executing search", searchText);
 
     // callback to handle search results
-    var cb = function (tracks, areModels) {
+    var cb = function (tracks) {
+      // filter away tracks that aren't streamable
+      tracks = _.filter(tracks, function (track) {
+        return !!track['stream_url'];
+      });
       // update searchResults with results
       var searchResults = this.props.searchResults;
       searchResults.set({
@@ -144,7 +148,6 @@ module.exports = React.createClass({
     }
 
     return (
-    
       <div>
         {Left(props)}
 
