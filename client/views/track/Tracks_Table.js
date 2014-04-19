@@ -8,6 +8,8 @@ var _ = require('underscore');
 var Track_Table_SC = require('./Track_Table_SC');
 var Track_Table_Echo = require('./Track_Table_Echo');
 
+var Table_Header = require('../bars/nav/Table_Header');
+
 module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
@@ -17,17 +19,33 @@ module.exports = React.createClass({
       'isPlaying': false,
       'activeTracks': [],
       'playingTrack': null,
-      'className': "ui large inverted purple celled table segment",
+      'className': "ui large inverted purple celled sortable table segment",
       'title': 'Track Title',
+      'headers': [
+        {
+          'key': 'play_status',
+          'className': 'one wide',
+        },
+        {
+          'key': 'name',
+          'className': 'thirteen wide',
+        },
+        {
+          'key': 'playback_count',
+          'className': 'one wide',
+          'icon': 'orange play sign icon',
+        },
+        {
+          'key': 'duration',
+          'className': 'one wide',
+          'icon': 'orange time icon',
+        },
+      ],
     }
   },
 
   handlePlayClick: function (e) {
     var track = this.props.playingTrack;
-    debug("play click", track, this.props.activeTracks[0]);
-    if (!track) {
-      track = this.props.activeTracks[0];
-    }
     this.props.handlePlayClick(track, e);
   },
 
@@ -39,11 +57,11 @@ module.exports = React.createClass({
     var ctrl = e.ctrlKey || e.metaKey;
     var shift = e.shiftKey;
     var track = row.backboneModel;
+    var activeTracks = this.props.activeTracks;
     debug("ROW CLICK", ctrl, shift);
 
     // ctrl => add or remove this track
     if (ctrl) {
-      var activeTracks = this.props.activeTracks;
       var index = activeTracks.indexOf(track);
       // track is in activeTracks, so remove it
       if (index > -1) {
@@ -57,7 +75,6 @@ module.exports = React.createClass({
     // shift => add track group
     } else if (shift) {
       var tracks = this.props.tracks;
-      var activeTracks = this.props.activeTracks;
       var index = tracks.indexOf(track);
       // if clicked track is already in activeTracks, quit
       if (index === -1) { return; }
@@ -80,21 +97,29 @@ module.exports = React.createClass({
       }
       this.props.setActiveTracks(activeTracks);
 
-    // nothing => set this track as active
+    // nothing => toggle this track as active
     } else {
-      this.props.setActiveTracks([track]);
+      // if already the only active track, so make it inactive
+      if ((activeTracks.length === 1) &&
+        (activeTracks.indexOf(track) > -1)) {
+        this.props.setActiveTracks([]);
+      // otherwise set this track as active
+      } else {
+        this.props.setActiveTracks([track]);
+      }
     }
   },
 
   // set dragging to activeTracks
   onDragStart: function (row, e) {
     var track = row.backboneModel;
-    // first make sure dragging track is in activeTracks
+    // if dragging track is in activeTracks, drag selection
     var activeTracks = this.props.activeTracks;
     var index = activeTracks.indexOf(track);
+    // if not in activeTracks, set this track as active and drag
     if (index === -1) {
-      activeTracks.push(track);
-      this.props.addActiveTrack(track)
+      activeTracks = [track];
+      this.props.setActiveTracks(activeTracks);
     }
     debug("onDragStart", activeTracks);
     this.props.setDragging(activeTracks);
@@ -104,6 +129,23 @@ module.exports = React.createClass({
   onDragEnd: function (e) {
     debug("onDragEnd")
     this.props.setDragging( [] );
+  },
+
+  handleHeaderClick: function (header) {
+    debug("handleHeaderClick", header.key);
+    var trackSort = this.props.trackSort;
+    // if already sorting by this header, toggle direction
+    if (trackSort.key === header.key) {
+      this.props.setTrackSort({
+        'key': header.key,
+        'direction': trackSort.direction * (-1),
+      });
+    } else {
+      this.props.setTrackSort({
+        'key': header.key,
+        'direction': 1,
+      });
+    }
   },
 
   render: function () {
@@ -121,7 +163,6 @@ module.exports = React.createClass({
     var playingTrack = this.props.playingTrack;
     var tracks = this.props.tracks;
     var track_tables = tracks.map(function (track) {
-      // figure out if track is being dragged
       return Track_Table({
         'track': track,
         'active': (activeTracks.indexOf(track) > -1),
@@ -130,39 +171,73 @@ module.exports = React.createClass({
         'onDragEnd': this.onDragEnd,
         'isPlayingTrack': (track.cid ===
           (playingTrack && playingTrack.cid)),
-        'playState': this.props.playState,
+        'queueIndex': this.props.appQueue.getQueueIndex(track),
+        'isPlaying': this.props.isPlaying,
         'handleClick': this.handleClick,
         'handleRemoveClick': this.props.handleRemoveClick,
         'handleDblClick': this.props.handleDblClick,
       });
     }.bind(this));
 
+    // make Table_Headers
+    // TODO: make play_status make sense as a sort
+    var headers = this.props.headers.map(function (header) {
+
+      // html needs extra runtime logic
+      var html = header.html
+      if (header.icon) {
+        html = (<i className={header.icon}></i>)
+      } else {
+        switch (header.key) {
+          case 'play_status':
+            var playIcon;
+            if (this.props.loading) {
+              playIcon = (<i className="loading icon"></i>);
+            } else if (this.props.isPlaying) {
+              playIcon = (<i className="pause icon"></i>);
+            } else {
+              playIcon = (<i className="play icon"></i>);
+            }
+            html = (<div className="orange ui icon button"
+              onClick={this.handlePlayClick}>
+                {playIcon}
+              </div>); break;
+          case 'name':
+            html = this.props.playlistName; break;
+        }
+      }
+
+      // determine className
+      var className = header.className;
+      var trackSort = this.props.trackSort
+      if (trackSort && (trackSort.key === header.key)) {
+        var direction = trackSort.direction;
+        if (direction === 1) {
+          className += ' ascending';
+        } else if (direction === -1) {
+          className += ' descending';
+        }
+      }
+      return Table_Header({
+        'key': header.key,
+        'className': className,
+        'html': html,
+        'handleClick': this.handleHeaderClick,
+      });
+    }.bind(this));
+
     // determine extra display vars
-    var playIcon;
-    if (this.props.loading) {
-      playIcon = (<i className="loading icon"></i>);
-    } else if (this.props.isPlaying) {
-      playIcon = (<i className="pause icon"></i>);
-    } else {
-      playIcon = (<i className="play icon"></i>);
-    }
-    var numTracksText = (tracks.length == 1) ? ' Track' : ' Tracks';
+    var numTracksText = (tracks.length == 1) ?
+      ' Track' : ' Tracks';
+
     return (
       <table
         className={this.props.className}
         onKeyPress={this.onKeyPress}
       >
         <thead>
-          <tr>
-            <th className="one wide">
-              <div className="orange ui icon button"
-                onClick={this.handlePlayClick}>
-                {playIcon}
-              </div>
-            </th>
-            <th className="fourteen wide">{this.props.title}</th>
-            <th className="one wide"><i className="orange time icon"></i></th>
-        </tr></thead>
+          <tr>{headers}</tr>
+        </thead>
         <tbody>
           {track_tables}
         </tbody>
@@ -170,6 +245,7 @@ module.exports = React.createClass({
           <tr>
             <th></th>
             <th>{tracks.length}{numTracksText}</th>
+            <th></th>
             <th></th>
         </tr></tfoot>
       </table>

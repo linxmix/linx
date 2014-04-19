@@ -34,19 +34,34 @@ module.exports = React.createClass({
       duration = minutes + ":" + duration;
     }
     // figure out what play icon to display
-    var datum;
+    var playIcon;
     if (this.props.isPlayingTrack) {
-      if (this.props.playState === 'play') {
-        datum = (<i className="volume up icon"></i>);
+      if (this.props.isPlaying) {
+        playIcon = (<i className="volume up icon"></i>);
       } else {
-        datum = (<i className="volume off icon"></i>);
+        playIcon = (<i className="volume off icon"></i>);
       }
     }
+    // if track is queued in global queue, add queue number to title
+    var title = track.get('title');
+    var queueIndex = this.props.queueIndex;
+    if (queueIndex > -1) {
+      title = (<span>{title}
+        <a className="ui teal circular label">{queueIndex + 1}</a>
+      </span>)
+    }
+    // get track playCount
+    var playCount = track.get('playback_count');
+    if (typeof playCount === 'undefined')
+      playCount = track.get('user_playback_count');
+    if (typeof playCount === 'undefined')
+      playCount = 0;
+    playCount = numberWithCommas(playCount);
     // render track row
     return Row(_.extend({}, {
       'backboneModel': track,
       'key': track.cid,
-      'data': [datum, track.get('title'), duration],
+      'data': [playIcon, title, playCount, duration],
       'active': this.props.active,
       'dragging': this.props.dragging,
       'draggable': true,
@@ -61,4 +76,8 @@ module.exports = React.createClass({
 
 function twoDigits(n) {
   return ("0" + n).slice(-2);
+}
+
+function numberWithCommas(n) {
+  return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }

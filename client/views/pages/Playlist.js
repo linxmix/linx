@@ -43,12 +43,10 @@ module.exports = React.createClass({
       this.props.changePlayState('pause');
     } else {
       var playlist = this.props.viewingPlaylist;
-      // play playlist and track if track exists
+      // play playlist with track
       this.props.setPlayingPlaylist(playlist);
-      if (track) {
-        this.props.changePlayState('play');
-        playlist.play(track);
-      }
+      this.props.changePlayState('play');
+      playlist.play(track);
     }
   },
 
@@ -74,6 +72,12 @@ module.exports = React.createClass({
     this.forceUpdate();
   },
 
+  setTrackSort: function (attribute) {
+    var playlist = this.props.viewingPlaylist;
+    playlist.setTrackSort(attribute);
+    this.forceUpdate();
+  },
+
   render: function () {
     var playlist = this.props.viewingPlaylist;
     // get tracks from viewingPlaylist
@@ -88,14 +92,17 @@ module.exports = React.createClass({
     return (
       <div>
         {Tracks_Table({
-          'title': name,
+          'playlistName': name,
           'tracks': tracks,
+          'appQueue': this.props.appQueue,
           'trackView': this.state.trackView,
           'isPlaying': isPlaying,
           'loading': this.props.loading,
           'playState': this.props.playState,
           'activeTracks': playlist.getActiveTracks(),
           'playingTrack': playlist.get('playingTrack'),
+          'trackSort': playlist.get('trackSort'),
+          'setTrackSort': this.setTrackSort,
           'dragging': this.props.dragging,
           'setDragging': this.props.setDragging,
           'addActiveTrack': this.addActiveTrack,

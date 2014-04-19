@@ -20,6 +20,7 @@ module.exports = Backbone.Model.extend({
       'tracks': new Tracks(),
       'activeTracks': [],
       'playingTrack': null,
+      'trackSort': { 'key': 'title', 'direction': 1 },
     };
   },
 
@@ -48,6 +49,9 @@ module.exports = Backbone.Model.extend({
   },
 
   initialize: function () {
+
+    // set track sort
+    this.setTrackSort(this.get('trackSort'));
 
     // rebuffer queue on cycle
     this.onCycle(function (newTrack) {
@@ -83,6 +87,17 @@ module.exports = Backbone.Model.extend({
     return this.get('tracks');
   },
 
+  // TODO: make this change based on direction, -1 or 1
+  setTrackSort: function (trackSort) {
+    if (this.get('type') !== 'queue') {
+      debug("setting new track sort", trackSort);
+      this.set({ 'trackSort': trackSort });
+      var tracks = this.tracks();
+      tracks.comparator = trackSort.key;
+      tracks.sort();
+    }
+  },
+
   // get activeTracks or default track if something is wanted
   getActiveTracks: function (getSomething) {
     var activeTracks = this.get('activeTracks');
@@ -90,6 +105,10 @@ module.exports = Backbone.Model.extend({
       activeTracks = [this.tracks().models[0]];
     }
     return activeTracks;
+  },
+
+  getQueueIndex: function (track) {
+    return this.get('queue').indexOf(track);
   },
 
   add: function (tracks) {
