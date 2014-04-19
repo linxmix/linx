@@ -21,19 +21,20 @@ module.exports = React.createClass({
           key: 'search',
           name: 'Search',
           icon: 'search icon',
-          className: '.search-sidebar'
+          className: 'search-sidebar'
         },*/
         {
           key: 'playlists',
           name: 'Playlists',
           icon: 'list layout icon',
-          className: '.playlist-sidebar'
+          className: 'playlist-sidebar',
+          popupClass: 'playlist-popup'
         },
         /*{
           key: 'linx-map',
           name: 'LinxMap',
           icon: 'globe icon',
-          className: '.linxMap-sidebar'
+          className: 'linxMap-sidebar'
         },*/
       ],
     }
@@ -51,7 +52,7 @@ module.exports = React.createClass({
   },
 
   tabClick: function (tab, e) {
-    var selector = tab.className;
+    var selector = '.' + tab.className;
     this.$(selector).sidebar({
       'exclusive': true,
     });
@@ -98,12 +99,12 @@ module.exports = React.createClass({
     // make tabs
     var tabs = this.props.tabs.map(function(tab) {
       var active = (tab.key === this.state.activeTab.key);
-      var name = active ? (<i className={'purple ' + tab.icon}></i>) :
-        (<i className={tab.icon}></i>);
+      var iconClass = tab.icon;
+      if (active) { iconClass += ' purple' }
       return (
         Tab(_.extend({}, tab, {
-          'name': name,
-          'inactiveClass': 'icon item',
+          'name': (<i className={iconClass}></i>),
+          'inactiveClass': 'icon item ' + tab.popupClass,
           'onDragEnter': this.onDragEnter,
           'handleClick': this.tabClick,
         }))
@@ -124,6 +125,24 @@ module.exports = React.createClass({
         },this.props))}
       </div>
     );
+  },
+
+  componentDidMount: function () {
+    // initialize popups for tabs
+    this.props.tabs.map(function (tab) {
+      var selector = '.' + tab.popupClass;
+      this.$(selector).popup({
+        'content': tab.name,
+        'position': "right center",
+        'variation': "large",
+        'inline': true,
+        'delay': 0,
+        'duration': 150,
+        'closable': true,
+        'preserve': true,
+        'on': 'hover',
+      });
+    }.bind(this));
   },
 
 });
