@@ -48,7 +48,10 @@ module.exports = React.createClass({
       'key': track.cid,
       'data': [datum, track.get('title'), duration],
       'active': this.props.active,
+      'dragging': this.props.dragging,
       'draggable': true,
+      'onDragStart': this.props.onDragStart,
+      'onDragEnd': this.props.onDragEnd,
       'handleClick': this.props.handleClick,
       'handleDblClick': this.props.handleDblClick,
     }));

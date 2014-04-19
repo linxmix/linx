@@ -67,6 +67,7 @@
 /*** /end Welcome Page ***/
 
 .ui.popup {
+  color: #FFFFFF;
   background-color: #E96633;
 }
 
@@ -79,18 +80,11 @@ body {
   opacity: 0.4;
 }
 
-a.item.drag-over, {
-  border: 2px;
-  outline: none;
-  border-color: #9ecaed;
-  box-shadow: 0 0 10px #9ecaed;
-}
-
-.ui.table tr.drag-over, {
-  border: 2px dashed #000;
-  outline: none;
-  border-color: #9ecaed;
-  box-shadow: 0 0 10px #9ecaed;
+.drag-over, .ui.inverted.menu .item.drag-over {
+  border: 2px !important;
+  outline: none !important;
+  border-color: #9ecaed !important;
+  box-shadow: 0 0 10px #9ecaed !important;
 }
 
 main.main-container {

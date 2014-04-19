@@ -30,6 +30,7 @@ module.exports = React.createClass({
           'active': (playlist.cid === this.props.viewingPlaylist.cid),
           'playState': this.props.playState,
           'isPlayingPlaylist': (playlist.cid === this.props.playingPlaylist.cid),
+          'dragging': this.props.dragging,
           'playlist': playlist,
           'handleClick': this.props.handleClick,
         });

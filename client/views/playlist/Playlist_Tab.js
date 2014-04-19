@@ -45,17 +45,12 @@ module.exports = React.createClass({
     return false;
   },
 
-  onDrop: function (e) {
-    e.stopPropagation();
-    // recover object from json
-    var obj = JSON.parse(e.nativeEvent.dataTransfer.getData('application/json'));
-    // if object is a track, add it to this playlist
-    var model = obj.backboneModel;
-    if (model && model.kind === 'track') {
-      this.props.playlist.add(model)
-    }
-    // if object is a playlist, add that playlist to this
-    // TODO: make playlists draggable?
+  // TODO: what is thing?
+  onDrop: function (thing) {
+    var dragging = this.props.dragging;
+    var playlist = this.props.playlist;
+    debug("onDrop", thing, dragging);
+    playlist.add(dragging);
   },
 
   render: function () {

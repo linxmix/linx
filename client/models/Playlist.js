@@ -49,13 +49,6 @@ module.exports = Backbone.Model.extend({
 
   initialize: function () {
 
-    // if new tracks collection, set activeTracks to default
-    this.setDefaultTracks();
-    this.on('change:tracks', function (playlist, tracks) {
-      console.log("CHANGED TRACKS", tracks);
-      playlist.setDefaultTracks();
-    }.bind(this));
-
     // rebuffer queue on cycle
     this.onCycle(function (newTrack) {
       this.bufferQueue();
@@ -90,31 +83,32 @@ module.exports = Backbone.Model.extend({
     return this.get('tracks');
   },
 
-  setDefaultTracks: function () {
-    this.set({ 'activeTracks': [this.tracks().models[0]] });
+  // get activeTracks or default track if something is wanted
+  getActiveTracks: function (getSomething) {
+    var activeTracks = this.get('activeTracks');
+    if (getSomething && _.isEmpty(activeTracks)) {
+      activeTracks = [this.tracks().models[0]];
+    }
+    return activeTracks;
   },
 
-  add: function (track) {
-    this.tracks().add(track);
-    // if tracks was empty, reset activeTracks to default
-    if (this.tracks().length === 1) {
-      this.setDefaultTracks();
-    }
+  add: function (tracks) {
+    this.tracks().add(tracks);
   },
 
   remove: function (track) {
+    // TODO: make this work for arrays of tracks
+    if (track instanceof Array) {
+      return debug("ERROR: remove not implemented for arrays", track);
+    }
     // TODO: test this
     // if removing an activeTrack, remove from activeTracks
-    var activeTracks = this.get('activeTracks');
+    var activeTracks = this.getActiveTracks();
     var index = activeTracks.indexOf(track);
     if (index > -1) {
       this.set({
         'activeTracks': activeTracks.splice(index, 1),
       });
-    }
-    // if no more activeTracks, reset to default
-    if (this.get('activeTracks').length === 0) {
-      this.setDefaultTracks();
     }
     // now remove track from playlist
     this.tracks().remove(track);
@@ -212,8 +206,8 @@ module.exports = Backbone.Model.extend({
 
     // first make sure we have something to sync
     var changed = playlist.changedAttributes();
-    // if playlist is new, we are good
-    if (!playlist.isNew()) {
+    // if playlist is new or method is delete, we are good
+    if (!(playlist.isNew() || method === 'delete')) {
       // we are also good if we changed something important
       if (changed) {
         if (!(changed['tracks'] || changed['name'])) {
@@ -231,6 +225,7 @@ module.exports = Backbone.Model.extend({
       if (error) {
         options.error(playlist, resp || error, options);
       } else {
+        playlist && playlist.set({ 'onSC': true });
         // TODO: call this but make it not change our playlists
         //options.success(playlist, resp, options);
       }
@@ -279,7 +274,7 @@ module.exports = Backbone.Model.extend({
 
   play: function (track) {
     var queue = this.get('queue');
-    if (!track) { track = this.get('activeTracks')[0]; }
+    if (!track) { track = this.getActiveTracks(true)[0]; }
     this.queueAtPos(track, 0);
     this.bufferQueue();
   },

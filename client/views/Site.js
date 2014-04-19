@@ -27,6 +27,7 @@ module.exports = React.createClass({
       'rightBar': 0,
       'bottomBar': 0,
       'loading': false,
+      'dragging': [],
     }
   },
 
@@ -77,6 +78,16 @@ module.exports = React.createClass({
   //
   // / Search
   //
+
+  setDragging: function (arr) {
+    if (!(arr instanceof Array)) {
+      return debug("ERROR: setDragging not given array", ar);
+    }
+    debug("setDragging", arr);
+    this.setState({
+      'dragging': arr,
+    });
+  },
 
   setLoading: function (bool) {
     debug("setLoading", bool);
@@ -131,6 +142,9 @@ module.exports = React.createClass({
 
       'playState': this.state.playState,
       'changePlayState': this.changePlayState,
+
+      'dragging': this.state.dragging,
+      'setDragging': this.setDragging,
 
       'loading': this.state.loading,
       'setLoading': this.setLoading,

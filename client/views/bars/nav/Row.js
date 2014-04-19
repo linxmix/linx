@@ -1,6 +1,7 @@
 /** @jsx React.DOM */
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
+var debug = require('debug')('views:bars/nav/Row');
 
 // TODO: separate draggable into its own view with params for html
 
@@ -56,10 +57,7 @@ module.exports = React.createClass({
     this.setState({
       'dragging': true,
     });
-    e.dataTransfer.effectAllowed = 'move';
-    // turn object into json and set as data
-    e.dataTransfer.setData('application/json', JSON.stringify(this.props));
-    this.props.onDragStart(e);
+    this.props.onDragStart(this.props, e);
   },
 
   onDragOver: function (e) {
@@ -71,6 +69,7 @@ module.exports = React.createClass({
   },
 
   onDragEnd: function (e) {
+    debug("onDragEnd");
     this.setState({
       'dragging': false,
     });
@@ -121,7 +120,8 @@ module.exports = React.createClass({
     // check if being moused over
     className += ' ' + (this.state.mouseOver ? this.props.mouseOverClass : '');
     // check if being dragged
-    className += ' ' + (this.state.dragging ? this.props.dragClass : '');
+    var dragging = this.state.dragging || this.props.dragging;
+    className += ' ' + (dragging ? this.props.dragClass : '');
     // check if being dragged over
     className += ' ' + (this.state.dragOver ? this.props.dragOverClass : '');
     return (

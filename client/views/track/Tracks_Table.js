@@ -75,13 +75,7 @@ module.exports = React.createClass({
         start = index;
         end = closestIndex - 1;
       }
-      debug("closestTrack", closestTrack.get('title'))
-      debug("closestIndex", closestIndex)
-      debug("index", index)
-      debug("start", start)
-      debug("end", end)
       for (var i = start; i <= end; i++) {
-        debug("adding track", tracks.at(i));
         activeTracks.push(tracks.at(i));
       }
       this.props.setActiveTracks(activeTracks);
@@ -90,6 +84,26 @@ module.exports = React.createClass({
     } else {
       this.props.setActiveTracks([track]);
     }
+  },
+
+  // set dragging to activeTracks
+  onDragStart: function (row, e) {
+    var track = row.backboneModel;
+    // first make sure dragging track is in activeTracks
+    var activeTracks = this.props.activeTracks;
+    var index = activeTracks.indexOf(track);
+    if (index === -1) {
+      activeTracks.push(track);
+      this.props.addActiveTrack(track)
+    }
+    debug("onDragStart", activeTracks);
+    this.props.setDragging(activeTracks);
+  },
+
+  // set dragging to none
+  onDragEnd: function (e) {
+    debug("onDragEnd")
+    this.props.setDragging( [] );
   },
 
   render: function () {
@@ -107,9 +121,13 @@ module.exports = React.createClass({
     var playingTrack = this.props.playingTrack;
     var tracks = this.props.tracks;
     var track_tables = tracks.map(function (track) {
+      // figure out if track is being dragged
       return Track_Table({
         'track': track,
         'active': (activeTracks.indexOf(track) > -1),
+        'dragging': (this.props.dragging.indexOf(track) > -1),
+        'onDragStart': this.onDragStart,
+        'onDragEnd': this.onDragEnd,
         'isPlayingTrack': (track.cid ===
           (playingTrack && playingTrack.cid)),
         'playState': this.props.playState,

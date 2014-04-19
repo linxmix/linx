@@ -35,9 +35,10 @@ module.exports = React.createClass({
     // do not remove the queue
     if (playlist && (playlist.get('type') === 'playlist')) {
       var name = playlist.get('name');
+      if (!!playlist.get('onSC')) {
+        alert("Deleted playlist '" + name + "'' from here and SoundCloud.");
+      }
       playlist.destroy()
-      // TODO: make this only appear if it was actually on soundcloud
-      alert("Deleted playlist '" + name + "'' from SoundCloud.");
     }
   },
 
@@ -56,6 +57,7 @@ module.exports = React.createClass({
             'playingPlaylist': this.props.playingPlaylist,
             'playlists': this.getCollection().playlists,
             'handleClick': this.handleClick,
+            'dragging': this.props.dragging,
             'className': "ui table inverted secondary purple segment",
           })}
           <div className="header item">

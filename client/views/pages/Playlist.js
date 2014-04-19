@@ -59,7 +59,7 @@ module.exports = React.createClass({
 
   addActiveTrack: function (track) {
     var playlist = this.props.viewingPlaylist;
-    var activeTracks = playlist.get('activeTracks');
+    var activeTracks = playlist.getActiveTracks();
     activeTracks.push(track);
     this.setActiveTracks(activeTracks)
   },
@@ -94,8 +94,10 @@ module.exports = React.createClass({
           'isPlaying': isPlaying,
           'loading': this.props.loading,
           'playState': this.props.playState,
-          'activeTracks': playlist.get('activeTracks'),
+          'activeTracks': playlist.getActiveTracks(),
           'playingTrack': playlist.get('playingTrack'),
+          'dragging': this.props.dragging,
+          'setDragging': this.props.setDragging,
           'addActiveTrack': this.addActiveTrack,
           'setActiveTracks': this.setActiveTracks,
           'changePlayState': this.props.changePlayState,
