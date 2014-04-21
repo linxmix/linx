@@ -115,13 +115,13 @@ module.exports = React.createClass({
 
     return (
       <div>
-        <div className="left-sidebar">
+        <div className="semi-transparent left-sidebar">
           <div className="inverted ui vertical icon menu">
             {tabs}
           </div>
         </div>
         {PlaylistsBar(_.extend({
-          'className': 'playlist-sidebar',
+          'className': 'playlist-sidebar transp',
         },this.props))}
       </div>
     );

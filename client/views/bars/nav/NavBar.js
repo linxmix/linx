@@ -62,7 +62,7 @@ module.exports = React.createClass({
     // TODO: fix menu to top without moving to right with sidebar
     // TODO: add linx logo to left side of menu
     return (
-      <div className="ui inverted menu" role="navigation">
+      <div className="ui inverted transp menu" role="navigation">
         <div className="right icon menu">
           <div className="icon item">
             <i className="user icon"></i>

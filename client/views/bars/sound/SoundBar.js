@@ -51,7 +51,7 @@ module.exports = React.createClass({
     // render SoundBar with widgets
     // TODO: add "playing {playlist name}"" as header
     return (
-      <div className="inverted ui segment">
+      <div className="inverted transp ui segment">
         {widgetViews}
       </div>
     )

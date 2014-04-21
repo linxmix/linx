@@ -26,7 +26,8 @@
 /*** Welcome Page ***/
 
 .welcome-page {
-  background: url("http://1.bp.blogspot.com/-JkPWLmt4k9U/UWWYRTALSVI/AAAAAAAACHg/x3zcJrSeQgw/s1600/palmlix.com-night-sky-stars-background-psdgraphics.jpg") no-repeat center center fixed; 
+  /*background: url("http://1.bp.blogspot.com/-JkPWLmt4k9U/UWWYRTALSVI/AAAAAAAACHg/x3zcJrSeQgw/s1600/palmlix.com-night-sky-stars-background-psdgraphics.jpg") no-repeat center center fixed; */
+  background: url("http://hdw.datawallpaper.com/nature/starry-night-wide-wallpaper-340918.jpg") no-repeat center center fixed; 
   background-size: cover;
   /* Set rules to fill background */
   min-height: 100%;
@@ -42,7 +43,7 @@
 
 .welcome-block {
   color: #ddd;
-  background-color: rgba(33,33,33,0.8);
+  background-color: rgba(33,33,33,0.7);
   height: 300px;
   width: 800px;
   margin: 0px auto;
@@ -71,9 +72,26 @@
   background-color: #E96633;
 }
 
+.semi-transparent {
+  opacity: 0.9;
+}
+
 body {
   margin: 0;
-  background: #9694A6;
+  background: url("http://hdw.datawallpaper.com/nature/starry-night-wide-wallpaper-340918.jpg") no-repeat center center fixed; 
+  background-size: cover;
+}
+
+/* make menu bar backgrounds semi transparent */
+.ui.inverted.segment.transp,
+.ui.inverted.menu.transp,
+ {
+  background-color: rgba(33, 33, 33, 0.8)
+}
+
+/* make main section semi transparent */
+.ui.inverted.purple.segment.test-main {
+  background-color: rgba(62, 37, 74, 0.8) !important;
 }
 
 .dragging {
@@ -92,7 +110,7 @@ body {
 }
 
 main.main-container {
-  width: 1000px;
+  width: 850px;
   margin: 0px auto;
   padding-top: 30px;
 }
@@ -120,8 +138,8 @@ main.main-container {
 }
 
 .bottom-sidebar {
+  text-align: center;
   margin: 0 auto;
-  margin-left: 42%;
   height: 42px;
 }
 

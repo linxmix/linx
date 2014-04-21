@@ -86,7 +86,7 @@ module.exports = React.createClass({
     var isPlaying = (isAppPlaying &&
       (playingPlaylist.cid === playlist.cid));
     // if playlist isn't a queue, make it sortable
-    var className = 'ui large inverted purple celled table segment';
+    var className = 'ui large inverted purple test-main celled table segment';
     if (playlist.get('type') !== 'queue') {
       className += ' sortable';
     }
@@ -147,6 +147,7 @@ module.exports = React.createClass({
       if (e.target.tagName !== 'INPUT') {
         // figure out string for keycode
         var key = keymap(e);
+        debug("key press", key);
         // make backspace be delete for macs
         if (key === 'backspace') { key = 'delete'; }
         // if key has a handler,
@@ -204,6 +205,11 @@ var SPECIAL_KEYS = {
   // remove selected tracks from viewingPlaylist
   'delete': function (e) {
     this.props.viewingPlaylist.remove(true);
+  },
+
+  // deselect all tracks
+  'escape': function (e) {
+    this.setActiveTracks([]);
   },
 
   // play selected track

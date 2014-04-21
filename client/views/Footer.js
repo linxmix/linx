@@ -54,7 +54,7 @@ module.exports = React.createClass({
 
     return (
       <div className="bottom-menu">
-        <div className="bottom-sidebar">
+        <div className="semi-transparent bottom-sidebar">
           {menu}
         </div>
         <div className={hidden}>

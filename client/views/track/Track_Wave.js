@@ -20,14 +20,46 @@ module.exports = React.createClass({
     }
   },
 
+  // cursor on hover
+  onMouseMove: function (event) {
+    // only do this if we have a file buffer loaded
+    var wave = this.wave;
+    if (wave.backend && wave.backend.buffer) {
+      var e = event.nativeEvent;
+      // extract mouse position from event
+      var relX = 'offsetX' in e ? e.offsetX : e.layerX;
+      var position = (relX / wave.drawer.scrollWidth) || 0;
+      // scale percent to duration
+      position *= wave.timings()[1];
+      // mark hover position
+      this.hoverMark = wave.mark({
+        'id': 'hover',
+        'position': position,
+        'color': 'rgba(255, 255, 255, 0.8)',
+      });
+    }
+  },
+
+  // if we have a wave and a hoverMark, delete the hoverMark
+  onMouseLeave: function (event) {
+    var wave = this.wave;
+    if (wave.backend && wave.backend.buffer) {
+      if (this.hoverMark) {
+        this.hoverMark.remove();
+        delete this.hoverMark;
+      }
+    }
+  },
+
   render: function () {
     var track = this.props.track;
-    //debug("render track_wave", track);
     // only display if active
     var className = (this.props.active) ? "" : "hidden";
     return (
       <div className={className}>
-        <div className="wave">
+        <div className="wave"
+          onMouseLeave={this.onMouseLeave}
+          onMouseMove={this.onMouseMove}>
           <div className="ui active teal progress">
             <div className="bar"></div>
           </div>
@@ -147,8 +179,8 @@ module.exports = React.createClass({
     // initialize
     wave.init({
       container: this.$('.wave').get(0),
-      waveColor: 'violet',
-      progressColor: 'purple',
+      waveColor: 'steelblue',
+      progressColor: 'darkblue',
       dragSelection: false,
     });
     this.updateWidget();
