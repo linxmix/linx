@@ -31,7 +31,7 @@ module.exports = React.createClass({
   onDragOver: function (e) {
     // make sure to prevent default drop event
     e.preventDefault();
-    e.dataTransfer.dropEffect = 'move';
+    e.dataTransfer.dropEffect = 'copy';
     this.props.onDragOver(this.props, e);
     return false;
   },

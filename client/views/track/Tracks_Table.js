@@ -27,7 +27,7 @@ module.exports = React.createClass({
           'className': 'one wide',
         },
         {
-          'key': 'name',
+          'key': 'title',
           'className': 'thirteen wide',
         },
         {
@@ -42,15 +42,6 @@ module.exports = React.createClass({
         },
       ],
     }
-  },
-
-  handlePlayClick: function (e) {
-    var track = this.props.playingTrack;
-    this.props.handlePlayClick(track, e);
-  },
-
-  onKeyPress: function (e) {
-    debug("KEY PRESS", e);
   },
 
   handleClick: function (row, e) {
@@ -158,7 +149,9 @@ module.exports = React.createClass({
       default: debug("WARNING: unknown trackView", this.props.trackView);
     }
 
-    // make a Track_Table for every track
+    //
+    // Track_Tables
+    //
     var activeTracks = this.props.activeTracks;
     var playingTrack = this.props.playingTrack;
     var tracks = this.props.tracks;
@@ -178,8 +171,13 @@ module.exports = React.createClass({
         'handleDblClick': this.props.handleDblClick,
       });
     }.bind(this));
+    //
+    // /end Track_Tables
+    //
 
-    // make Table_Headers
+    // 
+    // Table_Headers
+    // 
     // TODO: make play_status make sense as a sort
     var headers = this.props.headers.map(function (header) {
 
@@ -199,10 +197,10 @@ module.exports = React.createClass({
               playIcon = (<i className="play icon"></i>);
             }
             html = (<div className="orange ui icon button"
-              onClick={this.handlePlayClick}>
+              onClick={this.props.handlePlayClick}>
                 {playIcon}
               </div>); break;
-          case 'name':
+          case 'title':
             html = this.props.playlistName; break;
         }
       }
@@ -225,16 +223,16 @@ module.exports = React.createClass({
         'handleClick': this.handleHeaderClick,
       });
     }.bind(this));
+    // 
+    // /end Table_Headers
+    // 
 
     // determine extra display vars
     var numTracksText = (tracks.length == 1) ?
       ' Track' : ' Tracks';
 
     return (
-      <table
-        className={this.props.className}
-        onKeyPress={this.onKeyPress}
-      >
+      <table className={this.props.className}>
         <thead>
           <tr>{headers}</tr>
         </thead>

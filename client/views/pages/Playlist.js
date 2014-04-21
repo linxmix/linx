@@ -3,6 +3,9 @@ var React = require('react');
 var debug = require('debug')('views:pages/Playlist');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
+var $ = require('jquery');
+var keymap = require('browser-keymap');
+
 var Tracks_Table = require('../track/Tracks_Table');
 
 module.exports = React.createClass({
@@ -24,35 +27,29 @@ module.exports = React.createClass({
 
   // play viewingPlaylist with given track at head
   playRow: function (row, e) {
-    var playlist = this.props.viewingPlaylist;
     var track = row.backboneModel;
-    this.props.setPlayingPlaylist(playlist);
-    this.props.changePlayState('play');
-    playlist.play(track);
+    this.playViewing(e, { 'track': track });
   },
 
-  // playpause viewingPlaylist
-  playViewingPlaylist: function (track, e) {
+  playpauseViewing: function (e, options) {
     var playingPlaylist = this.props.playingPlaylist;
     var playlist = this.props.viewingPlaylist;
     var isAppPlaying = (this.props.playState === 'play');
     var isPlaying = (isAppPlaying &&
       (playingPlaylist.cid === playlist.cid));;
-    debug("play click", isPlaying, track)
+    debug("playpauseViewing", isPlaying)
     if (isPlaying) {
       this.props.changePlayState('pause');
     } else {
-      var playlist = this.props.viewingPlaylist;
-      // play playlist with track
-      this.props.setPlayingPlaylist(playlist);
-      this.props.changePlayState('play');
-      playlist.play(track);
+      this.playViewing(e, options);
     }
   },
 
-  removeTrack: function (track, e) {
-    debug("removing track", track);
-    this.props.viewingPlaylist.remove(track);
+  playViewing: function (e, options) {
+    var playlist = this.props.viewingPlaylist;
+    this.props.setPlayingPlaylist(playlist);
+    this.props.changePlayState('play');
+    playlist.play(options);
   },
 
   addActiveTrack: function (track) {
@@ -88,10 +85,16 @@ module.exports = React.createClass({
     var isAppPlaying = (this.props.playState === 'play');
     var isPlaying = (isAppPlaying &&
       (playingPlaylist.cid === playlist.cid));
+    // if playlist isn't a queue, make it sortable
+    var className = 'ui large inverted purple celled table segment';
+    if (playlist.get('type') !== 'queue') {
+      className += ' sortable';
+    }
     // create tracks view
     return (
       <div>
         {Tracks_Table({
+          'className': className,
           'playlistName': name,
           'tracks': tracks,
           'appQueue': this.props.appQueue,
@@ -109,7 +112,7 @@ module.exports = React.createClass({
           'setActiveTracks': this.setActiveTracks,
           'changePlayState': this.props.changePlayState,
           'handleRemoveClick': this.removeTrack,
-          'handlePlayClick': this.playViewingPlaylist,
+          'handlePlayClick': this.playpauseViewing,
           'handleDblClick': this.playRow,
         })}
       </div>
@@ -135,6 +138,29 @@ module.exports = React.createClass({
 
   componentDidMount: function () {
     this.resetListener();
+
+    //
+    // key press listener
+    //
+    $(document).keydown(function (e) {
+      // ignore key presses when in an input
+      if (e.target.tagName !== 'INPUT') {
+        // figure out string for keycode
+        var key = keymap(e);
+        // make backspace be delete for macs
+        if (key === 'backspace') { key = 'delete'; }
+        // if key has a handler,
+        if (key in SPECIAL_KEYS) {
+          // prevent default then call that handler
+          e.preventDefault();
+          SPECIAL_KEYS[key].call(this, e);
+        }
+      }
+    }.bind(this));
+    //
+    // /end key press listener
+    //
+
   },
 
   componentDidUpdate: function (prevProps, prevState) {
@@ -147,3 +173,52 @@ module.exports = React.createClass({
   },
 
 });
+
+// keys and handlers
+// TODO: tab to open sidebar
+// TODO: [up,down]
+// TODO: [shift,ctrl] + [up,down]
+//       ^ means moving the selection logic into playlist model
+var SPECIAL_KEYS = {
+
+  // back
+  'left': function (e) {
+    this.props.playingPlaylist.back();
+  },
+
+  // forth
+  'right': function (e) {
+    this.props.playingPlaylist.forth();
+  },
+
+  // move selection up
+  'up': function (e) {
+    debug("up")
+  },
+
+  // move selection down
+  'down': function (e) {
+    debug("down")
+  },
+
+  // remove selected tracks from viewingPlaylist
+  'delete': function (e) {
+    this.props.viewingPlaylist.remove(true);
+  },
+
+  // play selected track
+  '\n': function (e) {
+    this.playViewing(e, { 'playingTrack': false });
+  },
+
+  // playpause viewingPlaylist
+  ' ': function (e) {
+    this.props.playpause();
+  },
+
+  // select all tracks
+  'C-a': function (e) {
+    this.setActiveTracks(this.props.viewingPlaylist.tracks().models);
+  },
+
+}

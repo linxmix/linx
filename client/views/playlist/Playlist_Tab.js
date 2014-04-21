@@ -74,9 +74,9 @@ module.exports = React.createClass({
     var name = playlist.get('name');
     if (this.props.isPlayingPlaylist) {
       if (this.props.playState === 'play') {
-        name = (<div><i className="volume up icon"></i>{name}</div>);
+        name = (<div className="ignore-mouse"><i className="volume up icon"></i>{name}</div>);
       } else {
-        name = (<div><i className="volume off icon"></i>{name}</div>);
+        name = (<div className="ignore-mouse"><i className="volume off icon"></i>{name}</div>);
       }
     }
     return Tab(_.extend({}, playlist, {

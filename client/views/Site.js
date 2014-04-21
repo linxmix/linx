@@ -111,6 +111,14 @@ module.exports = React.createClass({
     });
   },
 
+  playpause: function () {
+    if (this.state.playState === 'play') {
+      this.changePlayState('pause');
+    } else {
+      this.changePlayState('play');
+    }
+  },
+
   setViewingPlaylist: function (newPlaylist) {
     debug("setViewingPlaylist", newPlaylist);
     this.setState({
@@ -141,6 +149,7 @@ module.exports = React.createClass({
       'appQueue': this.props.appQueue,
 
       'playState': this.state.playState,
+      'playpause': this.playpause,
       'changePlayState': this.changePlayState,
 
       'dragging': this.state.dragging,

@@ -87,14 +87,20 @@ module.exports = Backbone.Model.extend({
     return this.get('tracks');
   },
 
-  // TODO: make this change based on direction, -1 or 1
   setTrackSort: function (trackSort) {
     if (this.get('type') !== 'queue') {
       debug("setting new track sort", trackSort);
       this.set({ 'trackSort': trackSort });
       var tracks = this.tracks();
+      // change sort attribute then sort
       tracks.comparator = trackSort.key;
       tracks.sort();
+      // reverse if direction is backwards
+      if (trackSort.direction === -1) {
+        tracks.models.reverse();
+      }
+      // rebuffer queue since now our order changed
+      this.bufferQueue();
     }
   },
 
@@ -112,26 +118,39 @@ module.exports = Backbone.Model.extend({
   },
 
   add: function (tracks) {
-    this.tracks().add(tracks);
+    this.tracks().add(tracks, { 'sort': false });
   },
 
-  remove: function (track) {
-    // TODO: make this work for arrays of tracks
-    if (track instanceof Array) {
-      return debug("ERROR: remove not implemented for arrays", track);
-    }
-    // TODO: test this
-    // if removing an activeTrack, remove from activeTracks
-    var activeTracks = this.getActiveTracks();
-    var index = activeTracks.indexOf(track);
-    if (index > -1) {
-      this.set({
-        'activeTracks': activeTracks.splice(index, 1),
+  remove: function (tracks) {
+
+    // if bool, remove activeTracks
+    var newActiveTracks;
+    if (typeof tracks === 'boolean') {
+      newActiveTracks = [];
+      tracks = this.getActiveTracks();
+    // otherwise remove any tracks from activeTracks
+    } else {
+      if (!(tracks instanceof Array)) {
+        tracks = [tracks];
+      }
+      // if any of tracks are activeTracks, remove from activeTracks
+      var activeTracks = this.getActiveTracks();
+      _.forEach(tracks, function(track, index) {
+        if (index > -1) {
+          delete activeTracks[index];
+        }
+      });
+      activeTracks = activeTracks.filter(function (activeTrack) {
+        return !!activeTrack;
       });
     }
-    // now remove track from playlist
-    this.tracks().remove(track);
-  },
+
+    // now do the actual removals
+    debug("removing tracks", tracks);
+    this.tracks().remove(tracks, { 'silent': true });
+    this.tracks().trigger('remove', tracks, this.tracks());
+    this.set({ 'activeTracks': newActiveTracks });
+  },  
 
   queue: function (track) {
     this.queueAtPos(track, this.get('queue').length);
@@ -291,9 +310,25 @@ module.exports = Backbone.Model.extend({
   // Mixer Functions
   //
 
-  play: function (track) {
+  play: function (options) {
+    var defaultOptions = {
+      'track': null,
+      'playingTrack': true,
+      'activeTracks': true,
+    }
+    if (typeof options !== 'object') {
+      options = {};
+    }
+    _.defaults(options, defaultOptions);
+    debug("play", options);
     var queue = this.get('queue');
-    if (!track) { track = this.getActiveTracks(true)[0]; }
+    var track = options.track;
+    if (!track && options.playingTrack) {
+      track = this.get('playingTrack');
+    }
+    if (!track && options.activeTracks) {
+      track = this.getActiveTracks(true)[0];
+    }
     this.queueAtPos(track, 0);
     this.bufferQueue();
   },
