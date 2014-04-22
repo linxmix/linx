@@ -63,11 +63,11 @@ module.exports = React.createClass({
     // TODO: add linx logo to left side of menu
     return (
       <div className="ui inverted transp menu" role="navigation">
-        <div className="right icon menu">
-          <div className="icon item">
+        <div className="right menu">
+          <div className="item">
             <i className="user icon"></i>
           </div>
-          <div className="icon item">
+          <div className="item">
             <i className="settings icon"></i>
           </div>
           <div className="item">

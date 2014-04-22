@@ -223,10 +223,14 @@ module.exports = Backbone.Model.extend({
     // TODO: if queue is already of length 2 or greater,
     //       remove buffer songs that are not after nextSong
     if (queue.length >= 2) {
-      return;
+      queue.remove(queue.slice(1, queue.length), {
+        'silent': true,
+      });
+      queue = this.get('queue');
+    }
 
     // if queue has a song, buffer the next
-    } else if (queue.length === 1) {
+    if (queue.length === 1) {
       var currTrack = tracks.get(queue.models[0]);
       var nextTrack = tracks.at(tracks.indexOf(currTrack) + 1);
       this.queue(nextTrack);
