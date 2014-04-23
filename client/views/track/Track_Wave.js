@@ -6,6 +6,7 @@ var Backbone = require('backbone');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var Track_List_SC = require('./Track_List_SC');
+var Widget_Wave = require('../../models/Widget_Wave');
 
 var WaveSurfer = require('wavesurfer.js');
 
@@ -17,7 +18,22 @@ module.exports = React.createClass({
     return {
       'active': true,
       'playing': false,
+      'playState': 'stop',
+      'widget': new Widget_Wave(),
+      'dragSelection': false,
+      'loopSelection': false,
     }
+  },
+
+  getInitialState: function () {
+    return {
+      'beatgrid': false,
+      'matches': false,
+    }
+  },
+
+  onUpdateSelection: function (newSelection) {
+    this.props.onUpdateSelection(this.props.track, newSelection);
   },
 
   // cursor on hover
@@ -80,18 +96,23 @@ module.exports = React.createClass({
     var widget = this.props.widget;
     // set widget to not loaded
     widget.set({ 'loaded': false });
+
+    //
+    // prevWidget
+    //
     // make sure to remove player from previous widget
     prevWidget && prevWidget.unsetPlayer();
-    // load track if given
-    if (this.props.track) {
-      widget.setTrack(this.props.track);
-    }
     // if playing track starts or stops loading, tell parent
     // remove old handlers
     if (prevWidget && this.onLoadedChange) {
       prevWidget.off('change:loaded', this.onLoadedChange);
     }
     this.wave.un('finish');
+    this.wave.un('updateSelection');
+    //
+    // /end prevWidget
+    //
+
     // make new handlers
     var onLoadedChange = this.onLoadedChange = function (widget, loaded) {
       debug("onLoadedCHANGE", widget.get('index'),
@@ -108,8 +129,17 @@ module.exports = React.createClass({
     // add new handlers
     widget.on('change:loaded', onLoadedChange);
     this.wave.on('finish', this.props.onFinish);
+    if (this.props.dragSelection) {
+      this.wave.on('updateSelection',
+        this.onUpdateSelection);
+    }
     // add wavesurfer to widget
     widget.setPlayer(this.wave);
+    // load track if given
+    if (this.props.track) {
+      widget.setTrack(this.props.track);
+    }
+    // update widget play state
     this.setWidgetPlayState();
   },
 
@@ -118,11 +148,41 @@ module.exports = React.createClass({
     this.setWidgetPlayState();
 
     // if widget changed, load new stuff into it
+    var widget = this.props.widget;
     var prevWidget = prevProps.widget;
-    if (this.props.widget.cid !== prevWidget.cid) {
+    if (widget && (widget.cid !== prevWidget.cid)) {
       this.updateWidget(prevWidget);
     }
 
+    // if analysis is present and no beatgrid is set, set beatgrid
+    var track = this.props.track;
+    var analysis = track && track.get('echoAnalysis');
+    if (!this.state.beatgrid) {
+      if (this.props.beatgrid && analysis) {
+        debug("adding beatgrid");
+        var thresh = 0.5;
+        analysis['beats'].forEach(function (beat) {
+          if (beat['confidence'] >= thresh) {
+            widget.addBeatMark(beat['start']);
+          }
+        }.bind(this));
+        this.setState({ 'beatgrid': true });
+      }
+    }
+
+    // set matches
+    var track = this.props.track;
+    var matches = track && track.get('matches');
+    debug("TRACK MATCHES", matches);
+    if (!this.state.matches) {
+      if (matches) {
+        debug("adding matches");
+        matches.forEach(function (match) {
+          widget.addMatchMark(match);
+        }.bind(this));
+        this.setState({ 'matches': true });
+      }
+    }
     //this.widget.redraw();
     //debug('component updated');
     // bind this wavesurfer to the new DOM, then redraw
@@ -141,23 +201,12 @@ module.exports = React.createClass({
     var wave = this.wave = Object.create(WaveSurfer);
 
     // 
-    // 
+    // hackery
     //
-    wave.fireEvent = function (event) {
-      if (!this.handlers) { return; }
-
-      var handlers = this.handlers[event];
-      var args = Array.prototype.slice.call(arguments, 1);
-      if (handlers) {
-        for (var i = 0, len = handlers.length; i < len; i += 1) {
-          if (handlers[i]) { // ADDED THIS CHECK for concurrency
-            handlers[i].apply(null, args);
-          }
-        }
-      }
-    }
+    wave.fireEvent = fireEventCustom;
+    wave.updateSelection = updateSelectionCustom;
     // 
-    // 
+    // /end hackery
     // 
 
     // setup progress bar
@@ -176,15 +225,20 @@ module.exports = React.createClass({
     wave.on('destroy', hideProgress);
     wave.on('error', hideProgress);
 
-    // initialize
+    //
+    // init
+    //
     wave.init({
-      container: this.$('.wave').get(0),
-      waveColor: 'steelblue',
-      progressColor: 'darkblue',
-      dragSelection: false,
+      'container': this.$('.wave').get(0),
+      'waveColor': 'steelblue',
+      'progressColor': 'darkblue',
+      'dragSelection': this.props.dragSelection,
+      'loopSelection': this.props.loopSelection,
     });
-    this.updateWidget();
-
+    this.updateWidget()
+    //
+    // /end init
+    //
   },
 
   // component will be unmounted from the DOM
@@ -200,3 +254,64 @@ module.exports = React.createClass({
   },
 
 });
+
+//
+// custom functions to override wavesurfer defaults
+//
+function fireEventCustom(event) {
+  if (!this.handlers) { return; }
+
+  var handlers = this.handlers[event];
+  var args = Array.prototype.slice.call(arguments, 1);
+  if (handlers) {
+    for (var i = 0, len = handlers.length; i < len; i += 1) {
+      // ADDED CHECK for concurrency and null functions not to error
+      if (handlers[i]) {
+        handlers[i].apply(null, args);
+      }
+    }
+  }
+}
+
+function updateSelectionCustom(selection) {
+  var my = this;
+
+  var percent0 = selection.startPercentage;
+  var percent1 = selection.endPercentage;
+  var color = this.params.selectionColor;
+
+  if (percent0 > percent1) {
+    var tmpPercent = percent0;
+    percent0 = percent1;
+    percent1 = tmpPercent;
+  }
+
+  if (this.selMark0) {
+    this.selMark0.update({ percentage: percent0 });
+  } else {
+    this.selMark0 = this.mark({
+      width: 0,
+      percentage: percent0,
+      color: color
+    });
+  }
+
+  if (this.selMark1) {
+    this.selMark1.update({ percentage: percent1 });
+  } else {
+    this.selMark1 = this.mark({
+      width: 0,
+      percentage: percent1,
+      color: color
+    });
+  }
+
+  // ADDED NEW EVENT on update selection
+  this.fireEvent('updateSelection', this.getSelection());
+
+  this.drawer.updateSelection(percent0, percent1);
+
+  if (this.loopSelection) {
+    this.backend.updateSelection(percent0, percent1);
+  }
+}

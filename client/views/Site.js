@@ -28,6 +28,7 @@ module.exports = React.createClass({
       'bottomBar': 0,
       'loading': false,
       'dragging': [],
+      'uploaderTracks': [],
     }
   },
 
@@ -78,6 +79,14 @@ module.exports = React.createClass({
   //
   // / Search
   //
+
+  addUploaderTrack: function (track) {
+    var uploaderTracks = this.state.uploaderTracks;
+    uploaderTracks.push(track);
+    this.setState({
+      'uploaderTracks': uploaderTracks,
+    });
+  },
 
   setDragging: function (arr) {
     if (!(arr instanceof Array)) {
@@ -154,6 +163,9 @@ module.exports = React.createClass({
 
       'dragging': this.state.dragging,
       'setDragging': this.setDragging,
+
+      'uploaderTracks': this.state.uploaderTracks,
+      'addUploaderTrack': this.addUploaderTrack,
 
       'loading': this.state.loading,
       'setLoading': this.setLoading,

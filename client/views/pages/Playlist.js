@@ -28,7 +28,9 @@ module.exports = React.createClass({
   // play viewingPlaylist with given track at head
   playRow: function (row, e) {
     var track = row.backboneModel;
-    this.playViewing(e, { 'track': track });
+    debug("PLAY ROW", track);
+    //this.playViewing(e, { 'track': track });
+    this.props.addUploaderTrack(track);
   },
 
   playpauseViewing: function (e, options) {

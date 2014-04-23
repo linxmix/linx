@@ -25,6 +25,10 @@ module.exports = React.createClass({
     this.props.changePage(navTab.key);
   },
 
+  goUploader: function (e) {
+    this.props.changePage('Uploader');
+  },
+
   handleChange: function (options) {
     this.props.setSearchText(options.searchText);
   },
@@ -56,13 +60,15 @@ module.exports = React.createClass({
     var searchIcon = (this.state.searching) ?
       (<i className="loading icon"></i>) :
       (<i className="clickable search icon" onClick={this.handleSubmit}></i>);
-
     // render navBar
     // TODO: make menu do stuff and not be static
     // TODO: fix menu to top without moving to right with sidebar
     // TODO: add linx logo to left side of menu
     return (
       <div className="ui inverted transp menu" role="navigation">
+        <div className="ui orange button" onClick={this.goUploader}>
+          Uploader
+        </div>
         <div className="right menu">
           <div className="item">
             <i className="user icon"></i>

@@ -143,6 +143,8 @@ module.exports = React.createClass({
         'on': 'hover',
       });
     }.bind(this));
+    // start sidebar as open
+    this.launchTabClick();
   },
 
 });

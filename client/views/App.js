@@ -50,7 +50,7 @@ module.exports = React.createClass({
 
   getInitialState: function () {
     return {
-      'page': 'Welcome',
+      'page': 'Site',
     }
   },
 

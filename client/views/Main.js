@@ -6,6 +6,7 @@ var ReactBackboneMixin = require('backbone-react-component').mixin;
 var Me = require('./pages/Me');
 var Search = require('./pages/Search');
 var Queue = require('./pages/Queue');
+var Uploader = require('./pages/Uploader');
 var Playlist = require('./pages/Playlist');
 
 module.exports = React.createClass({
@@ -21,6 +22,9 @@ module.exports = React.createClass({
     switch (this.props.page) {
       case 'Me':
         renderedPage = Me(this.props);
+        break;
+      case 'Uploader':
+        renderedPage = Uploader(this.props);
         break;
       //case 'Queue':
       //  renderedPage = Queue(this.props);

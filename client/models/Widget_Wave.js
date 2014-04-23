@@ -104,4 +104,25 @@ module.exports = Widget.extend({
     }
   },
 
+  addBeatMark: function (position) {
+    var wave = this.get('player');
+    wave.mark({
+      'position': position,
+      'color': 'rgba(0, 0, 0, 1)',
+    });
+  },
+
+  addMatchMark: function (position) {
+    var wave = this.get('player');
+    wave.mark({
+      'position': position,
+      'color': 'rgba(255, 255, 255, 1)',
+    });
+  },
+
+  getSelection: function () {
+    var wave = this.get('player');
+    return wave.getSelection();
+  },
+
 });
