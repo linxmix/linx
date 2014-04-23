@@ -173,7 +173,6 @@ module.exports = React.createClass({
     // set matches
     var track = this.props.track;
     var matches = track && track.get('matches');
-    debug("TRACK MATCHES", matches);
     if (!this.state.matches) {
       if (matches) {
         debug("adding matches");

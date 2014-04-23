@@ -13,6 +13,7 @@ var Tracks = require('../collections/Tracks');
 var EchoNest = require('../collections/EchoNest');
 var TasteProfiles = require('../collections/TasteProfiles');
 var Playlists = require('../collections/Playlists');
+var Edges = require('../collections/Edges');
 
 var Site = require('./Site');
 var Welcome = require('./Welcome');
@@ -41,8 +42,8 @@ module.exports = React.createClass({
         'tasteProfiles': new TasteProfiles(),
         'playlists': playlists,
         'myTracks': new Tracks(),
+        'edges': new Edges(),
       },
-      // TODO: use vars above for this. will that be the same?
       'searchResults': searchResults,
       'appQueue':  queue,
     }
@@ -81,6 +82,22 @@ module.exports = React.createClass({
       </div>
     );
     
+  },
+
+  componentDidMount: function () {
+    this.getCollection().edges.fetch({
+      'success': function (collection, response, options) {
+        debug("successfully fetched edges", arguments);
+        /*var edge = collection.add({
+          'id': '1',
+          'in': '2',
+          'out': 'null',
+          'start': 1,
+          'end': 2,
+        });
+        edge.save();*/
+      }
+    });
   },
 
 });
