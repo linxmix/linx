@@ -16,7 +16,7 @@ describe("#edges", function () {
   var db, app;
   var edge0 = {
     in: '1',
-    id: '0',
+    edgeId: '0',
     out: '2',
     endIn: 12,
     startEdge: 34,
@@ -80,6 +80,17 @@ describe("#edges", function () {
       request(app)
         .put('/edges/0')
         .send(edge0)
+        .set('Accept', 'application/json')
+        .expect('Content-Type', /json/)
+        .expect(200)
+        .expect(edge0, done);
+    });
+  });
+
+  describe("GET /edges/0", function () {
+    it('responds with edge object', function (done) {
+      request(app)
+        .get('/edges/0')
         .set('Accept', 'application/json')
         .expect('Content-Type', /json/)
         .expect(200)

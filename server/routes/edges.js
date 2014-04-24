@@ -11,7 +11,7 @@ var queryEdgeSchema = {
       "description": "id of track in to edge",
       "type": "string",
     },
-    "id": {
+    "edgeId": {
       "description": "id of edge track",
       "type": "string",
     },
@@ -36,7 +36,7 @@ var queryEdgeSchema = {
       "type": "number",
     },
   },
-  "required": ["in", "out", "id", "endIn", "startEdge", "endEdge", "startOut"],
+  "required": ["in", "out", "edgeId", "endIn", "startEdge", "endEdge", "startOut"],
 };
 var queryEdgeValidation = function (queryEdge) {
   return tv4.validateMultiple(queryEdge, queryEdgeSchema, true);
@@ -47,7 +47,7 @@ var queryEdgeToDbEdge = function (queryEdge) {
 
   return {
     subject: queryEdge.in,
-    predicate: queryEdge.id,
+    predicate: queryEdge.edgeId,
     object: queryEdge.out,
     endIn: queryEdge.endIn,
     startEdge: queryEdge.startEdge,
@@ -61,7 +61,7 @@ var dbEdgeToQueryEdge = function (dbEdge) {
 
   return {
     in: dbEdge.subject,
-    id: dbEdge.predicate,
+    edgeId: dbEdge.predicate,
     out: dbEdge.object,
     endIn: dbEdge.endIn,
     startEdge: dbEdge.startEdge,
