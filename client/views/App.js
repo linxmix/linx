@@ -88,14 +88,16 @@ module.exports = React.createClass({
     this.getCollection().edges.fetch({
       'success': function (collection, response, options) {
         debug("successfully fetched edges", arguments);
-        /*var edge = collection.add({
-          'id': '1',
-          'in': '2',
-          'out': 'null',
-          'start': 1,
-          'end': 2,
+        var edge = collection.add({
+          'in': '1',
+          'id': '0',
+          'out': '2',
+          'endIn': 12,
+          'startEdge': 34,
+          'endEdge': 56,
+          'startOut': 78,
         });
-        edge.save();*/
+        edge.save();
       }
     });
   },

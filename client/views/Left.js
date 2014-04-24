@@ -43,7 +43,6 @@ module.exports = React.createClass({
   getInitialState: function () {
     return {
       'activeTab': this.props.tabs[0],
-      'sidebarClosed': true,
     }
   },
 
@@ -58,16 +57,18 @@ module.exports = React.createClass({
     });
     // toggle tab's sidebar
     this.$(selector).sidebar('toggle');
-    // set tab as active and report if sidebar is closed
+    // set tab as active
     this.setState({
       'activeTab': tab,
-      'sidebarClosed': this.$(selector).sidebar('is closed'),
     });
+    // report if sidebar is closed
+    this.props.setSidebarClosed(
+      this.$(selector).sidebar('is closed'));
   },
 
   // open sidebar on dragEnter
   onDragEnter: function (tab, e) {
-    if (this.state.sidebarClosed) {
+    if (this.props.sidebarClosed) {
       // if launchTab, do launchTabClick
       if (tab.key === 'launchTab') {
         this.launchTabClick(tab, e);
@@ -84,7 +85,7 @@ module.exports = React.createClass({
   render: function () {
 
     // make launchTab
-    var isHidden = this.state.sidebarClosed;
+    var isHidden = this.props.sidebarClosed;
     var launchTabName = (isHidden) ? (<i className="right arrow icon"></i>) :
       (<i className="left arrow icon"></i>);
     var launchTab = Tab({

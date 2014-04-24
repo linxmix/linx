@@ -13,6 +13,7 @@ var Main = require('./Main');
 var Right = require('./Right');
 var Footer = require('./Footer');
 
+// TODO: turn all of these change functions into one that takes 2 args
 module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
@@ -24,6 +25,7 @@ module.exports = React.createClass({
       'viewingPlaylist': this.props.appQueue,
       'playingPlaylist': this.props.appQueue,
       'searchText': '',
+      'sidebarClosed': false,
       'rightBar': 0,
       'bottomBar': 0,
       'loading': false,
@@ -98,6 +100,12 @@ module.exports = React.createClass({
     });
   },
 
+  setSidebarClosed: function (state) {
+    this.setState({
+      'sidebarClosed': state,
+    });
+  },
+
   setLoading: function (bool) {
     debug("setLoading", bool);
     this.setState({
@@ -169,6 +177,9 @@ module.exports = React.createClass({
 
       'loading': this.state.loading,
       'setLoading': this.setLoading,
+
+      'sidebarClosed': this.state.sidebarClosed,
+      'setSidebarClosed': this.setSidebarClosed,
 
       'searchText': this.state.searchText,
       'setSearchText': this.setSearchText,

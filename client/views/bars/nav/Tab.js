@@ -8,10 +8,15 @@ module.exports = React.createClass({
 
   getDefaultProps: function () {
     return {
+      'name': '',
+      'type': 'a',
       'active': false,
       'draggable': false,
       'dragClass': 'dragging',
       'dragOverClass': '',
+      'onMouseEnter': function () {}, // no-op
+      'onMouseLeave': function () {}, // no-op
+      'onDragOver': function () {}, // no-op
       'onDragOver': function () {}, // no-op
       'onDragEnter': function () {}, // no-op
       'onDragLeave': function () {}, // no-op
@@ -26,6 +31,14 @@ module.exports = React.createClass({
       'dragging': false,
       'dragOver': false,
     }
+  },
+
+  onMouseEnter: function (e) {
+    this.props.onMouseEnter(e, this.props);
+  },
+
+  onMouseLeave: function (e) {
+    this.props.onMouseLeave(e, this.props);
   },
 
   onDragOver: function (e) {
@@ -74,18 +87,21 @@ module.exports = React.createClass({
       this.props.activeClass : this.props.inactiveClass;
     // check if being dragged over
     className += ' ' + (this.state.dragOver ? this.props.dragOverClass : '');
-    return (
-      <a
-        className={className}
-        onClick={this.handleClick}
-        onDoubleClick={this.handleDblClick}
-        onDragOver={this.onDragOver}
-        onDrop={this.onDrop}
-        onDragEnter={this.onDragEnter}
-        onDragLeave={this.onDragLeave}>
-        {this.props.name}
-      </a>
-    );
+    var props = {
+      'className': className,
+      'onClick': this.handleClick,
+      'onDoubleClick': this.handleDblClick,
+      'onMouseEnter': this.onMouseEnter,
+      'onMouseLeave': this.onMouseLeave,
+      'onDragOver': this.onDragOver,
+      'onDrop': this.onDrop,
+      'onDragEnter': this.onDragEnter,
+      'onDragLeave': this.onDragLeave,
+    };
+    // render element based on tag type
+    var rendered = React.DOM[this.props.type]
+      (props, this.props.name);
+    return rendered;
   },
 
 });
