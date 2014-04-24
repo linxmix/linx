@@ -4,7 +4,7 @@ var tv4 = require('tv4');
 
 var edgesDb = require('../db/edges')
 
-var schema = {
+var queryEdgeSchema = {
   "type": "object",
   "properties": {
     "in": {
@@ -19,21 +19,59 @@ var schema = {
       "description": "id of track out of edge",
       "type": "string"
     },
-    "start": {
-      "description": "start sample of track in",
+    "endIn": {
+      "description": "end millseconds of track in",
       "type": "number",
     },
-    "end": {
-      "description": "end sample of track out",
+    "startEdge": {
+      "description": "start millseconds of edge track",
+      "type": "number",
+    },
+    "endEdge": {
+      "description": "end millseconds of edge track",
+      "type": "number",
+    },
+    "startOut": {
+      "description": "start milliseconds of track out",
       "type": "number",
     },
   },
-  "required": ["in", "out", "id", "start", "end"],
+  "required": ["in", "out", "id", "endIn", "startEdge", "endEdge", "startOut"],
+};
+var queryEdgeValidation = function (queryEdge) {
+  return tv4.validateMultiple(queryEdge, queryEdgeSchema, true);
 };
 
-// functionalize edgeToGraphEdge
-// functionalize graphEdgetoEdge
-// functionalize validation of either
+var queryEdgeToDbEdge = function (queryEdge) {
+  queryEdge = queryEdge || {};
+
+  return {
+    subject: queryEdge.in,
+    predicate: queryEdge.id,
+    object: queryEdge.out,
+    endIn: queryEdge.endIn,
+    startEdge: queryEdge.startEdge,
+    endEdge: queryEdge.endEdge,
+    startOut: queryEdge.startOut,
+  };
+};
+
+var dbEdgeToQueryEdge = function (dbEdge) {
+  dbEdge = dbEdge || {};
+
+  return {
+    in: dbEdge.subject,
+    id: dbEdge.predicate,
+    out: dbEdge.object,
+    endIn: dbEdge.endIn,
+    startEdge: dbEdge.startEdge,
+    endEdge: dbEdge.endEdge,
+    startOut: dbEdge.startOut,
+  };
+};
+var dbEdgeSchema = {};
+var dbEdgeValidation = function () {};
+
 
 module.exports = function (app) {
 
@@ -42,14 +80,9 @@ module.exports = function (app) {
   // read collection
   app.get("/edges", function (req, res, next) {
     
-    var edgeIn = req.query.in;
-    var edgeOut = req.query.out;
+    var dbEdge = queryEdgeToDbEdge(req.query);
 
-    var query = {};
-    if (edgeIn) query.subject = edgeIn;
-    if (edgeOut) query.object = edgeOut;
-
-    edgesDb.getAsync(query).then(function (results) {
+    edgesDb.getAsync(dbEdge).then(function (results) {
       res.json(200, results);
     }).catch(function (err) {
       return next(err);
@@ -59,26 +92,18 @@ module.exports = function (app) {
   // create model
   app.post("/edges", function (req, res, next) {
 
-    var edge = req.body;
+    var queryEdge = req.body;
 
-    var validation = tv4.validateMultiple(edge, schema, true);
-
-    console.log(validation);
+    var validation = queryEdgeValidation(queryEdge);
 
     if (!validation.valid) {
       return res.json(400, validation.errors);
     }
 
-    var graphEdge = {
-      subject: edge.in,
-      predicate: edge.id,
-      object: edge.out,
-      start: edge.start,
-      end: edge.end,
-    };
+    var dbEdge = queryEdgeToDbEdge(queryEdge);
 
-    edgesDb.putAsync(graphEdge).then(function () {
-      res.json(200, edge);
+    edgesDb.putAsync(dbEdge).then(function () {
+      res.json(200, queryEdge);
     }).catch(function (err) {
       return next(err);
     });
@@ -87,27 +112,21 @@ module.exports = function (app) {
   // read model
   app.get("/edges/:edgeId", function (req, res, next) {
 
-    var query = {
+    var getter = {
       predicate: req.params.edgeId,
     };
 
-    edgesDb.getAsync(query).then(function (results) {
+    edgesDb.getAsync(getter).then(function (results) {
 
       if (results.length === 0) {
         return res.json(404, undefined);
       }
 
-      var graphEdge = results[0];
+      var dbEdge = results[0];
 
-      var edge = {
-        in: graphEdge.subject,
-        id: graphEdge.predicate,
-        out: graphEdge.object,
-        start: graphEdge.start,
-        end: graphEdge.end,
-      };
+      var queryEdge = dbEdgeToQueryEdge(dbEdge);
 
-      res.json(200, edge);
+      res.json(200, queryEdge);
 
     }).catch(function (err) {
       return next(err);
@@ -117,39 +136,34 @@ module.exports = function (app) {
   // update model
   app.put("/edges/:edgeId", function (req, res, next) {
 
-    var query = {
+    var queryEdge = req.body;
+    var getter = {
       predicate: req.params.edgeId,
     };
-    var graphEdge;
+    var dbEdge;
 
-    edgesDb.getAsync(query).then(function (results) {
+    edgesDb.getAsync(getter).then(function (results) {
 
       if (results.length === 0) {
         res.json(404, undefined);
       }
 
-      graphEdge = results[0];
+      dbEdge = results[0];
       
-      return edgesDb.delAsync(graphEdge);
+      return edgesDb.delAsync(dbEdge);
     }).then(function () {
 
-      graphEdge.subject = req.body.in || graphEdge.subject;
-      graphEdge.object = req.body.out || graphEdge.object;
-      graphEdge.start = req.body.start || graphEdge.start;
-      graphEdge.end = req.body.end || graphEdge.end;
 
-      return edgesDb.putAsync(graphEdge);
+      var dbUpdates = queryEdgeToDbEdge(queryEdge);
+      var queryExisting = dbEdgeToQueryEdge(dbEdge);
+
+      dbEdge = _.extend(dbEdge, dbUpdates);
+      queryEdge = _.extend(queryExisting, queryEdge);
+
+      return edgesDb.putAsync(dbEdge);
     }).then(function () {
 
-      var edge = {
-        in: graphEdge.subject,
-        id: graphEdge.predicate,
-        out: graphEdge.object,
-        start: graphEdge.start,
-        end: graphEdge.end,
-      };
-
-      res.json(200, edge);
+      res.json(200, queryEdge);
 
     }).catch(function (err) {
       return next(err);
@@ -158,12 +172,11 @@ module.exports = function (app) {
 
   // delete model
   app.delete("/edges/:edgeId", function (req, res, next) {
-    var edgeId = req.params.edgeId;
-    var edge = {
-      predicate: edgeId,
+    var getter = {
+      predicate: req.params.edgeId,
     };
 
-    edgesDb.getAsync(edge).then(function (results) {
+    edgesDb.getAsync(getter).then(function (results) {
 
       if (results.length === 0) {
         res.json(404, undefined);

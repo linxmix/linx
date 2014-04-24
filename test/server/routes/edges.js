@@ -13,18 +13,19 @@ var delAll = function (db, done) {
 
 describe("#edges", function () {
 
-  var db, graphdb, app;
+  var db, app;
   var edge0 = {
     in: '1',
     id: '0',
     out: '2',
-    start: 123,
-    end: 321,
+    endIn: 12,
+    startEdge: 34,
+    endEdge: 56,
+    startOut: 78,
   };
   
   before(function (done) {
     db = require('../../../server/db');
-    graphdb = require('../../../server/graphdb');
     app = require('../../../server/server');
     delAll(db, done);
   });
@@ -73,7 +74,7 @@ describe("#edges", function () {
 
   describe("PUT /edges/0", function () {
 
-    edge0.start = 135;
+    edge0.startEdge = 135;
 
     it('responds with edge object', function (done) {
       request(app)
