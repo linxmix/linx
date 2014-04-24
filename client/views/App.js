@@ -8,6 +8,7 @@ var _ = require('underscore');
 var Me = require('../models/Me');
 var Queue = require('../models/Queue');
 var SearchResults = require('../models/SearchResults');
+var Edge = require('../models/Edge');
 
 var Tracks = require('../collections/Tracks');
 var EchoNest = require('../collections/EchoNest');
@@ -89,15 +90,15 @@ module.exports = React.createClass({
       'success': function (collection, response, options) {
         debug("successfully fetched edges", arguments);
         var edge = collection.add({
+          'edgeId': '01',
           'in': '1',
-          'id': '0',
           'out': '2',
           'endIn': 12,
           'startEdge': 34,
           'endEdge': 56,
           'startOut': 78,
         });
-        edge.save();
+        //edge.save();
       }
     });
   },
