@@ -20,4 +20,23 @@ module.exports = Backbone.Model.extend({
     Backbone.sync.apply(this, arguments);
   },
 
+  parse: function (response) {
+    // convert dbEdge to queryEdge
+    renameProperty.call(response, 'subject', 'in');
+    renameProperty.call(response, 'object', 'out');
+    renameProperty.call(response, 'predicate', 'edgeId');
+    // add id if there was an edgeId
+    response['id'] = response['edgeId'];
+    return response;
+  },
+
 });
+
+renameProperty = function (oldName, newName) {
+  // Check for the old property name to avoid a ReferenceError in strict mode.
+  if (this.hasOwnProperty(oldName)) {
+    this[newName] = this[oldName];
+    delete this[oldName];
+  }
+  return this;
+};
