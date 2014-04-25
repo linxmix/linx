@@ -66,7 +66,7 @@ module.exports = Tracks.extend({
     if (track instanceof Array) {
       return debug("ERROR: add given array instead of object", track);
     }
-    if (!(options && options['at'])) {
+    if (!(options && (typeof options['at'] === 'number'))) {
       return debug("ERROR: queue.add not given correct options");
     }
 
@@ -211,8 +211,8 @@ module.exports = Tracks.extend({
       var prev = options['prev'];
       var next = options['next'];
       if (options['index']) {
-        prev = this.getPrev(index);
-        next = this.getNext(index);
+        prev = this.getPrev(options['index']);
+        next = this.getNext(options['index']);
       }
       // if prev is transition, use startOut
       if (prev && prev.get('linxType') === 'transition') {
