@@ -6,7 +6,7 @@
   "browser": "client/index.js",
   "scripts": {
     "test-server": "(export NODE_ENV=test; mocha -R spec test/server/**/*.js)",
-    "test-client": "(export NODE_ENV=test; testling)",
+    "test-client": "(export NODE_ENV=test; testling -x google-chrome)",
     "test": "npm run test-server && (if [ -z \"$TRAVIS\" ]; then npm run test-client; fi)",
     "develop": "(export NODE_ENV=development; gulp develop & nodemon .)",
     "start": "gulp && node ."
@@ -59,7 +59,7 @@
     "backbone": "^1.1.2",
     "jquery": "^2.1.0",
     "backbone-react-component": "^0.6.0",
-    "react": "^0.9.0",
+    "react": "^0.10.0",
     "reactify": "^0.10.0",
     "envify": "^1.2.1",
     "uglifyify": "^2.0.0",

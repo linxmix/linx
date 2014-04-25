@@ -77,6 +77,9 @@ module.exports = Backbone.Model.extend({
     this.get('queue').on('add', updatePlayingTrack);
     this.get('queue').on('remove', updatePlayingTrack);
 
+    // give queue this id
+    this.get('queue').playlist = this.cid;
+
   },
 
   //

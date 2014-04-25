@@ -1,10 +1,11 @@
 var Backbone = require('backbone');
 var debug = require('debug')('collections:Queue')
 
+var Track = require('../models/Track');
 var Tracks = require('./Tracks');
 var Widgets = require('./Widgets');
 
-// MEGA TODO: allow duplicates in queue
+// TODO: allow duplicates in queue
 module.exports = Tracks.extend({
 
   initialize: function(models, options) {
@@ -52,18 +53,44 @@ module.exports = Tracks.extend({
 
   getPrev: function (index) {
     var prevIndex = index - 1;
-    return (prevIndex > -1) && this.at('prevIndex');
+    return (prevIndex > -1) && this.at(prevIndex);
   },
 
   getNext: function (index) {
     var nextIndex = index + 1;
-    return (nextIndex < this.length) && this.at('nextIndex');
+    return (nextIndex < this.length) && this.at(nextIndex);
+  },
+
+  // removes adjacent queue members if they are transitions
+  // returns 1 if prev was removed, else 0
+  // TODO: unless nextNext or prevPrev still work for prev or next transition!
+  removeTransitions: function (options) {
+    var removed = 0;
+    // curry options
+    var prev = options['prev'];
+    var next = options['next'];
+    if (options['index']) {
+      prev = this.getPrev(options['index']);
+      next = this.getNext(options['index']);
+    }
+    // maybe remove prev
+    if (prev && prev.get('linxType') === 'transition') {
+      this.remove(prev);
+      // update removed
+      removed++;
+    }
+    // maybe remove next
+    if (next && next.get('linxType') === 'transition') {
+      this.remove(next);
+    }
+    return removed;
   },
 
   // add a single track to collection, must have option.at
   // returns track if successful, or false
   add: function (track, options) {
     if (track instanceof Array) {
+      // TODO: add them in order
       return debug("ERROR: add given array instead of object", track);
     }
     if (!(options && (typeof options['at'] === 'number'))) {
@@ -71,22 +98,20 @@ module.exports = Tracks.extend({
     }
 
     // get tracks for prev, next
-    var index = options['at'];
     var prevTrack = this.getPrev(index);
-    var nextTrack = this.getNext(index);
+    var nextTrack = this.getNext(index - 1); // -1 b/c track not yet added
 
     // if adding between transitions, remove them
-    // TODO: unless we are adding a copy of that transition's in or out
-    if (prevTrack && prevTrack.get('linxType') === 'transition') {
-      this.remove(prevTrack);
-      // update index and prevTrack
-      prevTrack = this.getPrev(--index);
-    }
-    if (nextTrack && nextTrack.get('linxType') === 'transition') {
-      this.remove(nextTrack);
-      // update nextTrack
-      nextTrack = this.getNext(index);
-    }
+    var index = options['at'];
+    var prevTrack = this.getPrev(index);
+    var nextTrack = this.getNext(index - 1); // -1 b/c track not yet added
+    index -= this.removeTransitions({
+      'prev': prevTrack,
+      'next': nextTrack,
+    });
+    // refresh in case we changed index
+    prevTrack = this.getPrev(index);
+    nextTrack = this.getNext(index - 1); // -1 b/c track not yet added
 
     // if adding transition, make sure it fits
     if (track.get('linxType') === 'transition') {
@@ -94,16 +119,29 @@ module.exports = Tracks.extend({
       // first check prev
       var addPrev = function () {
         prevTrack = new Track({ 'id': track.getInId() });
-        Tracks.prototype.add.call(this, prevTrack, { 'at': index++ });
-      }
+        // don't wait for fetch if just a test
+        if (process.env.NODE_ENV === "test") {
+          Tracks.prototype.add.call(this, prevTrack, { 'at': index++ });
+        // TODO: make sure this works for real deal
+        } else {
+          var indexFreeze = index++;
+          prevTrack.fetch({
+            'success': function (model, response, options) {
+              Tracks.prototype.add.call(this, prevTrack, { 'at': indexFreeze });
+            }.bind(this),
+            'error': function (error) {
+              throw new Error("ERROR fetching prevTrack", prevTrack, error);
+            },
+          });
+        }
+      }.bind(this);
       if (prevTrack && prevTrack.id === track.getInId()) {
         // id matches, so make sure timings will work
         var prevPrev = this.getPrev(index - 1);
         // no prevPrev, so prev must be queue head
         if (!prevPrev) {
           // TODO: what now? add position to site? or to track model?
-          debug("WARNING: adding transition to queue when prev is playing", this, track);
-          return;
+          throw new Error("ERROR: adding transition to queue when prev is playing", this, track);
         }
         // prev is not playing, so check preceeding transition
         else if (prevPrev.get('linxType') === 'transition') {
@@ -113,8 +151,7 @@ module.exports = Tracks.extend({
           });
           if (!timing) {
             // TODO: timing was impossible, what now?
-            debug("WARNING: adding transition to queue when prev is correct id but impossible timing", this, track);
-            return;
+            throw new Error("ERROR: adding transition to queue when prev is correct id but impossible timing", this, track);
           } else {
             // timing is possible. sweet!
           }
@@ -127,7 +164,20 @@ module.exports = Tracks.extend({
       // then check next
       var addNext = function () {
         nextTrack = new Track({ 'id': track.getOutId() });
-        Tracks.prototype.add.call(this, nextTrack, { 'at': index + 1 });
+        // don't wait for fetch if just a test
+        if (process.env.NODE_ENV === "test") {
+          Tracks.prototype.add.call(this, nextTrack, { 'at': index + 1 });
+        // TODO: make sure this works for real deal
+        } else {
+          nextTrack.fetch({
+            'success': function (model, response, options) {
+              Tracks.prototype.add.call(this, nextTrack, { 'at': index + 1 });
+            }.bind(this),
+            'error': function (error) {
+              throw new Error("ERROR fetching nextTrack", nextTrack, error);
+            },
+          });
+        }
       }.bind(this);
       if (nextTrack && nextTrack.id === track.getOutId()) {
         // id matches, so make sure timings will work
@@ -144,8 +194,7 @@ module.exports = Tracks.extend({
           });
           if (!timing) {
             // TODO: timing was impossible, what now?
-            debug("WARNING: adding transition to queue when next is correct id but impossible timing", this, track);
-            return;
+            throw new Error("WARNING: adding transition to queue when next is correct id but impossible timing", this, track);
           }
         }
       // incorrect nextTrack, so add
@@ -158,17 +207,22 @@ module.exports = Tracks.extend({
     // update index in case we changed the queue
     options['at'] = index;
     // and finally, add track
-    return Tracks.prototype.add.call(this, track, options);
+    Tracks.prototype.add.call(this, track, options);
+    return;
   },
 
-  // TODO: do nothing special if transition removed,
-  //       but remove transition(s) if type is song
-  remove: function (tracks, options) {
-    if (!(tracks instanceof Array)) {
-      tracks = [tracks]
+  remove: function (track, options) {
+    if (track instanceof Array) {
+      return debug("ERROR: remove given array instead of model", track);
+    }
+    // if removing song, remove corresponding transition(s) (if any)
+    if (track.get('linxType') === 'song') {
+      this.removeTransitions({
+        'index': this.indexOf(track),
+      });
     }
     // call built-in remove
-    return Tracks.prototype.remove.call(this, tracks, options);
+    return Tracks.prototype.remove.call(this, track, options);
   },
 
   unsetTiming: function (track, index) {
@@ -188,8 +242,10 @@ module.exports = Tracks.extend({
 
     // if transition, remember to fix other timings
     if (track.get('linxType') === 'transition') {
-      this.setTiming(prev, index - 1);
-      this.setTiming(next, index + 1);
+      var prev = this.getPrev(index);
+      var next = this.getNext(index);
+      prev && this.setTiming(prev, index - 1);
+      next && this.setTiming(next, index + 1);
     }
 
     // set timing
@@ -237,7 +293,7 @@ module.exports = Tracks.extend({
   },
 
   getTimingKey: function () {
-    return 'timing:' + this.cid;
+    return 'timing:' + this.playlist;
   },
 
   getWidgets: function () {
@@ -305,7 +361,7 @@ module.exports = Tracks.extend({
 
     // if there was an unsynced widget, start loading from there
     if (wrongWidget) {
-      console.log("widget and track were unsynced:", widget.get('index'), track.get('title'));
+      debug("widget and track were unsynced:", widget.get('index'), track.get('title'));
       this.isSyncing = true;
       widget.setTrack(track, {
         'callback': function () {
