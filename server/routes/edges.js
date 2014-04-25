@@ -20,19 +20,19 @@ var queryEdgeSchema = {
       "type": "string"
     },
     "endIn": {
-      "description": "end millseconds of track in",
+      "description": "end seconds of track in",
       "type": "number",
     },
     "startEdge": {
-      "description": "start millseconds of edge track",
+      "description": "start seconds of edge track",
       "type": "number",
     },
     "endEdge": {
-      "description": "end millseconds of edge track",
+      "description": "end seconds of edge track",
       "type": "number",
     },
     "startOut": {
-      "description": "start milliseconds of track out",
+      "description": "start seconds of track out",
       "type": "number",
     },
   },
