@@ -15,9 +15,7 @@ module.exports = React.createClass({
     return {};
   },
 
-  // TODO: is this update too frequent?
   updateSelection: function (track, selection) {
-    debug("updating selection")
     var newState = {};
     newState[track.cid] = selection;
     this.setState(newState);
@@ -25,6 +23,8 @@ module.exports = React.createClass({
 
   // compares the selected regions of the two analyzed tracks
   // to the end of finding places where they most exactly overlap
+
+  // TODO: sort matches by similarity of nearby segments
   compare: function () {
     var uploaderTracks = this.props.uploaderTracks;
     var track1 = uploaderTracks[0];
@@ -68,24 +68,20 @@ module.exports = React.createClass({
         });
       });
     });
-    debug("matches", matches);
-    var thresh2 = 50;
-    var filtered1 = _.filter(matches, function (match) {
-      return match['dist'] <= thresh2;
+
+    // sort matches and take only the top 5
+    matches = _.sortBy(matches, function (match) {
+      return match['dist'];
     });
-    debug("filtered matches 1", filtered1)
-    var thresh3 = 25;
-    var filtered2 = _.filter(matches, function (match) {
-      return match['dist'] <= thresh3;
-    });
-    debug("filtered matches 2", filtered2)
+    best5 = matches.splice(0, 5);
+    debug("best5", best5);
 
     // add matched segs as marks to waveforms
-    t1Matches = filtered2.map(function (match) {
+    t1Matches = best5.map(function (match) {
       return match['seg1'];
     });
     track1.set({ 'matches': t1Matches });
-    t2Matches = filtered2.map(function (match) {
+    t2Matches = best5.map(function (match) {
       return match['seg2'];
     });
     track2.set({ 'matches': t2Matches });
