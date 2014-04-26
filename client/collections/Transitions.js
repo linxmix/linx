@@ -12,7 +12,6 @@ module.exports = Tracks.extend({
     var edges = this.edges = new Edges();
     // add transition on edge add
     edges.on('add', function (edge, edges, options) {
-      debug("ADDED EDGE", edge);
       this.add({ 'edge': edge }).fetch();
     }.bind(this));
     return Tracks.prototype.initialize.call(this, options);
@@ -24,7 +23,6 @@ module.exports = Tracks.extend({
       'success': function (edges, response, _options) {
         var cb = options.success;
         cb && cb(this, response, _options);
-        this.edges.add({ 'edgeId': 13158665 });
       }.bind(this),
       'error': options.error,
     });

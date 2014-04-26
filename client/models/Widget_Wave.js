@@ -36,19 +36,19 @@ module.exports = Widget.extend({
   },
 
   play: function () {
-    console.log("PLAYING WIDGET", this);
+    debug("PLAYING WIDGET", this);
     var wave = this.get('player');
     wave && wave.play();
   },
 
   pause: function () {
-    console.log("PAUSING WIDGET", this);
+    debug("PAUSING WIDGET", this);
     var wave = this.get('player');
     wave && wave.pause();
   },
 
   stop: function () {
-    console.log("STOPPING WIDGET", this);
+    debug("STOPPING WIDGET", this);
     var wave = this.get('player');
     wave && wave.stop();
   },
@@ -58,9 +58,24 @@ module.exports = Widget.extend({
     wave && wave.seekTo(percent);
   },
 
-  empty: function () {
+  seekTime: function (seconds) {
     var wave = this.get('player');
-    wave && wave.empty();
+    // scale seconds to percent
+    if (wave) {
+      var percent = seconds / wave.timings()[1]
+      debug("SCALED", percent, seconds, wave.timings()[1]);
+      wave.seekTo(percent);
+    }
+  },
+
+  empty: function () {
+    debug("EMPTYING WIDGET", this);
+    var wave = this.get('player');
+    if (wave) {
+      wave.empty();
+      this.unset('track');
+      wave.fireEvent('empty');
+    }
   },
 
   redraw: function () {
@@ -106,6 +121,8 @@ module.exports = Widget.extend({
 
   addStartMark: function (position) {
     var wave = this.get('player');
+    // seek to mark
+    this.seekTime(position);
     wave.startMark = wave.mark({
       'id': 'startMark',
       'position': position,
@@ -115,11 +132,18 @@ module.exports = Widget.extend({
 
   addEndMark: function (position) {
     var wave = this.get('player');
-    wave.endMark = wave.mark({
+    var mark = wave.mark({
       'id': 'endMark',
       'position': position,
       'color': 'rgba(255, 0, 0, 1)',
     });
+    // returns mark if endMark is new
+    if (mark) {
+      mark.on('reached', function () {
+        debug("MARK REACHED", this);
+        this.get('player').fireEvent('finish');
+      }.bind(this));
+    }
   },
 
   drawBeatGrid: function () {

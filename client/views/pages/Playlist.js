@@ -131,7 +131,9 @@ module.exports = React.createClass({
     // force rerender on track change
     var onPlaylistChange = this.onPlaylistChange = function () {
       debug('onPlaylistChange', arguments);
-      this.forceUpdate();
+      try {
+        this.forceUpdate();
+      } catch (Error) { }
     }.bind(this);
     // add handler to new playlist
     var playlist = this.props.viewingPlaylist;

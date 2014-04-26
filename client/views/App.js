@@ -28,7 +28,7 @@ module.exports = React.createClass({
     var queue = new Queue({
       'name': 'Queue',
     }, {
-      'numWidgets': 1,
+      'numWidgets': 2,
     });
     var searchResults = new SearchResults({
       'name': 'Search Results',
@@ -53,7 +53,7 @@ module.exports = React.createClass({
 
   getInitialState: function () {
     return {
-      'page': 'Site',
+      'page': 'Welcome',
     }
   },
 
@@ -90,6 +90,16 @@ module.exports = React.createClass({
     this.getCollection().transitions.fetch({
       'success': function (collection, response, options) {
         debug("successfully fetched transitions", collection.length);
+        var edge1 = new Edge({
+          'edgeId': '142731939',
+          'in': '54740440',
+          'out': '98081145',
+          'endIn': 266.01383,
+          'startEdge': 2.09043,
+          'endEdge': 69.03896,
+          'startOut': 67.74372,
+        });
+        edge1.save();
       },
     });
   },

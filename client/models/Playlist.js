@@ -36,7 +36,7 @@ module.exports = Backbone.Model.extend({
     }
 
     // numWidgets must a positive integer
-    options['numWidgets'] = options['numWidgets'] || 1;
+    options['numWidgets'] = options['numWidgets'] || 2;
 
     // call default constructor
     this.options = options;
@@ -66,13 +66,7 @@ module.exports = Backbone.Model.extend({
       if (queue.length === 0) {
         this.set({ 'playingTrack': null });
       } else {
-        var queueHead = this.get('queue').models[0];
-        if (queueHead && !playingTrack) {
-          this.set({ 'playingTrack': queueHead })
-        } else if (queueHead &&
-          (playingTrack.cid !== queueHead.cid)) {
-          this.set({ 'playingTrack': queueHead, });
-        }
+        this.set({ 'playingTrack': queue.at(0) })
       }
     }.bind(this);
     this.get('queue').on('add', updatePlayingTrack);
@@ -118,10 +112,13 @@ module.exports = Backbone.Model.extend({
     return this.get('queue').indexOf(track);
   },
 
-  add: function (tracks) {
-    this.tracks().add(tracks, { 'sort': false });
+  add: function (tracks, options) {
+    options = options ? options : {};
+    options['sort'] = false;
+    this.tracks().add(tracks, options);
   },
 
+  // TODO: also remove from this.get('queue')?
   remove: function (tracks) {
 
     // if bool, remove activeTracks
@@ -159,7 +156,10 @@ module.exports = Backbone.Model.extend({
 
   queueAtPos: function (track, pos) {
     if (!track || !track.get('stream_url')) {
-      return debug("ERROR: cannot queueAtPos track", track);
+      throw new Error("cannot queueAtPos track", track);
+    }
+    if (typeof pos !== 'number') {
+      throw new Error("cannot queueAtPos with no pos", pos);
     }
     // do not queue tracks >= 30min b/c it will break the app
     // TODO: make it so we can stream instead of DL so this works
@@ -167,16 +167,25 @@ module.exports = Backbone.Model.extend({
       alert("We're sorry, but right now SoundCloud won't let us stream tracks that are 30min or longer!");
       return;
     }
-    debug("queuing track at pos", track, pos);
+    
+    // figure out if already in queue
     var queue = this.get('queue');
-    // if already queued, silently remove first
     var queued = queue.get(track.id);
-    if (queued) {
+    var index = queued && queue.indexOf(queued);
+    // if already at desired pos, we're done
+    if (index === pos) {
+      return;
+    // if queued in wrong spot, first silently remove
+    } else if (queued) {
+      if (index < pos) { 
+        pos--; // remember to decrement if removed from in front of pos
+      }
       queue.remove(queued, {
         'silent': true,
       });
-    // add track at pos
     }
+    // add track at pos
+    debug("queuing track at pos", track, pos);
     queue.add(track, { 'at': pos });
   },
 
@@ -330,7 +339,7 @@ module.exports = Backbone.Model.extend({
       options = {};
     }
     _.defaults(options, defaultOptions);
-    debug("play", options);
+    debug("play", options, this.get('playingTrack'), this.getActiveTracks(true)[0]);
     var queue = this.get('queue');
     var track = options.track;
     if (!track && options.playingTrack) {

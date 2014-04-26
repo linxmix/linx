@@ -66,6 +66,8 @@ module.exports = React.createClass({
     var widget = this.props.widget;
     if (this.props.playing) {
       widget.setPlayState(this.props.playState);
+    } else {
+      widget.setPlayState('stop');
     }
   },
 
@@ -178,6 +180,7 @@ module.exports = React.createClass({
 
     // initialize handlers
     wave.on('loading', showProgress);
+    wave.on('empty', showProgress);
     wave.on('destroy', hideProgress);
     wave.on('error', hideProgress);
     wave.on('finish', function () {

@@ -5,6 +5,9 @@ var clientId = require('../config').clientId;
 
 module.exports = Backbone.Model.extend({
 
+  // TODO: do this
+  //'idAttribute': '_id',
+
   // TODO: make it so id is converted into string 'soundcloud__{id}'
   // TODO: convert all references from cid to id
   defaults: function () {

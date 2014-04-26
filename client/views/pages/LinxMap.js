@@ -12,6 +12,14 @@ module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
+  // queue transition
+  onClick: function (e) {
+    var transitions = this.getCollection().transitions;
+    var queue = this.props.appQueue;
+    debug("queueing transition", transitions.models[0], queue);
+    queue.queue(transitions.models[0]);
+  },
+
   render: function () {
 
     // make a Track_Wave for every Transition
@@ -24,6 +32,9 @@ module.exports = React.createClass({
 
     return (
       <div>
+        <div className="black ui button" onClick={this.onClick}>
+          Queue Transition
+        </div>
         {tracks}
       </div>
     );

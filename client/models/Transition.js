@@ -17,11 +17,9 @@ module.exports = Track.extend({
   // if making from edge, make this transition's id be edge.edgeId
   constructor: function (attributes, options) {
     attributes = attributes ? attributes : {};
-
     if (attributes['edge']) {
       this.id = attributes['edge'].get('edgeId');
     }
-
     // continue regular constructor
     Track.apply(this, arguments);
   },
