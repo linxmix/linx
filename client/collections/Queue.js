@@ -293,9 +293,9 @@ module.exports = Tracks.extend({
       });
     // otherwise, we are done syncing, so assert playstate
     } else {
-      widgets.forEach(function (widget) {
-        widget.get('track') && widget.assertPlayState();
-      });
+      //widgets.forEach(function (widget) {
+      //  widget.get('track') && widget.assertPlayState();
+      //});
       this.isSyncing = false
     }
 
@@ -393,12 +393,16 @@ var addTransition = function (track, options, cb) {
 }
 
 var addTrack = function (track, options, needsFetch, cb) {
-  debug("CALLING ADD TRACK", track.get('id'), options['at']);
+  debug("CALLING ADD TRACK", track.get('id'), options['at'], needsFetch);
 
   var doAdd = function () {
+    debug("DOING ADD")
     Tracks.prototype.add.call(this, track, options);
+    debug("ADD DONE")
     options['at']++;
+    debug("INCREMENT DONE")
     cb();
+    debug("CB DONE");
   }.bind(this);
 
   // add on fetch if needs fetch

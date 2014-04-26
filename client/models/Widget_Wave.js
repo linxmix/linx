@@ -38,13 +38,13 @@ module.exports = Widget.extend({
   play: function () {
     debug("PLAYING WIDGET", this);
     var wave = this.get('player');
-    wave && wave.play();
+    wave && wave.backend.isPaused() && wave.play();
   },
 
   pause: function () {
     debug("PAUSING WIDGET", this);
     var wave = this.get('player');
-    wave && wave.pause();
+    wave && !(wave.backend.isPaused()) && wave.pause();
   },
 
   stop: function () {

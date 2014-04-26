@@ -161,6 +161,7 @@ module.exports = React.createClass({
     // hackery
     //
     wave.fireEvent = fireEventCustom;
+    wave.pause = pauseCustom;
     wave.updateSelection = updateSelectionCustom;
     // 
     // /end hackery
@@ -242,6 +243,10 @@ function fireEventCustom(event) {
       }
     }
   }
+}
+
+function pauseCustom() {
+  (!this.backend.isPaused()) && this.backend.pause();
 }
 
 function updateSelectionCustom(selection) {
