@@ -14,6 +14,10 @@ module.exports = Tracks.extend({
     }.bind(this));
     // curry options
     if (typeof options !== 'object') { options = { 'numWidgets': 1, }; }
+    if (!options['id']) {
+      throw new Error("Cannot make queue without an id");
+    }
+    this.id = options['id'];
 
     this.on('add', function (track, collection, options) {
       var index = collection.indexOf(track);
@@ -41,8 +45,9 @@ module.exports = Tracks.extend({
 
     // make widgets equal to options.numWidgets
     var widgets = [];
+    var timingKey = this.getTimingKey();
     for (var i = 0; i < options.numWidgets; i++) {
-      widgets.push({ 'index': i });
+      widgets.push({ 'index': i, 'timingKey': timingKey });
     }
 
     // make widgets sub collection
@@ -91,6 +96,7 @@ module.exports = Tracks.extend({
   add: function (track, options) {
     if (track instanceof Array) {
       // TODO: add them in order
+      // TODO: make this wait on previous add to finish
       return debug("ERROR: add given array instead of object", track);
     }
     if (!(options && (typeof options['at'] === 'number'))) {
@@ -124,10 +130,9 @@ module.exports = Tracks.extend({
           Tracks.prototype.add.call(this, prevTrack, { 'at': index++ });
         // TODO: make sure this works for real deal
         } else {
-          var indexFreeze = index++;
           prevTrack.fetch({
             'success': function (model, response, options) {
-              Tracks.prototype.add.call(this, prevTrack, { 'at': indexFreeze });
+              Tracks.prototype.add.call(this, prevTrack, { 'at': index++ });
             }.bind(this),
             'error': function (error) {
               throw new Error("ERROR fetching prevTrack", prevTrack, error);
@@ -211,18 +216,21 @@ module.exports = Tracks.extend({
     return;
   },
 
-  remove: function (track, options) {
-    if (track instanceof Array) {
-      return debug("ERROR: remove given array instead of model", track);
+  remove: function (tracks, options) {
+    if (!(tracks instanceof Array)) {
+      tracks = [tracks]
     }
-    // if removing song, remove corresponding transition(s) (if any)
-    if (track.get('linxType') === 'song') {
-      this.removeTransitions({
-        'index': this.indexOf(track),
-      });
+    // if removing song(s), remove corresponding transition(s)
+    for (var i = 0; i < tracks.length; i++) {
+      var track = tracks[i];
+      if (track.get('linxType') === 'song') {
+        this.removeTransitions({
+          'index': this.indexOf(track),
+        });
+      }
     }
     // call built-in remove
-    return Tracks.prototype.remove.call(this, track, options);
+    return Tracks.prototype.remove.call(this, tracks, options);
   },
 
   unsetTiming: function (track, index) {
@@ -293,7 +301,7 @@ module.exports = Tracks.extend({
   },
 
   getTimingKey: function () {
-    return 'timing:' + this.playlist;
+    return 'timing:' + this.id;
   },
 
   getWidgets: function () {

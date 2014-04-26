@@ -11,6 +11,7 @@ var SearchResults = require('../models/SearchResults');
 var Edge = require('../models/Edge');
 
 var Tracks = require('../collections/Tracks');
+var Transitions = require('../collections/Transitions');
 var EchoNest = require('../collections/EchoNest');
 var TasteProfiles = require('../collections/TasteProfiles');
 var Playlists = require('../collections/Playlists');
@@ -43,7 +44,7 @@ module.exports = React.createClass({
         'tasteProfiles': new TasteProfiles(),
         'playlists': playlists,
         'myTracks': new Tracks(),
-        'edges': new Edges(),
+        'transitions': new Transitions(),
       },
       'searchResults': searchResults,
       'appQueue':  queue,
@@ -86,9 +87,9 @@ module.exports = React.createClass({
   },
 
   componentDidMount: function () {
-    this.getCollection().edges.fetch({
+    this.getCollection().transitions.fetch({
       'success': function (collection, response, options) {
-        debug("successfully fetched edges", collection.models);
+        debug("successfully fetched transitions", collection.length);
       },
     });
   },

@@ -14,6 +14,7 @@ module.exports = React.createClass({
 
   getDefaultProps: function () {
     return {
+      // TODO: show icon and label on hover
       'navTabs': [
         {
           'key': 'settings',
@@ -36,6 +37,15 @@ module.exports = React.createClass({
           'iconText': 'Upload',
           'cb': function (navTab) {
             this.props.changePage('Uploader');
+          },
+        },
+        {
+          'key': 'linxMap',
+          'icon': 'globe icon',
+          'color': 'teal',
+          'iconText': 'Linx Map',
+          'cb': function (navTab) {
+            this.props.changePage('LinxMap');
           },
         },
       ]
@@ -101,9 +111,11 @@ module.exports = React.createClass({
     // make navTabs
     var navTabs = this.props.navTabs.map(function(navTab) {
       var icon = navTab.icon;
+      // TODO: make icon large but dont change toolbar size
       // color icon if hovered or if uploader page
       if ((hoveredTab && (hoveredTab.key === navTab.key)) ||
-        (navTab.key === 'upload' && this.props.page === 'Uploader')) {
+        (navTab.key === 'upload' && this.props.page === 'Uploader') ||
+        (navTab.key === 'linxMap' && this.props.page === 'LinxMap')) {
         icon += ' ' + navTab.color;
       }
       icon = (<i className={icon}></i>);
@@ -125,7 +137,6 @@ module.exports = React.createClass({
       (<i className="clickable search icon" onClick={this.handleSubmit}></i>);
 
     // render navBar
-    // TODO: make menu do stuff and not be static
     return (
       <div className="ui inverted transp icon menu" role="navigation">
         {header}
@@ -145,12 +156,3 @@ module.exports = React.createClass({
   },
 
 });
-/*
-
-      <div className="ui inverted menu" role="navigation">
-        <div className="right menu">
-          {navTabs}
-        </div>
-      </div>
-
-      */

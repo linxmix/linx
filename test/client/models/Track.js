@@ -4,8 +4,6 @@ Backbone.$ = require('jquery');
 require('debug').enable('*');
 
 var Track = require('../../../client/models/Track');
-var Edge = require('../../../client/models/Edge');
-var Transition = require('../../../client/models/Transition');
 
 describe("#Track", function () {
 

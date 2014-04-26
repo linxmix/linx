@@ -32,9 +32,10 @@ module.exports = React.createClass({
         },
         /*{
           key: 'linx-map',
-          name: 'LinxMap',
+          name: 'Linx Map',
           icon: 'globe icon',
           className: 'linxMap-sidebar'
+          popupClass: 'linxMap-popup'
         },*/
       ],
     }

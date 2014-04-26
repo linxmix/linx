@@ -5,65 +5,34 @@ var clientId = require('../config').clientId;
 
 var Widget = require('./Widget');
 
-  // TODO: import all my functions from old linx project
-
+// TODO: port wave drawing and zooming from old linx project
 module.exports = Widget.extend({
 
-  // TODO: why does track.attributes work while track.get doesnt?
   // load given track into widget
   load: function (options) {
-    // set loading state
-    this.set({
-      'playState': 'stop',
-      'loaded': false,
-    });
+    // add defaults to options
+    if (typeof options !== 'object') { options = {}; }
+    this.onLoaded = options.callback;
+    this.set({ 'playState': 'stop', 'loaded': false });
     var track = this.get('track');
     var wave = this.get('player');
     debug("loading track into widget", this.get('index'), track.get('title'));
 
-    // cancel any previous loading
-    var xhr = this.get('xhr');
-    if (xhr) {
-      debug("CANCELLING XHR", track.get('title'))
-      xhr.abort();
-      this.unset('xhr');
-    }
-    // store new xhr
-    var onLoading = function (percent, xhr) {
-      if (xhr) {
-        this.set({ 'xhr': xhr });
-        wave.un('loading', onLoading);
-      }
-    }.bind(this);
-    wave.on('loading', onLoading);
-    // callback to remove this.xhr
-    wave.once('loaded', function () {
-      this.unset('xhr');
-    }.bind(this));
-    // add defaults to options
-    if (typeof options !== 'object') { options = {}; }
-
-    // make CORS-proxy URL
+    // TODO: why does track.attributes work while track.get doesnt?
     var url = "http://localhost:5001/" +
       track.attributes['stream_url'].replace(/^https:\/\//, '') +
       "?client_id=" + clientId;
 
-    // update onReady handlers
-    if (this.onReady) {
-      console.log("REMOVING ONREADY")
-      wave.un('ready', this.onReady);
-    }
-    var onReady = this.onReady = function () {
-      this.onReady = null;
-      this.set({ 'loaded': true });
-      this.assertPlayState();
-      debug("WIDGET LOADED", track.get('title'), options.callback);
-      options.callback && options.callback();
-    }.bind(this);
-    wave.on('ready', onReady);
-
     // load track into wave
     wave.load(url);
+  },
+
+  onReady: function () {
+    this.set({ 'loaded': true });
+    this.assertPlayState();
+    debug("WIDGET LOADED", this.get('track').get('title'));
+    this.onLoaded && this.onLoaded();
+    this.setTimingMarks();
   },
 
   play: function () {
@@ -104,6 +73,83 @@ module.exports = Widget.extend({
     }
   },
 
+  //
+  // marks
+  //
+
+  // TODO: also call this when timings change. maybe add track listeners?
+  setTimingMarks: function () {
+    var track = this.get('track');
+    var timing = track && track.get(this.get('timingKey'));
+    if (timing) {
+      debug("SETTING TIMING MARKS", track.get('title'), timing);
+      this.addStartMark(timing['startTime']);
+      this.addEndMark(timing['endTime']);
+    } else {
+      this.clearTimingMarks();
+    }
+  },
+
+  clearTimingMarks: function () {
+    var track = this.get('track');
+    debug("CLEARING TIMING MARKS", track && track.get('title'));
+    var wave = this.get('player');
+    if (wave.startMark) {
+      wave.startMark.remove();
+      delete wave.startMark;
+    }
+    if (wave.endMark) {
+      wave.endMark.remove();
+      delete wave.endMark;
+    }
+  },
+
+  addStartMark: function (position) {
+    var wave = this.get('player');
+    wave.startMark = wave.mark({
+      'id': 'startMark',
+      'position': position,
+      'color': 'rgba(0, 255, 0, 1)',
+    });
+  },
+
+  addEndMark: function (position) {
+    var wave = this.get('player');
+    wave.endMark = wave.mark({
+      'id': 'endMark',
+      'position': position,
+      'color': 'rgba(255, 0, 0, 1)',
+    });
+  },
+
+  drawBeatGrid: function () {
+    var track = this.get('track');
+    var analysis = track && track.get('echoAnalysis');
+    var wave = this.get('wave');
+    var thresh = 0.5;
+    if (analysis && wave) {
+      debug("adding beatgrid to wave", track.get('title'));
+      analysis['beats'].forEach(function (beat) {
+        if (beat['confidence'] >= thresh) {
+          this.addBeatMark(beat['start']);
+        }
+      }.bind(this));
+    }
+  },
+
+  drawMatches: function () {
+    // draw matches
+    var track = this.get('track');
+    var matches = track && track.get('matches');
+    var wave = this.get('wave');
+    if (matches && wave) {
+      debug("adding matches to wave", track.get('title'));
+      matches.forEach(function (match) {
+        this.addMatchMark(match);
+      }.bind(this));
+    }
+  },
+
   addBeatMark: function (position) {
     var wave = this.get('player');
     wave.mark({
@@ -126,3 +172,26 @@ module.exports = Widget.extend({
   },
 
 });
+
+
+    /* OLD XHR CANCEL CODE
+    // cancel any previous loading
+    var xhr = this.get('xhr');
+    if (xhr) {
+      debug("CANCELLING XHR", track.get('title'))
+      xhr.abort();
+      this.unset('xhr');
+    }
+    // store new xhr
+    var onLoading = function (percent, xhr) {
+      if (xhr) {
+        this.set({ 'xhr': xhr });
+        wave.un('loading', onLoading);
+      }
+    }.bind(this);
+    wave.on('loading', onLoading);
+    // callback to remove this.xhr
+    wave.once('loaded', function () {
+      this.unset('xhr');
+    }.bind(this));
+*/

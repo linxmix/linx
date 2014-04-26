@@ -9,7 +9,7 @@ var Transition = require('../../../client/models/Transition');
 var Queue = require('../../../client/collections/Queue');
 
 describe("#Queue", function () {
-  var queue = new Queue({}, { 'numWidgets': 2 });
+  var queue = new Queue([], { 'numWidgets': 2, 'id': 1 });
   queue.playlist = 'cid1';
   var song0 = new Track({
     'id': 'song0',
@@ -416,7 +416,7 @@ describe("#Queue", function () {
   });
 
   it("can have different timings for different queues", function () {
-    var queue2 = new Queue();
+    var queue2 = new Queue([], { 'id': 2 });
     queue2.playlist = 'cid2';
     queue.add(song0, { 'at': 0 });
     queue2.add(song0, { 'at': 0 });

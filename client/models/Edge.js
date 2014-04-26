@@ -30,6 +30,7 @@ module.exports = Backbone.Model.extend({
     return response;
   },
 
+  'urlRoot': '/edges',
 });
 
 renameProperty = function (oldName, newName) {

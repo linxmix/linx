@@ -58,6 +58,10 @@ module.exports = Backbone.Model.extend({
 
   unsetPlayer: function () {
     this.unset('player');
+    this.set({
+      'playState': 'stop',
+      'loaded': false,
+    });
   },
 
 });

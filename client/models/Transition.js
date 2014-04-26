@@ -10,9 +10,20 @@ module.exports = Track.extend({
   defaults: function () {
     var defaults = Track.prototype.defaults.apply(this, arguments);
     return _.defaults({
-      'edge': new Edge(),
       'linxType': 'transition',
     }, defaults);
+  },
+
+  // if making from edge, make this transition's id be edge.edgeId
+  constructor: function (attributes, options) {
+    attributes = attributes ? attributes : {};
+
+    if (attributes['edge']) {
+      this.id = attributes['edge'].get('edgeId');
+    }
+
+    // continue regular constructor
+    Track.apply(this, arguments);
   },
 
   // ids

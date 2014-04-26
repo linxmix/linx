@@ -29,11 +29,13 @@ module.exports = React.createClass({
   playRow: function (row, e) {
     var track = row.backboneModel;
     debug("PLAY ROW", track);
-    //this.playViewing(e, { 'track': track });
-    this.props.addUploaderTrack(track);
+    this.playViewing(e, { 'track': track });
+    //this.props.addUploaderTrack(track);
   },
 
   playpauseViewing: function (e, options) {
+    e && e.preventDefault();
+    e && e.stopPropagation();
     var playingPlaylist = this.props.playingPlaylist;
     var playlist = this.props.viewingPlaylist;
     var isAppPlaying = (this.props.playState === 'play');

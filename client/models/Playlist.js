@@ -35,20 +35,21 @@ module.exports = Backbone.Model.extend({
       attributes['type'] = 'playlist';
     }
 
-    // dynamically determine numWidgets
-    var numWidgets = options['numWidgets'];
-    if (typeof numWidgets !== 'number') {
-      numWidgets = 1;
-    }
-    attributes['queue'] = new Queue([], {
-      'numWidgets': numWidgets,
-    }),
+    // numWidgets must a positive integer
+    options['numWidgets'] = options['numWidgets'] || 1;
 
-    // continue regular constructor
+    // call default constructor
+    this.options = options;
     Backbone.Model.apply(this, arguments);
   },
 
   initialize: function () {
+    this.set({
+      'queue': new Queue([], {
+          'numWidgets': this.options['numWidgets'],
+          'id': this.cid,
+        }),
+    });
 
     // set track sort
     this.setTrackSort(this.get('trackSort'));
@@ -76,9 +77,6 @@ module.exports = Backbone.Model.extend({
     }.bind(this);
     this.get('queue').on('add', updatePlayingTrack);
     this.get('queue').on('remove', updatePlayingTrack);
-
-    // give queue this id
-    this.get('queue').playlist = this.cid;
 
   },
 
@@ -172,8 +170,9 @@ module.exports = Backbone.Model.extend({
     debug("queuing track at pos", track, pos);
     var queue = this.get('queue');
     // if already queued, silently remove first
-    if (queue.get(track.id)) {
-      queue.remove(track.id, {
+    var queued = queue.get(track.id);
+    if (queued) {
+      queue.remove(queued, {
         'silent': true,
       });
     // add track at pos
@@ -189,6 +188,10 @@ module.exports = Backbone.Model.extend({
   // returns the widgets of this playlist's queue
   getWidgets: function () {
     return this.get('queue').getWidgets();
+  },
+
+  getTimingKey: function () {
+    return this.get('queue').getTimingKey();
   },
 
   // returns tracks previously played from this playlist, youngest to oldest

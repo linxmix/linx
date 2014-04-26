@@ -44,6 +44,7 @@ module.exports = React.createClass({
     }
   },
 
+  // TODO: move selection logic into tracks
   handleClick: function (row, e) {
     var ctrl = e.ctrlKey || e.metaKey;
     var shift = e.shiftKey;

@@ -25,17 +25,11 @@ module.exports = React.createClass({
     }
   },
 
-  getInitialState: function () {
-    return {
-      'beatgrid': false,
-      'matches': false,
-    }
-  },
-
   onUpdateSelection: function (newSelection) {
     this.props.onUpdateSelection(this.props.track, newSelection);
   },
 
+  // TODO: move wave stuff into widget
   // cursor on hover
   onMouseMove: function (event) {
     // only do this if we have a file buffer loaded
@@ -56,6 +50,7 @@ module.exports = React.createClass({
     }
   },
 
+  // TODO: move wave stuff into widget
   // if we have a wave and a hoverMark, delete the hoverMark
   onMouseLeave: function (event) {
     var wave = this.wave;
@@ -67,8 +62,16 @@ module.exports = React.createClass({
     }
   },
 
+  setWidgetPlayState: function () {
+    var widget = this.props.widget;
+    if (this.props.playing) {
+      widget.setPlayState(this.props.playState);
+    }
+  },
+
   render: function () {
-    var track = this.props.track;
+    // track_wave must have track or widget prop
+    var track = this.props.track || this.props.widget.get('track');
     // only display if active
     var className = (this.props.active) ? "" : "hidden";
     return (
@@ -80,41 +83,16 @@ module.exports = React.createClass({
             <div className="bar"></div>
           </div>
         </div>
-        {Track_List_SC({ 'track': track, })}
+        {track && Track_List_SC({ 'track': track, })}
       </div>
     );
   },
 
-  setWidgetPlayState: function () {
+  newWidget: function (prevWidget) {
     var widget = this.props.widget;
-    if (this.props.playing) {
-      widget.setPlayState(this.props.playState);
-    }
-  },
 
-  updateWidget: function (prevWidget) {
-    var widget = this.props.widget;
-    // set widget to not loaded
-    widget.set({ 'loaded': false });
-
-    //
-    // prevWidget
-    //
-    // make sure to remove player from previous widget
-    prevWidget && prevWidget.unsetPlayer();
-    // if playing track starts or stops loading, tell parent
-    // remove old handlers
-    if (prevWidget && this.onLoadedChange) {
-      prevWidget.off('change:loaded', this.onLoadedChange);
-    }
-    this.wave.un('finish');
-    this.wave.un('updateSelection');
-    //
-    // /end prevWidget
-    //
-
-    // make new handlers
-    var onLoadedChange = this.onLoadedChange = function (widget, loaded) {
+    // make handler
+    var onLoadedChange = this.onLoadedChange || function (widget, loaded) {
       debug("onLoadedCHANGE", widget.get('index'),
         this.props.playing, loaded)
       // TODO: fix this because playing changes
@@ -126,20 +104,20 @@ module.exports = React.createClass({
         }
       }
     }.bind(this);
-    // add new handlers
-    widget.on('change:loaded', onLoadedChange);
-    this.wave.on('finish', this.props.onFinish);
-    if (this.props.dragSelection) {
-      this.wave.on('updateSelection',
-        this.onUpdateSelection);
+
+    // remove from prevWidget
+    if (prevWidget && this.onLoadedChange) {
+      prevWidget.off('change:loaded', this.onLoadedChange);
     }
-    // add wavesurfer to widget
+    prevWidget && prevWidget.unsetPlayer();
+
+    // add to new widget
+    widget.on('change:loaded', onLoadedChange);
     widget.setPlayer(this.wave);
     // load track if given
     if (this.props.track) {
       widget.setTrack(this.props.track);
     }
-    // update widget play state
     this.setWidgetPlayState();
   },
 
@@ -147,41 +125,19 @@ module.exports = React.createClass({
   componentDidUpdate: function (prevProps, prevState) {
     this.setWidgetPlayState();
 
+    // TODO: does track ever change when widget doesnt?
     // if widget changed, load new stuff into it
     var widget = this.props.widget;
     var prevWidget = prevProps.widget;
     if (widget && (widget.cid !== prevWidget.cid)) {
-      this.updateWidget(prevWidget);
+      debug("NEW WIDGET");
+      this.newWidget(prevWidget);
     }
 
-    // if analysis is present and no beatgrid is set, set beatgrid
-    var track = this.props.track;
-    var analysis = track && track.get('echoAnalysis');
-    if (!this.state.beatgrid) {
-      if (this.props.beatgrid && analysis) {
-        debug("adding beatgrid");
-        var thresh = 0.5;
-        analysis['beats'].forEach(function (beat) {
-          if (beat['confidence'] >= thresh) {
-            widget.addBeatMark(beat['start']);
-          }
-        }.bind(this));
-        this.setState({ 'beatgrid': true });
-      }
-    }
+    // TODO: make this smarter about when this happens
+    widget.drawBeatGrid();
+    widget.drawMatches();
 
-    // set matches
-    var track = this.props.track;
-    var matches = track && track.get('matches');
-    if (!this.state.matches) {
-      if (matches) {
-        debug("adding matches");
-        matches.forEach(function (match) {
-          widget.addMatchMark(match);
-        }.bind(this));
-        this.setState({ 'matches': true });
-      }
-    }
     //this.widget.redraw();
     //debug('component updated');
     // bind this wavesurfer to the new DOM, then redraw
@@ -193,7 +149,7 @@ module.exports = React.createClass({
     //}
   },
 
-  // rendered component has been mounted to a DOM element
+  // initialize this trackWave's wave object.
   componentDidMount: function () {
 
     // create and save wavesurfer object
@@ -219,10 +175,23 @@ module.exports = React.createClass({
     var hideProgress = function () {
       progressDiv.css('display', 'none');
     };
+
+    // initialize handlers
     wave.on('loading', showProgress);
-    wave.on('ready', hideProgress);
     wave.on('destroy', hideProgress);
     wave.on('error', hideProgress);
+    wave.on('finish', function () {
+      this.props.onFinish();
+    }.bind(this));
+    wave.on('ready', function () {
+      hideProgress();
+      this.props.widget.onReady();
+    }.bind(this));
+    // TODO: will this.props.dragSelection ever change?
+    if (this.props.dragSelection) {
+      wave.on('updateSelection', this.onUpdateSelection);
+    }
+
 
     //
     // init
@@ -234,7 +203,7 @@ module.exports = React.createClass({
       'dragSelection': this.props.dragSelection,
       'loopSelection': this.props.loopSelection,
     });
-    this.updateWidget()
+    this.newWidget()
     //
     // /end init
     //

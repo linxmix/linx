@@ -6,8 +6,6 @@ var Track_Table_SC = require('./Track_Table_SC');
 var Track_Table_Echo = require('./Track_Table_Echo');
 var Track_Wave = require('./Track_Wave');
 
-// TODO: turn this into a semantic table
-
 module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
@@ -26,7 +24,6 @@ module.exports = React.createClass({
     // make a Track for every track
     var tracks = this.props.tracks && this.props.tracks.map(function (track) {
       return Track({
-        'track': track,
         'changePlayState': this.props.changePlayState,
       });
     }.bind(this));

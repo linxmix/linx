@@ -37,7 +37,6 @@ module.exports = React.createClass({
       var active = (widget.get('index') === activeWidget);
       return WidgetView({
         'widget': widget,
-        'track': widget.get('track'),
         'active': active,
         // active widget in soundbar is always the playing widget
         'playing': active,
