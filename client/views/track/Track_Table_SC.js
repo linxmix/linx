@@ -48,9 +48,9 @@ module.exports = React.createClass({
     var title = track.get('title');
     var queueIndex = this.props.queueIndex;
     if (queueIndex > -1) {
-      title = (<span>{title}
+      title = (<span>
         <a className="ui teal circular label">{queueIndex + 1}</a>
-      </span>)
+      {title}</span>)
     }
     // get track playCount
     var playCount = track.get('playback_count');
