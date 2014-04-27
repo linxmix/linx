@@ -231,6 +231,17 @@ module.exports = Tracks.extend({
     return this.getWidgets().getActiveWidget(offset);
   },
 
+  getCurrentTime: function () {
+    var widget = this.getActiveWidget();
+    var player = widget && widget.get('player');
+    var track = widget && widget.get('track');
+    if (player && track) {
+      return player.getCurrentTime();
+    } else {
+      return 0;
+    }
+  },
+
   // TODO: this needs to use history to go to last song if there is one, or return false
   back: function () {
     debug("back");
@@ -251,8 +262,10 @@ module.exports = Tracks.extend({
   isSyncing: false,
   syncWidgets: function (isContinuation) {
     // TODO: make this work
-    if (this.isSyncing && isContinuation) {
+    if (this.isSyncing && !isContinuation) {
       return false;
+    } else {
+      this.isSyncing = true;
     }
     debug("syncWidgets called", this, isContinuation);
     var widgets = this.getWidgets();
@@ -368,8 +381,12 @@ var addTransition = function (track, options, cb) {
     var prevPrev = this.getPrev(options['at'] - 1);
     // no prevPrev, so prev must be queue head
     if (!prevPrev) {
-      // TODO: what now? add position to site? or to track model?
-      cb(new Error("ERROR: adding transition to queue when prev is playing", this, track));
+      var pos = this.getCurrentTime();
+      var endIn = track.getEndIn();
+      // if past transition start, not possible
+      if (pos + 1 >= endIn) {
+        cb(new Error("ERROR: adding transition to queue when prev is playing and past endIn", this, track));
+      }
     }
     // prev is not playing, so check preceeding transition
     else if (prevPrev.get('linxType') === 'transition') {
@@ -396,13 +413,9 @@ var addTrack = function (track, options, needsFetch, cb) {
   debug("CALLING ADD TRACK", track.get('id'), options['at'], needsFetch);
 
   var doAdd = function () {
-    debug("DOING ADD")
     Tracks.prototype.add.call(this, track, options);
-    debug("ADD DONE")
     options['at']++;
-    debug("INCREMENT DONE")
     cb();
-    debug("CB DONE");
   }.bind(this);
 
   // add on fetch if needs fetch

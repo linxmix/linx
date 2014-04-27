@@ -5,6 +5,8 @@ var clientId = require('../config').clientId;
 
 var Widget = require('./Widget');
 
+var CUE_LAG = 0.005;
+
 // TODO: port wave drawing and zooming from old linx project
 module.exports = Widget.extend({
 
@@ -92,11 +94,10 @@ module.exports = Widget.extend({
   // marks
   //
 
-  // TODO: also call this when timings change. maybe add track listeners?
   setTimingMarks: function () {
     var track = this.get('track');
     var timing = track && track.get(this.get('timingKey'));
-    if (timing) {
+    if (timing && this.get('loaded')) {
       debug("SETTING TIMING MARKS", track.get('title'), timing);
       this.addStartMark(timing['startTime']);
       this.addEndMark(timing['endTime']);
@@ -125,7 +126,7 @@ module.exports = Widget.extend({
     this.seekTime(position);
     wave.startMark = wave.mark({
       'id': 'startMark',
-      'position': position,
+      'position': position + CUE_LAG,
       'color': 'rgba(0, 255, 0, 1)',
     });
   },

@@ -62,7 +62,7 @@ module.exports = React.createClass({
       prevPlaylist.offCycle(this.onCycle);
     }
     // force rerender on track change
-    var onCycle = this.onCycle = function onCycle(newTrack) {
+    var onCycle = this.onCycle || function onCycle(newTrack) {
       debug('onCycle', this, newTrack);
       this.forceUpdate();
     }.bind(this);

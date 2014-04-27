@@ -22,6 +22,7 @@ module.exports = React.createClass({
       'widget': new Widget_Wave(),
       'dragSelection': false,
       'loopSelection': false,
+      'pos': 0,
     }
   },
 

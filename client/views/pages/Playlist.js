@@ -129,7 +129,7 @@ module.exports = React.createClass({
       prevPlaylist.offChange(this.onPlaylistChange);
     }
     // force rerender on track change
-    var onPlaylistChange = this.onPlaylistChange = function () {
+    var onPlaylistChange = this.onPlaylistChange || function () {
       debug('onPlaylistChange', arguments);
       try {
         this.forceUpdate();

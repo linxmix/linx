@@ -114,7 +114,7 @@ describe("#Queue", function () {
       track.unset(queue.getTimingKey());
     })
   });
-/*
+
   it("should be constructable with options.numWidgets", function () {
     expect(queue).to.exist;
     expect(queue.getWidgets().length).equal(2);
@@ -279,12 +279,20 @@ describe("#Queue", function () {
     expect(timing5.endTime).equal(30)
     setTimeout(done, 1500);
   });
-  it("errors when queuing a transition with prev playing", function (done) {
+  it("ok when queuing a transition with prev playing", function (done) {
     queue.add(song1, { 'at': 0 });
-    var fn = function () {
-      queue.add(transition12, { 'at': 1 });
-    }
-    expect(fn).to.throw(/prev is playing/);
+    queue.add(transition12, { 'at': 1 });
+    expect(queue.length).equal(3);
+    expect(queue.models[1].id).equal(transition12.id)
+    var timing1 = queue.models[0].get(queue.getTimingKey());
+    var timing2 = transition12.get(queue.getTimingKey());
+    var timing3 = queue.models[2].get(queue.getTimingKey());
+    expect(timing1.startTime).equal(0)
+    expect(timing1.endTime).equal(9)
+    expect(timing2.startTime).equal(1)
+    expect(timing2.endTime).equal(4)
+    expect(timing3.startTime).equal(1)
+    expect(timing3.endTime).equal(15)
     setTimeout(done, 1500);
   });
   it("errors when queuing a transition that overlaps with prev transition", function (done) {
@@ -452,7 +460,7 @@ describe("#Queue", function () {
     expect(timing2.endTime).equal(10)
     setTimeout(done, 1500);
   });
-*/
+
   it("can add and remove songs in batches", function (done) {
     queue.add([song0, song1, song2, song3]);
     expect(queue.length).equal(4);

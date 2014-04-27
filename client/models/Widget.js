@@ -5,15 +5,17 @@ module.exports = Backbone.Model.extend({
 
   defaults: function () {
     return {
-      index: null,
-      track: null,
-      player: null,
-      playState: 'stop',
-      loaded: false,
+      'index': null,
+      'track': null,
+      'player': null,
+      'playState': 'stop',
+      'loaded': false,
+      'position': 0,
     };
   },
 
   setTrack: function (track, options) {
+    var prevTrack = this.get('track');
     this.set({
       'track': track,
       'options': options || this.get('options'),
@@ -21,6 +23,28 @@ module.exports = Backbone.Model.extend({
     // load track into widget if we have a player
     if (this.get('player')) {
       this.load(this.get('options'));
+    }
+    // setup track listeners
+    this.setTrackListeners(prevTrack);
+  },
+
+  setTrackListeners: function (prevTrack) {
+    var track = this.get('track');
+    var key = 'change:' + this.get('timingKey');
+    // remove handler from prev
+    if (prevTrack && this.onChangeTiming) {
+      prevTrack.off(key, this.onChangeTiming);
+    }
+    // update timing on track timing change
+    var onChangeTiming = this.onChangeTiming || function onChangeTiming(newTiming) {
+      debug('onChangeTiming', this, newTiming);
+      if (this.get('loaded')) {
+        this.setTimingMarks();
+      }
+    }.bind(this);
+    // add handler to new
+    if (track) {
+      track.on(key, onChangeTiming);
     }
   },
 
