@@ -41,6 +41,8 @@ module.exports = React.createClass({
       } else {
         playIcon = (<i className="volume off icon"></i>);
       }
+    } else if (this.props.hasPlayed) {
+      playIcon = (<i className="checkmark icon"></i>);
     }
     // if track is queued in global queue, add queue number to title
     var title = track.get('title');

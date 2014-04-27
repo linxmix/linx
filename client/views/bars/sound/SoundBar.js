@@ -2,6 +2,7 @@
 var debug = require('debug')('views:bars/sound/SoundBar');
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
+//var ReactCSSTransitionGroup = React.addons.CSSTransitionGroup;
 
 var Tab = require('../nav/Tab');
 

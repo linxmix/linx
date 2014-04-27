@@ -19,15 +19,25 @@ module.exports = Backbone.Model.extend({
   },
 
   getDefaultStart: function () {
-    return 0;
+    var def = 0;
+    try {
+      def = this.get('echoAnalysis').track.end_of_fade_in;
+    } catch (e) { }
+    return def;
   },
 
   getDefaultEnd: function () {
-    return this.get('duration') / 1000;
+    var def = this.get('duration') / 1000;
+    try {
+      def = this.get('echoAnalysis').track.start_of_fade_out;
+    } catch (e) { }
+    return def;
   },
 
+  // TODO: make so can save/upload
+
   // make tracks fetchable if given an id
-  // TODO: find if already have a track model for that id?
+  // TODO: find if already have a model for that id?
   'url': function () {
     var url = 'http://api.soundcloud.com/tracks/' + this.id + '.json';
     url += "?client_id=" + clientId;

@@ -10,7 +10,6 @@ module.exports = Backbone.Model.extend({
       'player': null,
       'playState': 'stop',
       'loaded': false,
-      'position': 0,
     };
   },
 
@@ -25,10 +24,10 @@ module.exports = Backbone.Model.extend({
       this.load(this.get('options'));
     }
     // setup track listeners
-    this.setTrackListeners(prevTrack);
+    this.newTrack(prevTrack);
   },
 
-  setTrackListeners: function (prevTrack) {
+  newTrack: function (prevTrack) {
     var track = this.get('track');
     var key = 'change:' + this.get('timingKey');
     // remove handler from prev
@@ -42,9 +41,26 @@ module.exports = Backbone.Model.extend({
         this.setTimingMarks();
       }
     }.bind(this);
+    // analyze new track on track change
+    this.analyze();
     // add handler to new
     if (track) {
       track.on(key, onChangeTiming);
+    }
+  },
+
+  analyze: function () {
+    var echoNest = this.get('echoNest');
+    var track = this.get('track');
+    if (echoNest && track) {
+      echoNest.analyzeSC({
+        'track': track,
+        'fullAnalysis': true,
+        'success': function (track) {
+          this.drawBeatGrid();
+          this.setTimingMarks();
+        }.bind(this),
+      });
     }
   },
 

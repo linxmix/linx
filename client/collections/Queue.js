@@ -149,6 +149,7 @@ module.exports = Tracks.extend({
 
   unsetTiming: function (track, index) {
     // if removing transition not from front, make sure to update prev and next
+    debug("UNSETTING TIMING", track.get('id'), index)
     if (index && track.get('linxType') === 'transition') {
       this.setTiming(this.getPrev(index));
       // Note: -1 because index is of removed track
@@ -160,6 +161,7 @@ module.exports = Tracks.extend({
 
   // sets in and out timing based on current queue
   setTiming: function (track, index) {
+    if (!track) { return; }
     if (typeof index !== 'number') { index = this.indexOf(track); }
 
     // if transition, remember to fix other timings
@@ -182,8 +184,7 @@ module.exports = Tracks.extend({
   },
 
   getTiming: function (track, options) {
-    var startTime = track.getDefaultStart();
-    var endTime = track.getDefaultEnd();
+    var startTime, endTime;
 
     // if song, condition on possible transitions
     if (track.get('linxType') === 'song') {
@@ -223,10 +224,6 @@ module.exports = Tracks.extend({
     return this.widgets;
   },
 
-  getHistory: function () {
-    return this.history;
-  },
-
   getActiveWidget: function (offset) {
     return this.getWidgets().getActiveWidget(offset);
   },
@@ -242,10 +239,16 @@ module.exports = Tracks.extend({
     }
   },
 
-  // TODO: this needs to use history to go to last song if there is one, or return false
+  // use history to go to last song if there is one,
+  // or return false
   back: function () {
-    debug("back");
-    return false;
+    if (this.history.length > 0) {
+      var track = this.history.shift();
+      this.add(track, { 'at': 0 });
+      return track
+    } else {
+      return false;
+    }
   },
 
   cycleQueue: function () {

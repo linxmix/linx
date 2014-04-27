@@ -40,7 +40,7 @@ module.exports = Backbone.Collection.extend({
   analyzeSC: function (options) {
     debug("analyzing track in echonest", options)
     var track = options.track;
-    if (!track) { return debug("WARNING: no track given to analyze"); }
+    if (!track) { throw new Error("no track given to analyze"); }
 
     var next = function () {
       this.getTrackProfile(options);
@@ -51,7 +51,6 @@ module.exports = Backbone.Collection.extend({
       var analyzer = new SCAnalyzer({ 'id': track.id });
       analyzer.fetch({
         'success': function (collection, response, options) {
-          debug("SC ANALYZED", response);
           track.set({ 'echoId': response.trid });
           next();
         },
@@ -71,14 +70,12 @@ module.exports = Backbone.Collection.extend({
     }
 
     var next = function () {
-      debug("getTrackProfile next", track, track.get('echoProfile').status);
 
       var url = track.get('echoProfile').audio_summary.analysis_url;
       var count = 0;
       var attempt = function () {
         debug("ATTEMPT", count);
         $.getJSON(url, function (response) {
-          debug("ECHO FULL ANALYSIS", response);
           track.set({ 'echoAnalysis': response });
           options.success && options.success(track);
         }).fail(function (error) {
@@ -110,7 +107,6 @@ module.exports = Backbone.Collection.extend({
       trackProfiles.fetch({
         'cache': false, // IMPORTANT: refresh analysis_url
         'success': function (collection, response, options) {
-          debug("ECHO PROFILED", response);
           track.set({ 'echoProfile': response.response.track });
           next();
         },

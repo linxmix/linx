@@ -113,13 +113,18 @@ module.exports = React.createClass({
       prevWidget.off('change:loaded', this.onLoadedChange);
     }
     prevWidget && prevWidget.unsetPlayer();
+    prevWidget && (prevWidget.echoNest = undefined);
 
     // add to new widget
     widget.on('change:loaded', onLoadedChange);
     widget.setPlayer(this.wave);
+    // TODO: only give this if this track_wave is in soundbar?
+    widget.set({ 'echoNest': this.getCollection().echoNest });
     // load track if given
     if (this.props.track) {
       widget.setTrack(this.props.track);
+    } else {
+      widget.analyze();
     }
     this.setWidgetPlayState();
   },
@@ -138,8 +143,8 @@ module.exports = React.createClass({
     }
 
     // TODO: make this smarter about when this happens
-    widget.drawBeatGrid();
-    widget.drawMatches();
+    //widget.drawBeatGrid();
+    //widget.drawMatches();
 
     //this.widget.redraw();
     //debug('component updated');

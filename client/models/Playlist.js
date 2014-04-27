@@ -82,13 +82,27 @@ module.exports = Backbone.Model.extend({
     return this.get('tracks');
   },
 
+  // returns tracks previously played from this playlist, youngest to oldest
+  history: function () {
+    debug("getting history");
+    return this.get('queue').history;
+  },
+  
   setTrackSort: function (trackSort) {
     if (this.get('type') !== 'queue') {
       debug("setting new track sort", trackSort);
       this.set({ 'trackSort': trackSort });
       var tracks = this.tracks();
       // change sort attribute then sort
-      tracks.comparator = trackSort.key;
+      var key = trackSort.key;
+      if (key === 'play_status') {
+        var history = this.history();
+        var playing = this.get('playingTrack');
+        tracks.comparator = sortByHistory.bind(this,
+          this.get('playingTrack'), history, history.length);
+      } else {
+        tracks.comparator = key;
+      }
       tracks.sort();
       // reverse if direction is backwards
       if (trackSort.direction === -1) {
@@ -122,9 +136,9 @@ module.exports = Backbone.Model.extend({
   remove: function (tracks) {
 
     // if bool, remove activeTracks
-    var newActiveTracks;
+    var activeTracks;
     if (typeof tracks === 'boolean') {
-      newActiveTracks = [];
+      activeTracks = [];
       tracks = this.getActiveTracks();
     // otherwise remove any tracks from activeTracks
     } else {
@@ -132,22 +146,16 @@ module.exports = Backbone.Model.extend({
         tracks = [tracks];
       }
       // if any of tracks are activeTracks, remove from activeTracks
-      var activeTracks = this.getActiveTracks();
-      _.forEach(tracks, function(track, index) {
-        if (index > -1) {
-          delete activeTracks[index];
-        }
-      });
-      activeTracks = activeTracks.filter(function (activeTrack) {
-        return !!activeTrack;
+      activeTracks = this.getActiveTracks();
+      _.filter(activeTracks, function(activeTrack) {
+        return (tracks.indexOf(activeTrack) === -1);
       });
     }
 
     // now do the actual removals
     debug("removing tracks", tracks);
-    this.tracks().remove(tracks, { 'silent': true });
-    this.tracks().trigger('remove', tracks, this.tracks());
-    this.set({ 'activeTracks': newActiveTracks });
+    this.tracks().remove(tracks);
+    this.set({ 'activeTracks': activeTracks });
   },  
 
   queue: function (track) {
@@ -203,12 +211,6 @@ module.exports = Backbone.Model.extend({
     return this.get('queue').getTimingKey();
   },
 
-  // returns tracks previously played from this playlist, youngest to oldest
-  getHistory: function () {
-    debug("getting history");
-    return this.get('queue').getHistory();
-  },
-
   onCycle: function (callback) {
     this.get('queue').on('cycle', callback);
   },
@@ -248,7 +250,7 @@ module.exports = Backbone.Model.extend({
     if (queue.length === 1) {
       var currTrack = tracks.get(queue.models[0]);
       var nextTrack = tracks.at(tracks.indexOf(currTrack) + 1);
-      this.queue(nextTrack);
+      nextTrack && this.queue(nextTrack);
     }
 
     // if queue has no songs, raise question mark
@@ -358,17 +360,36 @@ module.exports = Backbone.Model.extend({
     widget.seek(percent);
   },
 
-  // play last song if queue has one, or jump to back of current song
+  // play last song, or play song above, or jump to back of current song
   back: function () {
     var queue = this.get('queue');
     if (!queue.back()) {
-      this.seek(0);
+      var playing = this.get('playingTrack');
+      var tracks = this.tracks();
+      var index = playing && tracks.indexOf(playing);
+      debug("BACK", playing, index);
+      if (index && index > 0) {
+        this.queueAtPos(tracks.at(index - 1), 0);
+      } else {
+        this.seek(0);
+      }
     }
   },
 
-  // TODO: make sure there is another song in queue before cycling
   forth: function () {
     this.get('queue').cycleQueue();
   },
 
 });
+
+// sort by play history, first played first
+function sortByHistory (playing, history, length, track) {
+  var index = history.indexOf(track);
+  if (index > -1) {
+    return -index;
+  } else if (track.id === (playing && playing.id)) {
+    return 1;
+  } else {
+    return 2;
+  }
+}

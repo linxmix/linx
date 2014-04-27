@@ -52,7 +52,9 @@ module.exports = Widget.extend({
   stop: function () {
     debug("STOPPING WIDGET", this);
     var wave = this.get('player');
-    wave && wave.stop();
+    try {
+      wave && wave.stop();
+    } catch (e) { }
   },
 
   seek: function (percent) {
@@ -65,7 +67,6 @@ module.exports = Widget.extend({
     // scale seconds to percent
     if (wave) {
       var percent = seconds / wave.timings()[1]
-      debug("SCALED", percent, seconds, wave.timings()[1]);
       wave.seekTo(percent);
     }
   },
@@ -96,11 +97,13 @@ module.exports = Widget.extend({
 
   setTimingMarks: function () {
     var track = this.get('track');
-    var timing = track && track.get(this.get('timingKey'));
-    if (timing && this.get('loaded')) {
-      debug("SETTING TIMING MARKS", track.get('title'), timing);
-      this.addStartMark(timing['startTime']);
-      this.addEndMark(timing['endTime']);
+    if (track && this.get('loaded')) {
+      var timing = track.get(this.get('timingKey')) || {};
+      var startTime = timing['startTime'] || track.getDefaultStart();
+      var endTime = timing['endTime'] || track.getDefaultEnd();
+      debug("setting timing marks", track.get('title'), startTime, endTime);
+      this.addStartMark(startTime);
+      this.addEndMark(endTime);
     } else {
       this.clearTimingMarks();
     }
@@ -110,19 +113,22 @@ module.exports = Widget.extend({
     var track = this.get('track');
     debug("CLEARING TIMING MARKS", track && track.get('title'));
     var wave = this.get('player');
-    if (wave.startMark) {
-      wave.startMark.remove();
-      delete wave.startMark;
-    }
-    if (wave.endMark) {
-      wave.endMark.remove();
-      delete wave.endMark;
+    if (wave) {
+      if (wave.startMark) {
+        wave.startMark.remove();
+        delete wave.startMark;
+      }
+      if (wave.endMark) {
+        wave.endMark.remove();
+        delete wave.endMark;
+      }
     }
   },
 
   addStartMark: function (position) {
     var wave = this.get('player');
     // seek to mark
+    if (!this.get('playState') === 'play')
     this.seekTime(position);
     wave.startMark = wave.mark({
       'id': 'startMark',
@@ -133,24 +139,23 @@ module.exports = Widget.extend({
 
   addEndMark: function (position) {
     var wave = this.get('player');
-    var mark = wave.mark({
+    var mark = wave.endMark = wave.mark({
       'id': 'endMark',
       'position': position,
       'color': 'rgba(255, 0, 0, 1)',
     });
-    // returns mark if endMark is new
-    if (mark) {
-      mark.on('reached', function () {
-        debug("MARK REACHED", this);
-        this.get('player').fireEvent('finish');
-      }.bind(this));
-    }
+    // add handler
+    mark.un('reached');
+    mark.on('reached', function () {
+      debug("MARK REACHED", this);
+      this.get('player').fireEvent('finish');
+    }.bind(this));
   },
 
   drawBeatGrid: function () {
     var track = this.get('track');
     var analysis = track && track.get('echoAnalysis');
-    var wave = this.get('wave');
+    var wave = this.get('player');
     var thresh = 0.5;
     if (analysis && wave) {
       debug("adding beatgrid to wave", track.get('title'));

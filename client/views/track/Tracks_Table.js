@@ -21,6 +21,7 @@ module.exports = React.createClass({
       'playingTrack': null,
       'className': "ui large inverted purple celled sortable table segment",
       'title': 'Track Title',
+      'showHistory': false,
       'headers': [
         {
           'key': 'play_status',
@@ -140,6 +141,10 @@ module.exports = React.createClass({
     }
   },
 
+  toggleHistory: function (e) {
+    this.props.setShowHistory(!this.props.showHistory);
+  },
+
   render: function () {
 
     // determine which view to use
@@ -156,6 +161,8 @@ module.exports = React.createClass({
     var activeTracks = this.props.activeTracks;
     var playingTrack = this.props.playingTrack;
     var tracks = this.props.tracks;
+    var history = this.props.history;
+    var tracks = (this.props.showHistory) ? history : tracks;
     var track_tables = tracks.map(function (track) {
       return Track_Table({
         'track': track,
@@ -167,6 +174,7 @@ module.exports = React.createClass({
           (playingTrack && playingTrack.cid)),
         'queueIndex': this.props.appQueue.getQueueIndex(track),
         'isPlaying': this.props.isPlaying,
+        'hasPlayed': (history.indexOf(track) > -1),
         'handleClick': this.handleClick,
         'handleRemoveClick': this.props.handleRemoveClick,
         'handleDblClick': this.props.handleDblClick,
@@ -179,7 +187,6 @@ module.exports = React.createClass({
     // 
     // Table_Headers
     // 
-    // TODO: make play_status make sense as a sort
     var headers = this.props.headers.map(function (header) {
 
       // html needs extra runtime logic
@@ -202,7 +209,16 @@ module.exports = React.createClass({
                 {playIcon}
               </div>); break;
           case 'title':
-            html = this.props.playlistName; break;
+            var title = this.props.playlistName;
+            var historyClass = "micro ui toggle button";
+            if (this.props.showHistory) {
+              historyClass += " active";
+            }
+            // TODO: make history button not so ugly!
+            //html = (<span>{title}
+            //  <div className={historyClass} onClick={this.toggleHistory}>History</div>
+            //</span>); break;
+            html = title; break;
         }
       }
 

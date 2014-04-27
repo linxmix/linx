@@ -12,9 +12,16 @@ module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
+  getDefaultProps: function () {
+    return {
+      'className': 'ui large inverted purple test-main celled table segment',
+    }
+  },
+
   getInitialState: function () {
     return {
       'trackView': 'table-sc',
+      'showHistory': false,
     }
   },
 
@@ -25,12 +32,17 @@ module.exports = React.createClass({
     });
   },
 
+  setShowHistory: function (bool) {
+    debug("showing history")
+    this.setState({ 'showHistory': bool });
+  },
+
   // play viewingPlaylist with given track at head
   playRow: function (row, e) {
     var track = row.backboneModel;
     debug("PLAY ROW", track);
-    this.playViewing(e, { 'track': track });
-    //this.props.addUploaderTrack(track);
+    //this.playViewing(e, { 'track': track });
+    this.props.addUploaderTrack(track);
   },
 
   playpauseViewing: function (e, options) {
@@ -83,6 +95,7 @@ module.exports = React.createClass({
     var playlist = this.props.viewingPlaylist;
     // get tracks from viewingPlaylist
     var tracks = (playlist && playlist.tracks());
+    var history = (playlist && playlist.history());
     var name = (playlist && playlist.get('name'));
     // figure out if this playlist is playing
     var playingPlaylist = this.props.playingPlaylist;
@@ -90,7 +103,7 @@ module.exports = React.createClass({
     var isPlaying = (isAppPlaying &&
       (playingPlaylist.cid === playlist.cid));
     // if playlist isn't a queue, make it sortable
-    var className = 'ui large inverted purple test-main celled table segment';
+    var className = this.props.className;
     if (playlist.get('type') !== 'queue') {
       className += ' sortable';
     }
@@ -101,6 +114,7 @@ module.exports = React.createClass({
           'className': className,
           'playlistName': name,
           'tracks': tracks,
+          'history': history,
           'appQueue': this.props.appQueue,
           'trackView': this.state.trackView,
           'isPlaying': isPlaying,
@@ -118,6 +132,8 @@ module.exports = React.createClass({
           'handleRemoveClick': this.removeTrack,
           'handlePlayClick': this.playpauseViewing,
           'handleDblClick': this.playRow,
+          'showHistory': this.state.showHistory,
+          'setShowHistory': this.setShowHistory,
         })}
       </div>
     )
