@@ -30,6 +30,13 @@ module.exports = React.createClass({
     this.props.onUpdateSelection(this.props.track, newSelection);
   },
 
+  doFade: function () {
+    debug("DOING FADE", this.props);
+    this.$('wave').transition({
+      'allowRepeats': false,
+    });
+  },
+
   // TODO: move wave stuff into widget
   // cursor on hover
   onMouseMove: function (event) {
@@ -76,7 +83,7 @@ module.exports = React.createClass({
     // track_wave must have track or widget prop
     var track = this.props.track || this.props.widget.get('track');
     // only display if active
-    var className = (this.props.active) ? "" : "hidden";
+    var className = (this.props.active) ? "" : "";
     return (
       <div className={className}>
         <div className="wave"
@@ -133,7 +140,6 @@ module.exports = React.createClass({
   componentDidUpdate: function (prevProps, prevState) {
     this.setWidgetPlayState();
 
-    // TODO: does track ever change when widget doesnt?
     // if widget changed, load new stuff into it
     var widget = this.props.widget;
     var prevWidget = prevProps.widget;
@@ -141,7 +147,17 @@ module.exports = React.createClass({
       debug("NEW WIDGET");
       this.newWidget(prevWidget);
     }
+/*
+    // if we were showing and are now hiding, fade
+    if (prevProps.active && !this.props.active) {
+      this.doFade();
+    }
 
+    // if we were hiding and are now showing, fade
+    if (!prevProps.active && this.props.active) {
+      this.doFade();
+    }
+*/
     // TODO: make this smarter about when this happens
     //widget.drawBeatGrid();
     //widget.drawMatches();
