@@ -73,15 +73,15 @@ module.exports = React.createClass({
     matches = _.sortBy(matches, function (match) {
       return match['dist'];
     });
-    best5 = matches.splice(0, 5);
-    debug("best5", best5);
+    best_matches = matches.splice(0, Math.min(5, t1Segs.length, t2Segs.length));
+    debug("best_matches", best_matches);
 
     // add matched segs as marks to waveforms
-    t1Matches = best5.map(function (match) {
+    t1Matches = best_matches.map(function (match) {
       return match['seg1'];
     });
     track1.set({ 'matches': t1Matches });
-    t2Matches = best5.map(function (match) {
+    t2Matches = best_matches.map(function (match) {
       return match['seg2'];
     });
     track2.set({ 'matches': t2Matches });
@@ -103,7 +103,6 @@ module.exports = React.createClass({
         'track': track,
         'dragSelection': true,
         'onUpdateSelection': this.updateSelection,
-        //'beatgrid': true,
         'changePlayState': this.props.changePlayState,
       });
     }.bind(this));

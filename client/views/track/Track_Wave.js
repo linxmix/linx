@@ -80,10 +80,13 @@ module.exports = React.createClass({
   },
 
   render: function () {
-    // track_wave must have track or widget prop
+
+    // TODO: make this smarter about when this happens
+    this.props.widget.drawMatches();
+    
     var track = this.props.track || this.props.widget.get('track');
     // only display if active
-    var className = (this.props.active) ? "" : "";
+    var className = (this.props.active) ? "" : "hidden";
     return (
       <div className={className}>
         <div className="wave"
@@ -138,7 +141,6 @@ module.exports = React.createClass({
 
   // rendered component has updated
   componentDidUpdate: function (prevProps, prevState) {
-    this.setWidgetPlayState();
 
     // if widget changed, load new stuff into it
     var widget = this.props.widget;
@@ -146,7 +148,10 @@ module.exports = React.createClass({
     if (widget && (widget.cid !== prevWidget.cid)) {
       debug("NEW WIDGET");
       this.newWidget(prevWidget);
+    } else {
+      this.setWidgetPlayState();
     }
+
 /*
     // if we were showing and are now hiding, fade
     if (prevProps.active && !this.props.active) {
@@ -158,9 +163,6 @@ module.exports = React.createClass({
       this.doFade();
     }
 */
-    // TODO: make this smarter about when this happens
-    //widget.drawBeatGrid();
-    //widget.drawMatches();
 
     //this.widget.redraw();
     //debug('component updated');

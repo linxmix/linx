@@ -83,6 +83,7 @@ module.exports = React.createClass({
   //
 
   addUploaderTrack: function (track) {
+    track.analyze({ 'fullAnalysis': true });
     var uploaderTracks = this.state.uploaderTracks;
     uploaderTracks.push(track);
     this.setState({
@@ -108,9 +109,9 @@ module.exports = React.createClass({
 
   setLoading: function (bool) {
     debug("setLoading", bool);
-    this.setState({
-      'loading': bool,
-    });
+    //this.setState({
+    //  'loading': bool,
+    //});
   },
 
   changePage: function (newPage) {

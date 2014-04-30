@@ -49,18 +49,17 @@ module.exports = Backbone.Model.extend({
     }
   },
 
-  analyze: function () {
-    var echoNest = this.get('echoNest');
+  analyze: function (options) {
+    options = options ? options : {
+      'fullAnalysis': true,
+      'success': function (track) {
+        //this.drawBeatGrid();
+        this.setTimingMarks();
+      }.bind(this),
+    };
     var track = this.get('track');
-    if (echoNest && track) {
-      echoNest.analyzeSC({
-        'track': track,
-        'fullAnalysis': true,
-        'success': function (track) {
-          this.drawBeatGrid();
-          this.setTimingMarks();
-        }.bind(this),
-      });
+    if (track) {
+      track.analyze(options);
     }
   },
 

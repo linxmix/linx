@@ -3,35 +3,40 @@ var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 var debug = require('debug')('views:track/Track_Uploader');
 
+var _ = require('underscore');
+
+var Widget_Wave = require('../../models/Widget_Wave');
 var Track_Wave = require('./Track_Wave');
 
 module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
-  analyzeSC: function (e) {
-    var track = this.props.track;
-    this.getCollection().echoNest.analyzeSC({
-      'track': track,
-      'fullAnalysis': true,
-      'success': function (track) {
-        debug("FINAL SUCCESS", track);
-        // redraw this wave to add beatmarkers
-        this.forceUpdate();
-      }.bind(this),
-    });
+  getDefaultProps: function () {
+    return {
+      'widget': new Widget_Wave(),
+    }
+  },
+
+  play: function (e) {
+    this.props.widget.play();
+  },
+
+  pause: function (e) {
+    this.props.widget.pause();
   },
 
   render: function () {
-    var track = this.props.track;
     var trackWave = Track_Wave(this.props);
-
     return (
       <div>
         {trackWave}
         <div className="ui small buttons">
-          <div className="ui black button" onClick={this.analyzeSC}>
-            Analyze
+          <div className="ui black button" onClick={this.play}>
+            Play
+          </div>
+          <div className="ui black button" onClick={this.pause}>
+            Pause
           </div>
         </div>
       </div>

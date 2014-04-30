@@ -13,7 +13,7 @@ module.exports = User.extend({
 
         // fetch user tracks
         // and add to app tracks
-        this.tracks().fetch({
+        /*this.tracks().fetch({
           success: function (tracks) {
             appTracks.add(tracks.models);
             onLogin && onLogin();
@@ -21,7 +21,7 @@ module.exports = User.extend({
           error: function () {
             console.error("error fetching user "+this.id+"'s tracks!");
           }.bind(this),
-        });
+        });*/
 
         // fetch user playlists
         // and add to app playlists

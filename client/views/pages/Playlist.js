@@ -161,9 +161,10 @@ module.exports = React.createClass({
   componentDidMount: function () {
     this.resetListener();
 
-    //
+    // unbind old listener
+    $(document).unbind('keydown');
+
     // key press listener
-    //
     $(document).keydown(function (e) {
       // ignore key presses when in an input
       if (e.target.tagName !== 'INPUT') {
@@ -180,9 +181,6 @@ module.exports = React.createClass({
         }
       }
     }.bind(this));
-    //
-    // /end key press listener
-    //
 
   },
 

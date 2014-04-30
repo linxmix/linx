@@ -91,15 +91,15 @@ module.exports = React.createClass({
       'success': function (collection, response, options) {
         debug("successfully fetched transitions", collection.length);
         var edge1 = new Edge({
-          'edgeId': '142731939',
+          'edgeId': '142731966',
           'in': '54740440',
-          'out': '98081145',
-          'endIn': 266.01383,
-          'startEdge': 2.09043,
-          'endEdge': 69.03896,
-          'startOut': 67.74372,
+          'out': '74157608',
+          'endIn': 251.46558,
+          'startEdge': 4.01107,
+          'endEdge': 30.49882,
+          'startOut': 41.77451,
         });
-        edge1.save();
+        //edge1.save();
       },
     });
   },

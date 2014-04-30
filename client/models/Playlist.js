@@ -84,7 +84,6 @@ module.exports = Backbone.Model.extend({
 
   // returns tracks previously played from this playlist, youngest to oldest
   history: function () {
-    debug("getting history");
     return this.get('queue').history;
   },
   

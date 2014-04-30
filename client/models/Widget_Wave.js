@@ -126,13 +126,15 @@ module.exports = Widget.extend({
   },
 
   addStartMark: function (position) {
+    position = position + CUE_LAG;
     var wave = this.get('player');
     // seek to mark
-    if (!this.get('playState') === 'play')
-    this.seekTime(position);
+    if (wave.backend && wave.backend.isPaused()) {
+      this.seekTime(position);
+    }
     wave.startMark = wave.mark({
       'id': 'startMark',
-      'position': position + CUE_LAG,
+      'position': position,
       'color': 'rgba(0, 255, 0, 1)',
     });
   },
@@ -171,7 +173,7 @@ module.exports = Widget.extend({
     // draw matches
     var track = this.get('track');
     var matches = track && track.get('matches');
-    var wave = this.get('wave');
+    var wave = this.get('player');
     if (matches && wave) {
       debug("adding matches to wave", track.get('title'));
       matches.forEach(function (match) {
