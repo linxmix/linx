@@ -30,7 +30,11 @@ module.exports = Widget.extend({
       "?client_id=" + clientId;
 
     // load track into wave
-    wave.load(url);
+    try {
+      wave.load(url);
+    } catch (e) {
+      debug("CAUGHT ERROR WHILE LOADING", e);
+    }
   },
 
   onReady: function () {
@@ -153,8 +157,7 @@ module.exports = Widget.extend({
     // add handler
     mark.un('reached');
     mark.on('reached', function () {
-      debug("MARK REACHED", this);
-      this.get('player').fireEvent('finish');
+      this.get('player').fireEvent('endMark', mark);
     }.bind(this));
   },
 

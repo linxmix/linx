@@ -118,9 +118,9 @@ module.exports = React.createClass({
       // TODO: fix this
       if (this.props.playing) {
         if (loading) {
-          this.props.onLoadStart();
+          this.props.onLoadStart(widget);
         } else {
-          this.props.onLoadEnd();
+          this.props.onLoadEnd(widget);
         }
       }
     }.bind(this);
@@ -213,8 +213,15 @@ module.exports = React.createClass({
     wave.on('loading', showProgress);
     wave.on('empty', showProgress);
     wave.on('destroy', hideProgress);
-    wave.on('error', hideProgress);
-    wave.on('finish', function () {
+    wave.on('error', function (err) {
+      hideProgress();
+      this.props.onLoadError(err, this.get('widget'));
+    }.bind(this));
+    // TODO: this is not necessary with end marks, yes?
+    //wave.on('finish', function () {
+    //  this.props.onFinish();
+    //}.bind(this));
+    wave.on('endMark', function (endMark) {
       this.props.onFinish();
     }.bind(this));
     wave.on('ready', function () {

@@ -13,16 +13,26 @@ module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
-  onLoadStart: function () {
-    debug("ONLOADSTART", this.props.hasLoaded);
+  onLoadStart: function (widget) {
     if (!this.props.hasLoaded) {
       this.props.toggleBar(2);
     }
     this.props.setLoading(true);
   },
 
-  onLoadEnd: function () {
+  onLoadEnd: function (widget) {
     this.props.setLoading(false);
+  },
+
+  onLoadError: function (err, widget) {
+    debug("LOAD ERROR", err);
+    var track = widget.get('track');
+    var playlist = this.props.playingPlaylist;
+    this.props.setLoading(false);
+    alert("We're sorry, but for some reason SoundCloud won't let us load track "+track.get('title')+ " !");
+    widget.set({ 'loading': false });
+    // on load fail, remove track from playingPlaylist
+    playingPlaylist.remove(track);
   },
 
   onFinish: function () {
@@ -48,6 +58,7 @@ module.exports = React.createClass({
         'playState': this.props.playState,
         'onLoadStart': this.onLoadStart,
         'onLoadEnd': this.onLoadEnd,
+        'onLoadError': this.onLoadError,
         'onFinish': this.onFinish,
       });
     }.bind(this));
