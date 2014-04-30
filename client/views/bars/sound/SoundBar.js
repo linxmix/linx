@@ -14,6 +14,10 @@ module.exports = React.createClass({
   mixins: [ReactBackboneMixin],
 
   onLoadStart: function () {
+    debug("ONLOADSTART", this.props.hasLoaded);
+    if (!this.props.hasLoaded) {
+      this.props.toggleBar(2);
+    }
     this.props.setLoading(true);
   },
 

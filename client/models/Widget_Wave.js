@@ -15,7 +15,11 @@ module.exports = Widget.extend({
     // add defaults to options
     if (typeof options !== 'object') { options = {}; }
     this.onLoaded = options.callback;
-    this.set({ 'playState': 'stop', 'loaded': false });
+    this.set({
+      'playState': 'stop',
+      'loaded': false,
+      'loading': true,
+    });
     var track = this.get('track');
     var wave = this.get('player');
     debug("loading track into widget", this.get('index'), track.get('title'));
@@ -30,7 +34,7 @@ module.exports = Widget.extend({
   },
 
   onReady: function () {
-    this.set({ 'loaded': true });
+    this.set({ 'loaded': true, 'loading': false });
     this.assertPlayState();
     debug("WIDGET LOADED", this.get('track').get('title'));
     this.onLoaded && this.onLoaded();

@@ -104,29 +104,29 @@ module.exports = React.createClass({
   newWidget: function (prevWidget) {
     var widget = this.props.widget;
 
-    // make handler
-    var onLoadedChange = this.onLoadedChange || function (widget, loaded) {
-      debug("onLoadedCHANGE", widget.get('index'),
-        this.props.playing, loaded)
-      // TODO: fix this because playing changes
-      if (this.props.playing) {
-        if (loaded) {
-          this.props.onLoadEnd();
-        } else {
-          this.props.onLoadStart();
-        }
-      }
-    }.bind(this);
-
     // remove from prevWidget
-    if (prevWidget && this.onLoadedChange) {
-      prevWidget.off('change:loaded', this.onLoadedChange);
+    if (prevWidget && this.onLoadingChange) {
+      prevWidget.off('change:loading', this.onLoadingChange);
     }
     prevWidget && prevWidget.unsetPlayer();
     prevWidget && (prevWidget.echoNest = undefined);
 
+    // make handler
+    var onLoadingChange = this.onLoadingChange || function (widget, loading) {
+      debug("onLoadingChange", widget.get('index'),
+        this.props.playing, widget.get('playState'), loading)
+      // TODO: fix this
+      if (this.props.playing) {
+        if (loading) {
+          this.props.onLoadStart();
+        } else {
+          this.props.onLoadEnd();
+        }
+      }
+    }.bind(this);
+
     // add to new widget
-    widget.on('change:loaded', onLoadedChange);
+    widget.on('change:loading', onLoadingChange);
     widget.setPlayer(this.wave);
     // TODO: only give this if this track_wave is in soundbar?
     widget.set({ 'echoNest': this.getCollection().echoNest });
@@ -150,6 +150,12 @@ module.exports = React.createClass({
       this.newWidget(prevWidget);
     } else {
       this.setWidgetPlayState();
+    }
+
+    // if changing to playing, and loading, call onLoadStart
+    if ((!(prevProps.playing) && this.props.playing) &&
+      this.props.widget.get('loading')) {
+      this.props.onLoadStart();
     }
 
 /*

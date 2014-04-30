@@ -14,9 +14,12 @@ module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
-  toggleBar: function () {
+  toggleBar: function (num) {
+    if (typeof num !== 'number') {
+      num = (this.props.bottomBar) ? 0 : 2;
+    }
     this.props.changeBar({
-      'bottomBar': (this.props.bottomBar) ? 0 : 2,
+      'bottomBar': num,
     });
   },
 
@@ -59,7 +62,7 @@ module.exports = React.createClass({
         </div>
         <div className={hidden}>
           {SoundBar(_.extend({
-            'setLoading': this.props.setLoading,
+            'toggleBar': this.toggleBar,
           }, this.props))}
         </div>
       </div>

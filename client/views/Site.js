@@ -31,6 +31,7 @@ module.exports = React.createClass({
       'loading': false,
       'dragging': [],
       'uploaderTracks': [],
+      'hasLoaded': false,
     }
   },
 
@@ -108,10 +109,15 @@ module.exports = React.createClass({
   },
 
   setLoading: function (bool) {
-    debug("setLoading", bool);
-    //this.setState({
-    //  'loading': bool,
-    //});
+    debug("setLoading", this.state.hasLoaded, bool);
+    if (!this.state.hasLoaded && bool) {
+      this.setState({
+        'hasLoaded': true,
+      });
+    }
+    this.setState({
+      'loading': bool,
+    });
   },
 
   changePage: function (newPage) {
@@ -177,6 +183,7 @@ module.exports = React.createClass({
       'addUploaderTrack': this.addUploaderTrack,
 
       'loading': this.state.loading,
+      'hasLoaded': this.state.hasLoaded,
       'setLoading': this.setLoading,
 
       'sidebarClosed': this.state.sidebarClosed,

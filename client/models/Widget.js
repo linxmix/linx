@@ -10,6 +10,7 @@ module.exports = Backbone.Model.extend({
       'player': null,
       'playState': 'stop',
       'loaded': false,
+      'loading': false,
     };
   },
 

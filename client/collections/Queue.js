@@ -26,10 +26,11 @@ module.exports = Tracks.extend({
 
     this.on('add', function (track, collection, options) {
       var index = collection.indexOf(track);
+      // TODO: make this work
       // if added to front, decrement activeWidget
-      if (index === 0) {
-        this.getWidgets().decrementActiveWidget();
-      }
+      //if (index === 0) {
+      //  this.getWidgets().decrementActiveWidget();
+      //}
       // set queue timing information
       this.setTiming(track, index);
       // resync widgets
@@ -254,10 +255,10 @@ module.exports = Tracks.extend({
   cycleQueue: function () {
     debug("cycleQueue");
     // shift queue
+    this.trigger('cycle', this.at(0));
     var track = this.shift();
     // add played track to front of history
     track && this.history.unshift(track);
-    this.trigger('cycle', this.at(0));
   },
 
   // TODO: add ability to reorder widgets to minimize load time
