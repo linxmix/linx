@@ -3,7 +3,8 @@ var debug = require('debug')('models:Widget');
 
 var _ = require('underscore');
 
-var VOL_STANDARD = -10;
+var LOUDNESS = -10;
+var VOL = Math.pow(10, -5 / 20)
 
 module.exports = Backbone.Model.extend({
 
@@ -15,7 +16,9 @@ module.exports = Backbone.Model.extend({
       'playState': 'stop',
       'loaded': false,
       'loading': false,
-      'volumes': {},
+      'volumes': {
+        'normalize': VOL,
+      },
     };
   },
 
@@ -27,17 +30,15 @@ module.exports = Backbone.Model.extend({
       try {
         loudness = profile.audio_summary.loudness;
       } catch (e) { }
-      var gain = VOL_STANDARD - loudness
+      var gain = LOUDNESS - loudness
       var vol = Math.pow(10, gain / 20);
-      debug("SETTING NORMALIZE VOLUME", vol, gain, loudness, profile);
-      if (!isNaN(vol)) {
+      if (!isNaN(vol) && this.get('playState') !== 'play') {
         this.setVolume('normalize', vol);
       }
     }
   },
 
   setVolume: function (type, level) {
-    debug("setting volume", type, level, this);
     var volumes = this.get('volumes');
     if (type && (typeof level === 'number')) {
       volumes[type] = level;
@@ -50,6 +51,7 @@ module.exports = Backbone.Model.extend({
       _.values(volumes).forEach(function (vol) {
         endVol *= vol;
       })
+      debug("setting volume", endVol);
       player.setVolume(endVol);
     }
   },
@@ -114,6 +116,16 @@ module.exports = Backbone.Model.extend({
     if (this.get('track')) {
       this.load(this.get('options'));
     }
+  },
+
+  setXhr: function (xhr) {
+    var prevXhr = this.get('xhr');
+    // cancel prevXhr if still loading
+    if (prevXhr && prevXhr.readyState < 4) {
+      this.unset('xhr');
+      prevXhr.abort();
+    }
+    this.set({ 'xhr': xhr });
   },
 
   setPlayState: function (newState) {

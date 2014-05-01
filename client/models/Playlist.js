@@ -36,7 +36,7 @@ module.exports = Backbone.Model.extend({
     }
 
     // numWidgets must a positive integer
-    options['numWidgets'] = options['numWidgets'] || 2;
+    options['numWidgets'] = options['numWidgets'] || 1;
 
     // call default constructor
     this.options = options;
@@ -131,7 +131,6 @@ module.exports = Backbone.Model.extend({
     this.tracks().add(tracks, options);
   },
 
-  // TODO: also remove from this.get('queue')?
   remove: function (tracks) {
 
     // if bool, remove activeTracks
@@ -144,12 +143,20 @@ module.exports = Backbone.Model.extend({
       if (!(tracks instanceof Array)) {
         tracks = [tracks];
       }
+      // TODO: test this
       // if any of tracks are activeTracks, remove from activeTracks
       activeTracks = this.getActiveTracks();
-      _.filter(activeTracks, function(activeTrack) {
+      activeTracks = _.filter(activeTracks, function(activeTrack) {
         return (tracks.indexOf(activeTrack) === -1);
       });
     }
+
+    // TODO: test this
+    // remove any tracks from queue
+    var queue = this.get('queue');
+    queue.remove(_.filter(queue, function(track) {
+      return (tracks.indexOf(track) > -1);
+    }));
 
     // now do the actual removals
     debug("removing tracks", tracks);

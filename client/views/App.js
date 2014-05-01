@@ -28,7 +28,7 @@ module.exports = React.createClass({
     var queue = new Queue({
       'name': 'Queue',
     }, {
-      'numWidgets': 2,
+      'numWidgets': 3,
     });
     var searchResults = new SearchResults({
       'name': 'Search Results',

@@ -12,16 +12,28 @@ module.exports = Widget.extend({
 
   // load given track into widget
   load: function (options) {
+    var track = this.get('track');
+    var wave = this.get('player');
+    wave.track = track;
+
     // add defaults to options
     if (typeof options !== 'object') { options = {}; }
-    this.onLoaded = options.callback;
     this.set({
       'playState': 'stop',
       'loaded': false,
       'loading': true,
+      // TODO: what the fuck? why does this not work?
+      'onLoaded': function (track) {
+        //debug("ONLOADED", this, track.id);
+        if (track.id !== this.get('track').id) {
+          return false;
+        } else {
+          var cb = options.callback;
+          cb && cb();
+          return true;
+        }
+      }.bind(this, track),
     });
-    var track = this.get('track');
-    var wave = this.get('player');
     debug("loading track into widget", this.get('index'), track.get('title'));
 
     // TODO: why does track.attributes work while track.get doesnt?
@@ -31,19 +43,24 @@ module.exports = Widget.extend({
 
     // load track into wave
     try {
-      wave.load(url);
+      var ajax = wave.load(url);
+      this.setXhr(ajax.xhr);
     } catch (e) {
       debug("CAUGHT ERROR WHILE LOADING", e);
     }
   },
 
   onReady: function () {
-    this.set({ 'loaded': true, 'loading': false });
-    this.setVolume();
-    this.assertPlayState();
-    debug("WIDGET LOADED", this.get('track').get('title'));
-    this.onLoaded && this.onLoaded();
-    this.setTimingMarks();
+    var correct = this.get('onLoaded')();
+    if (correct) {
+      this.set({ 'loaded': true, 'loading': false });
+      this.setVolume();
+      this.assertPlayState();
+      debug("WIDGET LOADED", this.get('track').get('title'));
+      this.setTimingMarks();
+    } else {
+      debug("WIDGET LOADED INCORRECT")
+    }
   },
 
   play: function () {
@@ -141,25 +158,30 @@ module.exports = Widget.extend({
     if (wave.backend && wave.backend.isPaused()) {
       this.seekTime(position);
     }
-    wave.startMark = wave.mark({
+    var mark = wave.mark({
       'id': 'startMark',
       'position': position,
       'color': 'rgba(0, 255, 0, 1)',
     });
+    if (mark) {
+      wave.startMark = mark;
+    }
   },
 
   addEndMark: function (position) {
     var wave = this.get('player');
-    var mark = wave.endMark = wave.mark({
+    var mark = wave.mark({
       'id': 'endMark',
       'position': position,
       'color': 'rgba(255, 0, 0, 1)',
     });
     // add handler
-    mark.un('reached');
-    mark.on('reached', function () {
-      this.get('player').fireEvent('endMark', mark);
-    }.bind(this));
+    if (mark) {
+      wave.endMark = mark;
+      mark.on('reached', function () {
+        this.get('player').fireEvent('endMark', mark);
+      }.bind(this));
+    }
   },
 
   drawBeatGrid: function () {

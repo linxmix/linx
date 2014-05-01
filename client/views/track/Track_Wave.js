@@ -50,22 +50,25 @@ module.exports = React.createClass({
       // scale percent to duration
       position *= wave.timings()[1];
       // mark hover position
-      this.hoverMark = wave.mark({
+      var options = {
         'id': 'hover',
         'position': position,
         'color': 'rgba(255, 255, 255, 0.8)',
-      });
+      };
+      wave.mark(options);
     }
   },
 
   // TODO: move wave stuff into widget
   // if we have a wave and a hoverMark, delete the hoverMark
   onMouseLeave: function (event) {
+    debug("MOUSE LEAVE", this.hoverMark)
     var wave = this.wave;
     if (wave.backend && wave.backend.buffer) {
-      if (this.hoverMark) {
-        this.hoverMark.remove();
-        delete this.hoverMark;
+      var hoverMark = wave.markers['hover'];
+      if (hoverMark) {
+        debug("DELETE HOVERMARK", hoverMark);
+        hoverMark.remove();
       }
     }
   },
@@ -86,7 +89,7 @@ module.exports = React.createClass({
     
     var track = this.props.track || this.props.widget.get('track');
     // only display if active
-    var className = (this.props.active) ? "" : "hidden";
+    var className = (this.props.active) ? "" : "";
     return (
       <div className={className}>
         <div className="wave"
@@ -198,7 +201,7 @@ module.exports = React.createClass({
     var progressDiv = this.$('.progress');
     var progressBar = progressDiv.children('.bar');
 
-    var showProgress = function (percent) {
+    var showProgress = function (percent, target) {
       progressDiv.css('display', 'block');
       progressBar.css('width', percent + '%');
     };
@@ -212,12 +215,8 @@ module.exports = React.createClass({
     wave.on('destroy', hideProgress);
     wave.on('error', function (err) {
       hideProgress();
-      this.props.onLoadError(err, this.get('widget'));
+      this.props.onLoadError(err, this.props.widget);
     }.bind(this));
-    // TODO: this is not necessary with end marks, yes?
-    //wave.on('finish', function () {
-    //  this.props.onFinish();
-    //}.bind(this));
     wave.on('endMark', function (endMark) {
       this.props.onFinish();
     }.bind(this));

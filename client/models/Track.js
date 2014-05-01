@@ -122,6 +122,13 @@ module.exports = Backbone.Model.extend({
     }
   },
 
+  // ignore deletes
+  'sync': function (method, model, options) {
+    if (method !== 'delete') {
+      Backbone.sync.apply(this, arguments);
+    }
+  },
+
   // make tracks fetchable if given an id
   // TODO: find if already have a model for that id?
   'url': function () {

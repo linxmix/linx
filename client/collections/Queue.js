@@ -8,7 +8,6 @@ var Tracks = require('./Tracks');
 var Widgets = require('./Widgets');
 
 var nodeQueue = require('queue');
-var results = [];
 
 // TODO: allow duplicates in queue
 module.exports = Tracks.extend({
@@ -40,9 +39,9 @@ module.exports = Tracks.extend({
     this.on('remove', function (track, collection, options) {
       var index = options.index;
       // if removed from front, increment activeWidget
-      if (index === 0) {
-        this.getWidgets().incrementActiveWidget();
-      }
+      //if (index === 0) {
+      //  this.getWidgets().incrementActiveWidget();
+      //}
       // unset queue timing information
       this.unsetTiming(track, index);
       // resync widgets
@@ -73,6 +72,8 @@ module.exports = Tracks.extend({
     this.widgets = new Widgets(widgets);
     // make history sub collection
     this.history = new Tracks();
+    // init syncCalls to 0;
+    this.syncCalls = 0;
   },
 
   getPrev: function (index) {
@@ -255,23 +256,23 @@ module.exports = Tracks.extend({
   cycleQueue: function () {
     debug("cycleQueue");
     // shift queue
-    this.trigger('cycle', this.at(0));
+    this.getWidgets().incrementActiveWidget();
     var track = this.shift();
+    this.trigger('cycle', this.at(0));
     // add played track to front of history
     track && this.history.unshift(track);
   },
 
   // TODO: add ability to reorder widgets to minimize load time
   // use queue to preload widgets
-  isSyncing: false,
-  syncWidgets: function (isContinuation) {
-    // TODO: make this work
-    if (this.isSyncing && !isContinuation) {
+  syncWidgets: function (syncCall) {
+    if (typeof syncCall !== 'number') {
+      syncCall = ++(this.syncCalls);
+    // do not continue if taken over by new sync
+    } else if (syncCall !== this.syncCalls) {
       return false;
-    } else {
-      this.isSyncing = true;
     }
-    debug("syncWidgets called", this, isContinuation);
+    debug("syncWidgets called", syncCall);
     var widgets = this.getWidgets();
     var activeWidget = widgets.activeWidget;
 
@@ -280,6 +281,8 @@ module.exports = Tracks.extend({
     for (var i = 0; i < widgets.length; i++) {
       var widgetIndex = (i + activeWidget) % widgets.length;
       var queueIndex = (widgetIndex + activeWidget) % widgets.length;
+      debug("widget index", widgetIndex)
+      debug("queue index", queueIndex)
 
       // if queue index is beyond queue, empty trailing then continue
       var widget = widgets.at(widgetIndex);
@@ -302,20 +305,12 @@ module.exports = Tracks.extend({
     // if there was an unsynced widget, start loading from there
     if (wrongWidget) {
       debug("widget and track were unsynced:", widget.get('index'), track.get('title'));
-      this.isSyncing = true;
       widget.setTrack(track, {
-        'callback': function () {
-          this.syncWidgets(true);
-        }.bind(this),
+        'callback': function (syncCall) {
+          this.syncWidgets(syncCall);
+        }.bind(this, syncCall),
       });
-    // otherwise, we are done syncing, so assert playstate
-    } else {
-      //widgets.forEach(function (widget) {
-      //  widget.get('track') && widget.assertPlayState();
-      //});
-      this.isSyncing = false
     }
-
   },
 
 });

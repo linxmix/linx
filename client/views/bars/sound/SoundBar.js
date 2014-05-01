@@ -29,10 +29,9 @@ module.exports = React.createClass({
     var track = widget.get('track');
     var playlist = this.props.playingPlaylist;
     this.props.setLoading(false);
-    alert("We're sorry, but for some reason SoundCloud won't let us load track "+track.get('title')+ " !");
+    alert("We're sorry, but for some reason SoundCloud won't let us stream "+track.get('title')+ "! Try another.");
     widget.set({ 'loading': false });
-    // on load fail, remove track from playingPlaylist
-    playingPlaylist.remove(track);
+    track.destroy();
   },
 
   onFinish: function () {
