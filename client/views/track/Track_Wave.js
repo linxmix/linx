@@ -109,7 +109,6 @@ module.exports = React.createClass({
       prevWidget.off('change:loading', this.onLoadingChange);
     }
     prevWidget && prevWidget.unsetPlayer();
-    prevWidget && (prevWidget.echoNest = undefined);
 
     // make handler
     var onLoadingChange = this.onLoadingChange || function (widget, loading) {
@@ -128,8 +127,6 @@ module.exports = React.createClass({
     // add to new widget
     widget.on('change:loading', onLoadingChange);
     widget.setPlayer(this.wave);
-    // TODO: only give this if this track_wave is in soundbar?
-    widget.set({ 'echoNest': this.getCollection().echoNest });
     // load track if given
     if (this.props.track) {
       widget.setTrack(this.props.track);

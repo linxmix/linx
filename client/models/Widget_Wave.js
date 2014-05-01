@@ -39,6 +39,7 @@ module.exports = Widget.extend({
 
   onReady: function () {
     this.set({ 'loaded': true, 'loading': false });
+    this.setVolume();
     this.assertPlayState();
     debug("WIDGET LOADED", this.get('track').get('title'));
     this.onLoaded && this.onLoaded();

@@ -99,7 +99,7 @@ module.exports = React.createClass({
           'endEdge': 30.49882,
           'startOut': 41.77451,
         });
-        //edge1.save();
+        edge1.save();
       },
     });
   },

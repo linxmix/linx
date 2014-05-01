@@ -1,6 +1,10 @@
 var Backbone = require('backbone');
 var debug = require('debug')('models:Widget');
 
+var _ = require('underscore');
+
+var VOL_STANDARD = -10;
+
 module.exports = Backbone.Model.extend({
 
   defaults: function () {
@@ -11,7 +15,43 @@ module.exports = Backbone.Model.extend({
       'playState': 'stop',
       'loaded': false,
       'loading': false,
+      'volumes': {},
     };
+  },
+
+  equalizeVolume: function () {
+    var track = this.get('track');
+    var profile = track && track.get('echoProfile');
+    if (track && profile) {
+      var loudness;
+      try {
+        loudness = profile.audio_summary.loudness;
+      } catch (e) { }
+      var gain = VOL_STANDARD - loudness
+      var vol = Math.pow(10, gain / 20);
+      debug("SETTING NORMALIZE VOLUME", vol, gain, loudness, profile);
+      if (!isNaN(vol)) {
+        this.setVolume('normalize', vol);
+      }
+    }
+  },
+
+  setVolume: function (type, level) {
+    debug("setting volume", type, level, this);
+    var volumes = this.get('volumes');
+    if (type && (typeof level === 'number')) {
+      volumes[type] = level;
+      this.set({ 'volumes': volumes });
+    }
+    var player = this.get('player');
+    if (player) {
+      var endVol = 1;
+      // adjust endVol for each in volumes
+      _.values(volumes).forEach(function (vol) {
+        endVol *= vol;
+      })
+      player.setVolume(endVol);
+    }
   },
 
   setTrack: function (track, options) {
@@ -56,6 +96,7 @@ module.exports = Backbone.Model.extend({
       'success': function (track) {
         //this.drawBeatGrid();
         this.setTimingMarks();
+        this.equalizeVolume();
       }.bind(this),
     };
     var track = this.get('track');
