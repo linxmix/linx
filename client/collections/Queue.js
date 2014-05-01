@@ -30,6 +30,8 @@ module.exports = Tracks.extend({
       //if (index === 0) {
       //  this.getWidgets().decrementActiveWidget();
       //}
+      // analyze new tracks
+      track.analyze({ 'full': true });
       // set queue timing information
       this.setTiming(track, index);
       // resync widgets
@@ -151,7 +153,7 @@ module.exports = Tracks.extend({
 
   unsetTiming: function (track, index) {
     // if removing transition not from front, make sure to update prev and next
-    debug("UNSETTING TIMING", track.get('id'), index)
+    //debug("UNSETTING TIMING", track.get('id'), index)
     if (index && track.get('linxType') === 'transition') {
       this.setTiming(this.getPrev(index));
       // Note: -1 because index is of removed track
@@ -181,7 +183,7 @@ module.exports = Tracks.extend({
     if (!timing[timingKey]) {
       throw new Error("ERROR: setting impossible timing", this, track);
     }
-    debug("SETTING TIMING", track.get('id'), timing[timingKey])
+    //debug("SETTING TIMING", track.get('id'), timing[timingKey])
     track.set(timing);
   },
 
@@ -278,11 +280,8 @@ module.exports = Tracks.extend({
 
     // do the queue sync: find incorrect widget and start from there
     var wrongWidget = null;
-    for (var i = 0; i < widgets.length; i++) {
-      var widgetIndex = (i + activeWidget) % widgets.length;
-      var queueIndex = (widgetIndex + activeWidget) % widgets.length;
-      debug("widget index", widgetIndex)
-      debug("queue index", queueIndex)
+    for (var queueIndex = 0; queueIndex < widgets.length; queueIndex++) {
+      var widgetIndex = (queueIndex + activeWidget) % widgets.length;
 
       // if queue index is beyond queue, empty trailing then continue
       var widget = widgets.at(widgetIndex);
@@ -320,7 +319,7 @@ var processTrack = function (track, options, cb) {
   if (!(options && (typeof options['at'] === 'number'))) {
     cb(new Error("queue.add not given correct options"));
   }
-  debug("CALLING PROCESS TRACK", track.get('id'), options['at']);
+  //debug("CALLING PROCESS TRACK", track.get('id'), options['at']);
 
   // if adding between transitions, remove them
   var prevTrack = this.getPrev(options['at']);
@@ -409,7 +408,7 @@ var addTransition = function (track, options, cb) {
 }
 
 var addTrack = function (track, options, needsFetch, cb) {
-  debug("CALLING ADD TRACK", track.get('id'), options['at'], needsFetch);
+  //debug("CALLING ADD TRACK", track.get('id'), options['at'], needsFetch);
 
   var doAdd = function () {
     Tracks.prototype.add.call(this, track, options);
@@ -421,7 +420,7 @@ var addTrack = function (track, options, needsFetch, cb) {
   if (needsFetch && (process.env.NODE_ENV !== "test")) {
     track.fetch({
       'success': function (model, response, _options) {
-        debug("FETCH TRACK SUCCESS", model);
+        //debug("FETCH TRACK SUCCESS", model);
         doAdd();
       },
       'error': cb,

@@ -22,7 +22,8 @@ module.exports = Widget.extend({
       'playState': 'stop',
       'loaded': false,
       'loading': true,
-      // TODO: what the fuck? why does this not work?
+      // TODO: why does this not work? need to make sure
+      //       track hasn't changed during loading (concurrency)
       'onLoaded': function (track) {
         //debug("ONLOADED", this, track.id);
         if (track.id !== this.get('track').id) {
@@ -117,9 +118,37 @@ module.exports = Widget.extend({
     }
   },
 
+  getSelection: function () {
+    var wave = this.get('player');
+    return wave.getSelection();
+  },
+
   //
   // marks
   //
+
+  setHoverMark: function (event) {
+    // only do this if we have a file buffer loaded
+    var wave = this.get('player');
+    if (wave.backend && wave.backend.buffer) {
+      var e = event.nativeEvent;
+      // extract mouse position from event
+      var relX = e.offsetX;
+      if (relX > 1) {
+        var percent = (relX / wave.drawer.scrollWidth) || 0;
+        // mark hover
+        this.addMark({
+          'id': 'hover',
+          'percentage': percent,
+          'color': 'rgba(255, 255, 255, 0.8)',
+        });
+      }
+    }
+  },
+
+  clearHoverMark: function (event) {
+    this.removeMark('hover');
+  },
 
   setTimingMarks: function () {
     var track = this.get('track');
@@ -127,7 +156,7 @@ module.exports = Widget.extend({
       var timing = track.get(this.get('timingKey')) || {};
       var startTime = timing['startTime'] || track.getDefaultStart();
       var endTime = timing['endTime'] || track.getDefaultEnd();
-      debug("setting timing marks", track.get('title'), startTime, endTime);
+      debug("setting timing marks", track.get('title'), timing);
       this.addStartMark(startTime);
       this.addEndMark(endTime);
     } else {
@@ -137,18 +166,8 @@ module.exports = Widget.extend({
 
   clearTimingMarks: function () {
     var track = this.get('track');
-    debug("CLEARING TIMING MARKS", track && track.get('title'));
-    var wave = this.get('player');
-    if (wave) {
-      if (wave.startMark) {
-        wave.startMark.remove();
-        delete wave.startMark;
-      }
-      if (wave.endMark) {
-        wave.endMark.remove();
-        delete wave.endMark;
-      }
-    }
+    this.removeMark('start');
+    this.removeMark('end');
   },
 
   addStartMark: function (position) {
@@ -159,7 +178,7 @@ module.exports = Widget.extend({
       this.seekTime(position);
     }
     var mark = wave.mark({
-      'id': 'startMark',
+      'id': 'start',
       'position': position,
       'color': 'rgba(0, 255, 0, 1)',
     });
@@ -171,15 +190,15 @@ module.exports = Widget.extend({
   addEndMark: function (position) {
     var wave = this.get('player');
     var mark = wave.mark({
-      'id': 'endMark',
+      'id': 'end',
       'position': position,
       'color': 'rgba(255, 0, 0, 1)',
     });
     // add handler
+    debug("MARKED END", position, this.get('track').get('title'));
     if (mark) {
-      wave.endMark = mark;
       mark.on('reached', function () {
-        this.get('player').fireEvent('endMark', mark);
+        wave.fireEvent('endMark', mark);
       }.bind(this));
     }
   },
@@ -228,32 +247,32 @@ module.exports = Widget.extend({
     });
   },
 
-  getSelection: function () {
+  addMark: function (options) {
     var wave = this.get('player');
-    return wave.getSelection();
+    if (wave) {
+      var mark = wave.mark(options);
+      // add handlers if new mark
+      if (mark) {
+        mark.on('over', function (e) {
+          e.offsetX = -100;
+        }.bind(mark));
+      }
+    }
+  },
+
+  removeMark: function (mark) {
+    var wave = this.get('player');
+    if (wave) {
+      try {
+        switch (typeof mark) {
+          case 'string':
+            wave.markers[mark].remove(); break;
+          case 'object':
+            mark.remove(); break;
+        }
+      }
+      catch (e) {}
+    }
   },
 
 });
-
-
-    /* OLD XHR CANCEL CODE
-    // cancel any previous loading
-    var xhr = this.get('xhr');
-    if (xhr) {
-      debug("CANCELLING XHR", track.get('title'))
-      xhr.abort();
-      this.unset('xhr');
-    }
-    // store new xhr
-    var onLoading = function (percent, xhr) {
-      if (xhr) {
-        this.set({ 'xhr': xhr });
-        wave.un('loading', onLoading);
-      }
-    }.bind(this);
-    wave.on('loading', onLoading);
-    // callback to remove this.xhr
-    wave.once('loaded', function () {
-      this.unset('xhr');
-    }.bind(this));
-*/

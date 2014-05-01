@@ -20,6 +20,8 @@ module.exports = Backbone.Model.extend({
       'playback_count': 0,
       'duration': 15000, // 15s for queue client test
       'linxType': 'song',
+      'analyzed': false,
+      'analyzing': false,
     }
   },
 
@@ -39,13 +41,36 @@ module.exports = Backbone.Model.extend({
     return def;
   },
 
-  // TODO: make so can save/upload
+  onAnalyzed: function (cb) {
+    if (this.get('analyzed')) {
+      cb()
+    } else {
+      this.on('change:analyzed', cb);
+    }
+  },
 
+  offAnalyzed: function (cb) {
+    this.off('change:analyzed', cb);
+  },
 
   // analyzes track from SC on echonest.
   analyze: function (options) {
     var track = this;
+    if (track.get('analyzing')) {
+      return;
+    } else {
+      track.set({ 'analyzing': true });
+    }
     debug("analyzing track in echonest", options)
+
+    var cb = options.success;
+    options.success = function () {
+      track.set({
+        'analyzing': false,
+        'analyzed': true,
+      });
+      cb && cb(arguments);
+    };
 
     var next = function () {
       track.getProfile(options);
@@ -67,7 +92,7 @@ module.exports = Backbone.Model.extend({
   },
 
   // gets echonest track profile from given track's echoId
-  // if options.fullAnalysis, will also retrieve full analysis docs
+  // if options.full, will also retrieve full analysis docs
   getProfile: function (options) {
     var track = this;
     if (!(track.get('echoId'))) {
@@ -95,7 +120,7 @@ module.exports = Backbone.Model.extend({
       }
 
       // if wanting full analysis, resolve analysis URL
-      if (options.fullAnalysis && !track.get('echoAnalysis')) {
+      if (options.full && !track.get('echoAnalysis')) {
         attempt();
       // otherwise, we're done here so call success
       } else {
@@ -122,6 +147,7 @@ module.exports = Backbone.Model.extend({
     }
   },
 
+  // TODO: make so can save/upload
   // ignore deletes
   'sync': function (method, model, options) {
     if (method !== 'delete') {

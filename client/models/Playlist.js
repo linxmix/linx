@@ -36,7 +36,7 @@ module.exports = Backbone.Model.extend({
     }
 
     // numWidgets must a positive integer
-    options['numWidgets'] = options['numWidgets'] || 1;
+    options['numWidgets'] = options['numWidgets'] || 2;
 
     // call default constructor
     this.options = options;

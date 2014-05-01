@@ -37,40 +37,14 @@ module.exports = React.createClass({
     });
   },
 
-  // TODO: move wave stuff into widget
-  // cursor on hover
+  // mark on hover
   onMouseMove: function (event) {
-    // only do this if we have a file buffer loaded
-    var wave = this.wave;
-    if (wave.backend && wave.backend.buffer) {
-      var e = event.nativeEvent;
-      // extract mouse position from event
-      var relX = 'offsetX' in e ? e.offsetX : e.layerX;
-      var position = (relX / wave.drawer.scrollWidth) || 0;
-      // scale percent to duration
-      position *= wave.timings()[1];
-      // mark hover position
-      var options = {
-        'id': 'hover',
-        'position': position,
-        'color': 'rgba(255, 255, 255, 0.8)',
-      };
-      wave.mark(options);
-    }
+    this.props.widget.setHoverMark(event);
   },
 
-  // TODO: move wave stuff into widget
-  // if we have a wave and a hoverMark, delete the hoverMark
+  // delete hover mark when leaving
   onMouseLeave: function (event) {
-    debug("MOUSE LEAVE", this.hoverMark)
-    var wave = this.wave;
-    if (wave.backend && wave.backend.buffer) {
-      var hoverMark = wave.markers['hover'];
-      if (hoverMark) {
-        debug("DELETE HOVERMARK", hoverMark);
-        hoverMark.remove();
-      }
-    }
+    this.props.widget.clearHoverMark(event);
   },
 
   setWidgetPlayState: function () {
@@ -89,7 +63,7 @@ module.exports = React.createClass({
     
     var track = this.props.track || this.props.widget.get('track');
     // only display if active
-    var className = (this.props.active) ? "" : "";
+    var className = (this.props.active) ? "" : "hidden";
     return (
       <div className={className}>
         <div className="wave"
@@ -133,8 +107,6 @@ module.exports = React.createClass({
     // load track if given
     if (this.props.track) {
       widget.setTrack(this.props.track);
-    } else {
-      widget.analyze();
     }
     this.setWidgetPlayState();
   },
@@ -152,10 +124,15 @@ module.exports = React.createClass({
       this.setWidgetPlayState();
     }
 
-    // if changing to playing, and loading, call onLoadStart
-    if ((!(prevProps.playing) && this.props.playing) &&
-      this.props.widget.get('loading')) {
-      this.props.onLoadStart();
+    // if changing to playing
+    if (!(prevProps.playing) && this.props.playing) {
+      // if loading, call onLoadStart
+      if (this.props.widget.get('loading')) {
+        this.props.onLoadStart();
+      // if not loading, call onLoadEnd
+      } else {
+        this.props.onLoadEnd();
+      }
     }
 
 /*
@@ -192,7 +169,9 @@ module.exports = React.createClass({
     //
     wave.fireEvent = fireEventCustom;
     wave.pause = pauseCustom;
+    wave.empty = emptyCustom;
     wave.updateSelection = updateSelectionCustom;
+    wave.Mark.remove = removeCustom;
     // 
     // /end hackery
     // 
@@ -219,6 +198,14 @@ module.exports = React.createClass({
     }.bind(this));
     wave.on('endMark', function (endMark) {
       this.props.onFinish();
+    }.bind(this));
+    // ensure endMark is hit
+    wave.on('finish', function () {
+      var endMark = wave.markers['end']
+      debug("FINISH", endMark)
+      if (endMark && !endMark.played) {
+        endMark.fireEvent('reached');
+      }
     }.bind(this));
     wave.on('ready', function () {
       hideProgress();
@@ -263,6 +250,25 @@ module.exports = React.createClass({
 //
 // custom functions to override wavesurfer defaults
 //
+function emptyCustom() {
+  // ADDED TRY
+  try {
+    if (this.backend && !this.backend.isPaused()) {
+      this.stop();
+      this.backend.disconnectSource();
+    }
+    this.drawer.setWidth(0);
+    this.drawer.drawPeaks({ length: this.drawer.getWidth() }, 0);
+    this.clearMarks();
+  }
+  catch (e) { }
+}
+function removeCustom() {
+  // SWITCHED ORDER
+  this.fireEvent('remove');
+  this.unAll();
+}
+
 function fireEventCustom(event) {
   if (!this.handlers) { return; }
 

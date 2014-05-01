@@ -84,7 +84,7 @@ module.exports = React.createClass({
   //
 
   addUploaderTrack: function (track) {
-    track.analyze({ 'fullAnalysis': true });
+    track.analyze({ 'full': true });
     var uploaderTracks = this.state.uploaderTracks;
     uploaderTracks.push(track);
     this.setState({

@@ -72,38 +72,19 @@ module.exports = Backbone.Model.extend({
 
   newTrack: function (prevTrack) {
     var track = this.get('track');
-    var key = 'change:' + this.get('timingKey');
     // remove handler from prev
-    if (prevTrack && this.onChangeTiming) {
-      prevTrack.off(key, this.onChangeTiming);
+    if (prevTrack && this.onAnalyzed) {
+      prevTrack.offAnalyzed(this.onAnalyzed);
     }
-    // update timing on track timing change
-    var onChangeTiming = this.onChangeTiming || function onChangeTiming(newTiming) {
-      debug('onChangeTiming', this, newTiming);
-      if (this.get('loaded')) {
-        this.setTimingMarks();
-      }
+    // update on track analyzed
+    var onAnalyzed = this.onAnalyzed || function onAnalyzed() {
+      debug('onAnalyzed', this);
+      this.setTimingMarks();
+      this.equalizeVolume();
     }.bind(this);
-    // analyze new track on track change
-    this.analyze();
     // add handler to new
     if (track) {
-      track.on(key, onChangeTiming);
-    }
-  },
-
-  analyze: function (options) {
-    options = options ? options : {
-      'fullAnalysis': true,
-      'success': function (track) {
-        //this.drawBeatGrid();
-        this.setTimingMarks();
-        this.equalizeVolume();
-      }.bind(this),
-    };
-    var track = this.get('track');
-    if (track) {
-      track.analyze(options);
+      track.onAnalyzed(onAnalyzed);
     }
   },
 
