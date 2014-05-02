@@ -44,14 +44,6 @@ module.exports = React.createClass({
     } else if (this.props.hasPlayed) {
       playIcon = (<i className="checkmark icon"></i>);
     }
-    // if track is queued in global queue, add queue number to title
-    var title = track.get('title');
-    var queueIndex = this.props.queueIndex;
-    if (queueIndex > -1) {
-      title = (<span>
-        <a className="ui teal circular label">{queueIndex + 1}</a>
-      {title}</span>)
-    }
     // get track playCount
     var playCount = track.get('playback_count');
     if (typeof playCount === 'undefined')
@@ -60,6 +52,7 @@ module.exports = React.createClass({
       playCount = 0;
     playCount = numberWithCommas(playCount);
     // render track row
+    var title = track.get('title');
     return Row(_.extend({}, {
       'backboneModel': track,
       'key': track.cid,

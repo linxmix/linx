@@ -22,8 +22,8 @@ module.exports = React.createClass({
     return {
       'page': 'Playlist',
       'playState': 'stop',
-      'viewingPlaylist': this.props.appQueue,
-      'playingPlaylist': this.props.appQueue,
+      'viewingPlaylist': null,
+      'playingPlaylist': null,
       'searchText': '',
       'sidebarClosed': false,
       'rightBar': 0,
@@ -170,7 +170,6 @@ module.exports = React.createClass({
     var bottom = this.state.bottomBar;
     var props = {
       'me': this.props.me,
-      'appQueue': this.props.appQueue,
 
       'playState': this.state.playState,
       'playpause': this.playpause,

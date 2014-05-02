@@ -27,6 +27,9 @@ module.exports = Backbone.Model.extend({
   constructor: function (attributes, options) {
     attributes = attributes ? attributes : {};
     options = options ? options : {};
+    
+    // numWidgets must a positive integer
+    options['numWidgets'] = options['numWidgets'] || 2;
 
     // if making from a soundcloud playlist, fill args
     if (attributes['kind'] === 'playlist') {
@@ -34,9 +37,6 @@ module.exports = Backbone.Model.extend({
       attributes['tracks'] = new Tracks(attributes['tracks']);
       attributes['type'] = 'playlist';
     }
-
-    // numWidgets must a positive integer
-    options['numWidgets'] = options['numWidgets'] || 2;
 
     // call default constructor
     this.options = options;

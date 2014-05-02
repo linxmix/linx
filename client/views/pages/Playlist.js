@@ -106,9 +106,9 @@ module.exports = React.createClass({
     var isAppPlaying = (this.props.playState === 'play');
     var isPlaying = (isAppPlaying &&
       (playingPlaylist.cid === playlist.cid));
-    // if playlist isn't a queue, make it sortable
+    // if playlist isn't a mix, make it sortable
     var className = this.props.className;
-    if (playlist.get('type') !== 'queue') {
+    if (playlist.get('type') !== 'mix') {
       className += ' sortable';
     }
     // create tracks view
@@ -119,7 +119,6 @@ module.exports = React.createClass({
           'playlistName': name,
           'tracks': tracks,
           'history': history,
-          'appQueue': this.props.appQueue,
           'trackView': this.state.trackView,
           'isPlaying': isPlaying,
           'loading': this.props.loading,

@@ -1,5 +1,5 @@
 var Backbone = require('backbone');
-var debug = require('debug')('models:Playlist');
+var debug = require('debug')('models:Mix');
 
 var _ = require('underscore');
 
@@ -10,17 +10,19 @@ module.exports = Playlist.extend({
   defaults: function () {
     var defaults = Playlist.prototype.defaults.apply(this, arguments);
     return _.defaults({
-      'name': 'AppQueue',
-      'type': 'queue',
+      'name': 'mix ' + this['cid'],
+      'type': 'mix',
+      'tracks': null,
+      'trackSort': null,
     }, defaults);
   },
 
-  // queue has no tracks collection => delegate to queue
+  // mixes have no tracks, only a queue
   tracks: function () {
     return this.get('queue');
   },
 
-  // no-op since Queue already buffers all tracks
+  // TODO
   bufferQueue: function () {
     return;
   },

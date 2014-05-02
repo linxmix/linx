@@ -172,7 +172,6 @@ module.exports = React.createClass({
         'onDragEnd': this.onDragEnd,
         'isPlayingTrack': (track.cid ===
           (playingTrack && playingTrack.cid)),
-        'queueIndex': this.props.appQueue.getQueueIndex(track),
         'isPlaying': this.props.isPlaying,
         'hasPlayed': (history.indexOf(track) > -1),
         'handleClick': this.handleClick,

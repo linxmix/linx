@@ -6,7 +6,6 @@ var ReactBackboneMixin = require('backbone-react-component').mixin;
 var _ = require('underscore');
 
 var Me = require('../models/Me');
-var Queue = require('../models/Queue');
 var SearchResults = require('../models/SearchResults');
 var Edge = require('../models/Edge');
 
@@ -25,15 +24,10 @@ module.exports = React.createClass({
   mixins: [ReactBackboneMixin],
 
   getDefaultProps: function () {
-    var queue = new Queue({
-      'name': 'Queue',
-    }, {
-      'numWidgets': 3,
-    });
     var searchResults = new SearchResults({
       'name': 'Search Results',
     });
-    var playlists = new Playlists([searchResults, queue], {});
+    var playlists = new Playlists([searchResults], {});
     
     return {
       'model': {
@@ -47,7 +41,6 @@ module.exports = React.createClass({
         'transitions': new Transitions(),
       },
       'searchResults': searchResults,
-      'appQueue':  queue,
     }
   },
 
@@ -99,7 +92,7 @@ module.exports = React.createClass({
           'endEdge': 30.49882,
           'startOut': 41.77451,
         });
-        edge1.save();
+        //edge1.save();
       },
     });
   },

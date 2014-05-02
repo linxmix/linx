@@ -15,9 +15,7 @@ module.exports = React.createClass({
   // queue transition
   onClick: function (e) {
     var transitions = this.getCollection().transitions;
-    var queue = this.props.appQueue;
-    debug("queueing transition", transitions.models[0], queue);
-    queue.queue(transitions.models[0]);
+    debug("TODO: make this queue transition", transitions.models[0]);
   },
 
   render: function () {

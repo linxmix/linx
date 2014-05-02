@@ -30,13 +30,6 @@ module.exports = React.createClass({
     this.props.onUpdateSelection(this.props.track, newSelection);
   },
 
-  doFade: function () {
-    debug("DOING FADE", this.props);
-    this.$('wave').transition({
-      'allowRepeats': false,
-    });
-  },
-
   // mark on hover
   onMouseMove: function (event) {
     this.props.widget.setHoverMark(event);
@@ -134,18 +127,6 @@ module.exports = React.createClass({
         this.props.onLoadEnd();
       }
     }
-
-/*
-    // if we were showing and are now hiding, fade
-    if (prevProps.active && !this.props.active) {
-      this.doFade();
-    }
-
-    // if we were hiding and are now showing, fade
-    if (!prevProps.active && this.props.active) {
-      this.doFade();
-    }
-*/
 
     //this.widget.redraw();
     //debug('component updated');
