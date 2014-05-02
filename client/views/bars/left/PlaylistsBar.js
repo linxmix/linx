@@ -3,6 +3,8 @@ var React = require('react');
 var debug = require('debug')('views:bars/PlaylistBar');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
+var _ = require('underscore');
+
 var Playlists = require('../../playlist/Playlists');
 
 module.exports = React.createClass({
@@ -32,8 +34,9 @@ module.exports = React.createClass({
   remove: function (e) {
     debug("remove", this.props);
     var playlist = this.props.viewingPlaylist;
-    // do not remove the queue
-    if (playlist && (playlist.get('type') === 'playlist')) {
+    // do not remove searchResults
+    if (playlist &&
+      (playlist.get('type') !== 'searchResults')) {
       var name = playlist.get('name');
       if (!!playlist.get('onSC')) {
         alert("Deleted playlist '" + name + "'' from here and SoundCloud.");
@@ -45,21 +48,33 @@ module.exports = React.createClass({
   render: function () {
     var className = "ui vertical inverted sidebar menu " +
       this.props.className;
+    var options = {
+      'playlistView': 'tab',
+      'playState': this.props.playState,
+      'viewingPlaylist': this.props.viewingPlaylist,
+      'playingPlaylist': this.props.playingPlaylist,
+      'handleClick': this.handleClick,
+      'dragging': this.props.dragging,
+      'className': "ui table inverted secondary purple segment",
+    };
+    var colls = this.getCollection();
     return (
         <div className={className}>
+
+          <div className="header item">
+            Mixes
+          </div>
+          {Playlists(_.extend({
+            'playlists': colls.mixes
+          }, options))}
+
           <div className="header item">
             Playlists
           </div>
-          {Playlists({
-            'playlistView': 'tab',
-            'playState': this.props.playState,
-            'viewingPlaylist': this.props.viewingPlaylist,
-            'playingPlaylist': this.props.playingPlaylist,
-            'playlists': this.getCollection().playlists,
-            'handleClick': this.handleClick,
-            'dragging': this.props.dragging,
-            'className': "ui table inverted secondary purple segment",
-          })}
+          {Playlists(_.extend({
+            'playlists': colls.playlists
+          }, options))}
+
           <div className="header item">
             <div className="small ui icon buttons">
               <div className="inverted purple ui icon button" onClick={this.add}>

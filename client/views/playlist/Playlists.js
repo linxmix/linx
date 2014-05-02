@@ -20,6 +20,8 @@ module.exports = React.createClass({
     }
 
     // make a Playlist for every playlist
+    var viewingPlaylist = this.props.viewingPlaylist;
+    var playingPlaylist = this.props.playingPlaylist;
     var playlists = this.props.playlists.map(function (playlist) {
       // skip searchResults if has no tracks
       if ((playlist.get('type') === 'searchResults') &&
@@ -27,9 +29,11 @@ module.exports = React.createClass({
         return;
       } else {
         return Playlist({
-          'active': (playlist.cid === this.props.viewingPlaylist.cid),
+          'active': (viewingPlaylist &&
+            (playlist.cid === viewingPlaylist.cid)),
           'playState': this.props.playState,
-          'isPlayingPlaylist': (playlist.cid === this.props.playingPlaylist.cid),
+          'isPlayingPlaylist': (playingPlaylist &&
+            (playlist.cid === playingPlaylist.cid)),
           'dragging': this.props.dragging,
           'playlist': playlist,
           'handleClick': this.props.handleClick,

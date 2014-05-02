@@ -7,12 +7,12 @@ module.exports = Playlist.extend({
 
   defaults: function () {
     var attributes = Playlist.prototype.defaults.apply(this, arguments);
-    attributes['type'] = 'searchResults';
-    attributes['name'] = 'Search Results';
+    attributes['type'] = 'favorites';
+    attributes['name'] = 'SoundCloud Favorites';
     return attributes;
   },
 
-  // cannot add or remove from searchResults
+  // cannot conventionally add or remove from favorites
   add: function (track) { },
   remove: function (track) { },
 

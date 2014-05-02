@@ -1,5 +1,7 @@
 var Backbone = require('backbone')
 
+var Tracks = require('../collections/Tracks');
+var Favorites = require('../models/Favorites');
 var User = require('./User');
 
 module.exports = User.extend({
@@ -22,6 +24,19 @@ module.exports = User.extend({
             console.error("error fetching user "+this.id+"'s tracks!");
           }.bind(this),
         });*/
+
+        // fetch user favorites
+        // and add as playlist to app playlists
+        this.favorites().fetch({
+          success: function (favorites, response, options) {
+            appPlaylists.add(new Favorites({
+              'tracks': favorites,
+            }), { 'at': 1 });
+          },
+          error: function () {
+            console.error("error fetching user "+this.id+"'s favorites!");
+          }.bind(this),
+        });
 
         // fetch user playlists
         // and add to app playlists

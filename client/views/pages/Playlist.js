@@ -14,7 +14,7 @@ module.exports = React.createClass({
 
   getDefaultProps: function () {
     return {
-      'className': 'ui large inverted purple test-main celled table segment',
+      'className': 'ui large sortable inverted purple test-main celled table segment',
     }
   },
 
@@ -96,48 +96,44 @@ module.exports = React.createClass({
   },
 
   render: function () {
+    var options = {
+      'loading': this.props.loading,
+      'playState': this.props.playState,
+      'className': this.props.className,
+      'trackView': this.state.trackView,
+      'setTrackSort': this.setTrackSort,
+      'dragging': this.props.dragging,
+      'setDragging': this.props.setDragging,
+      'addActiveTrack': this.addActiveTrack,
+      'setActiveTracks': this.setActiveTracks,
+      'changePlayState': this.props.changePlayState,
+      'handleRemoveClick': this.removeTrack,
+      'handlePlayClick': this.playpauseViewing,
+      'handleDblClick': this.playRow,
+      'showHistory': this.state.showHistory,
+      'setShowHistory': this.setShowHistory,
+    };
+    // add options if we have a viewingPlaylist
     var playlist = this.props.viewingPlaylist;
-    // get tracks from viewingPlaylist
-    var tracks = (playlist && playlist.tracks());
-    var history = (playlist && playlist.history());
-    var name = (playlist && playlist.get('name'));
-    // figure out if this playlist is playing
-    var playingPlaylist = this.props.playingPlaylist;
-    var isAppPlaying = (this.props.playState === 'play');
-    var isPlaying = (isAppPlaying &&
-      (playingPlaylist.cid === playlist.cid));
-    // if playlist isn't a mix, make it sortable
-    var className = this.props.className;
-    if (playlist.get('type') !== 'mix') {
-      className += ' sortable';
+    var tracksTable;
+    if (playlist) {
+      options['tracks'] = playlist.tracks();
+      options['history'] = playlist.history();
+      options['playlistName'] = playlist.get('name');
+      options['activeTracks'] = playlist.getActiveTracks();
+      options['playingTrack'] = playlist.get('playingTrack');
+      options['trackSort'] = playlist.get('trackSort');
+      // figure out if playlist is playing
+      var playingPlaylist = this.props.playingPlaylist;
+      var isAppPlaying = (this.props.playState === 'play');
+      options['isPlaying'] = ((isAppPlaying && playingPlaylist) &&
+        (playingPlaylist.cid === playlist.cid));
+      tracksTable = Tracks_Table(options);
     }
     // create tracks view
     return (
       <div>
-        {Tracks_Table({
-          'className': className,
-          'playlistName': name,
-          'tracks': tracks,
-          'history': history,
-          'trackView': this.state.trackView,
-          'isPlaying': isPlaying,
-          'loading': this.props.loading,
-          'playState': this.props.playState,
-          'activeTracks': playlist.getActiveTracks(),
-          'playingTrack': playlist.get('playingTrack'),
-          'trackSort': playlist.get('trackSort'),
-          'setTrackSort': this.setTrackSort,
-          'dragging': this.props.dragging,
-          'setDragging': this.props.setDragging,
-          'addActiveTrack': this.addActiveTrack,
-          'setActiveTracks': this.setActiveTracks,
-          'changePlayState': this.props.changePlayState,
-          'handleRemoveClick': this.removeTrack,
-          'handlePlayClick': this.playpauseViewing,
-          'handleDblClick': this.playRow,
-          'showHistory': this.state.showHistory,
-          'setShowHistory': this.setShowHistory,
-        })}
+        {tracksTable}
       </div>
     )
   },

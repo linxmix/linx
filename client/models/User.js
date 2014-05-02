@@ -23,6 +23,13 @@ module.exports = Backbone.Model.extend({
     });
   },
 
+  favorites: function () {
+    return new Tracks([], {
+      'userId': this.id,
+      'favorites': true,
+    });
+  },
+
   playlists: function () {
     return new Playlists([], {
       'userId': this.id,

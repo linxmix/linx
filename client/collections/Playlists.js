@@ -10,7 +10,6 @@ var Playlist = require('../models/Playlist');
 module.exports = Backbone.Collection.extend({
 
   initialize: function (models, options) {
-    console.log("MAKING PLAYLISTS", models, options);
     this.on("add", function(playlist) {
       debug("added playlist", playlist);
     });

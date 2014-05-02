@@ -5,6 +5,8 @@ var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var _ = require('underscore');
 
+var startPage = require('../config').startPage;
+
 var Me = require('../models/Me');
 var SearchResults = require('../models/SearchResults');
 var Edge = require('../models/Edge');
@@ -24,9 +26,7 @@ module.exports = React.createClass({
   mixins: [ReactBackboneMixin],
 
   getDefaultProps: function () {
-    var searchResults = new SearchResults({
-      'name': 'Search Results',
-    });
+    var searchResults = new SearchResults();
     var playlists = new Playlists([searchResults], {});
     
     return {
@@ -37,6 +37,7 @@ module.exports = React.createClass({
         'echoNest': new EchoNest(),
         'tasteProfiles': new TasteProfiles(),
         'playlists': playlists,
+        'mixes': new Playlists(),
         'myTracks': new Tracks(),
         'transitions': new Transitions(),
       },
@@ -46,7 +47,7 @@ module.exports = React.createClass({
 
   getInitialState: function () {
     return {
-      'page': 'Site',
+      'page': startPage,
     }
   },
 
