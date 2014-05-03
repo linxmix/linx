@@ -23,7 +23,7 @@
 /* transition must be last */
 @import '../node_modules/semantic/src/modules/transition.less';
 
-/*** Welcome Page ***/
+/*** Welcome ***/
 
 .welcome-page {
   /*background: url("http://1.bp.blogspot.com/-JkPWLmt4k9U/UWWYRTALSVI/AAAAAAAACHg/x3zcJrSeQgw/s1600/palmlix.com-night-sky-stars-background-psdgraphics.jpg") no-repeat center center fixed; */
@@ -65,7 +65,7 @@
   padding: 50px;
 }
 
-/*** /end Welcome Page ***/
+/*** /end Welcome ***/
 
 /*** Transitions ***/
 .example-enter {
@@ -86,6 +86,46 @@
   opacity: 0.01;
 }
 /*** /end Transitions ***/
+
+/*** Graph ***/
+
+.graph-wrapper {
+  overflow: scroll;
+  position: fixed !important;
+  position: absolute;
+  top: 51px;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin-bottom: 0;
+}
+
+#graph {
+  width: 2000px;
+  height: 1500px;
+}
+
+.link {
+  fill: none;
+  stroke: #666;
+  stroke-width: 2px;
+}
+
+circle {
+  fill: #ccc;
+  stroke: #888;
+  stroke-width: 1.5px;
+  cursor: pointer;
+}
+
+text {
+  fill: #00345E;
+  font: sans-serif;
+  font-size: 18px;
+  pointer-events: none;
+}
+
+/*** /end Graph ***/
 
 /* make playlists fixed height and scrollable */
 .playlists-tabs {
