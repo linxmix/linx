@@ -9,6 +9,12 @@ module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
+  getDefaultProps: function () {
+    return {
+      'wrapperClassName': '',
+    }
+  },
+
   render: function () {
 
     // determine which view to use
@@ -42,7 +48,7 @@ module.exports = React.createClass({
     }.bind(this));
 
     return (
-      <div>
+      <div className={this.props.wrapperClassName}>
         {playlists}
       </div>
     );

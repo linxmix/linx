@@ -16,6 +16,7 @@ var Transitions = require('../collections/Transitions');
 var EchoNest = require('../collections/EchoNest');
 var TasteProfiles = require('../collections/TasteProfiles');
 var Playlists = require('../collections/Playlists');
+var Mixes = require('../collections/Mixes');
 var Edges = require('../collections/Edges');
 
 var Site = require('./Site');
@@ -37,7 +38,7 @@ module.exports = React.createClass({
         'echoNest': new EchoNest(),
         'tasteProfiles': new TasteProfiles(),
         'playlists': playlists,
-        'mixes': new Playlists(),
+        'mixes': new Mixes(),
         'myTracks': new Tracks(),
         'transitions': new Transitions(),
       },
@@ -96,6 +97,8 @@ module.exports = React.createClass({
         //edge1.save();
       },
     });
+
+    this.getCollection().mixes.add({});
   },
 
 });

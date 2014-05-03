@@ -9,6 +9,7 @@ var Queue = require('./pages/Queue');
 var Uploader = require('./pages/Uploader');
 var LinxMap = require('./pages/LinxMap');
 var Playlist = require('./pages/Playlist');
+var MixBuilder = require('./pages/MixBuilder');
 
 module.exports = React.createClass({
   
@@ -30,11 +31,11 @@ module.exports = React.createClass({
       case 'LinxMap':
         renderedPage = LinxMap(this.props);
         break;
-      //case 'Queue':
-      //  renderedPage = Queue(this.props);
-      //  break;
-      case 'Playlist': case 'Queue':
+      case 'Playlist':
         renderedPage = Playlist(this.props);
+        break;
+      case 'MixBuilder':
+        renderedPage = MixBuilder(this.props);
         break;
       case 'Search':
         renderedPage = Search(this.props);

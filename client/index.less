@@ -87,6 +87,29 @@
 }
 /*** /end Transitions ***/
 
+/* make playlists fixed height and scrollable */
+.playlists-tabs {
+  height: 40%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* TODO: make this work */
+/* make tracks-table-body fixed height and scrollable */
+.tracks-table-body {
+  height: 200px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+
+main.main-container {
+  width: 850px;
+  height: 1000px;
+  margin: 0px auto;
+  padding-top: 30px;
+  overflow: hidden;
+}
+
 /* search icon in navbar */
 .ui.inverted.icon.menu .icon.search {
   color: #000;
@@ -132,12 +155,6 @@ body {
   outline: none !important;
   border-color: #9ecaed !important;
   box-shadow: 0 0 10px #9ecaed !important;
-}
-
-main.main-container {
-  width: 850px;
-  margin: 0px auto;
-  padding-top: 30px;
 }
 
 .ui.grid > .row > .tight-right {

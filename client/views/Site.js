@@ -148,8 +148,11 @@ module.exports = React.createClass({
     this.setState({
       'viewingPlaylist': newPlaylist,
     });
-    // jump to playlist page whenever setting viewingPlaylist
-    this.changePage('Playlist');
+    // change to correct page for playlist
+    switch (newPlaylist.get('type')) {
+      case 'playlist': this.changePage('Playlist'); break;
+      case 'mix': this.changePage('MixBuilder'); break;
+    }
   },
 
   setPlayingPlaylist: function (newPlaylist) {

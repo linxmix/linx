@@ -252,7 +252,7 @@ module.exports = React.createClass({
         <thead>
           <tr>{headers}</tr>
         </thead>
-        <tbody>
+        <tbody className="tracks-table-body">
           {track_tables}
         </tbody>
         <tfoot>

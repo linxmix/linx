@@ -17,6 +17,11 @@ module.exports = Playlist.extend({
     }, defaults);
   },
 
+  // cannot sort a mix
+  setTrackSort: function (trackSort) {
+    return;
+  },
+
   // mixes have no tracks, only a queue
   tracks: function () {
     return this.get('queue');

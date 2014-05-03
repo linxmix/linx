@@ -55,6 +55,7 @@ module.exports = React.createClass({
       'playingPlaylist': this.props.playingPlaylist,
       'handleClick': this.handleClick,
       'dragging': this.props.dragging,
+      'wrapperClassName': 'playlists-tabs',
       'className': "ui table inverted secondary purple segment",
     };
     var colls = this.getCollection();
@@ -62,17 +63,17 @@ module.exports = React.createClass({
         <div className={className}>
 
           <div className="header item">
-            Mixes
-          </div>
-          {Playlists(_.extend({
-            'playlists': colls.mixes
-          }, options))}
-
-          <div className="header item">
             Playlists
           </div>
           {Playlists(_.extend({
             'playlists': colls.playlists
+          }, options))}
+
+          <div className="header item">
+            Mixes
+          </div>
+          {Playlists(_.extend({
+            'playlists': colls.mixes
           }, options))}
 
           <div className="header item">

@@ -4,5 +4,5 @@ module.exports = {
   echoApiKey: "CWBME38JDGQNEJPXT",
   
   widgetModel: "Wave",
-  startPage: 'Welcome',
+  startPage: 'Site',
 }

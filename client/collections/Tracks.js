@@ -8,7 +8,6 @@ var Track = require('../models/Track');
 module.exports = Backbone.Collection.extend({
 
   initialize: function (models, options) {
-    debug("MAKING TRACKS", options);
     this.on("add", function(track) {
       debug("added track: " + track.get('title'));
     });
@@ -26,7 +25,6 @@ module.exports = Backbone.Collection.extend({
       url += "/tracks";
     }
     url += "?client_id=" + clientId;
-    debug("TRACKs URL", url);
     return url;
   },
 
