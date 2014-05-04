@@ -86,13 +86,11 @@ module.exports = React.createClass({
     var playlist = this.props.viewingPlaylist;
     // TODO: make sure they are in the same order as they are displayed on screen
     playlist.set({ 'activeTracks': tracks });
-    this.forceUpdate();
   },
 
   setTrackSort: function (attribute) {
     var playlist = this.props.viewingPlaylist;
     playlist.setTrackSort(attribute);
-    this.forceUpdate();
   },
 
   render: function () {
@@ -140,12 +138,12 @@ module.exports = React.createClass({
 
   resetListener: function (prevPlaylist) {
     // remove handler from prevPlaylist
-    if (prevPlaylist && this.onPlaylistChange) {
-      prevPlaylist.offChange(this.onPlaylistChange);
+    if (prevPlaylist && this.onPlaylistEvent) {
+      prevPlaylist.offEvents(this.onPlaylistEvent);
     }
     // force rerender on track change
-    var onPlaylistChange = this.onPlaylistChange || function () {
-      debug('onPlaylistChange', arguments);
+    var onPlaylistEvent = this.onPlaylistEvent || function () {
+      debug('onPlaylistEvent', arguments);
       try {
         this.forceUpdate();
       } catch (Error) { }
@@ -153,7 +151,7 @@ module.exports = React.createClass({
     // add handler to new playlist
     var playlist = this.props.viewingPlaylist;
     if (playlist) {
-      playlist.onChange(onPlaylistChange);
+      playlist.onEvents(onPlaylistEvent);
     }
   },
 
@@ -223,7 +221,9 @@ var SPECIAL_KEYS = {
 
   // remove selected tracks from viewingPlaylist
   'delete': function (e) {
-    this.props.viewingPlaylist.remove(true);
+    this.props.viewingPlaylist.remove(null, {
+      'activeTracks': true,
+    });
   },
 
   // deselect all tracks

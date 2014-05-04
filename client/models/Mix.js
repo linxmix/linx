@@ -17,17 +17,43 @@ module.exports = Playlist.extend({
     }, defaults);
   },
 
+  remove: function (tracks, options) {
+    if (!(tracks instanceof Array)) {
+      tracks = [tracks];
+    }
+    // if activeTrack is in tracks, remove activeTrack
+    activeTracks = this.getActiveTracks();
+    if (tracks.indexOf(activeTracks[0]) > -1) {
+      activeTracks = [];
+    }
+
+    // now do the actual removals
+    debug("removing tracks from mix", tracks);
+    this.tracks().remove(tracks, options);
+    this.set({ 'activeTracks': activeTracks });
+  },
+
   // cannot sort a mix
   setTrackSort: function (trackSort) {
     return;
   },
+
+  getActiveTrack: function () {
+    return this.getActiveTracks()[0];
+  },
+
+  setActiveTrack: function (track) {
+    var activeTracks = [];
+    if (track) { activeTracks.push(track); }
+    return this.set({ 'activeTracks', activeTracks })
+  }
 
   // mixes have no tracks, only a queue
   tracks: function () {
     return this.get('queue');
   },
 
-  // TODO
+  // TODO?
   bufferQueue: function () {
     return;
   },

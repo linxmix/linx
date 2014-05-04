@@ -14,20 +14,27 @@ var d3 = require('d3');
 module.exports = React.createClass({
   mixins: [ReactBackboneMixin],
 
-  render: function () {
-    return (<div id="graph"></div>);
+  getDefaultProps: function () {
+    var width = 1000;
+    var height = 1000;
+    return {
+      'width': width,
+      'height': height,
+      'x0': width / 2.0,
+      'y0': height / 2.0,
+      'r': height / 2.5,
+    }
   },
 
-  componentDidUpdate: function (prevProps, prevState) {
-    // TODO: refine this
-    this.update(prevProps, prevState);
+  render: function () {
+    return (<div id="graph"></div>);
   },
 
   componentDidMount: function () {
 
   // set graph width and height
-  var height = this.props.height;
   var width = this.props.width;
+  var height = this.props.height;
   this.$('#graph').width(width);
   this.$('#graph').height(height);
   // create svg
@@ -49,88 +56,119 @@ module.exports = React.createClass({
     .append("svg:path")
     .attr("d", "M0,-5L10,0L0,5");
 
-  // draw graph
-  this.update();
+  // update graph
+  this.updateQueueNodes();
+  this.updateUpNext();
+  this.updateNodes();
+  this.updateLinks();
 
   },
 
-  // update graph based on changes
-  // TODO: determine changes, then only do those
-  'update': function (prevProps, prevState) {
-    console.log("updateing graph");
+  componentDidUpdate: function (prevProps, prevState) {
+    var prevUpNext = prevProps.upNext;
+    var upNext = this.props.upNext;
+    var prevQueue = prevProps.queue;
+    var queue = this.props.queue;
+    var prevPlaying = prevProps.playing;
+    var playing = this.props.playing;
+    var prevActive = prevProps.active;
+    var active = this.props.active;
+    // see if things changed
+    var upNextNodes = (prevUpNext.nodes.cid !== upNext.nodes.cid);
+    var upNextLinks = (prevUpNext.links.cid !== upNext.links.cid);
+    var queueNodes = (prevQueue.nodes.cid !== queue.nodes.cid);
+    var queueLinks = (prevQueue.links.cid !== queue.links.cid);
 
-
-    // if we have a currSong, draw graph in view mix mode
-    if (Graph['currSong']) {
-
-      // position queued songs
-      Graph.updateQueuePositions();
-
-      // position upNext songs
-      Graph.updateUpNextPositions();
-
-      // update links and nodes
-      Graph['links'] = Graph['queuedTransitions'].concat(
-        Graph['transitionsUpNext']);
-      Graph['nodes'] = Graph['queuedSongs'].concat(
-        Graph['upNext']);
-
-      // redraw links and nodes
-      Graph.updateNodes();
-      Graph.updateLinks();
-
-    } // end view mix mode
-
-    // no currSong, so draw graph in intro mode
-    else {
-      // TODO
+    // update if upNext changed
+    if (upNextNodes || upNextLinks) {
+      this.updateUpNext();
     }
+    // update if queue changed
+    if (queueNodes || queueLinks) {
+      this.updateQueue();
+    }
+    // update if nodes changed
+    if (upNextNodes || queueNodes) {
+      this.updateNodes();
+    }
+    // update if links changed
+    if (upNextLinks || queueLinks) {
+      this.updateLinks();
+    }
+    // update if playing changed
+    if (playing) {
+      this.updatePlaying();
+    }
+    // update if active changed
+    if (active) {
+      this.updateActive();
+    }
+  },
 
-  }, // end update
+  // TODO: make this also do stuff for transition
+  'updateActive': function () {
+    // place activeTrack in center of screen
+    var active = this.props.active;
+    if (active) {
+      active.set({
+        'x': this.props.x0,
+        'y': this.props.y0,
+      });
+    }
+  },
+
+  // color playingTrack blue
+  'updatePlaying': function () {
+    var playing = this.props.playing;
+    if (playing) {
+      playing.set({ 'color': 2 });
+    }
+  },
 
   // place upNext songs in a circle around lastSong
-  'updateUpNextPositions': function() {
-    var upNext = this.state.upNext;
-    var x0 = this.state.x0;
-    var y0 = this.state.y0;
-    var r = this.state.r;
-    for (var i = 0; i < upNext.length; i++) {
-      var song = upNext[i];
-      var theta = (i / upNext.length) * (2.0 * Math.PI);
-      song['x'] = x0 + r * Math.cos(theta);
-      song['y'] = y0 + r * Math.sin(theta);
+  'updateUpNext': function () {
+    var nodes = this.props.upNext['nodes'];
+    var x0 = this.props.x0;
+    var y0 = this.props.y0;
+    var r = this.props.r;
+    for (var i = 0; i < nodes.length; i++) {
+      var node = nodes[i];
+      var theta = (i / nodes.length) * (2.0 * Math.PI);
+      node.set({
+        'x': x0 + r * Math.cos(theta),
+        'y': y0 + r * Math.sin(theta),
+        'color': 0,
+      });
     }
   },
 
   // place and color queued songs
-  'updateQueuePositions': function() {
-    var queuedSongs = Graph['queuedSongs'];
-    for (var i = 0; i < queuedSongs.length; i++) {
-      var song = queuedSongs[i];
-      song['x'] = 30 * i + 30;
-      song['y'] = Graph.height - 30;
-      song['color'] = (i == 0) ? 2 : 1;
-    }
-
-    // place lastSong in center of screen
-    var lastSong = queuedSongs[queuedSongs.length - 1];
-    if (lastSong) {
-      lastSong['x'] = Graph['x0'];
-      lastSong['y'] = Graph['y0'];
+  'updateQueue': function () {
+    var nodes = this.props.queue['nodes'];
+    for (var i = 0; i < nodes.length; i++) {
+      var node = nodes[i];
+      node.set({
+        'x': 30 * i + 30,
+        'y': Graph.height - 30,
+        'color': 1,
+      });
     }
   },
 
 
   // sync displayed svg with node data
-  'updateNodes': function(nodes) {
-    if (typeof nodes === 'undefined') { nodes = Graph.nodes; }
+  'updateNodes': function () {
+    var queueNodes = _.pluck(this.props.queue.nodes, 'attributes');
+    var upNextNodes = _.pluck(this.props.upNext.nodes, 'attributes');
+    var nodes = queueNodes.concat(upNextNodes);
 
     //
-    // JOIN new data to old nodes using _id as the key
+    // JOIN new data to old nodes using id as the key
     //
-    var node = Graph.svg.selectAll(".node")
-      // TODO: does this update existing nodes with new data?
-      .data(nodes, function (d) { return d._id; });
+    var node = this.svg.selectAll(".node")
+      // TODO: does this update existing models with new
+      //       data? even when changed by 'set'?
+      .data(nodes, function (d) { return d.id; });
 
     // 
     // ENTER new data as new nodes
@@ -139,25 +177,14 @@ module.exports = React.createClass({
       .attr("class", "node")
       // initial position
       .attr("transform", function(d) {
-        var x = Graph.width / 2;
+        var x = this.width / 2;
         var y = 0;
         return "translate(" + x + "," + y + ")";
-      })
-      // play or queue node on double click
+      }.bind(this))
+      // TODO: play or queue node on double click
       .on("dblclick", function (d) {
-        if (d.transition) {
-          Mixer.queue({
-            'sample': d.transition,
-            'index': d.transition['index'],
-          });
-          // update graph
-          Graph.update();
-        } else if (!Graph['currSong']) {
-          Mixer.play(d);
-          // force graph redraw
-          Graph.forceRedraw();
-        }
-      });
+        debug("dblclick", d);
+      }.bind(this));
 
     // animate flying in
     enter.transition(1000)
@@ -167,20 +194,23 @@ module.exports = React.createClass({
 
     // add the circles
     enter.append("circle")
-      .attr("r", 10)
+      .attr("r", function (d) { return d.r; })
+      // TODO: can style inherit from properites of d?
       .style("fill", colorNode)
       // color and grow node on mouseover
       .on("mouseover", function (d) {
-        var color = (Graph['currSong'] && (d._id == Graph['currSong']._id)) ? 2 : 1;
+        var color = 1;
+        var active = this.props.active;
+        if (active && active.id === d.id) { color = 2; }
         d3.select(this).transition()
           .duration(300)
           .attr("r", 15)
           .style("fill", function (d) { return colorNode({ color: color }); });
-      })
+      }.bind(this))
       .on("mouseout", function (d) {
         d3.select(this).transition()
           .duration(300)
-          .attr("r", 10)
+          .attr("r", function (d) { return d.r; })
           .style("fill", colorNode);
       });
 
@@ -188,7 +218,7 @@ module.exports = React.createClass({
     enter.append("text")
       .attr("x", 12)
       .attr("dy", ".35em")
-      .text(function(d) { return d.name; });
+      .text(function(d) { return d.title; });
 
     // 
     // UPDATE existing nodes
@@ -196,12 +226,11 @@ module.exports = React.createClass({
     node.transition()
       .duration(1000)
       .attr("transform", function(d) {
-        console.log("updating node: ", d);
         return "translate(" + d.x + "," + d.y + ")";
       })
       .select("circle")
       // recolor node's circle
-      .style("fill", function (d) { return colorNode(d); });
+      .style("fill", colorNode);
 
     //
     // EXIT old nodes
@@ -212,15 +241,16 @@ module.exports = React.createClass({
   }, // /end updateNodes
 
   // sync displayed svg with link data
-  'updateLinks': function(links) {
-    if (typeof links === 'undefined') { links = Graph.links; }
+  'updateLinks': function () {
+    var queueLinks = _.pluck(this.props.queue.links, 'attributes');
+    var upNextLinks = _.pluck(this.props.upNext.links, 'attributes');
+    var links = queueLinks.concat(upNextLinks);
 
     //
-    // JOIN new data to old links using _id as the key
+    // JOIN new data to old links using id as the key
     //
-    console.log("links", links)
-    var path = Graph.svg.selectAll(".link")
-      .data(links, function (d) { return d._id; });
+    var path = this.svg.selectAll(".link")
+      .data(links, function (d) { return d.id; });
 
     //
     // ENTER new data as new links
@@ -307,7 +337,7 @@ function tick() {
     d.target.y;
   });
 
-  Graph.svg.selectAll(".node").attr("transform", function(d) {
+  this.svg.selectAll(".node").attr("transform", function(d) {
     return "translate(" + d.x + "," + d.y + ")";
   });
 }

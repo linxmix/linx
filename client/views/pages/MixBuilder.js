@@ -6,74 +6,124 @@ var debug = require('debug')('views:pages/MixBuilder')
 var _ = require('underscore');
 
 var Graph = require('./Graph');
+var Nodes = require('../../collections/Nodes');
+var Links = require('../../collections/Links');
 
 module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
-  // determine which songs and transitions are upNext
-  // TODO: port this idea
-  /*
-  'computeUpNext': function() {
-    var queuedSongs = Graph['queuedSongs'];
-    var lastSong = queuedSongs[queuedSongs.length - 1]
-    var queuedSongIds = queuedSongs.map(function (song) {
-      return song._id;
+  getInitialState: function () {
+    this.decomposeQueue();
+    return { };
+  },
+
+  computeUpNext: function () {
+    var mix = this.props.viewingPlaylist;
+    var activeTrack = mix.getActiveTrack();
+    switch (activeTrack['linxType']) {
+      case 'song': break; // TODO: make graph flower
+      case 'transition': break; // TODO: make graph lines
+    }
+    // TODO: set nodes and links of upNext
+    throw new Error("computeUpNext incomplete!");
+    var songs; var transitions;
+    this.setState({
+      'upNext': {
+        'nodes': new Nodes(songs.pluck('id')),
+        'links': new Links(transitions.forEach(function (transition) {
+          return {
+            'id': transition.id,
+            'transitionType': transition.transitionType,
+          }
+        })),
+      },
     });
-    // find all transitions out of lastSong
-    var startTime = (lastSong._id === Graph['currSong']._id) ?
-        Mixer.getCurrentPosition() : lastSong.startTime;
-    Graph['transitionsUpNext'] = Transitions.find({
-      'startSong': lastSong._id,
-      'startSongEnd': { $gt: startTime },
-      // exclude songs already in the queue
-      'endSong': { $nin: queuedSongIds }
-    }).fetch();
-    // add endSong of each transition to upNext
-    Graph['upNext'] =
-      Graph['transitionsUpNext'].map(function (transition) {
-        var song = Songs.findOne(transition.endSong);
-        song['transition'] = transition;
-        return song;
+  },
+
+  decomposeQueue: function () {
+    var mix = this.props.viewingPlaylist;
+    var songs = mix.getSongs();
+    var transitions = mix.getTransitions();
+    this.setState({
+      'queue': {
+        'nodes': new Nodes(songs.pluck('id')),
+        'links': new Links(transitions.forEach(function (transition) {
+          return {
+            'id': transition.id,
+            'transitionType': transition.transitionType,
+          }
+        })),
+      },
     });
-  },*/
+  },
 
   render: function () {
-    var options = {};
-
-    // TODO: make this work, including stuff like:
-    /*
-      'currSong': null,
-      'queuedSongs': [],
-      'queuedTransitions': [],
-      'upNext': [],
-      'transitionsUpNext': [],
-      'nodes': [],
-      'links': [],
-      'width': 0,
-      'height': 0,
-      'x0': 0,
-      'y0': 0,
-      'r': 0,
-      'svg': null,
-      // set graph width and height to be that of client's screen
-      var width = this.width = $(window).width() - 50;
-      var height = this.height = $(window).height() - 96;
-      this.x0 = width / 2.0;
-      this.y0 = height / 2.0;
-      this.r = height / 2.5;
-      this.$('#graph').width(width);
-      this.$('#graph').height(height);
-      */
-    // determine vars for graph
-
+    var mix = this.props.viewingPlaylist;
+    var queue = this.state.queue;
+    var upNext = this.state.upNext;
+    var active = queue.get(mix.getActiveTrack());
+    var playing = queue.get(mix.get('playingTrack'));
     return (
     <div>
       <div className="graph-wrapper">
-        {Graph(_.defaults(options, this.props))}
+        {Graph({
+          'active': active,
+          'playing': playing,
+          'queue': queue,
+          'upNext': upNext,
+        })}
       </div>
     </div>
     );
+  },
+
+  resetListener: function (prevMix) {
+    // remove handlers from prevMix
+    if (prevMix) {
+      if (this.onMixChange) {
+        prevMix.offEvents(this.onMixChange);
+      }
+      if (this.onActiveChange) {
+        prevMix.offEvents(this.onActiveChange);
+      }
+      if (this.onPlayingChange) {
+        prevMix.offEvents(this.onPlayingChange);
+      }
+    }
+    // recalculate on changes
+    var onMixChange = this.onMixChange || function onMixChange(newTrack) {
+      debug('onMixChange', this, newTrack);
+      this.decomposeQueue();
+    }.bind(this);
+    var onActiveChange = this.onActiveChange || function onActiveChange(newTrack) {
+      debug('onActiveChange', this, newTrack);
+      this.computeUpNext();
+    }.bind(this);
+    var onPlayingChange = this.onPlayingChange || function onPlayingChange(newTrack) {
+      debug('onPlayingChange', this, newTrack);
+      this.forceUpdate();
+    }.bind(this);
+    // add handlers to new mix
+    var mix = this.props.viewingPlaylist;
+    if (mix) {
+      mix.onEvents(onMixChange, ['add', 'remove']);
+      mix.onEvents(onActiveChange, ['change:activeTrack']);
+      mix.onEvents(onPlayingChange, ['change:playingTrack']);
+    }
+  },
+
+  componentDidMount: function () {
+    this.resetListener();
+  },
+
+  componentDidUpdate: function (prevProps, prevState) {
+    var prevMix = prevProps.viewingPlaylist;
+    var mix = this.props.viewingPlaylist;
+    // switch mix listener if mix changed
+    if (mix && ((prevMix && prevMix.cid) !== mix.cid)) {
+      this.resetListener(prevMix);
+    }
   },
 
 });

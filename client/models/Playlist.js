@@ -82,6 +82,14 @@ module.exports = Backbone.Model.extend({
     return this.get('tracks');
   },
 
+  getSongs: function () {
+    return this.get('queue').getSongs();
+  },
+
+  getTransitions: function () {
+    return this.get('queue').getTransitions();
+  },
+
   // returns tracks previously played from this playlist, youngest to oldest
   history: function () {
     return this.get('queue').history;
@@ -131,11 +139,11 @@ module.exports = Backbone.Model.extend({
     this.tracks().add(tracks, options);
   },
 
-  remove: function (tracks) {
+  remove: function (tracks, options) {
 
     // if bool, remove activeTracks
     var activeTracks;
-    if (typeof tracks === 'boolean') {
+    if (options.activeTracks) {
       activeTracks = [];
       tracks = this.getActiveTracks();
     // otherwise remove any tracks from activeTracks
@@ -156,11 +164,11 @@ module.exports = Backbone.Model.extend({
     var queue = this.get('queue');
     queue.remove(_.filter(queue, function(track) {
       return (tracks.indexOf(track) > -1);
-    }));
+    }), options);
 
     // now do the actual removals
     debug("removing tracks", tracks);
-    this.tracks().remove(tracks);
+    this.tracks().remove(tracks, options);
     this.set({ 'activeTracks': activeTracks });
   },  
 
@@ -225,16 +233,27 @@ module.exports = Backbone.Model.extend({
     this.get('queue').off('cycle', callback);
   },
 
-  onChange: function (callback) {
-    this.tracks().on('add', callback);
-    this.tracks().on('remove', callback);
-    this.on('change:playingTrack', callback);
+  getDefaultEvents: function () {
+    return [
+      'add', 'remove', 'change:playingTrack',
+      'change:activeTrack', 'change:trackSort',
+    ];
   },
 
-  offChange: function (callback) {
-    this.tracks().off('add', callback);
-    this.tracks().off('remove', callback);
-    this.off('change:playingTrack', callback);
+  onEvents: function (callback, events) {
+    events = events || this.getDefaultEvents();
+    var tracks = this.tracks();
+    events.forEach(function (event) {
+      tracks.on(event, callback);
+    });
+  },
+
+  offEvents: function (callback, events) {
+    events = events || this.getDefaultEvents();
+    var tracks = this.tracks();
+    events.forEach(function (event) {
+      tracks.off(event, callback);
+    });
   },
 
   // TODO: make this always play in order of tracks
@@ -303,6 +322,7 @@ module.exports = Backbone.Model.extend({
         Backbone.sync.apply(this, arguments); break;
 
       case 'create':
+      // TODO: does _.pluck work here?
         var trackIds = playlist.tracks().models.map(function (track) {
           return { 'id': track.id }
         });
@@ -315,6 +335,7 @@ module.exports = Backbone.Model.extend({
         break;
 
       case 'update':
+      // TODO: does _.pluck work here?
         var trackIds = playlist.tracks().models.map(function (track) {
           return { 'id': track.id }
         });

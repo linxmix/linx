@@ -11,6 +11,7 @@ module.exports = Track.extend({
     var defaults = Track.prototype.defaults.apply(this, arguments);
     return _.defaults({
       'linxType': 'transition',
+      'transitionType': 'dj',
     }, defaults);
   },
 
@@ -22,6 +23,11 @@ module.exports = Track.extend({
     }
     // continue regular constructor
     Track.apply(this, arguments);
+  },
+
+  // saves edge to server
+  save: function () {
+    return this.get('edge').save(arguments);
   },
 
   // ids

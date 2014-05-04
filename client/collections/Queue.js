@@ -78,6 +78,22 @@ module.exports = Tracks.extend({
     this.syncCalls = 0;
   },
 
+  // TODO: TEST THIS
+  getSongs: function () {
+    _.filter(this.models, function (track) {
+      return (track.get('linkType') === 'song');
+    });
+  },
+
+  // TODO: TEST THIS
+  getTransitions: function () {
+    // TODO: also make soft transitions!
+    throw new Error("getTransitions incomplete!");
+    return _.filter(this.models, function (track) {
+      return (track.get('linkType') === 'transition');
+    });
+  },
+
   getPrev: function (index) {
     var prevIndex = index - 1;
     return (prevIndex > -1) && this.at(prevIndex);
