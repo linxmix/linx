@@ -4,6 +4,7 @@ var debug = require('debug')('collections:Queue')
 var _ = require('underscore');
 
 var Track = require('../models/Track');
+var Transition_Soft = require('../models/Transition_Soft');
 var Tracks = require('./Tracks');
 var Widgets = require('./Widgets');
 
@@ -78,20 +79,32 @@ module.exports = Tracks.extend({
     this.syncCalls = 0;
   },
 
-  // TODO: TEST THIS
   getSongs: function () {
-    _.filter(this.models, function (track) {
+    return new Tracks(_.filter(this.models, function (track) {
       return (track.get('linkType') === 'song');
-    });
+    }));
   },
 
-  // TODO: TEST THIS
+  // interpolate soft transitions
   getTransitions: function () {
-    // TODO: also make soft transitions!
-    throw new Error("getTransitions incomplete!");
-    return _.filter(this.models, function (track) {
-      return (track.get('linkType') === 'transition');
-    });
+    var transitions = new Tracks();
+    for (var i = 0; i < this.length; i++) {
+      var track = this.at(i);
+      var prevTrack = this.getPrev(i);
+      switch (track.linxType) {
+        case 'transition': 
+          transitions.push(track); break;
+        // if 2 songs in a row, make a soft transition
+        case 'song':
+          if (prevTrack && prevTrack.linxType === 'song') {
+            transitions.push(new Transition_Soft({
+              'in': prevTrack.id,
+              'out': track.id,
+            }));
+          } break;
+      }
+    }
+    return transitions;
   },
 
   getPrev: function (index) {

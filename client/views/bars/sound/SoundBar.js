@@ -1,8 +1,11 @@
 /** @jsx React.DOM */
 var debug = require('debug')('views:bars/sound/SoundBar');
 var React = require('react');
+var Backbone = require('Backbone');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 //var ReactCSSTransitionGroup = require('react/addons/CSSTransitionGroup');
+
+var _ = require('underscore');
 
 var Tab = require('../nav/Tab');
 
@@ -12,6 +15,12 @@ var WidgetView = (require('../../../config').widgetModel === 'SC') ?
 module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
+
+  getDefaultProps: function () {
+    return {
+      'listener': _.extend({}, Backbone.Events),
+    }
+  },
 
   onLoadStart: function (widget) {
     if (!this.props.hasLoaded) {
@@ -71,21 +80,29 @@ module.exports = React.createClass({
     )
   },
 
-  resetListener: function (prevPlaylist) {
-    // remove handler from prevPlaylist
-    if (prevPlaylist && this.onCycle) {
-      prevPlaylist.offCycle(this.onCycle);
-    }
-    // force rerender on track change
-    var onCycle = this.onCycle || function onCycle(newTrack) {
-      debug('onCycle', this, newTrack);
-      this.forceUpdate();
-    }.bind(this);
-    // add handler to new playlist
-    var playlist = this.props.playingPlaylist;
+  listenTo: function (playlist) {
     if (playlist) {
-      playlist.onCycle(onCycle);
+      var listener = this.props.listener;
+      var queue = playlist.get('queue');
+      // need to wrap so calls with no args
+      var forceUpdate = function () {
+        this.forceUpdate();
+      }.bind(this);
+      listener.listenTo(queue, 'cycle',
+        forceUpdate);
     }
+  },
+
+  stopListening: function (playlist) {
+    if (playlist) {
+      var queue = playlist.get('queue');
+      this.props.listener.stopListening(queue);
+    }
+  },
+
+  resetListener: function (prevPlaylist) {
+    this.stopListening(prevPlaylist);
+    this.listenTo(this.props.playingPlaylist);
   },
 
   componentDidMount: function () {
@@ -99,6 +116,10 @@ module.exports = React.createClass({
     if (playlist && ((prevPlaylist && prevPlaylist.cid) !== playlist.cid)) {
       this.resetListener(prevPlaylist);
     }
+  },
+
+  componentWillUnmount: function () {
+    this.stopListening(this.props.playingPlaylist);
   },
 
 });

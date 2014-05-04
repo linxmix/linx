@@ -44,20 +44,19 @@ module.exports = Backbone.Model.extend({
   },
 
   initialize: function () {
+    var queue = new Queue([], {
+      'numWidgets': this.options['numWidgets'],
+      'id': this.cid,
+    });
     this.set({
-      'queue': new Queue([], {
-          'numWidgets': this.options['numWidgets'],
-          'id': this.cid,
-        }),
+      'queue': queue,
     });
 
     // set track sort
     this.setTrackSort(this.get('trackSort'));
 
     // rebuffer queue on cycle
-    this.onCycle(function (newTrack) {
-      this.bufferQueue();
-    }.bind(this));
+    queue.on('cycle', this.bufferQueue.bind(this));
 
     // update playingTrack on queue change
     var updatePlayingTrack = function () {
@@ -69,8 +68,8 @@ module.exports = Backbone.Model.extend({
         this.set({ 'playingTrack': queue.at(0) })
       }
     }.bind(this);
-    this.get('queue').on('add', updatePlayingTrack);
-    this.get('queue').on('remove', updatePlayingTrack);
+    queue.on('add', updatePlayingTrack)
+    queue.on('remove', updatePlayingTrack)
 
   },
 
@@ -95,10 +94,10 @@ module.exports = Backbone.Model.extend({
     return this.get('queue').history;
   },
   
-  setTrackSort: function (trackSort) {
+  setTrackSort: function (trackSort, options) {
     if (this.get('type') !== 'queue') {
       debug("setting new track sort", trackSort);
-      this.set({ 'trackSort': trackSort });
+      this.set({ 'trackSort': trackSort }, options);
       var tracks = this.tracks();
       // change sort attribute then sort
       var key = trackSort.key;
@@ -117,6 +116,31 @@ module.exports = Backbone.Model.extend({
       }
       // rebuffer queue since now our order changed
       this.bufferQueue();
+    }
+  },
+
+  addActiveTrack: function (track, options) {
+    if (track) {
+      var activeTracks = playlist.getActiveTracks();
+      activeTracks.push(track);
+      playlist.setActiveTracks(activeTracks, options)
+    } else {
+      debug("WARNING: addActiveTrack given no track!");
+    }
+  },
+
+  // TODO: make sure they are in sort order
+  setActiveTracks: function (tracks, options) {
+    options = options ? options : {};
+    if (!(tracks instanceof Array)) {
+      throw new Error("setActiveTracks not given array");
+    }
+    var prevActiveTracks = this.getActiveTracks();
+    this.set({ 'activeTracks': tracks }, options);
+    // if same array, manually trigger change event
+    if ((tracks === prevActiveTracks) &&
+      !(options.silent)) {
+      this.trigger('change:activeTracks', this, tracks, options);
     }
   },
 
@@ -223,37 +247,6 @@ module.exports = Backbone.Model.extend({
 
   getTimingKey: function () {
     return this.get('queue').getTimingKey();
-  },
-
-  onCycle: function (callback) {
-    this.get('queue').on('cycle', callback);
-  },
-
-  offCycle: function (callback) {
-    this.get('queue').off('cycle', callback);
-  },
-
-  getDefaultEvents: function () {
-    return [
-      'add', 'remove', 'change:playingTrack',
-      'change:activeTrack', 'change:trackSort',
-    ];
-  },
-
-  onEvents: function (callback, events) {
-    events = events || this.getDefaultEvents();
-    var tracks = this.tracks();
-    events.forEach(function (event) {
-      tracks.on(event, callback);
-    });
-  },
-
-  offEvents: function (callback, events) {
-    events = events || this.getDefaultEvents();
-    var tracks = this.tracks();
-    events.forEach(function (event) {
-      tracks.off(event, callback);
-    });
   },
 
   // TODO: make this always play in order of tracks

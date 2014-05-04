@@ -601,6 +601,25 @@ describe("#Queue", function () {
     setTimeout(done, 1500);
   });
 
+  it("can decompose 2 songs into a soft transition", function (done) {
+    queue.add([song0, song1]);
+    var songs = queue.getSongs();
+    expect(songs.length).equal(2);
+    expect(songs.models[0].id).equal(queue.models[0].id);
+    expect(songs.models[1].id).equal(queue.models[1].id);
+    var transitions = queue.getTransitions();
+    expect(transitions.length).equal(1);
+    var transition = transitions.models[0];
+    expect(transition.linxType).equal('transition');
+    expect(transition.transitionType).equal('soft');
+    expect(transition.save()).equal(false);
+    expect(transition.getEdgeId()).equal('soft');
+    expect(transition.getInId()).equal(song0.id);
+    expect(transition.getOutId()).equal(song1.id);
+    setTimeout(done, 1500);
+  });
+
+
 });
 
 function printQueue(queue) {

@@ -1,10 +1,12 @@
 /** @jsx React.DOM */
 var React = require('react');
+var Backbone = require('Backbone');
 var debug = require('debug')('views:pages/Playlist');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var $ = require('jquery');
 var keymap = require('browser-keymap');
+var _ = require('underscore');
 
 var Tracks_Table = require('../track/Tracks_Table');
 
@@ -14,6 +16,7 @@ module.exports = React.createClass({
 
   getDefaultProps: function () {
     return {
+      'listener': _.extend({}, Backbone.Events),
       'className': 'ui large sortable inverted purple test-main celled table segment',
     }
   },
@@ -72,38 +75,14 @@ module.exports = React.createClass({
     playlist.play(options);
   },
 
-  addActiveTrack: function (track) {
-    var playlist = this.props.viewingPlaylist;
-    var activeTracks = playlist.getActiveTracks();
-    activeTracks.push(track);
-    this.setActiveTracks(activeTracks)
-  },
-
-  setActiveTracks: function (tracks) {
-    if (!(tracks instanceof Array)) {
-      return debug("ERROR: setActiveTracks not given array", tracks);
-    }
-    var playlist = this.props.viewingPlaylist;
-    // TODO: make sure they are in the same order as they are displayed on screen
-    playlist.set({ 'activeTracks': tracks });
-  },
-
-  setTrackSort: function (attribute) {
-    var playlist = this.props.viewingPlaylist;
-    playlist.setTrackSort(attribute);
-  },
-
   render: function () {
     var options = {
       'loading': this.props.loading,
       'playState': this.props.playState,
       'className': this.props.className,
       'trackView': this.state.trackView,
-      'setTrackSort': this.setTrackSort,
       'dragging': this.props.dragging,
       'setDragging': this.props.setDragging,
-      'addActiveTrack': this.addActiveTrack,
-      'setActiveTracks': this.setActiveTracks,
       'changePlayState': this.props.changePlayState,
       'handleRemoveClick': this.removeTrack,
       'handlePlayClick': this.playpauseViewing,
@@ -119,6 +98,9 @@ module.exports = React.createClass({
       options['history'] = playlist.history();
       options['playlistName'] = playlist.get('name');
       options['activeTracks'] = playlist.getActiveTracks();
+      options['addActiveTrack'] = playlist.addActiveTrack.bind(playlist);
+      options['setActiveTracks'] = playlist.setActiveTracks.bind(playlist);
+      options['setTrackSort'] = playlist.setTrackSort.bind(playlist);
       options['playingTrack'] = playlist.get('playingTrack');
       options['trackSort'] = playlist.get('trackSort');
       // figure out if playlist is playing
@@ -136,29 +118,40 @@ module.exports = React.createClass({
     )
   },
 
-  resetListener: function (prevPlaylist) {
-    // remove handler from prevPlaylist
-    if (prevPlaylist && this.onPlaylistEvent) {
-      prevPlaylist.offEvents(this.onPlaylistEvent);
-    }
-    // force rerender on track change
-    var onPlaylistEvent = this.onPlaylistEvent || function () {
-      debug('onPlaylistEvent', arguments);
-      try {
-        this.forceUpdate();
-      } catch (Error) { }
-    }.bind(this);
-    // add handler to new playlist
-    var playlist = this.props.viewingPlaylist;
+  listenTo: function (playlist) {
     if (playlist) {
-      playlist.onEvents(onPlaylistEvent);
+      var tracks = playlist.tracks();
+      var listener = this.props.listener;
+      // need to wrap so calls with no args
+      var cb = function () {
+        debug("onPlaylistEvent", arguments);
+        this.forceUpdate();
+      }.bind(this);
+      listener.listenTo(tracks, 'add', cb)
+      listener.listenTo(tracks, 'remove', cb)
+      listener.listenTo(playlist, 'change:playingTrack', cb)
+      listener.listenTo(playlist, 'change:activeTracks', cb)
     }
+  },
+
+  stopListening: function (playlist) {
+    if (playlist) {
+      var tracks = playlist.tracks();
+      var listener = this.props.listener;
+      listener.stopListening(tracks);
+      listener.stopListening(playlist);
+    }
+  },
+
+  resetListener: function (prevPlaylist) {
+    this.stopListening(prevPlaylist);
+    this.listenTo(this.props.viewingPlaylist);
   },
 
   componentDidMount: function () {
     this.resetListener();
 
-    // unbind old listener
+    // unbind old key press listener
     $(document).unbind('keydown');
 
     // key press listener
@@ -188,6 +181,11 @@ module.exports = React.createClass({
     if (playlist && ((prevPlaylist && prevPlaylist.cid) !== playlist.cid)) {
       this.resetListener(prevPlaylist);
     }
+  },
+
+  componentWillUnmount: function () {
+    debug("UNMOUNTING");
+    this.stopListening(this.props.viewingPlaylist);
   },
 
 });
@@ -228,7 +226,7 @@ var SPECIAL_KEYS = {
 
   // deselect all tracks
   'escape': function (e) {
-    this.setActiveTracks([]);
+    this.props.viewingPlaylist.setActiveTracks([]);
   },
 
   // play selected track
@@ -243,7 +241,8 @@ var SPECIAL_KEYS = {
 
   // select all tracks
   'C-a': function (e) {
-    this.setActiveTracks(this.props.viewingPlaylist.tracks().models);
+    var playlist = this.props.viewingPlaylist;
+    playlist.setActiveTracks(playlist.tracks().models);
   },
 
 }

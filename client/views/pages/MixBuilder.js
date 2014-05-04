@@ -1,6 +1,7 @@
 /** @jsx React.DOM */
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
+var Backbone = require('Backbone');
 var debug = require('debug')('views:pages/MixBuilder')
 
 var _ = require('underscore');
@@ -13,9 +14,23 @@ module.exports = React.createClass({
   
   mixins: [ReactBackboneMixin],
 
+  getDefaultProps: function () {
+    return {
+      'listener': _.extend({}, Backbone.Events),
+    }
+  },
+
   getInitialState: function () {
-    this.decomposeQueue();
-    return { };
+    return {
+      'queue': {
+        'nodes': new Nodes(),
+        'links': new Links(),
+      },
+      'upNext': {
+        'nodes': new Nodes(),
+        'links': new Links(),
+      },
+    };
   },
 
   computeUpNext: function () {
@@ -43,30 +58,35 @@ module.exports = React.createClass({
 
   decomposeQueue: function () {
     var mix = this.props.viewingPlaylist;
-    var songs = mix.getSongs();
-    var transitions = mix.getTransitions();
-    this.setState({
-      'queue': {
-        'nodes': new Nodes(songs.pluck('id')),
-        'links': new Links(transitions.forEach(function (transition) {
-          return {
-            'id': transition.id,
-            'transitionType': transition.transitionType,
-          }
-        })),
-      },
-    });
+    if (mix) {
+      var songs = mix.getSongs();
+      var transitions = mix.getTransitions();
+      this.setState({
+        'queue': {
+          'nodes': new Nodes(songs.pluck('id')),
+          'links': new Links(transitions.forEach(function (transition) {
+            return {
+              'id': transition.id,
+              'transitionType': transition.transitionType,
+            }
+          })),
+        },
+      });
+    }
   },
 
   render: function () {
     var mix = this.props.viewingPlaylist;
     var queue = this.state.queue;
     var upNext = this.state.upNext;
-    var active = queue.get(mix.getActiveTrack());
-    var playing = queue.get(mix.get('playingTrack'));
+    var active, playing;
+    if (mix && mix.type === 'mix') {
+      active = queue.nodes.get(mix.getActiveTrack());
+      playing = queue.links.get(mix.get('playingTrack'));
+    }
     return (
-    <div>
-      <div className="graph-wrapper">
+    <div className="ui grid">
+      <div className="sixteen wide column graph-wrapper">
         {Graph({
           'active': active,
           'playing': playing,
@@ -78,39 +98,37 @@ module.exports = React.createClass({
     );
   },
 
-  resetListener: function (prevMix) {
-    // remove handlers from prevMix
-    if (prevMix) {
-      if (this.onMixChange) {
-        prevMix.offEvents(this.onMixChange);
-      }
-      if (this.onActiveChange) {
-        prevMix.offEvents(this.onActiveChange);
-      }
-      if (this.onPlayingChange) {
-        prevMix.offEvents(this.onPlayingChange);
-      }
-    }
-    // recalculate on changes
-    var onMixChange = this.onMixChange || function onMixChange(newTrack) {
-      debug('onMixChange', this, newTrack);
-      this.decomposeQueue();
-    }.bind(this);
-    var onActiveChange = this.onActiveChange || function onActiveChange(newTrack) {
-      debug('onActiveChange', this, newTrack);
-      this.computeUpNext();
-    }.bind(this);
-    var onPlayingChange = this.onPlayingChange || function onPlayingChange(newTrack) {
-      debug('onPlayingChange', this, newTrack);
-      this.forceUpdate();
-    }.bind(this);
-    // add handlers to new mix
-    var mix = this.props.viewingPlaylist;
+  listenTo: function (mix) {
     if (mix) {
-      mix.onEvents(onMixChange, ['add', 'remove']);
-      mix.onEvents(onActiveChange, ['change:activeTrack']);
-      mix.onEvents(onPlayingChange, ['change:playingTrack']);
+      var listener = this.props.listener;
+      // need to wrap so calls with no args
+      var forceUpdate = function () {
+        this.forceUpdate();
+      }.bind(this);
+      // listen to mix
+      listener.listenTo(mix, 'change:activeTracks',
+        this.computeUpNext);
+      listener.listenTo(mix, 'change:playingTrack',
+        forceUpdate);
+      // listen to tracks
+      var tracks = mix.tracks();
+      listener.listenTo(tracks, 'add',
+        this.decomposeQueue);
+      listener.listenTo(tracks, 'remove',
+        this.decomposeQueue);
     }
+  },
+
+  stopListening: function (mix) {
+    if (mix) {
+      this.props.listener.stopListening(mix);
+    }
+  },
+
+  resetListener: function (prevMix) {
+    this.stopListening(prevMix);
+    this.decomposeQueue();
+    this.listenTo(this.props.viewingPlaylist);
   },
 
   componentDidMount: function () {
@@ -124,6 +142,10 @@ module.exports = React.createClass({
     if (mix && ((prevMix && prevMix.cid) !== mix.cid)) {
       this.resetListener(prevMix);
     }
+  },
+
+  componentWillUnmount: function () {
+    this.stopListening(this.props.viewingPlaylist);
   },
 
 });

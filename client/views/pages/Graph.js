@@ -32,35 +32,35 @@ module.exports = React.createClass({
 
   componentDidMount: function () {
 
-  // set graph width and height
-  var width = this.props.width;
-  var height = this.props.height;
-  this.$('#graph').width(width);
-  this.$('#graph').height(height);
-  // create svg
-  var svg = this.svg = d3.select("#graph").append("svg")
-    .attr("width", width)
-    .attr("height", height);
+    // set graph width and height
+    var width = this.props.width;
+    var height = this.props.height;
+    this.$('#graph').width(width);
+    this.$('#graph').height(height);
+    // create svg
+    var svg = this.svg = d3.select("#graph").append("svg")
+      .attr("width", width)
+      .attr("height", height);
 
-  // build arrows
-  svg.append("svg:defs").selectAll("marker")
-    .data(["end"])
-    .enter().append("svg:marker")
-    .attr("id", String)
-    .attr("viewBox", "0 -5 10 10")
-    .attr("refX", 15)
-    .attr("refY", -1.5)
-    .attr("markerWidth", 6)
-    .attr("markerHeight", 6)
-    .attr("orient", "auto")
-    .append("svg:path")
-    .attr("d", "M0,-5L10,0L0,5");
+    // build arrows
+    svg.append("svg:defs").selectAll("marker")
+      .data(["end"])
+      .enter().append("svg:marker")
+      .attr("id", String)
+      .attr("viewBox", "0 -5 10 10")
+      .attr("refX", 15)
+      .attr("refY", -1.5)
+      .attr("markerWidth", 6)
+      .attr("markerHeight", 6)
+      .attr("orient", "auto")
+      .append("svg:path")
+      .attr("d", "M0,-5L10,0L0,5");
 
-  // update graph
-  this.updateQueueNodes();
-  this.updateUpNext();
-  this.updateNodes();
-  this.updateLinks();
+    // update graph
+    this.updateQueue();
+    this.updateUpNext();
+    this.updateNodes();
+    this.updateLinks();
 
   },
 
@@ -125,6 +125,19 @@ module.exports = React.createClass({
     }
   },
 
+  // place and color queued songs
+  'updateQueue': function () {
+    var nodes = this.props.queue['nodes'];
+    for (var i = 0; i < nodes.length; i++) {
+      var node = nodes[i];
+      node.set({
+        'x': 30 * i + 30,
+        'y': Graph.height - 30,
+        'color': 1,
+      });
+    }
+  },
+
   // place upNext songs in a circle around lastSong
   'updateUpNext': function () {
     var nodes = this.props.upNext['nodes'];
@@ -141,20 +154,6 @@ module.exports = React.createClass({
       });
     }
   },
-
-  // place and color queued songs
-  'updateQueue': function () {
-    var nodes = this.props.queue['nodes'];
-    for (var i = 0; i < nodes.length; i++) {
-      var node = nodes[i];
-      node.set({
-        'x': 30 * i + 30,
-        'y': Graph.height - 30,
-        'color': 1,
-      });
-    }
-  },
-
 
   // sync displayed svg with node data
   'updateNodes': function () {

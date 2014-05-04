@@ -20,7 +20,7 @@ module.exports = React.createClass({
 
   getInitialState: function () {
     return {
-      'page': 'Playlist',
+      'page': 'MixBuilder',
       'playState': 'stop',
       'viewingPlaylist': null,
       'playingPlaylist': null,
@@ -145,14 +145,18 @@ module.exports = React.createClass({
 
   setViewingPlaylist: function (newPlaylist) {
     debug("setViewingPlaylist", newPlaylist);
+    // change to correct page for playlist
+    var page;
+    switch (newPlaylist.get('type')) {
+      case 'playlist': case 'searchResults':
+        page = 'Playlist'; break;
+      case 'mix':
+        page = 'MixBuilder'; break;
+    }
     this.setState({
+      'page': page,
       'viewingPlaylist': newPlaylist,
     });
-    // change to correct page for playlist
-    switch (newPlaylist.get('type')) {
-      case 'playlist': this.changePage('Playlist'); break;
-      case 'mix': this.changePage('MixBuilder'); break;
-    }
   },
 
   setPlayingPlaylist: function (newPlaylist) {
