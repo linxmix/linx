@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 var debug = require('debug')('views:bars/sound/SoundBar');
 var React = require('react');
-var Backbone = require('Backbone');
+var Backbone = require('backbone');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 //var ReactCSSTransitionGroup = require('react/addons/CSSTransitionGroup');
 

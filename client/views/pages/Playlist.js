@@ -1,6 +1,6 @@
 /** @jsx React.DOM */
 var React = require('react');
-var Backbone = require('Backbone');
+var Backbone = require('backbone');
 var debug = require('debug')('views:pages/Playlist');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 

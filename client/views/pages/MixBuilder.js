@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
-var Backbone = require('Backbone');
+var Backbone = require('backbone');
 var debug = require('debug')('views:pages/MixBuilder')
 
 var _ = require('underscore');
