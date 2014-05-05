@@ -89,20 +89,14 @@
 
 /*** Graph ***/
 
-.graph-wrapper {
-  overflow: scroll;
-  position: fixed !important;
-  position: absolute;
-  top: 51px;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  margin-bottom: 0;
+.ui.segment.graph-wrapper {
+  width: 80%;
+  min-width: 600px;
+  margin: 0px auto;
 }
 
 #graph {
-  width: 1000px;
-  height: 1000px;
+  height: 400px;
 }
 
 .link {
@@ -142,12 +136,14 @@ text {
   overflow-x: hidden;
 }
 
-main.main-container {
-  width: 850px;
-  height: 1000px;
-  margin: 0px auto;
+.main-container {
   padding-top: 30px;
-  overflow: hidden;
+}
+
+.playlist {
+  min-width: 600px;
+  width: 70%;
+  margin: 0px auto;
 }
 
 /* search icon in navbar */
@@ -166,8 +162,9 @@ main.main-container {
 
 body {
   margin: 0;
-  background: url("http://hdw.datawallpaper.com/nature/starry-night-wide-wallpaper-340918.jpg") no-repeat center center fixed; 
-  background-size: cover;
+  background-color: rgba(33,33,33,0.4);
+ /* background: url("http://hdw.datawallpaper.com/nature/starry-night-wide-wallpaper-340918.jpg") no-repeat center center fixed; 
+  background-size: cover;*/
 }
 
 /* make menu bar backgrounds semi transparent */
@@ -219,20 +216,19 @@ body {
   z-index: 1;
 }
 
-.bottom-sidebar {
+.bottom-menu {
   text-align: center;
   margin: 0 auto;
   height: 42px;
 }
 
-.bottom-menu {
+.bottom-sidebar {
   position: fixed;
   bottom: 0%;
-  width: 100%;
-  margin-left: 0%;
-  margin-right: 0%;
-  margin-top: 0px;
-  margin-bottom: 0px;
+  left: 0;
+  right: 0;
+  margin-left: auto;
+  margin-right: auto;
   z-index: 12;
 }
 

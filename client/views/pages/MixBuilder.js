@@ -5,6 +5,7 @@ var Backbone = require('Backbone');
 var debug = require('debug')('views:pages/MixBuilder')
 
 var _ = require('underscore');
+var $ = require('jquery');
 
 var Graph = require('./Graph');
 var Nodes = require('../../collections/Nodes');
@@ -61,16 +62,21 @@ module.exports = React.createClass({
     if (mix) {
       var songs = mix.getSongs();
       var transitions = mix.getTransitions();
-      debug("DECOMPOSING QUEUE", mix, songs, transitions)
+      var nodes = songs.map(function (song) {
+        return { 'id': song.id };
+      });
+      var links = transitions.map(function (transition) {
+        return {
+          'id': transition.id,
+          'transitionType': transition.get('transitionType'),
+        };
+      });
+      debug("DECOMPOSING QUEUE", songs.length, nodes,
+        transitions.length, links);
       this.setState({
         'queue': {
-          'nodes': new Nodes(songs.pluck('id')),
-          'links': new Links(transitions.forEach(function (transition) {
-            return {
-              'id': transition.id,
-              'transitionType': transition.transitionType,
-            }
-          })),
+          'nodes': new Nodes(nodes),
+          'links': new Links(links),
         },
       });
     }
@@ -86,15 +92,13 @@ module.exports = React.createClass({
       playing = queue.links.get(mix.get('playingTrack'));
     }
     return (
-    <div className="ui segment">
-      <div className="graph-wrapper">
+    <div className="graph-wrapper inverted purple ui segment">
         {Graph({
           'active': active,
           'playing': playing,
           'queue': queue,
           'upNext': upNext,
         })}
-      </div>
     </div>
     );
   },

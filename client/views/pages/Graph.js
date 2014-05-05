@@ -15,8 +15,8 @@ module.exports = React.createClass({
   mixins: [ReactBackboneMixin],
 
   getDefaultProps: function () {
-    var width = 1000;
-    var height = 1000;
+    var width = 200;
+    var height = 200;
     return {
       'width': width,
       'height': height,
@@ -27,20 +27,15 @@ module.exports = React.createClass({
   },
 
   render: function () {
-    return (<div id="graph"></div>);
+    return (<svg id="graph"></svg>);
   },
 
   componentDidMount: function () {
 
-    // set graph width and height
-    var width = this.props.width;
-    var height = this.props.height;
-    this.$('#graph').width(width);
-    this.$('#graph').height(height);
     // create svg
-    var svg = this.svg = d3.select("#graph").append("svg")
-      .attr("width", width)
-      .attr("height", height);
+    var svg = this.svg = d3.select("#graph");
+      //.attr('viewbox', 0, 0, 200, 200)
+      //.attr('height', 100)
 
     // build arrows
     svg.append("svg:defs").selectAll("marker")
@@ -61,6 +56,8 @@ module.exports = React.createClass({
     this.updateUpNext();
     this.updateNodes();
     this.updateLinks();
+    this.updatePlaying();
+    this.updateActive();
 
   },
 
@@ -74,10 +71,11 @@ module.exports = React.createClass({
     var prevActive = prevProps.active;
     var active = this.props.active;
     // see if things changed
-    var upNextNodes = (prevUpNext.nodes.cid !== upNext.nodes.cid);
-    var upNextLinks = (prevUpNext.links.cid !== upNext.links.cid);
-    var queueNodes = (prevQueue.nodes.cid !== queue.nodes.cid);
-    var queueLinks = (prevQueue.links.cid !== queue.links.cid);
+    var upNextNodes = (prevUpNext.nodes !== upNext.nodes);
+    var upNextLinks = (prevUpNext.links !== upNext.links);
+    var queueNodes = (prevQueue.nodes !== queue.nodes);
+    var queueLinks = (prevQueue.links !== queue.links);
+    debug("GRAPH UPDATE", queueNodes, queueLinks);
 
     // update if upNext changed
     if (upNextNodes || upNextLinks) {
@@ -109,6 +107,7 @@ module.exports = React.createClass({
   'updateActive': function () {
     // place activeTrack in center of screen
     var active = this.props.active;
+    debug("UPDATING ACTIVE", active);
     if (active) {
       active.set({
         'x': this.props.x0,
@@ -120,6 +119,7 @@ module.exports = React.createClass({
   // color playingTrack blue
   'updatePlaying': function () {
     var playing = this.props.playing;
+    debug("UPDATING PLAYING", playing);
     if (playing) {
       playing.set({ 'color': 2 });
     }
@@ -128,11 +128,13 @@ module.exports = React.createClass({
   // place and color queued songs
   'updateQueue': function () {
     var nodes = this.props.queue['nodes'];
+    debug("UPDATING QUEUE", nodes);
+    var height = this.props.height;
     for (var i = 0; i < nodes.length; i++) {
-      var node = nodes[i];
+      var node = nodes.at(i);
       node.set({
         'x': 30 * i + 30,
-        'y': Graph.height - 30,
+        'y': height - 30,
         'color': 1,
       });
     }
@@ -141,11 +143,12 @@ module.exports = React.createClass({
   // place upNext songs in a circle around lastSong
   'updateUpNext': function () {
     var nodes = this.props.upNext['nodes'];
+    debug("UPDATING UPNEXT", nodes);
     var x0 = this.props.x0;
     var y0 = this.props.y0;
     var r = this.props.r;
     for (var i = 0; i < nodes.length; i++) {
-      var node = nodes[i];
+      var node = nodes.at(i);
       var theta = (i / nodes.length) * (2.0 * Math.PI);
       node.set({
         'x': x0 + r * Math.cos(theta),
@@ -157,9 +160,10 @@ module.exports = React.createClass({
 
   // sync displayed svg with node data
   'updateNodes': function () {
-    var queueNodes = _.pluck(this.props.queue.nodes, 'attributes');
-    var upNextNodes = _.pluck(this.props.upNext.nodes, 'attributes');
+    var queueNodes = _.pluck(this.props.queue.nodes.models, 'attributes');
+    var upNextNodes = _.pluck(this.props.upNext.nodes.models, 'attributes');
     var nodes = queueNodes.concat(upNextNodes);
+    debug("UPDATE NODES", nodes)
 
     //
     // JOIN new data to old nodes using id as the key
@@ -241,9 +245,10 @@ module.exports = React.createClass({
 
   // sync displayed svg with link data
   'updateLinks': function () {
-    var queueLinks = _.pluck(this.props.queue.links, 'attributes');
-    var upNextLinks = _.pluck(this.props.upNext.links, 'attributes');
+    var queueLinks = _.pluck(this.props.queue.links.models, 'attributes');
+    var upNextLinks = _.pluck(this.props.upNext.links.models, 'attributes');
     var links = queueLinks.concat(upNextLinks);
+    debug("UPDATE LINKS", links)
 
     //
     // JOIN new data to old links using id as the key

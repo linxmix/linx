@@ -112,7 +112,7 @@ module.exports = React.createClass({
     }
     // create tracks view
     return (
-      <div>
+      <div className="playlist">
         {tracksTable}
       </div>
     )

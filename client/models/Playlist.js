@@ -315,7 +315,6 @@ module.exports = Backbone.Model.extend({
         Backbone.sync.apply(this, arguments); break;
 
       case 'create':
-      // TODO: does _.pluck work here?
         var trackIds = playlist.tracks().models.map(function (track) {
           return { 'id': track.id }
         });
@@ -328,7 +327,6 @@ module.exports = Backbone.Model.extend({
         break;
 
       case 'update':
-      // TODO: does _.pluck work here?
         var trackIds = playlist.tracks().models.map(function (track) {
           return { 'id': track.id }
         });

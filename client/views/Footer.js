@@ -56,8 +56,8 @@ module.exports = React.createClass({
     })) : launchTab;
 
     return (
-      <div className="bottom-menu">
-        <div className="semi-transparent bottom-sidebar">
+      <div className="bottom-sidebar">
+        <div className="semi-transparent bottom-menu">
           {menu}
         </div>
         <div className={hidden}>
