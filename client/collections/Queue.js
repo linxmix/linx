@@ -80,8 +80,8 @@ module.exports = Tracks.extend({
   },
 
   getSongs: function () {
-    return new Tracks(_.filter(this.models, function (track) {
-      return (track.get('linkType') === 'song');
+    return new Tracks(this.where({
+      'linxType': 'song',
     }));
   },
 
@@ -91,17 +91,21 @@ module.exports = Tracks.extend({
     for (var i = 0; i < this.length; i++) {
       var track = this.at(i);
       var prevTrack = this.getPrev(i);
-      switch (track.linxType) {
+      switch (track.get('linxType')) {
+
         case 'transition': 
           transitions.push(track); break;
+
         // if 2 songs in a row, make a soft transition
         case 'song':
-          if (prevTrack && prevTrack.linxType === 'song') {
+          var type = prevTrack && prevTrack.get('linxType');
+          if (type === 'song') {
             transitions.push(new Transition_Soft({
               'in': prevTrack.id,
               'out': track.id,
             }));
           } break;
+
       }
     }
     return transitions;

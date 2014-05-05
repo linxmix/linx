@@ -61,6 +61,7 @@ module.exports = React.createClass({
     if (mix) {
       var songs = mix.getSongs();
       var transitions = mix.getTransitions();
+      debug("DECOMPOSING QUEUE", mix, songs, transitions)
       this.setState({
         'queue': {
           'nodes': new Nodes(songs.pluck('id')),
@@ -85,8 +86,8 @@ module.exports = React.createClass({
       playing = queue.links.get(mix.get('playingTrack'));
     }
     return (
-    <div className="ui grid">
-      <div className="sixteen wide column graph-wrapper">
+    <div className="ui segment">
+      <div className="graph-wrapper">
         {Graph({
           'active': active,
           'playing': playing,
@@ -121,7 +122,10 @@ module.exports = React.createClass({
 
   stopListening: function (mix) {
     if (mix) {
-      this.props.listener.stopListening(mix);
+      var listener = this.props.listener;
+      var tracks = mix.tracks();
+      listener.stopListening(mix);
+      listener.stopListening(tracks);
     }
   },
 

@@ -41,18 +41,6 @@ module.exports = Backbone.Model.extend({
     return def;
   },
 
-  onAnalyzed: function (cb) {
-    if (this.get('analyzed')) {
-      cb()
-    } else {
-      this.on('change:analyzed', cb);
-    }
-  },
-
-  offAnalyzed: function (cb) {
-    this.off('change:analyzed', cb);
-  },
-
   // analyzes track from SC on echonest.
   analyze: function (options) {
     var track = this;

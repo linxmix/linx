@@ -2,12 +2,12 @@
 var React = require('react');
 var debug = require('debug')('views:track/Track_Wave');
 var Backbone = require('backbone');
-
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var Track_List_SC = require('./Track_List_SC');
 var Widget_Wave = require('../../models/Widget_Wave');
 
+var _ = require('underscore');
 var WaveSurfer = require('wavesurfer.js');
 
 module.exports = React.createClass({
@@ -16,6 +16,7 @@ module.exports = React.createClass({
 
   getDefaultProps: function () {
     return {
+      'listener': _.extend({}, Backbone.Events),
       'active': true,
       'playing': false,
       'playState': 'stop',
@@ -71,37 +72,39 @@ module.exports = React.createClass({
     );
   },
 
-  newWidget: function (prevWidget) {
-    var widget = this.props.widget;
-
-    // remove from prevWidget
-    if (prevWidget && this.onLoadingChange) {
-      prevWidget.off('change:loading', this.onLoadingChange);
-    }
-    prevWidget && prevWidget.unsetPlayer();
-
-    // make handler
-    var onLoadingChange = this.onLoadingChange || function (widget, loading) {
-      debug("onLoadingChange", widget.get('index'),
-        this.props.playing, widget.get('playState'), loading)
-      // TODO: fix this
-      if (this.props.playing) {
-        if (loading) {
-          this.props.onLoadStart(widget);
-        } else {
-          this.props.onLoadEnd(widget);
+  listenTo: function (widget) {
+    if (widget) {
+      var listener = this.props.listener;
+      var cb = function (widget, loading) {
+        if (this.props.playing) {
+          if (loading) {
+            this.props.onLoadStart(widget);
+          } else {
+            this.props.onLoadEnd(widget);
+          }
         }
+      }.bind(this);
+      listener.listenTo(widget, 'change:loading', cb);
+      // load track if given
+      if (this.props.track) {
+        widget.setTrack(this.props.track);
       }
-    }.bind(this);
-
-    // add to new widget
-    widget.on('change:loading', onLoadingChange);
-    widget.setPlayer(this.wave);
-    // load track if given
-    if (this.props.track) {
-      widget.setTrack(this.props.track);
+      // set new player
+      widget.setPlayer(this.wave);
+      this.setWidgetPlayState();
     }
-    this.setWidgetPlayState();
+  },
+
+  stopListening: function (widget) {
+    if (widget) {
+      this.props.listener.stopListening(widget);
+      widget.unsetPlayer()
+    }
+  },
+
+  resetListener: function (prevWidget) {
+    this.stopListening(prevWidget);
+    this.listenTo(this.props.widget);
   },
 
   // rendered component has updated
@@ -110,9 +113,9 @@ module.exports = React.createClass({
     // if widget changed, load new stuff into it
     var widget = this.props.widget;
     var prevWidget = prevProps.widget;
-    if (widget && (widget.cid !== prevWidget.cid)) {
+    if (widget.cid !== prevWidget.cid) {
       debug("NEW WIDGET");
-      this.newWidget(prevWidget);
+      this.resetListener(prevWidget);
     } else {
       this.setWidgetPlayState();
     }
@@ -208,18 +211,16 @@ module.exports = React.createClass({
       'dragSelection': this.props.dragSelection,
       'loopSelection': this.props.loopSelection,
     });
-    this.newWidget()
+    this.resetListener()
     //
     // /end init
     //
   },
 
-  // component will be unmounted from the DOM
   componentWillUnmount: function () {
-    debug("componentWillUnmount");
 
-    // remove wavesurfer from widget
-    this.props.widget.unsetPlayer();
+    // disconnect from widget
+    this.stopListening(this.props.widget);
 
     // clean up the wavesurfer
     this.wave.destroy();

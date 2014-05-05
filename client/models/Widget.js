@@ -32,7 +32,7 @@ module.exports = Backbone.Model.extend({
       } catch (e) { }
       var gain = LOUDNESS - loudness
       var vol = Math.pow(10, gain / 20);
-      if (!isNaN(vol) && this.get('playState') !== 'play') {
+      if (!isNaN(vol)) {
         this.setVolume('normalize', vol);
       }
     }
@@ -44,14 +44,19 @@ module.exports = Backbone.Model.extend({
       volumes[type] = level;
       this.set({ 'volumes': volumes });
     }
+    this.assertVolume();
+  },
+
+  assertVolume: function () {
+    var volumes = this.get('volumes');
     var player = this.get('player');
-    if (player) {
+    if (player && this.get('playState') !== 'play') {
       var endVol = 1;
       // adjust endVol for each in volumes
       _.values(volumes).forEach(function (vol) {
         endVol *= vol;
-      })
-      debug("setting volume", endVol);
+      });
+      debug("asserting volume", endVol);
       player.setVolume(endVol);
     }
   },
@@ -67,24 +72,25 @@ module.exports = Backbone.Model.extend({
       this.load(this.get('options'));
     }
     // setup track listeners
-    this.newTrack(prevTrack);
+    this.resetListener(prevTrack);
   },
 
-  newTrack: function (prevTrack) {
-    var track = this.get('track');
-    // remove handler from prev
-    if (prevTrack && this.onAnalyzed) {
-      prevTrack.offAnalyzed(this.onAnalyzed);
+  resetListener: function (prevTrack) {
+    if (prevTrack) {
+      this.stopListening(prevTrack);
     }
-    // update on track analyzed
-    var onAnalyzed = this.onAnalyzed || function onAnalyzed() {
-      debug('onAnalyzed', this);
-      this.setTimingMarks();
-      this.equalizeVolume();
-    }.bind(this);
-    // add handler to new
+    var track = this.get('track');
     if (track) {
-      track.onAnalyzed(onAnalyzed);
+      var cb = function () {
+        debug('onAnalyzed', this);
+        this.setTimingMarks();
+        this.equalizeVolume();
+      }.bind(this);
+      if (track.get('analyzed')) {
+        cb();
+      } else {
+        this.listenTo(track, 'change:analyzed', cb)
+      }
     }
   },
 
