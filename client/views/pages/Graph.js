@@ -6,7 +6,7 @@ var debug = require('debug')('views:pages/MixBuilder')
 var _ = require('underscore');
 var $ = jQuery = require('jquery');
 var d3 = require('d3');
-var overscroll = require('overscroll');
+require('jquery-overscroll');
 
 // TODO: make it so links are drawn naturally instead of in tick
 // TODO: fix linx map view, broken because using "x" instead of "px"?
@@ -32,7 +32,7 @@ module.exports = React.createClass({
   },
 
   componentDidMount: function () {
-    debug("OVERSCROLL", overscroll);
+    debug("OVERSCROLL", jQuery.fn.overscroll);
 
     // create svg
     var svg = this.svg = d3.select("#graph");
