@@ -84,6 +84,7 @@
     "level-writestream": "^0.1.1",
     "browser-keymap": "0.0.1",
     "queue": "^2.2.0",
-    "d3": "^3.4.6"
+    "d3": "^3.4.6",
+    "jquery-overscroll": "git://github.com/linxmusic/overscroll"
   }
 }
