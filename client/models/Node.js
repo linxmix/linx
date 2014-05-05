@@ -7,7 +7,7 @@ module.exports = Backbone.Model.extend({
     return {
       'x': null,
       'y': null,
-      'r': 10,
+      'r': 100,
       'color': 0,
     }
   },

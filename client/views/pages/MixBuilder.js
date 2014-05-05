@@ -62,21 +62,11 @@ module.exports = React.createClass({
     if (mix) {
       var songs = mix.getSongs();
       var transitions = mix.getTransitions();
-      var nodes = songs.map(function (song) {
-        return { 'id': song.id };
-      });
-      var links = transitions.map(function (transition) {
-        return {
-          'id': transition.id,
-          'transitionType': transition.get('transitionType'),
-        };
-      });
-      debug("DECOMPOSING QUEUE", songs.length, nodes,
-        transitions.length, links);
+      debug("DECOMPOSING QUEUE", songs, transitions);
       this.setState({
         'queue': {
-          'nodes': new Nodes(nodes),
-          'links': new Links(links),
+          'nodes': new Nodes(songs.models),
+          'links': new Links(transitions.models),
         },
       });
     }

@@ -23,7 +23,9 @@
 /* transition must be last */
 @import '../node_modules/semantic/src/modules/transition.less';
 
+/***************/
 /*** Welcome ***/
+/***************/
 
 .welcome-page {
   /*background: url("http://1.bp.blogspot.com/-JkPWLmt4k9U/UWWYRTALSVI/AAAAAAAACHg/x3zcJrSeQgw/s1600/palmlix.com-night-sky-stars-background-psdgraphics.jpg") no-repeat center center fixed; */
@@ -65,9 +67,10 @@
   padding: 50px;
 }
 
-/*** /end Welcome ***/
-
+/*******************/
 /*** Transitions ***/
+/*******************/
+
 .example-enter {
   opacity: 0.01;
   transition: opacity .5s ease-in;
@@ -85,9 +88,10 @@
 .example-leave.example-leave-active {
   opacity: 0.01;
 }
-/*** /end Transitions ***/
 
+/*************/
 /*** Graph ***/
+/*************/
 
 .ui.segment.graph-wrapper {
   width: 80%;
@@ -95,11 +99,11 @@
   margin: 0px auto;
 }
 
-#graph {
+svg#graph {
+  width: 100%;
+  /* TODO: make this not fixed */
   height: 600px;
-  height: 800px;
-  overflow: scroll;
-  viewbox: 0 0 800 600;
+  /*overflow: scroll;*/
 }
 
 .link {
@@ -110,8 +114,8 @@
 
 circle {
   fill: #ccc;
-  stroke: #888;
-  stroke-width: 1.5px;
+  stroke: #000;
+  stroke-width: 0.1;
   cursor: pointer;
 }
 
@@ -122,7 +126,9 @@ text {
   pointer-events: none;
 }
 
+/******************/
 /*** /end Graph ***/
+/******************/
 
 /* make playlists fixed height and scrollable */
 .playlists-tabs {

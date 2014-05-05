@@ -16,8 +16,8 @@ module.exports = React.createClass({
   mixins: [ReactBackboneMixin],
 
   getDefaultProps: function () {
-    var width = 200;
-    var height = 200;
+    var width = 160;
+    var height = 100;
     return {
       'width': width,
       'height': height,
@@ -28,16 +28,18 @@ module.exports = React.createClass({
   },
 
   render: function () {
-    return (<svg id="graph"></svg>);
+    return (<svg id="graph">
+    </svg>);
   },
+      //<rect x="0" y="0" width="100" height="100" fill="yellow" stroke="black" stroke-width="12"/>
 
   componentDidMount: function () {
     debug("OVERSCROLL", jQuery.fn.overscroll);
 
     // create svg
-    var svg = this.svg = d3.select("#graph");
-      //.attr('viewbox', 0, 0, 200, 200)
-      //.attr('height', 100)
+    var svg = this.svg = d3.select("#graph")
+      .attr('viewBox', '0 0 160 100')
+      .attr('preserveAspectRatio', 'none')
 
     // build arrows
     svg.append("svg:defs").selectAll("marker")
@@ -131,12 +133,12 @@ module.exports = React.createClass({
   'updateQueue': function () {
     var nodes = this.props.queue['nodes'];
     debug("UPDATING QUEUE", nodes);
-    var height = this.props.height;
+    var width = this.props.width;
     for (var i = 0; i < nodes.length; i++) {
       var node = nodes.at(i);
       node.set({
-        'x': 30 * i + 30,
-        'y': height - 30,
+        'x': 5,
+        'y': 5 * i + 5,
         'color': 1,
       });
     }
@@ -199,31 +201,29 @@ module.exports = React.createClass({
 
     // add the circles
     enter.append("circle")
-      .attr("r", function (d) { return d.r; })
+      .attr("r", 2)
       // TODO: can style inherit from properites of d?
       .style("fill", colorNode)
       // color and grow node on mouseover
       .on("mouseover", function (d) {
         var color = 1;
-        var active = this.props.active;
-        if (active && active.id === d.id) { color = 2; }
         d3.select(this).transition()
           .duration(300)
-          .attr("r", 15)
+          .attr("r", 3)
           .style("fill", function (d) { return colorNode({ color: color }); });
-      }.bind(this))
+      })
       .on("mouseout", function (d) {
         d3.select(this).transition()
           .duration(300)
-          .attr("r", function (d) { return d.r; })
+          .attr("r", 2)
           .style("fill", colorNode);
       });
 
     // add the text 
     enter.append("text")
-      .attr("x", 12)
+      .attr("x", 1)
       .attr("dy", ".35em")
-      .text(function(d) { return d.title; });
+      //.text(function(d) { return d.title; });
 
     // 
     // UPDATE existing nodes
