@@ -30,7 +30,7 @@ module.exports = React.createClass({
   render: function () {
     return (<svg id="graph">
     </svg>);
-  },
+  },  
       //<rect x="0" y="0" width="100" height="100" fill="yellow" stroke="black" stroke-width="12"/>
 
   componentDidMount: function () {
@@ -201,7 +201,7 @@ module.exports = React.createClass({
 
     // add the circles
     enter.append("circle")
-      .attr("r", 2)
+      .attr("r", 1.5)
       // TODO: can style inherit from properites of d?
       .style("fill", colorNode)
       // color and grow node on mouseover
@@ -209,21 +209,21 @@ module.exports = React.createClass({
         var color = 1;
         d3.select(this).transition()
           .duration(300)
-          .attr("r", 3)
+          .attr("r", 2)
           .style("fill", function (d) { return colorNode({ color: color }); });
       })
       .on("mouseout", function (d) {
         d3.select(this).transition()
           .duration(300)
-          .attr("r", 2)
+          .attr("r", 1.5)
           .style("fill", colorNode);
       });
 
     // add the text 
     enter.append("text")
-      .attr("x", 1)
+      .attr("x", 4)
       .attr("dy", ".35em")
-      //.text(function(d) { return d.title; });
+      .text(function(d) { return d.title; });
 
     // 
     // UPDATE existing nodes
