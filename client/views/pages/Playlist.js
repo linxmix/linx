@@ -48,35 +48,12 @@ module.exports = React.createClass({
     if (ctrl) {
       this.props.addUploaderTrack(track);
     } else {
-      this.playViewing(e, { 'track': track });
+      this.props.playViewing(e, { 'track': track });
     }
-  },
-
-  playpauseViewing: function (e, options) {
-    e && e.preventDefault();
-    e && e.stopPropagation();
-    var playingPlaylist = this.props.playingPlaylist;
-    var playlist = this.props.viewingPlaylist;
-    var isAppPlaying = (this.props.playState === 'play');
-    var isPlaying = (isAppPlaying &&
-      (playingPlaylist.cid === playlist.cid));;
-    debug("playpauseViewing", isPlaying)
-    if (isPlaying) {
-      this.props.changePlayState('pause');
-    } else {
-      this.playViewing(e, options);
-    }
-  },
-
-  playViewing: function (e, options) {
-    var playlist = this.props.viewingPlaylist;
-    this.props.setPlayingPlaylist(playlist);
-    this.props.changePlayState('play');
-    playlist.play(options);
   },
 
   render: function () {
-    var options = {
+    var props = {
       'loading': this.props.loading,
       'playState': this.props.playState,
       'className': this.props.className,
@@ -85,30 +62,30 @@ module.exports = React.createClass({
       'setDragging': this.props.setDragging,
       'changePlayState': this.props.changePlayState,
       'handleRemoveClick': this.removeTrack,
-      'handlePlayClick': this.playpauseViewing,
+      'handlePlayClick': this.props.playpauseViewing,
       'handleDblClick': this.playRow,
       'showHistory': this.state.showHistory,
       'setShowHistory': this.setShowHistory,
     };
-    // add options if we have a viewingPlaylist
+    // add props if we have a viewingPlaylist
     var playlist = this.props.viewingPlaylist;
     var tracksTable;
     if (playlist) {
-      options['tracks'] = playlist.tracks();
-      options['history'] = playlist.history();
-      options['playlistName'] = playlist.get('name');
-      options['activeTracks'] = playlist.getActiveTracks();
-      options['addActiveTrack'] = playlist.addActiveTrack.bind(playlist);
-      options['setActiveTracks'] = playlist.setActiveTracks.bind(playlist);
-      options['setTrackSort'] = playlist.setTrackSort.bind(playlist);
-      options['playingTrack'] = playlist.get('playingTrack');
-      options['trackSort'] = playlist.get('trackSort');
+      props['tracks'] = playlist.tracks();
+      props['history'] = playlist.history();
+      props['playlistName'] = playlist.get('name');
+      props['activeTracks'] = playlist.getActiveTracks();
+      props['addActiveTrack'] = playlist.addActiveTrack.bind(playlist);
+      props['setActiveTracks'] = playlist.setActiveTracks.bind(playlist);
+      props['setTrackSort'] = playlist.setTrackSort.bind(playlist);
+      props['playingTrack'] = playlist.get('playingTrack');
+      props['trackSort'] = playlist.get('trackSort');
       // figure out if playlist is playing
       var playingPlaylist = this.props.playingPlaylist;
       var isAppPlaying = (this.props.playState === 'play');
-      options['isPlaying'] = ((isAppPlaying && playingPlaylist) &&
+      props['isPlaying'] = ((isAppPlaying && playingPlaylist) &&
         (playingPlaylist.cid === playlist.cid));
-      tracksTable = Tracks_Table(options);
+      tracksTable = Tracks_Table(props);
     }
     // create tracks view
     return (
@@ -184,7 +161,6 @@ module.exports = React.createClass({
   },
 
   componentWillUnmount: function () {
-    debug("UNMOUNTING");
     this.stopListening(this.props.viewingPlaylist);
   },
 
@@ -231,7 +207,7 @@ var SPECIAL_KEYS = {
 
   // play selected track
   '\n': function (e) {
-    this.playViewing(e, { 'playingTrack': false });
+    this.props.playViewing(e, { 'playingTrack': false });
   },
 
   // playpause viewingPlaylist

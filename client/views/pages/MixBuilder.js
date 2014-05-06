@@ -10,6 +10,9 @@ var $ = require('jquery');
 var Graph = require('./Graph');
 var Nodes = require('../../collections/Nodes');
 var Links = require('../../collections/Links');
+var Transition_Soft = require('../../models/Transition_Soft');
+var Node = require('../../models/Node');
+var Link = require('../../models/Link');
 
 module.exports = React.createClass({
   
@@ -34,61 +37,115 @@ module.exports = React.createClass({
     };
   },
 
-  computeUpNext: function () {
-    var mix = this.props.viewingPlaylist;
-    var activeTrack = mix.getActiveTrack();
-    switch (activeTrack['linxType']) {
-      case 'song': break; // TODO: make graph flower
-      case 'transition': break; // TODO: make graph lines
-    }
-    // TODO: set nodes and links of upNext
-    throw new Error("computeUpNext incomplete!");
-    var songs; var transitions;
-    this.setState({
-      'upNext': {
-        'nodes': new Nodes(songs.pluck('id')),
-        'links': new Links(transitions.forEach(function (transition) {
-          return {
-            'id': transition.id,
-            'transitionType': transition.transitionType,
-          }
-        })),
-      },
+  songsUpNext: function (outSong) {
+    var searchResults = this.props.searchResults;
+    var songs = searchResults.tracks().slice(0, 4);
+    // make soft transitions into song
+    var transitions = songs.map(function (inSong) {
+      return new Transition_Soft({
+        'in': inSong.id,
+        'out': outSong.id,
+      });
     });
+    return {
+      'songs': songs,
+      'transitions': transitions,
+    }
+  },
+
+  transitionsUpNext: function (transition) {
+    throw new Error("transitionsUpNext unimplemented!");
+    return {
+      'songs': {},
+      'transitions': {},
+    }
+  },
+
+  computeUpNext: function () {
+    debug("COMPUTE UP NEXT");
+    var mix = this.props.viewingPlaylist;
+    if (mix && mix.get('type') === 'mix') {
+      var activeTrack = mix.getActiveTrack();
+      if (activeTrack) {
+        var upNext;
+        // determine upNext based on track type
+        switch (activeTrack.get('linxType')) {
+          case 'song':
+            upNext = this.songsUpNext(activeTrack);
+            break; // TODO: make graph flower
+          case 'transition':
+           upNext = this.transitionsUpNext(activeTrack);
+            break; // TODO: make graph lines
+        }
+        // update based on new upNext
+        this.setState({
+          'upNext': {
+            'nodes': Nodes.makeFromTracks(upNext.songs),
+            'links': Links.makeFromTracks(upNext.transitions),
+          },
+        });
+      }
+    }
   },
 
   decomposeQueue: function () {
+    debug("DECOMPOSE QUEUE");
     var mix = this.props.viewingPlaylist;
     if (mix) {
       var songs = mix.getSongs();
       var transitions = mix.getTransitions();
-      debug("DECOMPOSING QUEUE", songs, transitions);
       this.setState({
         'queue': {
-          'nodes': new Nodes(songs.models),
-          'links': new Links(transitions.models),
+          'nodes': Nodes.makeFromTracks(songs.models),
+          'links': Links.makeFromTracks(transitions.models),
         },
       });
     }
   },
 
-  render: function () {
-    var mix = this.props.viewingPlaylist;
+  getTrackElement: function (track) {
+    if (!track) { return null; }
     var queue = this.state.queue;
     var upNext = this.state.upNext;
-    var active, playing;
-    if (mix && mix.type === 'mix') {
-      active = queue.nodes.get(mix.getActiveTrack());
-      playing = queue.links.get(mix.get('playingTrack'));
+    var elType;
+    // determine element type from type of track
+    switch (track.get('linxType')) {
+      case 'song':
+        elType = 'nodes';
+        break;
+      case 'transition':
+        elType = 'links';
+        break;
+    }
+    // get and return element
+    var element = queue[elType].get(track.id) ||
+      upNext[elType].get(track.id);
+    if (!element) {
+      //throw new Error("getTrackElement found no element for given track!");
+    }
+    return element;
+  },
+
+  render: function () {
+    var mix = this.props.viewingPlaylist;
+    var graph;
+    if (mix && mix.get('type') === 'mix') {
+      active = this.getTrackElement(mix.getActiveTrack());
+      // TODO: playing can be a transition!
+      playing = this.getTrackElement(mix.get('playingTrack'));
+      graph = Graph({
+        'active': active,
+        'playing': playing,
+        'queue': this.state.queue,
+        'upNext': this.state.upNext,
+        'setActiveTrack': mix.setActiveTrack.bind(mix),
+        'playViewing': this.props.playViewing,
+        'playpauseViewing': this.props.playpauseViewing,
+      });
     }
     return (
-    <div className="graph-wrapper inverted purple ui segment">
-        {Graph({
-          'active': active,
-          'playing': playing,
-          'queue': queue,
-          'upNext': upNext,
-        })}
+    <div className="graph-wrapper">
+      {graph}
     </div>
     );
   },
@@ -114,12 +171,22 @@ module.exports = React.createClass({
     }
   },
 
-  stopListening: function (mix) {
+  listenToSearch: function () {
+    var searchResults = this.props.searchResults;
+    var listener = this.props.listener;
+    listener.listenTo(searchResults, 'change:tracks',
+      this.computeUpNext);
+  },
+
+  stopListening: function (mix, searchResults) {
+    var listener = this.props.listener;
     if (mix) {
-      var listener = this.props.listener;
       var tracks = mix.tracks();
       listener.stopListening(mix);
       listener.stopListening(tracks);
+    }
+    if (searchResults) {
+      listener.stopListening(searchResults);
     }
   },
 
@@ -131,6 +198,7 @@ module.exports = React.createClass({
 
   componentDidMount: function () {
     this.resetListener();
+    this.listenToSearch();
   },
 
   componentDidUpdate: function (prevProps, prevState) {
@@ -143,7 +211,8 @@ module.exports = React.createClass({
   },
 
   componentWillUnmount: function () {
-    this.stopListening(this.props.viewingPlaylist);
+    this.stopListening(this.props.viewingPlaylist,
+      this.props.searchResults);
   },
 
 });

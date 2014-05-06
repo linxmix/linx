@@ -16,6 +16,7 @@ module.exports = Backbone.Model.extend({
   defaults: function () {
     return {
       'name': 'playlist ' + this['cid'],
+      // TODO: convert to linxType
       'type': 'playlist',
       'tracks': new Tracks(),
       'activeTracks': [],
@@ -81,6 +82,16 @@ module.exports = Backbone.Model.extend({
     return this.get('tracks');
   },
 
+  getOrAdd: function (track) {
+    var haveTrack = this.tracks().get(track.id);
+    if (haveTrack) {
+      track = haveTrack;
+    } else {
+      this.add(track);
+    }
+    return track;
+  },
+
   getSongs: function () {
     return this.get('queue').getSongs();
   },
@@ -135,9 +146,10 @@ module.exports = Backbone.Model.extend({
     if (!(tracks instanceof Array)) {
       throw new Error("setActiveTracks not given array");
     }
+    // set active tracks
     var prevActiveTracks = this.getActiveTracks();
     this.set({ 'activeTracks': tracks }, options);
-    // if same array, manually trigger change event
+    // if was same as previous, manually trigger change event
     if ((tracks === prevActiveTracks) &&
       !(options.silent)) {
       this.trigger('change:activeTracks', this, tracks, options);
@@ -211,7 +223,7 @@ module.exports = Backbone.Model.extend({
     // TODO: make it so we can stream instead of DL so this works
     if (track.get('duration') >= 1800000) {
       alert("We're sorry, but right now SoundCloud won't let us stream tracks that are 30min or longer!");
-      return;
+      return false;
     }
     
     // figure out if already in queue
@@ -220,7 +232,7 @@ module.exports = Backbone.Model.extend({
     var index = queued && queue.indexOf(queued);
     // if already at desired pos, we're done
     if (index === pos) {
-      return;
+      return true;
     // if queued in wrong spot, first silently remove
     } else if (queued) {
       if (index < pos) { 
@@ -233,6 +245,7 @@ module.exports = Backbone.Model.extend({
     // add track at pos
     debug("queuing track at pos", track, pos);
     queue.add(track, { 'at': pos });
+    return true;
   },
 
   dequeue: function (track) {
@@ -362,9 +375,15 @@ module.exports = Backbone.Model.extend({
     debug("play", options, this.get('playingTrack'), this.getActiveTracks(true)[0]);
     var queue = this.get('queue');
     var track = options.track;
+    // if track is string, assume it's an id
+    if (typeof track === 'number') {
+      track = this.tracks().get(track);
+    }
+    // if no track, play playingTrack
     if (!track && options.playingTrack) {
       track = this.get('playingTrack');
     }
+    // if no playingTrack, play first activeTrack
     if (!track && options.activeTracks) {
       track = this.getActiveTracks(true)[0];
     }

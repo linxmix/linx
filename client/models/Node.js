@@ -9,6 +9,7 @@ module.exports = Backbone.Model.extend({
       'y': null,
       'r': 100,
       'color': 0,
+      'track': null,
     }
   },
 

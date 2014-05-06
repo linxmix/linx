@@ -64,8 +64,11 @@ module.exports = React.createClass({
       this.setState({
         'searching': false,
       });
-      // set searchResults as viewingPlaylist
-      this.setViewingPlaylist(searchResults);
+      // maybe set searchResults as viewingPlaylist
+      // TODO: make search display on new mix!
+      if (this.state.page !== 'MixBuilder') {
+        this.setViewingPlaylist(searchResults);
+      }
       // call callback
       callback && callback();
     }.bind(this);

@@ -3,7 +3,7 @@ var debug = require('debug')('collections:Nodes')
 
 var Node = require('../models/Node');
 
-module.exports = Backbone.Collection.extend({
+var Nodes = Backbone.Collection.extend({
 
   initialize: function (models, options) {
     this.on("add", function(node) {
@@ -14,3 +14,17 @@ module.exports = Backbone.Collection.extend({
 
   model: Node,
 });
+
+// TODO: make certain tracks are songs
+Nodes.makeFromTracks = function (tracks) {
+  var nodes = tracks.map(function (track) {
+    return {
+      'id': track.id,
+      'linxType': track.get('linxType'),
+      'track': track,
+    };
+  });
+  return new Nodes(nodes);
+};
+
+module.exports = Nodes;

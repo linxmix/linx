@@ -8,6 +8,8 @@ var $ = jQuery = require('jquery');
 var d3 = require('d3');
 require('jquery-overscroll');
 
+var Track = require('../../models/Track');
+
 // TODO: make it so links are drawn naturally instead of in tick
 // TODO: fix linx map view, broken because using "x" instead of "px"?
 // TODO: update positions when song changes
@@ -34,7 +36,6 @@ module.exports = React.createClass({
       //<rect x="0" y="0" width="100" height="100" fill="yellow" stroke="black" stroke-width="12"/>
 
   componentDidMount: function () {
-    debug("OVERSCROLL", jQuery.fn.overscroll);
 
     // create svg
     var svg = this.svg = d3.select("#graph")
@@ -66,20 +67,42 @@ module.exports = React.createClass({
   },
 
   componentDidUpdate: function (prevProps, prevState) {
-    var prevUpNext = prevProps.upNext;
-    var upNext = this.props.upNext;
+
+    //
+    // see if things changed
+    //
+
+    // queue
     var prevQueue = prevProps.queue;
     var queue = this.props.queue;
-    var prevPlaying = prevProps.playing;
-    var playing = this.props.playing;
-    var prevActive = prevProps.active;
-    var active = this.props.active;
-    // see if things changed
-    var upNextNodes = (prevUpNext.nodes !== upNext.nodes);
-    var upNextLinks = (prevUpNext.links !== upNext.links);
     var queueNodes = (prevQueue.nodes !== queue.nodes);
     var queueLinks = (prevQueue.links !== queue.links);
-    debug("GRAPH UPDATE", queueNodes, queueLinks);
+
+    // upNext
+    var prevUpNext = prevProps.upNext;
+    var upNext = this.props.upNext;
+    var upNextNodes = (prevUpNext.nodes !== upNext.nodes);
+    var upNextLinks = (prevUpNext.links !== upNext.links);
+
+    // playing
+    var prevPlaying = prevProps.playing;
+    var playing = this.props.playing;
+    var prevPlayingId = prevPlaying && prevPlaying.id;
+    var playingId = playing && playing.id;
+    var playingChanged = !playingId || (prevPlayingId !== playingId);
+
+    // active
+    var prevActive = prevProps.active;
+    var active = this.props.active;
+    var prevActiveId = prevActive && prevActive.id;
+    var activeId = active && active.id;
+    var activeChanged = !activeId || (prevActiveId !== activeId);
+    debug("GRAPH UPDATE", queueNodes, queueLinks,
+      upNextNodes, upNextLinks, playingChanged, activeChanged);
+
+    //
+    // update based on changes
+    //
 
     // update if upNext changed
     if (upNextNodes || upNextLinks) {
@@ -89,50 +112,88 @@ module.exports = React.createClass({
     if (queueNodes || queueLinks) {
       this.updateQueue();
     }
+
+    // update if playing changed
+    if (playingChanged) {
+      this.updatePlaying(prevPlaying);
+    }
+    // update if active changed
+    if (activeChanged) {
+      this.updateActive(prevActive);
+    }
+
     // update if nodes changed
-    if (upNextNodes || queueNodes) {
+    if (upNextNodes || queueNodes ||
+      activeChanged || playingChanged) {
       this.updateNodes();
     }
+    // MEGA TODO: pay attention to active and playing
     // update if links changed
     if (upNextLinks || queueLinks) {
       this.updateLinks();
     }
-    // update if playing changed
-    if (playing) {
-      this.updatePlaying();
-    }
-    // update if active changed
-    if (active) {
-      this.updateActive();
-    }
   },
 
-  // TODO: make this also do stuff for transition
-  'updateActive': function () {
+  'updateActive': function (prevActive) {
     // place activeTrack in center of screen
     var active = this.props.active;
-    debug("UPDATING ACTIVE", active);
+    debug("updating active", active);
     if (active) {
-      active.set({
-        'x': this.props.x0,
-        'y': this.props.y0,
-      });
+      switch (active.get('linxType')) {
+        case 'song': 
+          active.set({
+            'x': this.props.x0,
+            'px': active.get('x'),
+            'y': this.props.y0,
+            'py': active.get('y'),
+            'color': 2,
+            'pColor': active.get('color'),
+          });
+          break;
+        // TODO: make this also do stuff for transition
+        case 'transition':
+          debug("WARNING: active is transition!");
+          break;
+      }
+    }
+    if (prevActive) {
+      switch (prevActive.get('linxType')) {
+        case 'song': 
+          prevActive.set({
+            'x': prevActive.get('px'),
+            'y': prevActive.get('py'),
+            'color': prevActive.get('pColor'),
+          });
+          break;
+        // TODO: make this also do stuff for transition
+        case 'transition':
+          debug("WARNING: prevActive is transition!");
+          break;
+      }
     }
   },
 
-  // color playingTrack blue
-  'updatePlaying': function () {
+  'updatePlaying': function (prevPlaying) {
     var playing = this.props.playing;
-    debug("UPDATING PLAYING", playing);
+    debug("updating playing", playing);
+    // color playingTrack blue
     if (playing) {
-      playing.set({ 'color': 2 });
+      playing.set({
+        'color': 2,
+        'pColor': playing.get('color'),
+      });
+    }
+    if (prevPlaying) {
+      prevPlaying.set({
+        'color': prevPlaying.get('pColor'),
+      });
     }
   },
 
   // place and color queued songs
   'updateQueue': function () {
     var nodes = this.props.queue['nodes'];
-    debug("UPDATING QUEUE", nodes);
+    debug("updating queue", nodes);
     var width = this.props.width;
     for (var i = 0; i < nodes.length; i++) {
       var node = nodes.at(i);
@@ -147,7 +208,7 @@ module.exports = React.createClass({
   // place upNext songs in a circle around lastSong
   'updateUpNext': function () {
     var nodes = this.props.upNext['nodes'];
-    debug("UPDATING UPNEXT", nodes);
+    debug("updating upNext", nodes);
     var x0 = this.props.x0;
     var y0 = this.props.y0;
     var r = this.props.r;
@@ -164,6 +225,7 @@ module.exports = React.createClass({
 
   // sync displayed svg with node data
   'updateNodes': function () {
+    // TODO: just use models?
     var queueNodes = _.pluck(this.props.queue.nodes.models, 'attributes');
     var upNextNodes = _.pluck(this.props.upNext.nodes.models, 'attributes');
     var nodes = queueNodes.concat(upNextNodes);
@@ -175,7 +237,7 @@ module.exports = React.createClass({
     var node = this.svg.selectAll(".node")
       // TODO: does this update existing models with new
       //       data? even when changed by 'set'?
-      .data(nodes, function (d) { return d.id; });
+      .data(nodes, function (d) { return d.id); });
 
     // 
     // ENTER new data as new nodes
@@ -188,10 +250,19 @@ module.exports = React.createClass({
         var y = 0;
         return "translate(" + x + "," + y + ")";
       }.bind(this))
-      // TODO: play or queue node on double click
-      .on("dblclick", function (d) {
+      // set node active on click
+      .on("click", function (d, i) {
+        debug("click", d, i);
+      // TODO: why does this force mixbuilder to rerender twice?
+        this.props.setActiveTrack(d.track);
+      }.bind(this))
+      // play node on double click
+      .on("dblclick", function (d, i) {
         debug("dblclick", d);
-      }.bind(this));
+        this.props.playViewing(i, {
+          'track': d.track,
+        });
+      }.bind(this))
 
     // animate flying in
     enter.transition(1000)
@@ -223,7 +294,7 @@ module.exports = React.createClass({
     enter.append("text")
       .attr("x", 4)
       .attr("dy", ".35em")
-      .text(function(d) { return d.title; });
+      .text(function(d) { return d.track.get('title'); });
 
     // 
     // UPDATE existing nodes
@@ -316,8 +387,8 @@ function colorLink(d) {
 }
 
 // add the curvy lines
-function tick() {
-  Graph.svg.selectAll(".link").attr("d", function(d) {
+function tick(svg) {
+  svg.selectAll(".link").attr("d", function(d) {
 
     /*
     // recenter path's circle
@@ -343,7 +414,7 @@ function tick() {
     d.target.y;
   });
 
-  this.svg.selectAll(".node").attr("transform", function(d) {
+  svg.selectAll(".node").attr("transform", function(d) {
     return "translate(" + d.x + "," + d.y + ")";
   });
 }

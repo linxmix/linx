@@ -42,10 +42,10 @@ module.exports = Playlist.extend({
     return this.getActiveTracks()[0];
   },
 
-  setActiveTrack: function (track) {
+  setActiveTrack: function (track, options) {
     var activeTracks = [];
     if (track) { activeTracks.push(track); }
-    return this.setActiveTracks(activeTracks);
+    return this.setActiveTracks(activeTracks, options);
   },
 
   // mixes have no tracks, only a queue
