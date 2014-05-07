@@ -5,10 +5,11 @@ module.exports = Backbone.Model.extend({
 
   defaults: function () {
     return {
-      'x': null,
-      'y': null,
+      'x': 0,
+      'y': 0,
       'r': 100,
       'color': 0,
+      'linxType': 'song',
       'track': null,
     }
   },

@@ -37,11 +37,12 @@ module.exports = React.createClass({
     };
   },
 
-  songsUpNext: function (outSong) {
+  songsUpNext: function (inSong) {
     var searchResults = this.props.searchResults;
-    var songs = searchResults.tracks().slice(0, 4);
+    var songs = searchResults.tracks().slice(0, 7);
     // make soft transitions into song
-    var transitions = songs.map(function (inSong) {
+    debug("computing Songs UP NEXT", inSong);
+    var transitions = songs.map(function (outSong) {
       return new Transition_Soft({
         'in': inSong.id,
         'out': outSong.id,
@@ -62,7 +63,6 @@ module.exports = React.createClass({
   },
 
   computeUpNext: function () {
-    debug("COMPUTE UP NEXT");
     var mix = this.props.viewingPlaylist;
     if (mix && mix.get('type') === 'mix') {
       var activeTrack = mix.getActiveTrack();
@@ -89,7 +89,6 @@ module.exports = React.createClass({
   },
 
   decomposeQueue: function () {
-    debug("DECOMPOSE QUEUE");
     var mix = this.props.viewingPlaylist;
     if (mix) {
       var songs = mix.getSongs();
@@ -103,7 +102,32 @@ module.exports = React.createClass({
     }
   },
 
+  makeTrackElement: function (track) {
+    debug("MAKING TRACK ELEMENT", track);
+    if (!track) { return null; }
+    // make new element from track
+    switch (track.get('linxType')) {
+      case 'song':
+        return new Node({
+          'track': track,
+          'id': track.id,
+          'x': -10,
+          'y': -10,
+          'linxType': 'song',
+        });
+        break;
+      case 'transition':
+        return new Link({
+          'track': track,
+          'id': track.id,
+          'linxType': 'transition',
+        });
+        break;
+    }
+  },
+
   getTrackElement: function (track) {
+    debug("GETTING TRACK ELEMENT", track);
     if (!track) { return null; }
     var queue = this.state.queue;
     var upNext = this.state.upNext;
@@ -117,11 +141,11 @@ module.exports = React.createClass({
         elType = 'links';
         break;
     }
-    // get and return element
+    // get (or make) and return element
     var element = queue[elType].get(track.id) ||
       upNext[elType].get(track.id);
     if (!element) {
-      //throw new Error("getTrackElement found no element for given track!");
+      element = this.makeTrackElement(track);
     }
     return element;
   },

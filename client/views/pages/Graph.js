@@ -1,7 +1,7 @@
 /** @jsx React.DOM */
 var React = require('react');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
-var debug = require('debug')('views:pages/MixBuilder')
+var debug = require('debug')('views:pages/Graph')
 
 var _ = require('underscore');
 var $ = jQuery = require('jquery');
@@ -9,6 +9,7 @@ var d3 = require('d3');
 require('jquery-overscroll');
 
 var Track = require('../../models/Track');
+var Node = require('../../models/Node');
 
 // TODO: make it so links are drawn naturally instead of in tick
 // TODO: fix linx map view, broken because using "x" instead of "px"?
@@ -26,7 +27,7 @@ module.exports = React.createClass({
       'x0': width / 2.0,
       'y0': height / 2.0,
       'r': height / 2.5,
-    }
+    };
   },
 
   render: function () {
@@ -50,8 +51,8 @@ module.exports = React.createClass({
       .attr("viewBox", "0 -5 10 10")
       .attr("refX", 15)
       .attr("refY", -1.5)
-      .attr("markerWidth", 6)
-      .attr("markerHeight", 6)
+      .attr("markerWidth", 2.5)
+      .attr("markerHeight", 2.5)
       .attr("orient", "auto")
       .append("svg:path")
       .attr("d", "M0,-5L10,0L0,5");
@@ -125,13 +126,34 @@ module.exports = React.createClass({
     // update if nodes changed
     if (upNextNodes || queueNodes ||
       activeChanged || playingChanged) {
-      this.updateNodes();
+      var options = {};
+      debug("ABOUT TO UPDAT ENODES", active)
+      if (active &&
+        (active.get('linxType') === 'song')) {
+        options['active'] = active;
+      }
+      if (playing &&
+        (playing.get('linxType') === 'song')) {
+        options['playing'] = playing;
+      }
+      this.updateNodes(options);
     }
-    // MEGA TODO: pay attention to active and playing
+
     // update if links changed
-    if (upNextLinks || queueLinks) {
-      this.updateLinks();
+    if (upNextLinks || queueLinks ||
+      activeChanged || playingChanged) {
+      var options = {};
+      if (active &&
+        (active.get('linxType') === 'transition')) {
+        options['active'] = active;
+      }
+      if (playing &&
+        (playing.get('linxType') === 'transition')) {
+        options['playing'] = playing;
+      }
+      this.updateLinks(options);
     }
+
   },
 
   'updateActive': function (prevActive) {
@@ -224,29 +246,51 @@ module.exports = React.createClass({
   },
 
   // sync displayed svg with node data
-  'updateNodes': function () {
+  'updateNodes': function (options) {
+    options = options ? options : {};
     // TODO: just use models?
     var queueNodes = _.pluck(this.props.queue.nodes.models, 'attributes');
     var upNextNodes = _.pluck(this.props.upNext.nodes.models, 'attributes');
     var nodes = queueNodes.concat(upNextNodes);
-    debug("UPDATE NODES", nodes)
+
+    // update this.nodes
+    this.nodes = {};
+    nodes.forEach(function (node) {
+      this.nodes[node.id] = node;
+    }.bind(this));
+
+    // possibly add [active/playing]
+    var active = options.active;
+    if (active && !(this.nodes[active.id])) {
+      this.updateActive();
+      this.nodes[active.id] = active.attributes;
+      nodes.push(active.attributes);
+    }
+    var playing = options.playing;
+    if (playing && !(this.nodes[playing.id])) {
+      this.updatePlaying();
+      this.nodes[playing.id] = playing.attributes;
+      nodes.push(playing.attributes);
+    }
+
+    debug("UPDATE NODES", nodes);
 
     //
     // JOIN new data to old nodes using id as the key
     //
     var node = this.svg.selectAll(".node")
-      // TODO: does this update existing models with new
-      //       data? even when changed by 'set'?
-      .data(nodes, function (d) { return d.id); });
+      .data(nodes, function (d) { return d.id; });
 
     // 
     // ENTER new data as new nodes
     //
     var enter = node.enter().append("svg:g")
       .attr("class", "node")
+      .attr("opacity", 1)
       // initial position
       .attr("transform", function(d) {
-        var x = this.width / 2;
+        // TODO: somehow move into Node defaults
+        var x = this.props.width / 2;
         var y = 0;
         return "translate(" + x + "," + y + ")";
       }.bind(this))
@@ -292,8 +336,8 @@ module.exports = React.createClass({
 
     // add the text 
     enter.append("text")
-      .attr("x", 4)
-      .attr("dy", ".35em")
+      .attr("x", 2)
+      .attr("dy", ".25em")
       .text(function(d) { return d.track.get('title'); });
 
     // 
@@ -311,7 +355,9 @@ module.exports = React.createClass({
     //
     // EXIT old nodes
     //
-    node.exit()
+    node.exit().transition()
+      .duration(500)
+      .attr('opacity', 0)
       .remove();
 
   }, // /end updateNodes
@@ -321,48 +367,73 @@ module.exports = React.createClass({
     var queueLinks = _.pluck(this.props.queue.links.models, 'attributes');
     var upNextLinks = _.pluck(this.props.upNext.links.models, 'attributes');
     var links = queueLinks.concat(upNextLinks);
-    debug("UPDATE LINKS", links)
+    debug("UPDATE LINKS", links, this.nodes)
 
     //
     // JOIN new data to old links using id as the key
     //
     var path = this.svg.selectAll(".link")
-      .data(links, function (d) { return d.id; });
+      // TODO: fix d.track.cid
+      .data(links, function (d) { return d.track.cid; });
 
     //
     // ENTER new data as new links
     //
-    path.enter().append("svg:path")
+    var enter = path.enter().append("svg:path")
       .attr("class", "link")
       // make soft transitions dashed
       .style("stroke-dasharray", function (d) {
-        return ((d.transitionType !== 'soft') ? "" : ("3,3"));
+        return ((d.transitionType !== 'soft') ? "" : ("1.5,1"));
       })
       // add link's arrow
       .attr("marker-end", "url(#end)")
-      .style("stroke", colorLink);
+      .style("stroke", colorLink)
+      .attr("d", function (d) {
+        return getPath({
+          'd': d,
+          'drawFrom': 'in',
+          'nodes': this.nodes,
+        });
+      }.bind(this));
 
-      // TODO: fix this. problem is finding source and target x and y.
-      /*.attr("d", function(d) {
-        console.log("drawing path", d);
-        // draw path
-        var startSong = Graph.nodes[d['startSong']];
-        var endSong = Graph.nodes[d['endSong']];
-        var dx = endSong.x - startSong.x,
-        dy = endSong.y - startSong.y,
-        dr = Math.sqrt(dx * dx + dy * dy);
-        return "M" +
-        d.source.x + "," +
-        d.source.y + "A" +
-        dr + "," + dr + " 0 0,1 " +
-        d.target.x + "," +
-        d.target.y;
-      });*/
+    // animate link entering
+    enter.transition()
+      .duration(1000)
+      // TODO: make this work, also animate link growing
+      .style('opacity', 1)
+      .attr("d", function (d) {
+        return getPath({
+          'd': d,
+          'nodes': this.nodes,
+        });
+      }.bind(this));
+
+    // 
+    // UPDATE existing links
+    // 
+    path.transition()
+      .duration(1000)
+      .style("stroke", colorLink)
+      .attr("d", function (d) {
+        return getPath({
+          'd': d,
+          'nodes': this.nodes,
+        });
+      }.bind(this));
 
     //
     // EXIT old links
     //
-    path.exit()
+    path.exit().transition()
+      .duration(500)
+      .style('opacity', 0)
+      .attr("d", function (d) {
+        return getPath({
+          'd': d,
+          'drawFrom': 'null',
+          'nodes': this.nodes,
+        });
+      }.bind(this))
       .remove();
 
   }, // /end updateLinks
@@ -384,6 +455,53 @@ function colorLink(d) {
   var colors = ["#666", "#2ca02c", "#1f77b4"], // red, green, blue
       color = (d && d.color) || 0;
   return colors[color];
+}
+
+function getPath (options) {
+  var d = options.d;
+  var nodes = options.nodes;
+
+  // get inNode info        
+  var inId = d.track.getInId();
+  debug("inId", d.track.getInId());
+  var inNode = nodes[inId];
+  
+  // get outNode info        
+  var outId = d.track.getOutId();
+  var outNode = nodes[outId];
+
+  // figure out path
+  var inX, inY, outX, outY;
+  switch (options.drawFrom) {
+    case 'in':
+      inX = outX = inNode.x;
+      inY = outY = inNode.y; break;
+    case 'out':
+      outX = inX = outNode.x;
+      outY = inY = outNode.y; break;
+    case 'null':
+      outX = inX = 0;
+      outY = inY = 0; break;
+    default:
+      inX = inNode.x;
+      inY = inNode.y;
+      outX = outNode.x;
+      outY = outNode.y;
+  }
+
+  // get distances 
+  var dx = outX - inX;
+  var dy = outY - inY;
+  var dr = Math.sqrt(dx * dx + dy * dy);
+  var path = "M" +
+    inX + "," +
+    inY + "A" +
+    dr + "," + dr + " 0 0,1 " +
+    outX + "," +
+    outY;
+  debug("drawing path", options, path);
+
+  return path;
 }
 
 // add the curvy lines

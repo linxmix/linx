@@ -20,7 +20,7 @@ Nodes.makeFromTracks = function (tracks) {
   var nodes = tracks.map(function (track) {
     return {
       'id': track.id,
-      'linxType': track.get('linxType'),
+      'linxType': 'song',
       'track': track,
     };
   });

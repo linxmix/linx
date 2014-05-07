@@ -7,6 +7,7 @@ module.exports = Backbone.Model.extend({
     return {
       'color': 0,
       'track': null,
+      'linxType': 'transition',
     }
   },
 

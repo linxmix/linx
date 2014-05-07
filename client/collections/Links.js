@@ -18,11 +18,13 @@ var Links = Backbone.Collection.extend({
 // TODO: make certain tracks are transitions
 Links.makeFromTracks = function (tracks) {
   var links = tracks.map(function (track) {
-    return {
-      'id': track.id,
-      'linxType': track.get('linxType'),
+    var props = {
+      'linxType': 'transition',
+      'transitionType': track.get('transitionType'),
       'track': track,
     };
+    if (track.id) { props.id = track.id; }
+    return props;
   });
   return new Links(links);
 };
