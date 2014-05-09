@@ -92,9 +92,6 @@ module.exports = React.createClass({
         'playing': mix.get('playingTrack'),
         'nodes': this.props.nodes,
         'links': this.props.links,
-        'setActiveTrack': mix.setActiveTrack.bind(mix),
-        'playViewing': this.props.playViewing,
-        'playpauseViewing': this.props.playpauseViewing,
       });
     }
     return (
@@ -145,14 +142,21 @@ module.exports = React.createClass({
   },
 
   resetListener: function (prevMix) {
+    var newMix = this.props.viewingPlaylist;
     this.stopListening(prevMix);
+    // update nodes's reference to mix
+    this.props.nodes.mix = mix;
     this.computeQueue();
-    this.listenTo(this.props.viewingPlaylist);
+    this.listenTo(newMix);
   },
 
   componentDidMount: function () {
     this.resetListener();
     this.listenToSearch();
+    // add props to nodes
+    var nodes = this.props.nodes;
+    nodes.play = this.props.playViewing;
+    nodes.playpause = this.props.playpauseViewing;
   },
 
   componentDidUpdate: function (prevProps, prevState) {

@@ -76,7 +76,6 @@ module.exports = React.createClass({
   },
 
   componentDidUpdate: function (prevProps, prevState) {
-    // TODO: need to change setActiveTrack on mix change!
 
     // update active if changed
     var active = this.props.active;

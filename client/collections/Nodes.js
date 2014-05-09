@@ -8,7 +8,6 @@ module.exports = Backbone.Collection.extend({
   initialize: function (models, options) {
     this.on("add", function(node) {
       debug("added node: " + node.id);
-    });
     this.options = options;
     this.update();
   },
@@ -21,6 +20,21 @@ module.exports = Backbone.Collection.extend({
     this.y0 = height / 2.0,
     this.r = height / 2.5,
     this.update();
+  },
+
+  onClick: function (d, i) {
+    debug("onClick", arguments)
+    // TODO: does this need to be a model and use get?
+    this.mix.setActiveTrack(d.track);
+  },
+
+  onDblClick: function (d, i) {
+    debug("onDblClick", arguments)
+    // TODO: does this need to be a model and use get?
+    var mix = this.mix;
+    this.playViewing(null, {
+      'track': d.id,
+    });
   },
 
   // TODO: make certain tracks are songs
@@ -77,6 +91,7 @@ module.exports = Backbone.Collection.extend({
     var nodes = _.pluck(this.models, 'attributes')
     debug("UPDATE NODES", nodes);
 
+
     //
     // JOIN new data to old nodes using id as the key
     //
@@ -96,19 +111,8 @@ module.exports = Backbone.Collection.extend({
         var y = 0;
         return "translate(" + x + "," + y + ")";
       }.bind(this))
-      // set node active on click
-      .on("click", function (d, i) {
-        debug("click", d, i);
-      // TODO: why does this force mixbuilder to rerender twice?
-        this.props.setActiveTrack(d.track);
-      }.bind(this))
-      // play node on double click
-      .on("dblclick", function (d, i) {
-        debug("dblclick", d);
-        this.props.playViewing(i, {
-          'track': d.track,
-        });
-      }.bind(this))
+      .on("click", this.onClick.bind(this))
+      .on("dblclick", this.onDblClick.bind(this));
 
     // animate flying in
     enter.transition(1000)
