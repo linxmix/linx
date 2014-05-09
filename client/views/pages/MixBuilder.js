@@ -8,8 +8,10 @@ var _ = require('underscore');
 var $ = require('jquery');
 
 var Graph = require('./Graph');
+
 var Nodes = require('../../collections/Nodes');
 var Links = require('../../collections/Links');
+
 var Transition_Soft = require('../../models/Transition_Soft');
 var Node = require('../../models/Node');
 var Link = require('../../models/Link');
@@ -21,20 +23,9 @@ module.exports = React.createClass({
   getDefaultProps: function () {
     return {
       'listener': _.extend({}, Backbone.Events),
+      'nodes': new Nodes(),
+      'links': new Links(),
     }
-  },
-
-  getInitialState: function () {
-    return {
-      'queue': {
-        'nodes': new Nodes(),
-        'links': new Links(),
-      },
-      'upNext': {
-        'nodes': new Nodes(),
-        'links': new Links(),
-      },
-    };
   },
 
   songsUpNext: function (inSong) {
@@ -67,101 +58,40 @@ module.exports = React.createClass({
     if (mix && mix.get('type') === 'mix') {
       var activeTrack = mix.getActiveTrack();
       if (activeTrack) {
-        var upNext;
-        // determine upNext based on track type
+        var upNextTracks;
+        // determine upNextTracks based on track type
         switch (activeTrack.get('linxType')) {
           case 'song':
-            upNext = this.songsUpNext(activeTrack);
-            break; // TODO: make graph flower
+            upNextTracks = this.songsUpNext(activeTrack);
+            break;
           case 'transition':
-           upNext = this.transitionsUpNext(activeTrack);
-            break; // TODO: make graph lines
+            upNextTracks = this.transitionsUpNext(activeTrack);
+            break;
         }
-        // update based on new upNext
-        this.setState({
-          'upNext': {
-            'nodes': Nodes.makeFromTracks(upNext.songs),
-            'links': Links.makeFromTracks(upNext.transitions),
-          },
-        });
+        // update based on new upNextTracks
+        this.props.nodes.mergeUpNext(upNextTracks.songs);
+        this.props.links.mergeUpNext(upNextTracks.transitions);
       }
     }
   },
 
-  decomposeQueue: function () {
+  computeQueue: function () {
     var mix = this.props.viewingPlaylist;
     if (mix) {
-      var songs = mix.getSongs();
-      var transitions = mix.getTransitions();
-      this.setState({
-        'queue': {
-          'nodes': Nodes.makeFromTracks(songs.models),
-          'links': Links.makeFromTracks(transitions.models),
-        },
-      });
+      this.props.nodes.mergeQueue(mix.getSongs().models);
+      this.props.links.mergeQueue(mix.getTransitions().models);
     }
-  },
-
-  makeTrackElement: function (track) {
-    debug("MAKING TRACK ELEMENT", track);
-    if (!track) { return null; }
-    // make new element from track
-    switch (track.get('linxType')) {
-      case 'song':
-        return new Node({
-          'track': track,
-          'id': track.id,
-          'x': -10,
-          'y': -10,
-          'linxType': 'song',
-        });
-        break;
-      case 'transition':
-        return new Link({
-          'track': track,
-          'id': track.id,
-          'linxType': 'transition',
-        });
-        break;
-    }
-  },
-
-  getTrackElement: function (track) {
-    debug("GETTING TRACK ELEMENT", track);
-    if (!track) { return null; }
-    var queue = this.state.queue;
-    var upNext = this.state.upNext;
-    var elType;
-    // determine element type from type of track
-    switch (track.get('linxType')) {
-      case 'song':
-        elType = 'nodes';
-        break;
-      case 'transition':
-        elType = 'links';
-        break;
-    }
-    // get (or make) and return element
-    var element = queue[elType].get(track.id) ||
-      upNext[elType].get(track.id);
-    if (!element) {
-      element = this.makeTrackElement(track);
-    }
-    return element;
   },
 
   render: function () {
     var mix = this.props.viewingPlaylist;
     var graph;
     if (mix && mix.get('type') === 'mix') {
-      active = this.getTrackElement(mix.getActiveTrack());
-      // TODO: playing can be a transition!
-      playing = this.getTrackElement(mix.get('playingTrack'));
       graph = Graph({
-        'active': active,
-        'playing': playing,
-        'queue': this.state.queue,
-        'upNext': this.state.upNext,
+        'active': mix.getActiveTrack(),
+        'playing': mix.get('playingTrack'),
+        'nodes': this.props.nodes,
+        'links': this.props.links,
         'setActiveTrack': mix.setActiveTrack.bind(mix),
         'playViewing': this.props.playViewing,
         'playpauseViewing': this.props.playpauseViewing,
@@ -189,9 +119,9 @@ module.exports = React.createClass({
       // listen to tracks
       var tracks = mix.tracks();
       listener.listenTo(tracks, 'add',
-        this.decomposeQueue);
+        this.computeQueue);
       listener.listenTo(tracks, 'remove',
-        this.decomposeQueue);
+        this.computeQueue);
     }
   },
 
@@ -216,7 +146,7 @@ module.exports = React.createClass({
 
   resetListener: function (prevMix) {
     this.stopListening(prevMix);
-    this.decomposeQueue();
+    this.computeQueue();
     this.listenTo(this.props.viewingPlaylist);
   },
 
