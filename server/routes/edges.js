@@ -1,194 +1,169 @@
 var _ = require('underscore');
-var Promise = require('bluebird');
-var tv4 = require('tv4');
 
-var edgesDb = require('../db/edges')
-
-var queryEdgeSchema = {
-  "type": "object",
-  "properties": {
-    "in": {
-      "description": "id of track in to edge",
-      "type": "string",
-    },
-    "edgeId": {
-      "description": "id of edge track",
-      "type": "string",
-    },
-    "out": {
-      "description": "id of track out of edge",
-      "type": "string"
-    },
-    "endIn": {
-      "description": "end seconds of track in",
-      "type": "number",
-    },
-    "startEdge": {
-      "description": "start seconds of edge track",
-      "type": "number",
-    },
-    "endEdge": {
-      "description": "end seconds of edge track",
-      "type": "number",
-    },
-    "startOut": {
-      "description": "start seconds of track out",
-      "type": "number",
-    },
-  },
-  "required": ["in", "out", "edgeId", "endIn", "startEdge", "endEdge", "startOut"],
-};
-var queryEdgeValidation = function (queryEdge) {
-  return tv4.validateMultiple(queryEdge, queryEdgeSchema, true);
-};
-
-var queryEdgeToDbEdge = function (queryEdge) {
-  queryEdge = queryEdge || {};
-
-  return {
-    subject: queryEdge.in,
-    predicate: queryEdge.edgeId,
-    object: queryEdge.out,
-    endIn: queryEdge.endIn,
-    startEdge: queryEdge.startEdge,
-    endEdge: queryEdge.endEdge,
-    startOut: queryEdge.startOut,
-  };
-};
-
-var dbEdgeToQueryEdge = function (dbEdge) {
-  dbEdge = dbEdge || {};
-
-  return {
-    in: dbEdge.subject,
-    edgeId: dbEdge.predicate,
-    out: dbEdge.object,
-    endIn: dbEdge.endIn,
-    startEdge: dbEdge.startEdge,
-    endEdge: dbEdge.endEdge,
-    startOut: dbEdge.startOut,
-  };
-};
-var dbEdgeSchema = {};
-var dbEdgeValidation = function () {};
-
+var db = require('../db/edges')
+var Edge = require('../models/edge');
+var EdgeTriple = require('../models/edgeTriple');
 
 module.exports = function (app) {
-
-  edgesDb = Promise.promisifyAll(edgesDb);
   
   // read collection
   app.get("/edges", function (req, res, next) {
-    
-    var dbEdge = queryEdgeToDbEdge(req.query);
 
-    edgesDb.getAsync(dbEdge).then(function (results) {
-      res.json(200, results);
-    }).catch(function (err) {
-      return next(err);
+    // get edge from request query
+    var edge = req.query;
+
+    // convert edge to triple
+    var edgeTriple = EdgeTriple.fromEdge(edge);
+
+    // get triple from db
+    db.get(edgeTriple, function (err, triples) {
+      if (err) { return next(err); }
+
+      var edges = _.map(triples, function (triple) {
+        // convert triple to edge
+        return Edge.fromTriple(triple);
+      });
+
+      // return success and edges
+      res.json(200, edges);
     });
   });
 
   // create model
   app.post("/edges", function (req, res, next) {
 
-    var queryEdge = req.body;
+    // get edge from body
+    var edge = req.body;
 
-    var validation = queryEdgeValidation(queryEdge);
-
+    // validate edge
+    var validation = Edge.validation(edge);
+    // if not valid, return 400 with errors
     if (!validation.valid) {
       return res.json(400, validation.errors);
     }
 
-    var dbEdge = queryEdgeToDbEdge(queryEdge);
+    // convert edge to triple for db
+    var edgeTriple = EdgeTriple.fromEdge(edge);
 
-    edgesDb.putAsync(dbEdge).then(function () {
-      res.json(200, queryEdge);
-    }).catch(function (err) {
-      return next(err);
+    // put triple in db
+    db.put(edgeTriple, function (err) {
+      if (err) { return next(err); }
+
+      // return success and edge
+      res.json(200, edge);
     });
   });
 
   // read model
   app.get("/edges/:edgeId", function (req, res, next) {
+    // TODO get all matching?
+    // multiple edges can have same edgeId
+    // as id for edges in entire triple
 
-    var getter = {
+    // prepare db query from request's 'edgeId' param
+    var getTriple = {
       predicate: req.params.edgeId,
     };
 
-    edgesDb.getAsync(getter).then(function (results) {
+    // get edgeTriple from db
+    db.get(getTriple, function (err, results) {
+      if (err) { return next(err); }
 
+      // if no triples found, return 404
       if (results.length === 0) {
         return res.json(404, undefined);
       }
 
-      var dbEdge = results[0];
+      var edgeTriple = results[0];
 
-      var queryEdge = dbEdgeToQueryEdge(dbEdge);
+      // convert triple to edge
+      var edge = Edge.fromTriple(edgeTriple);
 
-      res.json(200, queryEdge);
-
-    }).catch(function (err) {
-      return next(err);
+      // return success and edge
+      res.json(200, edge);
     });
   });
 
   // update model
   app.put("/edges/:edgeId", function (req, res, next) {
+    // TODO what about transactions?
+    // TODO update all matching
 
-    var queryEdge = req.body;
-    var getter = {
+    // levelgraph does not support in-place update,
+    // as there are no constraint in the graph.
+    // in order to update a triple, you should first
+    // delete it.
+    // https://github.com/mcollina/levelgraph#updating
+
+    // prepare db query from request
+    var edge = req.body;
+    var getTriple = {
       predicate: req.params.edgeId,
     };
-    var dbEdge;
 
-    edgesDb.getAsync(getter).then(function (results) {
+    // get existing edgeTriple from database
+    db.get(getTriple, function (err, results) {
+      if (err) { return next(err); }
 
+      // if no edge found, return 404
       if (results.length === 0) {
         res.json(404, undefined);
       }
 
-      dbEdge = results[0];
+      var edgeTriple = results[0];
       
-      return edgesDb.delAsync(dbEdge);
-    }).then(function () {
+      // delete current triple
+      db.del(edgeTriple, function (err) {
+        if (err) { return next(err); }
 
+        // convert edge from request to triple
+        var tripleUpdates = EdgeTriple.fromEdge(edge);
+        // convert triple from db to edge
+        var edgeExisting = Edge.fromTriple(edgeTriple);
 
-      var dbUpdates = queryEdgeToDbEdge(queryEdge);
-      var queryExisting = dbEdgeToQueryEdge(dbEdge);
+        // extend triple from db with triple from request
+        edgeTriple = _.extend(edgeTriple, tripleUpdates);
+        // extend edge from db with edge from request
+        edge = _.extend(edgeExisting, edge);
 
-      dbEdge = _.extend(dbEdge, dbUpdates);
-      queryEdge = _.extend(queryExisting, queryEdge);
+        // put updated triple in db
+        db.put(edgeTriple, function (err) {
+          if (err) { return next(err); }
 
-      return edgesDb.putAsync(dbEdge);
-    }).then(function () {
-
-      res.json(200, queryEdge);
-
-    }).catch(function (err) {
-      return next(err);
+          // return success and edge
+          res.json(200, edge);
+        });
+      });
     });
   });
 
   // delete model
   app.delete("/edges/:edgeId", function (req, res, next) {
-    var getter = {
+    // TODO delete all matching
+
+    // prepare db query from request
+    var getTriple = {
       predicate: req.params.edgeId,
     };
 
-    edgesDb.getAsync(getter).then(function (results) {
+    // get triples from db
+    db.get(getTriple, function (err, triples) {
+      if (err) { return next(err); }
 
-      if (results.length === 0) {
+      // if no triples found, return 
+      if (triples.length === 0) {
         res.json(404, undefined);
       }
 
-      edge = results[0];
+      edgeTriple = triples[0];
 
-      return edgesDb.delAsync(edge);
-    }).then(function () {
+      // delete edgeTriple from db
+      db.del(edgeTriple, function (err) {
+        if (err) { return next(err); }
+
+        // if success, return success
         res.json(200, undefined);
-    }).catch(function (err) {
-      if (err) { return next(err); }
+      });
     });
   });
 };
