@@ -56,9 +56,7 @@ module.exports = function (app) {
 
   // read model
   app.get("/edges/:edgeId", function (req, res, next) {
-    // TODO get all matching?
-    // multiple edges can have same edgeId
-    // as id for edges in entire triple
+    // TODO id is entire triple
 
     // prepare db query from request's 'edgeId' param
     var getTriple = {
@@ -87,7 +85,7 @@ module.exports = function (app) {
   // update model
   app.put("/edges/:edgeId", function (req, res, next) {
     // TODO what about transactions?
-    // TODO update all matching
+    // TODO id is entire triple
 
     // levelgraph does not support in-place update,
     // as there are no constraint in the graph.
@@ -139,7 +137,7 @@ module.exports = function (app) {
 
   // delete model
   app.delete("/edges/:edgeId", function (req, res, next) {
-    // TODO delete all matching
+    // TODO id is entire triple
 
     // prepare db query from request
     var getTriple = {
