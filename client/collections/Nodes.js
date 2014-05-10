@@ -22,6 +22,7 @@ module.exports = Backbone.Collection.extend({
     this.update();
   },
 
+  // TODO: somehow move view stuff into view?
   onClick: function (d, i) {
     debug("onClick", arguments)
     // TODO: does this need to be a model and use get?
@@ -90,7 +91,6 @@ module.exports = Backbone.Collection.extend({
     if (!this.svg) { return; }
     var nodes = _.pluck(this.models, 'attributes')
     debug("UPDATE NODES", nodes);
-
 
     //
     // JOIN new data to old nodes using id as the key
