@@ -5,16 +5,13 @@ var Backbone = require('backbone');
 var debug = require('debug')('views:pages/MixBuilder')
 
 var _ = require('underscore');
-var $ = require('jquery');
 
 var Graph = require('./Graph');
 
-var Nodes = require('../../collections/Nodes');
-var Links = require('../../collections/Links');
+var Nodes = require('../../models/Nodes');
+var Links = require('../../models/Links');
 
 var Transition_Soft = require('../../models/Transition_Soft');
-var Node = require('../../models/Node');
-var Link = require('../../models/Link');
 
 module.exports = React.createClass({
   
@@ -69,8 +66,8 @@ module.exports = React.createClass({
             break;
         }
         // update based on new upNextTracks
-        this.props.nodes.mergeUpNext(upNextTracks.songs);
-        this.props.links.mergeUpNext(upNextTracks.transitions);
+        this.props.nodes.setUpNext(upNextTracks.songs);
+        this.props.links.setUpNext(upNextTracks.transitions);
       }
     }
   },
@@ -78,8 +75,8 @@ module.exports = React.createClass({
   computeQueue: function () {
     var mix = this.props.viewingPlaylist;
     if (mix) {
-      this.props.nodes.mergeQueue(mix.getSongs().models);
-      this.props.links.mergeQueue(mix.getTransitions().models);
+      this.props.nodes.setQueue(mix.getSongs().models);
+      this.props.links.setQueue(mix.getTransitions().models);
     }
   },
 
@@ -88,10 +85,14 @@ module.exports = React.createClass({
     var graph;
     if (mix && mix.get('type') === 'mix') {
       graph = Graph({
-        'active': mix.getActiveTrack(),
-        'playing': mix.get('playingTrack'),
         'nodes': this.props.nodes,
         'links': this.props.links,
+
+        'active': mix.getActiveTrack(),
+        'playing': mix.get('playingTrack'),
+
+        'play': this.props.playViewing,
+        'setActiveTrack': mix.setActiveTrack.bind(mix),
       });
     }
     return (
@@ -141,30 +142,25 @@ module.exports = React.createClass({
     }
   },
 
-  resetListener: function (prevMix) {
-    var newMix = this.props.viewingPlaylist;
+  resetListener: function (newMix, prevMix) {
     this.stopListening(prevMix);
-    // update nodes's reference to mix
-    this.props.nodes.mix = mix;
     this.computeQueue();
+    this.computeUpNext();
     this.listenTo(newMix);
   },
 
-  componentDidMount: function () {
-    this.resetListener();
+  componentWillMount: function () {
+    // setup listeners
+    this.resetListener(this.props.viewingPlaylist);
     this.listenToSearch();
-    // add props to nodes
-    var nodes = this.props.nodes;
-    nodes.play = this.props.playViewing;
-    nodes.playpause = this.props.playpauseViewing;
   },
 
-  componentDidUpdate: function (prevProps, prevState) {
-    var prevMix = prevProps.viewingPlaylist;
+  componentWillUpdate: function (nextProps, nextState) {
+    var nextMix = nextProps.viewingPlaylist;
     var mix = this.props.viewingPlaylist;
-    // switch mix listener if mix changed
-    if (mix && ((prevMix && prevMix.cid) !== mix.cid)) {
-      this.resetListener(prevMix);
+    // switch mix listener if mix changes
+    if (nextMix && ((mix && mix.cid) !== nextMix.cid)) {
+      this.resetListener(nextMix, mix);
     }
   },
 
