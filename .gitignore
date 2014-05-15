@@ -5,7 +5,7 @@ node_modules
 npm-debug.log
 *.swp
 .meteor
-.DS_Store
+*.DS_Store
 packages
 linx-pitch.txt
 linx description.txt
