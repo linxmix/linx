@@ -21,6 +21,7 @@ var Edges = require('../collections/Edges');
 
 var Site = require('./Site');
 var Welcome = require('./Welcome');
+var Pitch = require('./Pitch');
 
 module.exports = React.createClass({
   
@@ -72,6 +73,9 @@ module.exports = React.createClass({
         renderedPage = Welcome(props); break;
       case 'Site':
         renderedPage = Site(props); break;
+      case 'Pitch':
+        debug("PITCH PAGE");
+        renderedPage = Pitch(props); break;
     }
     return (
       <div>
