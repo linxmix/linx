@@ -3,10 +3,10 @@ var Backbone = require('backbone');
 Backbone.$ = require('jquery');
 require('debug').enable('*');
 
-var Track = require('../../../client/models/Track');
-var Edge = require('../../../client/models/Edge');
-var Transition = require('../../../client/models/Transition');
-var Queue = require('../../../client/collections/Queue');
+var Track = require('../../src/models/Track');
+var Edge = require('../../src/models/Edge');
+var Transition = require('../../src/models/Transition');
+var Queue = require('../../src/collections/Queue');
 
 describe("#Queue", function () {
   var queue;

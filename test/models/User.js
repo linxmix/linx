@@ -2,7 +2,7 @@ var expect = require('chai').expect;
 var Backbone = require('backbone');
 Backbone.$ = require('jquery');
 
-var User = require('../../../client/models/User');
+var User = require('../../src/models/User');
 
 describe("#User", function () {
   var user;

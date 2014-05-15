@@ -3,7 +3,7 @@ var Backbone = require('backbone');
 Backbone.$ = require('jquery');
 require('debug').enable('*');
 
-var Track = require('../../../client/models/Track');
+var Track = require('../../src/models/Track');
 
 describe("#Track", function () {
 

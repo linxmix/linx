@@ -2,25 +2,22 @@
   "name": "linx",
   "version": "0.0.0",
   "description": "",
-  "main": "server/index.js",
-  "browser": "client/index.js",
+  "main": "src/index.js",
   "scripts": {
-    "test-server": "(export NODE_ENV=test; mocha -R spec test/server/**/*.js)",
-    "test-client": "(export NODE_ENV=test; testling -x google-chrome)",
-    "test": "npm run test-server && (if [ -z \"$TRAVIS\" ]; then npm run test-client; fi)",
-    "develop": "(export NODE_ENV=development; gulp develop & nodemon .)",
-    "start": "gulp && node ."
+    "test": "(export NODE_ENV=test; testling -x google-chrome)",
+    "develop": "(export NODE_ENV=development; gulp && beefy ../src/index.js:index.js --cwd static --live)",
+    "start": "(export NODE_ENV=production; browserify src/index.js -o static/index.js -g uglifyify"
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/wolfbiter/linx.git"
+    "url": "git://github.com/linxmusic/linx.git"
   },
   "author": "",
   "license": "AGPLv3",
   "bugs": {
-    "url": "https://github.com/wolfbiter/linx/issues"
+    "url": "https://github.com/linxmusic/linx/issues"
   },
-  "homepage": "https://github.com/wolfbiter/linx",
+  "homepage": "https://github.com/linxmusic/linx",
   "browserify": {
     "transform": [
       "envify",
@@ -29,7 +26,7 @@
     ]
   },
   "testling": {
-    "files": "test/client/**/*.js",
+    "files": "test/**/*.js",
     "harness": "mocha",
     "browsers": [
       "ie/9..latest",
@@ -43,19 +40,12 @@
     ]
   },
   "devDependencies": {
-    "watchify": "^0.6.1",
-    "tiny-lr": "0.0.5",
-    "gulp-livereload": "^1.2.0",
-    "nodemon": "^1.0.15",
     "chai": "~1.9.0",
     "mocha": "~1.18.0",
-    "supertest": "~0.9.2",
-    "testling": "^1.6.1"
+    "testling": "^1.6.1",
+    "beefy": "^1.1.0"
   },
   "dependencies": {
-    "express": "^3.4.8",
-    "ecstatic": "^0.4.13",
-    "cors-anywhere": "^0.1.9",
     "backbone": "^1.1.2",
     "jquery": "^2.1.0",
     "backbone-react-component": "^0.6.0",
@@ -64,7 +54,6 @@
     "envify": "^1.2.1",
     "uglifyify": "^2.0.0",
     "vinyl-source-stream": "^0.1.1",
-    "gulp": "^3.5.6",
     "browserify": "^3.32.1",
     "lessify": "git://github.com/ahdinosaur/lessify",
     "wavesurfer.js": "0.1.6",
@@ -73,18 +62,11 @@
     "echojs": "git://github.com/ahdinosaur/echojs",
     "URIjs": "^1.12.1",
     "underscore": "^1.6.0",
-    "level": "^0.18.0",
-    "levelgraph": "^0.8.2",
-    "morgan": "^1.0.0",
-    "body-parser": "^1.0.1",
-    "compression": "^1.0.1",
     "bluebird": "^1.2.1",
-    "tv4": "^1.0.16",
-    "level-sublevel": "^5.2.0",
-    "level-writestream": "^0.1.1",
     "browser-keymap": "0.0.1",
     "queue": "^2.2.0",
     "d3": "^3.4.6",
-    "jquery-overscroll": "git://github.com/linxmusic/overscroll"
+    "jquery-overscroll": "git://github.com/linxmusic/overscroll",
+    "react-addons": "^0.9.0"
   }
 }

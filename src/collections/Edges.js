@@ -14,6 +14,7 @@ module.exports = Backbone.Collection.extend({
     this.options = options;
   },
 
-  url: '/edges',
+  url: ((process.env.NODE_ENV === 'production') ?
+    'http://api.linx.dj/edges' : 'http://localhost:5000/edges'),
   model: Edge,
 });

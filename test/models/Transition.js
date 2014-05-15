@@ -3,8 +3,8 @@ var Backbone = require('backbone');
 Backbone.$ = require('jquery');
 require('debug').enable('*');
 
-var Edge = require('../../../client/models/Edge');
-var Transition = require('../../../client/models/Transition');
+var Edge = require('../../src/models/Edge');
+var Transition = require('../../src/models/Transition');
 
 describe("#Transition", function () {
 
