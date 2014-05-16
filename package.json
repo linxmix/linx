@@ -8,8 +8,8 @@
     "watch": "gulp && beefy ../src/index.js:index.js --cwd static --live",
     "test": "(export NODE_ENV=test; testling -x google-chrome)",
     "develop": "(export NODE_ENV=development; npm run watch)",
-    "start": "(export NODE_ENV=production; npm run build)",
-    "deploy": "npm run start && npm run gh-pages",
+    "start": "(export NODE_ENV=production; npm run build && http-server static)",
+    "deploy": "(export NODE_ENV=production; npm run build && npm run gh-pages)",
     "gh-pages": "./bin/deploy git@github.com:linxmix/linxmix.github.io origin master static"
   },
   "repository": {
@@ -73,6 +73,7 @@
     "jquery-overscroll": "git://github.com/linxmusic/overscroll",
     "react-addons": "^0.9.0",
     "gulp-gh-pages": "^0.2.0",
-    "gulp-replace": "^0.3.0"
+    "gulp-replace": "^0.3.0",
+    "http-server": "^0.6.1"
   }
 }
