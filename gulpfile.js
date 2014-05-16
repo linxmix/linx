@@ -19,4 +19,4 @@ gulp.task('deploy', function () {
 
 gulp.task('assets', ['fonts'])
 gulp.task('default', ['assets']);
-gulp.task('deploy', ['gh-pages']);
+gulp.task('deploy', ['deploy']);
