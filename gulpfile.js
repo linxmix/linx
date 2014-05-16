@@ -11,12 +11,11 @@ gulp.task('deploy', function () {
   return gulp.src("./static/**/*")
     .pipe(replace('    <script src="/-/live-reload.js"></script>\n',''))
     .pipe(deploy({
-      remoteUrl: "git@github.com/linxmix/linxmix.github.io",
+      remoteUrl: "git@github.com:linxmix/linxmix.github.io",
       origin: "deploy",
-      branch: "master"
+      branch: "master",
     }));
 });
 
 gulp.task('assets', ['fonts'])
 gulp.task('default', ['assets']);
-gulp.task('deploy', ['deploy']);
