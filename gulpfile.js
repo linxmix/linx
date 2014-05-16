@@ -11,7 +11,7 @@ gulp.task('deploy', function () {
   return gulp.src("./static/**/*")
     .pipe(replace('    <script src="/-/live-reload.js"></script>\n',''))
     .pipe(deploy({
-      remoteUrl: "git@github.com:linxmix/linxmix.github.io",
+      remoteUrl: "git@github.com:linxmix/linxmix.github.io.git",
       origin: "deploy",
       branch: "master",
     }));
