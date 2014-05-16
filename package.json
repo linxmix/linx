@@ -4,9 +4,12 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
+    "build": "gulp && browserify src/index.js -o static/index.js -g uglifyify",
+    "watch": "gulp && beefy ../src/index.js:index.js --cwd static --live",
     "test": "(export NODE_ENV=test; testling -x google-chrome)",
-    "develop": "(export NODE_ENV=development; gulp && beefy ../src/index.js:index.js --cwd static --live)",
-    "start": "(export NODE_ENV=production; browserify src/index.js -o static/index.js -g uglifyify"
+    "develop": "(export NODE_ENV=development; npm run watch)",
+    "start": "(export NODE_ENV=production; npm run build)",
+    "deploy": "npm run start && gulp deploy"
   },
   "repository": {
     "type": "git",
@@ -67,6 +70,8 @@
     "queue": "^2.2.0",
     "d3": "^3.4.6",
     "jquery-overscroll": "git://github.com/linxmusic/overscroll",
-    "react-addons": "^0.9.0"
+    "react-addons": "^0.9.0",
+    "gulp-gh-pages": "^0.2.0",
+    "gulp-replace": "^0.3.0"
   }
 }
