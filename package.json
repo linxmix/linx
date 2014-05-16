@@ -9,7 +9,8 @@
     "test": "(export NODE_ENV=test; testling -x google-chrome)",
     "develop": "(export NODE_ENV=development; npm run watch)",
     "start": "(export NODE_ENV=production; npm run build)",
-    "deploy": "npm run start && ./bin/deploy git@github.com:linxmix/linxmix.github.io origin master"
+    "deploy": "npm run start && npm run gh-pages",
+    "gh-pages": "./bin/deploy git@github.com:linxmix/linxmix.github.io origin master static"
   },
   "repository": {
     "type": "git",

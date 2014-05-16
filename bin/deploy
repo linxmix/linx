@@ -3,18 +3,19 @@
 url=$1
 remote=$2
 branch=$3
+base=$4
 
 mkdir -p deploy
 cd deploy
 
 git init && \
-  git checkout $branch
-  touch .nojekyll && \
+  git checkout -B $branch && \
+  touch ".nojekyll" && \
   rm -rf * && \
-  cp -r ../!(node_modules) ./ && \
+  cp -r ../$base/* ./ && \
   git add . && \
   git commit -m \"deploy\" && \
-  git config --get remote.$url.url && \
+  git remote set-url $remote $url && \
   git push $remote $branch --force
 
 cd ..
