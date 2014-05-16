@@ -13,8 +13,9 @@ git init && \
   touch ".nojekyll" && \
   rm -rf * && \
   cp -r ../$base/* ./ && \
+  sed -i -s 's/    <script src="\/-\/live-reload.js"><\/script>//' index.html && \
   git add . && \
-  git commit -m \"deploy\" && \
+  git commit -m "deploy" && \
   git remote set-url $remote $url && \
   git push $remote $branch --force
 
