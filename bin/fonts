@@ -1,0 +1,4 @@
+#!/bin/bash
+
+mkdir -p static/fonts
+cp node_modules/semantic/src/fonts/* static/fonts
