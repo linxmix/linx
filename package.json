@@ -1,7 +1,7 @@
 {
   "name": "linx",
   "version": "0.0.0",
-  "description": "",
+  "description": "music player which interleaves songs with prerecorded transitions",
   "main": "src/index.js",
   "scripts": {
     "build": "gulp && browserify src/index.js -o static/index.js",
@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/linxmusic/linx.git"
+    "url": "git://github.com/linxmix/linx.git"
   },
   "author": "",
   "license": "AGPLv3",
   "bugs": {
-    "url": "https://github.com/linxmusic/linx/issues"
+    "url": "https://github.com/linxmix/linx/issues"
   },
-  "homepage": "https://github.com/linxmusic/linx",
+  "homepage": "https://github.com/linxmix/linx",
   "browserify": {
     "transform": [
       "envify",
@@ -34,8 +34,8 @@
     "harness": "mocha",
     "browsers": [
       "ie/9..latest",
-      "firefox/17..nightly",
-      "chrome/23..canary",
+      "firefox/15,18,21,23..nightly",
+      "chrome/20,23,26,29..canary",
       "opera/15..next",
       "safari/6..latest",
       "iphone/6",
@@ -70,7 +70,7 @@
     "browser-keymap": "0.0.1",
     "queue": "^2.2.0",
     "d3": "^3.4.6",
-    "jquery-overscroll": "git://github.com/linxmusic/overscroll",
+    "jquery-overscroll": "git://github.com/linxmix/overscroll",
     "react-addons": "^0.9.0",
     "gulp-gh-pages": "^0.2.0",
     "gulp-replace": "^0.3.0",

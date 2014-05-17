@@ -4,9 +4,7 @@ node_modules
 /static/fonts
 npm-debug.log
 *.swp
-.meteor
 *.DS_Store
-packages
 linx-pitch.txt
 linx description.txt
 /db

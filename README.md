@@ -1,41 +1,39 @@
 # linx
 
-[![server tests](https://travis-ci.org/linxmusic/linx.png)](https://travis-ci.org/linxmusic/linx)
-[![npm version](https://badge.fury.io/js/ciab-linx.png)](https://npmjs.org/package/linx)
-[![dependency status](https://david-dm.org/linxmusic/linx.png)](https://david-dm.org/linxmusic/linx)
-[![devDependency status](https://david-dm.org/linxmusic/linx/dev-status.png)](https://david-dm.org/linxmusic/linx#info=devDependencies)
+[![dependency status](https://david-dm.org/linxmix/linx.png)](https://david-dm.org/linxmix/linx)
+[![devDependency status](https://david-dm.org/linxmix/linx/dev-status.png)](https://david-dm.org/linxmix/linx#info=devDependencies)
 
-[![browser tests](https://ci.testling.com/linxmusic/linx.png)](https://ci.testling.com/linxmusic/linx)
+[![browser tests](https://ci.testling.com/linxmix/linx.png)](https://ci.testling.com/linxmix/linx)
 
-TODO: add description yada yada
+open source music player that DJs with a graph (songs and transitions between songs).
 
 ## how to install
 
 ```
-git clone https://github.com/linxmusic/linx
+git clone https://github.com/linxmix/linx
 npm install
 ```
 
-## how to run
+## how to run (NODE_ENV=production)
 
 ```
 npm start
 ```
 
-## how to develop
+## how to develop (NODE_ENV=development)
 
 ```
 npm run develop
 ```
 
-## how to test
+## how to test (NODE_ENV=test)
 
 ```
-npm run test-server
+npm run test
 ```
 
-OR
+## how to deploy (NODE_ENV=production)
 
 ```
-npm run test-client
+npm run deploy
 ```
