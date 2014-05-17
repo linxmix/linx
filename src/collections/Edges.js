@@ -2,6 +2,7 @@ var Backbone = require('backbone');
 var debug = require('debug')('collections:Edges')
 
 var clientId = require('../config').clientId;
+var apiServer = require('../utils').apiServer;
 
 var Edge = require('../models/Edge');
 
@@ -14,7 +15,6 @@ module.exports = Backbone.Collection.extend({
     this.options = options;
   },
 
-  url: ((process.env.NODE_ENV === 'production') ?
-    'http://api.linx.dj/edges' : 'http://localhost:5000/edges'),
+  url: apiServer + "/edges",
   model: Edge,
 });

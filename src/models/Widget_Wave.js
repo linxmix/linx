@@ -2,6 +2,7 @@ var Backbone = require('backbone');
 var debug = require('debug')('models:Widget_Wave');
 
 var clientId = require('../config').clientId;
+var apiServer = require('../utils').apiServer;
 
 var Widget = require('./Widget');
 
@@ -38,8 +39,9 @@ module.exports = Widget.extend({
     debug("loading track into widget", this.get('index'), track.get('title'));
 
     // TODO: why does track.attributes work while track.get doesnt?
-    var url = "http://localhost:5001/" +
-      track.attributes['stream_url'].replace(/^https:\/\//, '') +
+    // api server proxies /sc/* to https://api.soundcloud.com/*
+    var url = apiServer + "/sc" +
+      track.attributes['stream_url'].replace(/^https:\/\/api.soundcloud.com/, '') +
       "?client_id=" + clientId;
 
     // load track into wave
