@@ -8,7 +8,7 @@
     "build": "npm run assets && browserify src/index.js -o static/index.js",
     "watch": "npm run assets && beefy ../src/index.js:index.js --cwd static --live",
     "test": "(export NODE_ENV=test; testling -x google-chrome)",
-    "develop": "(export NODE_ENV=development; npm run watch)",
+    "develop": "(export NODE_ENV=development; npm run build; npm run watch)",
     "start": "(export NODE_ENV=production; npm run build && http-server static)",
     "deploy": "(export NODE_ENV=production; npm run build && npm run gh-pages)",
     "gh-pages": "./bin/deploy git@github.com:linxmix/linxmix.github.io origin master static"
@@ -65,7 +65,7 @@
     "backbone-react-component": "^0.6.0",
     "react": "^0.10.0",
     "react-addons": "^0.9.0",
-    "wavesurfer.js": "0.1.6",
+    "wavesurfer.js": "0.1.7",
     "echojs": "git://github.com/ahdinosaur/echojs",
     "URIjs": "^1.12.1",
     "browser-keymap": "0.0.1",
