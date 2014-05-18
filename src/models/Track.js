@@ -188,7 +188,7 @@ var SCAnalyzer = Backbone.Collection.extend({
 
   url: function () {
     var options = this.options;
-    var url = "http://labs.echonest.com/SCAnalyzer/analyze"
+    var url = "http://corsproxy.com/labs.echonest.com/SCAnalyzer/analyze"
     url = new URI(url);
     url.query({ 'id': options.id });
     return url;
