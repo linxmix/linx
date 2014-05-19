@@ -14,7 +14,7 @@ module.exports = {
   echoApiKey: "CWBME38JDGQNEJPXT",
   
   widgetModel: "Wave",
-  startPage: 'Pitch',
+  startPage: 'Welcome',
 
   apiServer: isProd ?
     "http://api.linx.dj" :

@@ -4,7 +4,7 @@
   "description": "music player which interleaves songs with prerecorded transitions",
   "main": "src/index.js",
   "scripts": {
-    "proxy": "corsproxy localhost 5500",
+    "proxy": "./bin/proxy",
     "assets": "./bin/fonts",
     "build": "npm run assets && browserify src/index.js -o static/index.js",
     "watch": "npm run assets && beefy ../src/index.js:index.js 4000 --cwd static --live",
@@ -50,7 +50,7 @@
     "mocha": "~1.18.0",
     "testling": "^1.6.1",
     "beefy": "^1.1.0",
-    "corsproxy": "^0.2.14"
+    "cors-anywhere": "^0.1.9"
   },
   "dependencies": {
     "browserify": "^4.1.4",

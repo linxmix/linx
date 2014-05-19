@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+
+var host = '0.0.0.0';
+var port = '5500';
+
+var cors_proxy = require('cors-anywhere');
+
+cors_proxy.createServer({
+    requireHeader: ['origin'],
+    removeHeaders: ['cookie', 'cookie2']
+}).listen(port, host, function() {
+    console.log('Running CORS Anywhere on ' + host + ':' + port);
+});

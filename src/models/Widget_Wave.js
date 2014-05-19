@@ -40,7 +40,7 @@ module.exports = Widget.extend({
     debug("loading track into widget", this.get('index'), track.get('title'));
 
     // TODO: why does track.attributes work while track.get doesnt?
-    // api server proxies /sc/* to https://api.soundcloud.com/*
+    // use proxy to access stream_url
     var url = proxyServer + '/' +
       track.attributes['stream_url'].replace(/^https?:\/\//, '') +
       "?client_id=" + clientId;
