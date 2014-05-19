@@ -4,11 +4,12 @@
   "description": "music player which interleaves songs with prerecorded transitions",
   "main": "src/index.js",
   "scripts": {
+    "proxy": "corsproxy localhost 5500",
     "assets": "./bin/fonts",
     "build": "npm run assets && browserify src/index.js -o static/index.js",
     "watch": "npm run assets && beefy ../src/index.js:index.js 4000 --cwd static --live",
     "test": "(export NODE_ENV=test; testling -x google-chrome)",
-    "develop": "(export NODE_ENV=development; npm run build; npm run watch)",
+    "develop": "(export NODE_ENV=development; npm run build && (npm run proxy & npm run watch))",
     "start": "(export NODE_ENV=production; npm run build && http-server static -p 4000)",
     "deploy": "(export NODE_ENV=production; npm run build && npm run gh-pages)",
     "gh-pages": "./bin/deploy git@github.com:linxmix/linxmix.github.io origin master static"
@@ -48,7 +49,8 @@
     "chai": "~1.9.0",
     "mocha": "~1.18.0",
     "testling": "^1.6.1",
-    "beefy": "^1.1.0"
+    "beefy": "^1.1.0",
+    "corsproxy": "^0.2.14"
   },
   "dependencies": {
     "browserify": "^4.1.4",

@@ -1,8 +1,9 @@
 var Backbone = require('backbone');
 var debug = require('debug')('collections:Edges')
 
-var clientId = require('../config').clientId;
-var apiServer = require('../utils').apiServer;
+var config = require('../config');
+var clientId = config.clientId;
+var apiServer = config.apiServer;
 
 var Edge = require('../models/Edge');
 

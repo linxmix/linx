@@ -6,6 +6,7 @@ var $ = require('jquery');
 
 var config = require('../config');
 var clientId = config.clientId;
+var proxyServer = config.proxyServer;
 var echoApiKey = config.echoApiKey;
 
 module.exports = Backbone.Model.extend({
@@ -188,7 +189,7 @@ var SCAnalyzer = Backbone.Collection.extend({
 
   url: function () {
     var options = this.options;
-    var url = "http://corsproxy.com/labs.echonest.com/SCAnalyzer/analyze"
+    var url = proxyServer + "/labs.echonest.com/SCAnalyzer/analyze"
     url = new URI(url);
     url.query({ 'id': options.id });
     return url;

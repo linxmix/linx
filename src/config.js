@@ -15,4 +15,12 @@ module.exports = {
   
   widgetModel: "Wave",
   startPage: 'Pitch',
+
+  apiServer: isProd ?
+    "http://api.linx.dj" :
+    "http://localhost:5000",
+
+  proxyServer: isProd ?
+    "http://proxy.linx.dj" :
+    "http://localhost:5500",
 }
