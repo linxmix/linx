@@ -27,6 +27,7 @@ module.exports = React.createClass({
     }.bind(this));
     return (
       <div>
+        <img href="/static/soundcloud-track.png"></img>
         <div className="view_port">
           <div className="polling_message">
             Listening for dispatches

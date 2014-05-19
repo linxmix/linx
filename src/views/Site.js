@@ -65,9 +65,7 @@ module.exports = React.createClass({
         'searching': false,
       });
       // maybe set searchResults as viewingPlaylist
-      // TODO: make search display on new mix!
       var playlist = this.state.viewingPlaylist;
-      debug("MAYBE SET PAGE", this.state.page, playlist)
       if (this.state.page === 'MixBuilder') {
         if ((!playlist) || (playlist.tracks().length < 1)) {
           this.setViewingPlaylist(searchResults);

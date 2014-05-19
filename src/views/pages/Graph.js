@@ -175,7 +175,6 @@ module.exports = React.createClass({
         var y = 0;
         return "translate(" + x + "," + y + ")";
       }.bind(this))
-      // TODO: are binds necessary here?
       .on("click", this.onNodeClick)
       .on("dblclick", this.onNodeDblClick);
 
