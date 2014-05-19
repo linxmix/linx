@@ -41,7 +41,7 @@ module.exports = Widget.extend({
     // TODO: why does track.attributes work while track.get doesnt?
     // api server proxies /sc/* to https://api.soundcloud.com/*
     var url = apiServer + "/sc" +
-      track.attributes['stream_url'].replace(/^https:\/\/api.soundcloud.com/, '') +
+      track.attributes['stream_url'].replace(/^https?:\/\/api.soundcloud.com/, '') +
       "?client_id=" + clientId;
 
     // load track into wave
