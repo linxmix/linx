@@ -200,8 +200,10 @@ module.exports = Widget.extend({
     // add handler
     debug("MARKED END", position, this.get('track').get('title'));
     if (mark) {
+      debug("end mark set", this.get('track').get('title'));
       mark.on('reached', function () {
-        wave.fireEvent('endMark', mark);
+        debug("end mark reached")
+        this.get('player').fireEvent('endMark', mark);
       }.bind(this));
     }
   },

@@ -145,20 +145,21 @@ module.exports = React.createClass({
   // initialize this trackWave's wave object.
   componentDidMount: function () {
 
-    // create and save wavesurfer object
-    var wave = this.wave = Object.create(WaveSurfer);
-
     // 
     // hackery
     //
-    wave.fireEvent = fireEventCustom;
-    wave.pause = pauseCustom;
-    wave.empty = emptyCustom;
-    wave.updateSelection = updateSelectionCustom;
-    wave.Mark.remove = removeCustom;
+    WaveSurfer.fireEvent = fireEventCustom;
+    WaveSurfer.pause = pauseCustom;
+    WaveSurfer.empty = emptyCustom;
+    WaveSurfer.updateSelection = updateSelectionCustom;
+    WaveSurfer.Mark.remove = removeCustom;
+    WaveSurfer.WebAudio.onPlayFrame = onPlayFrameCustom;
     // 
     // /end hackery
     // 
+
+    // create and save wavesurfer object
+    var wave = this.wave = Object.create(WaveSurfer);
 
     // setup progress bar
     var progressDiv = this.$('.progress');
@@ -311,4 +312,29 @@ function updateSelectionCustom(selection) {
   if (this.loopSelection) {
     this.backend.updateSelection(percent0, percent1);
   }
+}
+var played = false;
+function onPlayFrameCustom (time) {
+  if (this.scheduledPause != null) {
+    if (this.prevFrameTime >= this.scheduledPause) {
+      this.pause();
+    }
+  }
+  var MAX_INTERVAL = 0.05; // ensure finish event is activated
+  console.log("playframe", time + MAX_INTERVAL, this.getDuration());
+  if (time + MAX_INTERVAL > this.getDuration()) {
+    this.fireEvent('finish', time);
+  }
+
+  if (this.loop) {
+    if (
+      this.prevFrameTime > this.loopStart &&
+      this.prevFrameTime <= this.loopEnd &&
+      time > this.loopEnd
+      ) {
+      this.play(this.loopStart);
+  }
+}
+
+this.prevFrameTime = time;
 }
