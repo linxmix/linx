@@ -1,10 +1,6 @@
 var Backbone = require('backbone');
 var debug = require('debug')('models:Widget_Wave');
 
-var config = require('../config');
-var clientId = config.clientId;
-var proxyServer = config.proxyServer;
-
 var Widget = require('./Widget');
 
 var CUE_LAG = 0.005;
@@ -39,15 +35,9 @@ module.exports = Widget.extend({
     });
     debug("loading track into widget", this.get('index'), track.get('title'));
 
-    // TODO: why does track.attributes work while track.get doesnt?
-    // use proxy to access stream_url
-    var url = proxyServer + '/' +
-      track.attributes['stream_url'].replace(/^https?:\/\//, '') +
-      "?client_id=" + clientId;
-
     // load track into wave
     try {
-      var ajax = wave.load(url);
+      var ajax = wave.load(track.getStreamUrl());
       this.setXhr(ajax.xhr);
     } catch (e) {
       debug("CAUGHT ERROR WHILE LOADING", e);

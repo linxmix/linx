@@ -42,8 +42,64 @@ module.exports = Backbone.Model.extend({
     return def;
   },
 
-  // analyzes track from SC on echonest.
+  // use proxy to access stream_url
+  getStreamUrl: function () {
+    debug("GETTING STREAM URL", this.get('title'));
+    return proxyServer + '/' +
+      this.get('stream_url').replace(/^https?:\/\//, '') +
+      "?client_id=" + clientId;
+  },
+
+  // directly analyzes track on echonest.
   analyze: function (options) {
+    var track = this;
+    var cb = options.success;
+    if (track.get('analyzing')) {
+      // TODO: call success on analyzed
+      return;
+    // if already analyzed, call success immediately
+    } else if (track.get('analyzed')) {
+      return cb && cb(track);
+    // otherwise, proceed with analysis
+    } else {
+      track.set({ 'analyzing': true });
+    }
+    debug("analyzing track in echonest", options)
+
+    // chain onto success function
+    options.success = function () {
+      track.set({
+        'analyzing': false,
+        'analyzed': true,
+      });
+      cb && cb(arguments);
+    };
+
+    // if has echoId, get profile from echoId
+    if (track.get('echoId')) {
+      track.getProfile(options);
+
+    // if no echoId, get profile from audio
+    } else {
+      var trackProfile = new TrackProfile({
+        'url': 'upload',
+        'queryUrl': track.getStreamUrl(),
+      });
+      trackProfile.fetch({
+        'type': 'POST', // IMPORTANT: need post request to upload audio
+        'cache': false, // IMPORTANT: refresh analysis_url
+        'success': function (collection, response, _options) {
+          track.set({ 'echoProfile': response.response.track });
+          if (options.full) {
+            getAnalysis(options);
+          }
+        },
+      });
+    }
+  },
+
+  // uses SCanalyze to analyze track on echonest
+  SCAnalyze: function (options) {
     var track = this;
     if (track.get('analyzing')) {
       return;
@@ -80,59 +136,65 @@ module.exports = Backbone.Model.extend({
     }
   },
 
+  // gets echonest analysis for given track
+  getAnalysis: function (options) {
+    var track = this;
+    if (!(track.get('echoProfile'))) {
+      throw new Error("getProfile called without echoId");
+    }
+
+    var url = track.get('echoProfile').audio_summary.analysis_url;
+    var count = 0;
+    var attempt = function () {
+      debug("ATTEMPT", count);
+      $.getJSON(url, function (response) {
+        track.set({ 'echoAnalysis': response });
+        options.success && options.success(track);
+      }).fail(function (error) {
+        debug("FAIL", error);
+        if (count <= 5) {
+          window.setTimeout(function () {
+            count++;
+            attempt();
+          }, 5000);
+        }
+      });
+    }
+
+    // resolve analysis URL
+    if (!track.get('echoAnalysis')) {
+      attempt();
+    // if we already have analysis, we're done here so call success
+    } else {
+      options.success && options.success(track);
+    }
+  },
+
   // gets echonest track profile from given track's echoId
   // if options.full, will also retrieve full analysis docs
   getProfile: function (options) {
     var track = this;
     if (!(track.get('echoId'))) {
-      return debug("WARNING: getProfile called without echoId", track);
+      throw new Error("getProfile called without echoId");
     }
-
-    var next = function () {
-
-      var url = track.get('echoProfile').audio_summary.analysis_url;
-      var count = 0;
-      var attempt = function () {
-        debug("ATTEMPT", count);
-        $.getJSON(url, function (response) {
-          track.set({ 'echoAnalysis': response });
-          options.success && options.success(track);
-        }).fail(function (error) {
-          debug("FAIL", error);
-          if (count <= 5) {
-            window.setTimeout(function () {
-              count++;
-              attempt();
-            }, 5000);
-          }
-        });
-      }
-
-      // if wanting full analysis, resolve analysis URL
-      if (options.full && !track.get('echoAnalysis')) {
-        attempt();
-      // otherwise, we're done here so call success
-      } else {
-        options.success && options.success(track);
-      }
-    };
 
     // if no track profile or analysis is pending, get track profile
     var echoProfile = track.get('echoProfile');
     if (!echoProfile || echoProfile.status !== 'complete') {
       var trackProfile = new TrackProfile({
         'echoId': track.get('echoId'),
+        'url': 'profile',
       });
       trackProfile.fetch({
         'cache': false, // IMPORTANT: refresh analysis_url
         'success': function (collection, response, _options) {
           track.set({ 'echoProfile': response.response.track });
-          next();
+          getAnalysis(options);
         },
       });
     // if already has, continue
     } else {
-      next();
+      getAnalysis(options);
     }
   },
 
@@ -166,13 +228,15 @@ var TrackProfile = Backbone.Collection.extend({
 
   url: function () {
     var options = this.options;
-    var url = "http://developer.echonest.com/api/v4/track/profile"
+    var url = "http://developer.echonest.com/api/v4/track/" + options.url;
     url = new URI(url);
     url.query({
       'api_key': options.api_key,
       'id': options.echoId,
+      'url': options.queryUrl,
       'bucket': 'audio_summary',
     });
+    debug("TRACKPROFILE URL", url);
     return url;
   },
 

@@ -13,13 +13,14 @@ module.exports = {
   // echonest
   echoApiKey: "CWBME38JDGQNEJPXT",
   
+  // client
   widgetModel: "Wave",
   startPage: 'Welcome',
 
+  // server
   apiServer: isProd ?
     "http://api.linx.dj" :
     "http://localhost:5000",
-
   proxyServer: isProd ?
     "http://proxy.linx.dj" :
     "http://localhost:5500",
