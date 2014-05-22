@@ -37,7 +37,7 @@ module.exports = Widget.extend({
 
     // load track into wave
     try {
-      var ajax = wave.load(track.getStreamUrl());
+      var ajax = wave.load(track.getStreamUrl(true));
       this.setXhr(ajax.xhr);
     } catch (e) {
       debug("CAUGHT ERROR WHILE LOADING", e);

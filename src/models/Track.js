@@ -2,6 +2,7 @@ var Backbone = require('backbone');
 var debug = require('debug')('models:Track');
 
 var URI = require('URIjs');
+var params = require('query-params');
 var $ = require('jquery');
 
 var config = require('../config');
@@ -43,11 +44,13 @@ module.exports = Backbone.Model.extend({
   },
 
   // use proxy to access stream_url
-  getStreamUrl: function () {
+  getStreamUrl: function (useProxy) {
     debug("GETTING STREAM URL", this.get('title'));
-    return proxyServer + '/' +
-      this.get('stream_url').replace(/^https?:\/\//, '') +
+    var url = this.get('stream_url').replace(/^https?:\/\//, '') +
       "?client_id=" + clientId;
+    if (useProxy) url = proxyServer + '/' + url;
+    else url = 'http://' + url;
+    return url;
   },
 
   // directly analyzes track on echonest.
@@ -79,19 +82,22 @@ module.exports = Backbone.Model.extend({
     if (track.get('echoId')) {
       track.getProfile(options);
 
-    // if no echoId, get profile from audio
+    // if no echoId, get echoId
     } else {
       var trackProfile = new TrackProfile({
         'url': 'upload',
-        'queryUrl': track.getStreamUrl(),
       });
       trackProfile.fetch({
-        'type': 'POST', // IMPORTANT: need post request to upload audio
-        'cache': false, // IMPORTANT: refresh analysis_url
+        'contentType': 'application/x-www-form-urlencoded',
+        'type': 'POST',
+        'data': params.encode({
+          'api_key': echoApiKey,
+          'url': track.getStreamUrl(),
+        }),
         'success': function (collection, response, _options) {
-          track.set({ 'echoProfile': response.response.track });
+          track.set({ 'echoId': response.response.track.id });
           if (options.full) {
-            getAnalysis(options);
+            track.getProfile(options);
           }
         },
       });
@@ -136,6 +142,34 @@ module.exports = Backbone.Model.extend({
     }
   },
 
+  // gets echonest track profile from given track's echoId
+  // if options.full, will also retrieve full analysis docs
+  getProfile: function (options) {
+    var track = this;
+    if (!(track.get('echoId'))) {
+      throw new Error("getProfile called without echoId");
+    }
+
+    // if no track profile or analysis is pending, get track profile
+    var echoProfile = track.get('echoProfile');
+    if (!echoProfile || echoProfile.status !== 'complete') {
+      var trackProfile = new TrackProfile({
+        'echoId': track.get('echoId'),
+        'url': 'profile',
+      });
+      trackProfile.fetch({
+        'cache': false, // IMPORTANT: refresh analysis_url
+        'success': function (collection, response, _options) {
+          track.set({ 'echoProfile': response.response.track });
+          track.getAnalysis(options);
+        },
+      });
+    // if already has, continue
+    } else {
+      track.getAnalysis(options);
+    }
+  },
+
   // gets echonest analysis for given track
   getAnalysis: function (options) {
     var track = this;
@@ -170,34 +204,6 @@ module.exports = Backbone.Model.extend({
     }
   },
 
-  // gets echonest track profile from given track's echoId
-  // if options.full, will also retrieve full analysis docs
-  getProfile: function (options) {
-    var track = this;
-    if (!(track.get('echoId'))) {
-      throw new Error("getProfile called without echoId");
-    }
-
-    // if no track profile or analysis is pending, get track profile
-    var echoProfile = track.get('echoProfile');
-    if (!echoProfile || echoProfile.status !== 'complete') {
-      var trackProfile = new TrackProfile({
-        'echoId': track.get('echoId'),
-        'url': 'profile',
-      });
-      trackProfile.fetch({
-        'cache': false, // IMPORTANT: refresh analysis_url
-        'success': function (collection, response, _options) {
-          track.set({ 'echoProfile': response.response.track });
-          getAnalysis(options);
-        },
-      });
-    // if already has, continue
-    } else {
-      getAnalysis(options);
-    }
-  },
-
   // TODO: make so can save/upload
   // ignore deletes
   'sync': function (method, model, options) {
@@ -229,13 +235,14 @@ var TrackProfile = Backbone.Collection.extend({
   url: function () {
     var options = this.options;
     var url = "http://developer.echonest.com/api/v4/track/" + options.url;
-    url = new URI(url);
-    url.query({
-      'api_key': options.api_key,
-      'id': options.echoId,
-      'url': options.queryUrl,
-      'bucket': 'audio_summary',
-    });
+    if (options.url !== 'upload') {
+      url = new URI(url);
+      url.query({
+        'api_key': options.api_key,
+        'id': options.echoId,
+        'bucket': 'audio_summary',
+      });
+    }
     debug("TRACKPROFILE URL", url);
     return url;
   },
