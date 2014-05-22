@@ -16,8 +16,7 @@ module.exports = Backbone.Model.extend({
   defaults: function () {
     return {
       'name': 'playlist ' + this['cid'],
-      // TODO: convert to linxType
-      'type': 'playlist',
+      'linxType': 'playlist',
       'tracks': new Tracks(),
       'activeTracks': [],
       'playingTrack': null,
@@ -32,11 +31,9 @@ module.exports = Backbone.Model.extend({
     // numWidgets must a positive integer
     options['numWidgets'] = options['numWidgets'] || 2;
 
-    // if making from a soundcloud playlist, fill args
-    if (attributes['kind'] === 'playlist') {
-      attributes['name'] = attributes['title'];
-      attributes['tracks'] = new Tracks(attributes['tracks']);
-      attributes['type'] = 'playlist';
+    // if making from a soundcloud playlist, convert attrs
+    if ('id' in attributes) {
+      convertFromSC(attributes);
     }
 
     // call default constructor
@@ -106,7 +103,7 @@ module.exports = Backbone.Model.extend({
   },
   
   setTrackSort: function (trackSort, options) {
-    if (this.get('type') !== 'queue') {
+    if (this.get('linxType') !== 'queue') {
       debug("setting new track sort", trackSort);
       this.set({ 'trackSort': trackSort }, options);
       var tracks = this.tracks();
@@ -293,31 +290,17 @@ module.exports = Backbone.Model.extend({
   // TODO: convert from sdk to urls
   // TODO: find out what other params SC lets us create/update
   sync: function (method, playlist, options) {
-
-    // first make sure we have something to sync
-    var changed = playlist.changedAttributes();
-    // if playlist is new or method is delete, we are good
-    if (!(playlist.isNew() || method === 'delete')) {
-      // we are also good if we changed something important
-      if (changed) {
-        if (!(changed['tracks'] || changed['name'])) {
-          debug("playlist not new but nothing important changed", playlist.get('name'));
-          return;
-        }
-      } else {
-        debug("playlist not new and wasn't changed", playlist.get('name'));
-        return;
-      }
-    }
+    var tracks = playlist.tracks();
 
     // make callback to give to server
     var cb = function (resp, error) {
       if (error) {
-        options.error(playlist, resp || error, options);
+        options.error(resp || error);
       } else {
-        playlist && playlist.set({ 'onSC': true });
-        // TODO: call this but make it not change our playlists
-        //options.success(playlist, resp, options);
+        if (method === 'create' || method === 'update') {
+          convertFromSC(resp, tracks);
+        }
+        options.success(resp);
       }
     }
 
@@ -328,7 +311,7 @@ module.exports = Backbone.Model.extend({
         Backbone.sync.apply(this, arguments); break;
 
       case 'create':
-        var trackIds = playlist.tracks().models.map(function (track) {
+        var trackIds = tracks.models.map(function (track) {
           return { 'id': track.id }
         });
         SC.post('/playlists', {
@@ -340,7 +323,7 @@ module.exports = Backbone.Model.extend({
         break;
 
       case 'update':
-        var trackIds = playlist.tracks().models.map(function (track) {
+        var trackIds = tracks.models.map(function (track) {
           return { 'id': track.id }
         });
         SC.put(playlist.get('uri'), {
@@ -429,4 +412,17 @@ function sortByHistory (playing, history, length, track) {
   } else {
     return 2;
   }
+}
+
+// convert attributes from SC playlist to Linx playlist
+function convertFromSC (attributes, tracks) {
+  attributes['name'] = attributes['title'];
+  if (tracks) {
+    // TODO: add fetched tracks to tracks
+    attributes['tracks'] = tracks;
+  } else {
+    attributes['tracks'] = new Tracks(attributes['tracks']);
+  }
+  attributes['linxType'] = 'playlist';
+  return attributes;
 }

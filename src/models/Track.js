@@ -16,7 +16,7 @@ module.exports = Backbone.Model.extend({
   //'idAttribute': '_id',
 
   // TODO: make it so id is converted into string 'soundcloud__{id}'
-  // TODO: convert all references from cid to id
+  // TODO: convert references from cid to id?
   defaults: function () {
     return {
       'playback_count': 0,

@@ -25,23 +25,20 @@ module.exports = React.createClass({
   },
 
   add: function (e) {
-    debug("add", this.props);
     var playlists = this.getCollection().playlists;
     playlists.add({});
   },
 
   // TODO: dont actually delete from soundcloud yet
   remove: function (e) {
-    debug("remove", this.props);
     var playlist = this.props.viewingPlaylist;
-    // do not remove searchResults
+    // do not remove searchResults or favorites
     if (playlist &&
-      (playlist.get('type') !== 'searchResults')) {
+      (playlist.get('linxType') !== 'searchResults') && 
+      (playlist.get('linxType') !== 'favorites')) {
       var name = playlist.get('name');
-      if (!!playlist.get('onSC')) {
-        alert("Deleted playlist '" + name + "'' from here and SoundCloud.");
-      }
-      playlist.destroy()
+      // mark for delete
+      playlist.set({ 'delete': true });
     }
   },
 

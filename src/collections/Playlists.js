@@ -37,16 +37,23 @@ module.exports = Backbone.Collection.extend({
 
   save: function () {
     debug("save", this.models);
-    var num = 0;
+    var saved = 0, deleted = 0;
     this.map(function (playlist) {
-      // only save playlists
-      if (playlist.get('type') === 'playlist') {
-        num++;
-        playlist.save();
+      // only do playlists
+      if (playlist.get('linxType') === 'playlist') {
+        // delete if marked for delete
+        if (playlist.get('delete')) {
+          playlist.destroy();
+          deleted++;
+        // else save
+        } else {
+          playlist.save();
+          saved++;
+        }
       }
     });
     // TODO: make this count how many actually changed
-    alert("Successfully saved " + num + " playlists to SoundCloud!");
+    alert("Saved " + saved + " playlists. Deleted " + deleted + " playlists.");
   },
 
   model: Playlist,

@@ -52,7 +52,7 @@ module.exports = React.createClass({
 
   computeUpNext: function () {
     var mix = this.props.viewingPlaylist;
-    if (mix && mix.get('type') === 'mix') {
+    if (mix && mix.get('linxType') === 'mix') {
       var activeTrack = mix.getActiveTrack();
       if (activeTrack) {
         var upNextTracks;
@@ -83,7 +83,7 @@ module.exports = React.createClass({
   render: function () {
     var mix = this.props.viewingPlaylist;
     var graph;
-    if (mix && mix.get('type') === 'mix') {
+    if (mix && mix.get('linxType') === 'mix') {
       graph = Graph({
         'nodes': this.props.nodes,
         'links': this.props.links,

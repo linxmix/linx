@@ -7,7 +7,7 @@ module.exports = Playlist.extend({
 
   defaults: function () {
     var attributes = Playlist.prototype.defaults.apply(this, arguments);
-    attributes['type'] = 'searchResults';
+    attributes['linxType'] = 'searchResults';
     attributes['name'] = 'Search Results';
     return attributes;
   },

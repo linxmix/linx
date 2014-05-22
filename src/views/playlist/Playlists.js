@@ -30,8 +30,11 @@ module.exports = React.createClass({
     var playingPlaylist = this.props.playingPlaylist;
     var playlists = this.props.playlists.map(function (playlist) {
       // skip searchResults if has no tracks
-      if ((playlist.get('type') === 'searchResults') &&
+      if ((playlist.get('linxType') === 'searchResults') &&
         (playlist.tracks().length === 0)) {
+        return;
+      // skip delete playlists
+      } else if (playlist.get('delete')) {
         return;
       } else {
         return Playlist({

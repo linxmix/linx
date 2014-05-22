@@ -154,7 +154,7 @@ module.exports = React.createClass({
     debug("setViewingPlaylist", newPlaylist);
     // change to correct page for playlist
     var page;
-    switch (newPlaylist.get('type')) {
+    switch (newPlaylist.get('linxType')) {
       case 'mix':
         page = 'MixBuilder'; break;
       default:

@@ -27,7 +27,7 @@ module.exports = React.createClass({
 
   handleDblClick: function (playlist, e) {
     var playlist = this.props.playlist;
-    var type = playlist.get('type')
+    var type = playlist.get('linxType')
     if ((type === 'playlist') || (type === 'mix')) {
       this.setState({ 'editing': true, });
     }

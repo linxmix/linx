@@ -11,7 +11,7 @@ module.exports = Playlist.extend({
     var defaults = Playlist.prototype.defaults.apply(this, arguments);
     return _.defaults({
       'name': 'mix ' + this['cid'],
-      'type': 'mix',
+      'linxType': 'mix',
       'tracks': null,
       'trackSort': null,
     }, defaults);

@@ -43,10 +43,6 @@ module.exports = User.extend({
         // and add to app playlists
         this.playlists().fetch({
           success: function (playlists) {
-            // make note that these playlists are on SC
-            playlists.forEach(function (playlist) {
-              playlist.set({ 'onSC': true });
-            });
             appPlaylists.add(playlists.models);
             onLogin && onLogin();
           }.bind(this),

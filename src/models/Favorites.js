@@ -7,7 +7,7 @@ module.exports = Playlist.extend({
 
   defaults: function () {
     var attributes = Playlist.prototype.defaults.apply(this, arguments);
-    attributes['type'] = 'favorites';
+    attributes['linxType'] = 'favorites';
     attributes['name'] = 'SoundCloud Favorites';
     return attributes;
   },
