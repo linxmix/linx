@@ -129,9 +129,9 @@ module.exports = Backbone.Model.extend({
 
   addActiveTrack: function (track, options) {
     if (track) {
-      var activeTracks = playlist.getActiveTracks();
+      var activeTracks = this.getActiveTracks();
       activeTracks.push(track);
-      playlist.setActiveTracks(activeTracks, options)
+      this.setActiveTracks(activeTracks, options)
     } else {
       debug("WARNING: addActiveTrack given no track!");
     }
