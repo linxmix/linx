@@ -313,7 +313,6 @@ function updateSelectionCustom(selection) {
     this.backend.updateSelection(percent0, percent1);
   }
 }
-var played = false;
 function onPlayFrameCustom (time) {
   if (this.scheduledPause != null) {
     if (this.prevFrameTime >= this.scheduledPause) {
@@ -321,7 +320,7 @@ function onPlayFrameCustom (time) {
     }
   }
   var MAX_INTERVAL = 0.05; // ensure finish event is activated
-  console.log("playframe", time + MAX_INTERVAL, this.getDuration());
+  //console.log("playframe", time + MAX_INTERVAL, this.getDuration());
   if (time + MAX_INTERVAL > this.getDuration()) {
     this.fireEvent('finish', time);
   }

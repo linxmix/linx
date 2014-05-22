@@ -1,4 +1,5 @@
 var Backbone = require('backbone')
+var debug = require('debug')('models:Me');
 
 var Tracks = require('../collections/Tracks');
 var Favorites = require('../models/Favorites');

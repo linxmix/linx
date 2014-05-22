@@ -147,9 +147,15 @@ module.exports = Widget.extend({
     var track = this.get('track');
     if (track && this.get('loaded')) {
       var timing = track.get(this.get('timingKey')) || {};
-      var startTime = timing['startTime'] || track.getDefaultStart();
-      var endTime = timing['endTime'] || track.getDefaultEnd();
-      debug("setting timing marks", track.get('title'), timing);
+      var startTime = track.getDefaultStart();
+      var endTime = track.getDefaultEnd();
+      if (typeof timing['startTime'] === 'number') {
+        startTime = timing['startTime'];
+      }
+      if (typeof timing['endTime'] === 'number') {
+        endTime = timing['endTime'];
+      }
+      debug("setting timing marks", track.get('title'), startTime, endTime);
       this.addStartMark(startTime);
       this.addEndMark(endTime);
     } else {
@@ -188,7 +194,6 @@ module.exports = Widget.extend({
       'color': 'rgba(255, 0, 0, 1)',
     });
     // add handler
-    debug("MARKED END", position, this.get('track').get('title'));
     if (mark) {
       debug("end mark set", this.get('track').get('title'));
       mark.on('reached', function () {

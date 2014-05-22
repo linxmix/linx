@@ -89,6 +89,7 @@ module.exports = Backbone.Model.extend({
       if (track.get('analyzed')) {
         cb();
       } else {
+        // TODO: also need to listen to change of timing marks
         this.listenTo(track, 'change:analyzed', cb)
       }
     }

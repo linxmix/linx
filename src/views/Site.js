@@ -155,10 +155,10 @@ module.exports = React.createClass({
     // change to correct page for playlist
     var page;
     switch (newPlaylist.get('type')) {
-      case 'playlist': case 'searchResults':
-        page = 'Playlist'; break;
       case 'mix':
         page = 'MixBuilder'; break;
+      default:
+        page = 'Playlist';
     }
     this.setState({
       'page': page,

@@ -388,7 +388,7 @@ module.exports = Backbone.Model.extend({
       track = this.getActiveTracks(true)[0];
     }
     this.queueAtPos(track, 0);
-    this.bufferQueue();
+    //this.bufferQueue();
   },
 
   seek: function (percent) {

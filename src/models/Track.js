@@ -45,7 +45,6 @@ module.exports = Backbone.Model.extend({
 
   // use proxy to access stream_url
   getStreamUrl: function (useProxy) {
-    debug("GETTING STREAM URL", this.get('title'));
     var url = this.get('stream_url').replace(/^https?:\/\//, '') +
       "?client_id=" + clientId;
     if (useProxy) url = proxyServer + '/' + url;
@@ -243,7 +242,6 @@ var TrackProfile = Backbone.Collection.extend({
         'bucket': 'audio_summary',
       });
     }
-    debug("TRACKPROFILE URL", url);
     return url;
   },
 
