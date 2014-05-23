@@ -3,7 +3,6 @@ var debug = require('debug')('views:bars/sound/SoundBar');
 var React = require('react');
 var Backbone = require('backbone');
 var ReactBackboneMixin = require('backbone-react-component').mixin;
-//var ReactCSSTransitionGroup = require('react/addons/CSSTransitionGroup');
 
 var _ = require('underscore');
 
@@ -64,6 +63,7 @@ module.exports = React.createClass({
         // active widget in soundbar is always the playing widget
         'playing': active,
         'playState': this.props.playState,
+        'masterVol': this.props.masterVol,
         'onLoadStart': this.onLoadStart,
         'onLoadEnd': this.onLoadEnd,
         'onLoadError': this.onLoadError,

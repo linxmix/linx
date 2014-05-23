@@ -44,16 +44,19 @@ module.exports = React.createClass({
       'handleClick': this.launchTabClick,
     });
 
-    // if bar is hidden, make collapse view
+    // if bar is showing, make mixer menu
     var playlist = this.props.playingPlaylist;
     var menu = (true) ? Mixer(_.extend({
       'loading': this.props.loading,
+      'setMasterVol': this.props.setMasterVol,
+      'masterVol': this.props.masterVol,
       'forth': function () { playlist.forth(); } ,
       'back': function () { playlist.back(); } ,
     }, this.props, {
       'launchTab': launchTab,
-    // else just make launchTab
-    })) : launchTab;
+
+    // else just make launch tab
+    })) : (<div className="inverted ui icon menu">{launchTab}</div>);
 
     return (
       <div className="bottom-sidebar">

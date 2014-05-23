@@ -32,6 +32,7 @@ module.exports = React.createClass({
       'dragging': [],
       'uploaderTracks': [],
       'hasLoaded': false,
+      'masterVol': 1,
     }
   },
 
@@ -89,6 +90,12 @@ module.exports = React.createClass({
   //
   // / Search
   //
+
+  setMasterVol: function (val) {
+    this.setState({
+      'masterVol': val,
+    });
+  },
 
   addUploaderTrack: function (track) {
     track.analyze({ 'full': true });
@@ -201,6 +208,9 @@ module.exports = React.createClass({
 
       'sidebarClosed': this.state.sidebarClosed,
       'setSidebarClosed': this.setSidebarClosed,
+
+      'masterVol': this.state.masterVol,
+      'setMasterVol': this.setMasterVol,
 
       'searchText': this.state.searchText,
       'setSearchText': this.setSearchText,

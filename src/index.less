@@ -123,6 +123,7 @@
    @-moz-keyframes move_eye { from { margin-left:-20%; } to { margin-left:100%; }  }
      @-o-keyframes move_eye { from { margin-left:-20%; } to { margin-left:100%; }  }
         @keyframes move_eye { from { margin-left:-20%; } to { margin-left:100%; }  }
+
 /*************/
 /*** Graph ***/
 /*************/
@@ -260,10 +261,24 @@ body {
   z-index: 1;
 }
 
+.volume-slider-open {
+  display: inline-block;
+  margin-left: 20px;
+  width: 100px;
+  visibility: visible;
+}
+
+.volume-slider-closed {
+  visibility: hidden;
+  position: absolute;
+  width: 100px;
+}
+
 .bottom-menu {
   text-align: center;
   margin: 0 auto;
-  height: 42px;
+  /** TODO: why is this necessary? **/
+  margin-bottom: -4px;
 }
 
 .bottom-sidebar {

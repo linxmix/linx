@@ -1,8 +1,7 @@
 /** @jsx React.DOM */
 var debug = require('debug')('views:Pitch')
 var React = require('react');
-var addons = require('react-addons');
-var ReactCSSTransitionGroup = addons.CSSTransitionGroup;
+var ReactCSSTransitionGroup = require('react-addons').CSSTransitionGroup;
 var ReactBackboneMixin = require('backbone-react-component').mixin;
 
 var _ = require('underscore');

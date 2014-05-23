@@ -14,6 +14,7 @@ module.exports = React.createClass({
       'draggable': false,
       'dragClass': 'dragging',
       'dragOverClass': '',
+      'mouseOverClass': '',
       'onMouseEnter': function () {}, // no-op
       'onMouseLeave': function () {}, // no-op
       'onDragOver': function () {}, // no-op
@@ -30,14 +31,21 @@ module.exports = React.createClass({
     return {
       'dragging': false,
       'dragOver': false,
+      'mouseOver': false,
     }
   },
 
   onMouseEnter: function (e) {
+    this.setState({
+      'mouseOver': true,
+    });
     this.props.onMouseEnter(e, this.props);
   },
 
   onMouseLeave: function (e) {
+    this.setState({
+      'mouseOver': false,
+    });
     this.props.onMouseLeave(e, this.props);
   },
 

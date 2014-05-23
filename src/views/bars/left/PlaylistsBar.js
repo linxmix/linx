@@ -29,7 +29,6 @@ module.exports = React.createClass({
     playlists.add({});
   },
 
-  // TODO: dont actually delete from soundcloud yet
   remove: function (e) {
     var playlist = this.props.viewingPlaylist;
     // do not remove searchResults or favorites

@@ -46,13 +46,6 @@ module.exports = React.createClass({
         </div>
       </div>
     );
-    
-  },
-
-  componentDidMount: function () {
-    var d3 = require('d3');
-    d3.slider = require('d3.slider');
-    d3.select(this.$('.welcome-header').get(0)).call(d3.slider());
   },
 
 });

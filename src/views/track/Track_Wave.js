@@ -50,6 +50,11 @@ module.exports = React.createClass({
     }
   },
 
+  setWidgetVolume: function () {
+    var widget = this.props.widget;
+    widget.setVolume('master', this.props.masterVol);
+  },
+
   render: function () {
 
     // TODO: make this smarter about when this happens
@@ -92,6 +97,7 @@ module.exports = React.createClass({
       // set new player
       widget.setPlayer(this.wave);
       this.setWidgetPlayState();
+      this.setWidgetVolume();
     }
   },
 
@@ -118,6 +124,7 @@ module.exports = React.createClass({
       this.resetListener(prevWidget);
     } else {
       this.setWidgetPlayState();
+      this.setWidgetVolume();
     }
 
     // if changing to playing

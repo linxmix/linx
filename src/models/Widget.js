@@ -18,6 +18,7 @@ module.exports = Backbone.Model.extend({
       'loading': false,
       'volumes': {
         'normalize': VOL,
+        'master': 1,
       },
     };
   },
@@ -33,24 +34,25 @@ module.exports = Backbone.Model.extend({
       var gain = LOUDNESS - loudness
       var vol = Math.pow(10, gain / 20);
       if (!isNaN(vol)) {
-        this.setVolume('normalize', vol);
+        this.setVolume('normalize', vol, true);
       }
     }
   },
 
-  setVolume: function (type, level) {
+  setVolume: function (type, level, lazy) {
     var volumes = this.get('volumes');
     if (type && (typeof level === 'number')) {
       volumes[type] = level;
       this.set({ 'volumes': volumes });
     }
-    this.assertVolume();
+    this.assertVolume(lazy);
   },
 
-  assertVolume: function () {
+  assertVolume: function (lazy) {
     var volumes = this.get('volumes');
     var player = this.get('player');
-    if (player && this.get('playState') !== 'play') {
+    var doAssert = !lazy || (this.get('playState') !== 'play');
+    if (player && doAssert) {
       var endVol = 1;
       // adjust endVol for each in volumes
       _.values(volumes).forEach(function (vol) {

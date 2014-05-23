@@ -15,7 +15,7 @@ module.exports = {
   
   // client
   widgetModel: "Wave",
-  startPage: 'Welcome',
+  startPage: 'Site',
 
   // server
   apiServer: isProd ?
