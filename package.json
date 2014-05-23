@@ -75,6 +75,7 @@
     "semantic": "git://github.com/Semantic-Org/Semantic-UI#0.15.4",
     "uglifyify": "^2.0.0",
     "underscore": "^1.6.0",
-    "wavesurfer.js": "0.1.7"
+    "wavesurfer.js": "0.1.7",
+    "d3.slider": "git://github.com/linxmix/d3.slider"
   }
 }
