@@ -19,9 +19,9 @@ module.exports = {
 
   // server
   apiServer: isProd ?
-    "http://api.linx.dj" :
+    "http://api.app.linx.dj" :
     "http://localhost:5000",
   proxyServer: isProd ?
-    "http://proxy.linx.dj" :
+    "http://proxy.app.linx.dj" :
     "http://localhost:5500",
 }
