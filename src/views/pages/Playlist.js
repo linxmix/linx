@@ -46,7 +46,7 @@ module.exports = React.createClass({
     var ctrl = e.ctrlKey || e.metaKey;
     debug("PLAY ROW", track, e, ctrl);
     if (ctrl) {
-      this.props.addUploaderTrack(track);
+      this.props.uploaderPlaylist.add(track);
     } else {
       this.props.playViewing(e, { 'track': track });
     }

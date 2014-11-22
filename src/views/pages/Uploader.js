@@ -6,6 +6,7 @@ var debug = require('debug')('views:pages/Uploader')
 var _ = require('underscore');
 
 var Track_Uploader = require('../track/Track_Uploader');
+var Dropzone = require('./Uploader/dropzone');
 
 module.exports = React.createClass({
   
@@ -26,9 +27,9 @@ module.exports = React.createClass({
 
   // TODO: sort matches by similarity of nearby segments
   compare: function () {
-    var uploaderTracks = this.props.uploaderTracks;
-    var track1 = uploaderTracks[0];
-    var track2 = uploaderTracks[1];
+    var uploaderSongs = this.props.uploaderPlaylist.getSongs();
+    var track1 = uploaderSongs.at(0);
+    var track2 = uploaderSongs.at(1);
     var selection1 = [track1, this.state[track1.cid]];
     var selection2 = [track2, this.state[track2.cid]];
     debug("comparing regions", selection1, selection2);
@@ -95,10 +96,14 @@ module.exports = React.createClass({
     }.bind(this));*/
   },
 
+  onTransitionDrop: function(files) {
+    console.log('onTransitionDrop', files[0]);
+  },
+
   render: function () {
 
     // make a Track_Uploader for every track
-    var tracks = this.props.uploaderTracks.map(function (track) {
+    var tracks = this.props.uploaderPlaylist.tracks().map(function (track) {
       return Track_Uploader({
         'track': track,
         'dragSelection': true,
@@ -107,8 +112,16 @@ module.exports = React.createClass({
       });
     }.bind(this));
 
+    // make dropzone
+    var dropzone = Dropzone({
+      'onDrop': this.onTransitionDrop,
+    });
+
     return (
       <div>
+        <div className="inverted ui segment">
+          {dropzone}
+        </div>
         <div className="ui small buttons">
           <div className="ui black button" onClick={this.compare}>
             Compare Selections

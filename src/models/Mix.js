@@ -22,7 +22,7 @@ module.exports = Playlist.extend({
       tracks = [tracks];
     }
     // if activeTrack is in tracks, remove activeTrack
-    activeTracks = this.getActiveTracks();
+    var activeTracks = this.getActiveTracks();
     if (tracks.indexOf(activeTracks[0]) > -1) {
       activeTracks = [];
     }

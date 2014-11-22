@@ -20,7 +20,9 @@ module.exports = React.createClass({
     if (!this.props.me.id) {
       alert("Sorry, but you can't save your playlists unless you're signed in!");
     } else {
-      this.getCollection().playlists.save();
+      if (window.confirm('Are you sure you want to sync to Soundcloud?')) {
+        this.getCollection().playlists.save();
+      }
     }
   },
 
@@ -56,36 +58,36 @@ module.exports = React.createClass({
     };
     var colls = this.getCollection();
     return (
-        <div className={className}>
+      <div className={className}>
 
-          <div className="header item">
-            Playlists
-          </div>
-          {Playlists(_.extend({
-            'playlists': colls.playlists
-          }, options))}
+        <div className="header item">
+          Playlists
+        </div>
+        {Playlists(_.extend({
+          'playlists': colls.playlists
+        }, options))}
 
-          <div className="header item">
-            Mixes
-          </div>
-          {Playlists(_.extend({
-            'playlists': colls.mixes
-          }, options))}
+        <div className="header item">
+          Mixes
+        </div>
+        {Playlists(_.extend({
+          'playlists': colls.mixes
+        }, options))}
 
-          <div className="header item">
-            <div className="small ui icon buttons">
-              <div className="inverted purple ui icon button" onClick={this.add}>
-                <i className="green add icon"></i>
-              </div>
-              <div className="inverted purple ui icon button" onClick={this.remove}>
-                <i className="red remove icon"></i>
-              </div>
+        <div className="header item">
+          <div className="small ui icon buttons">
+            <div className="inverted purple ui icon button" onClick={this.add}>
+              <i className="green add icon"></i>
             </div>
-            <div className="small circular orange ui button" onClick={this.save}>
-              Save
+            <div className="inverted purple ui icon button" onClick={this.remove}>
+              <i className="red remove icon"></i>
             </div>
+          </div>
+          <div className="small circular orange ui button" onClick={this.save}>
+            Save
           </div>
         </div>
+      </div>
     );
   },
 
