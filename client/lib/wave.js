@@ -9,12 +9,12 @@ Wave = {
 
   // position is in seconds
   'getPosition': function(wave) {
-    return (wave && wave.timings()[0]);
+    return (wave && wave.getCurrentTime());
   },
 
   // duration is in seconds
   'getDuration': function(wave) {
-    return (wave && wave.timings()[1]);
+    return (wave && wave.getDuration());
   },
 
   // progress is in percent

@@ -38,91 +38,109 @@ function makeWave(id, loadText, isSongWave) {
   Uploader.waves[id] = wave;
 
   // hack to access the ArrayBuffer of audio data as it's read
-  wave.loadBuffer = function (data) {
-    var my = wave;
-    wave.arrayBuffer = data;
-    wave.pause();
-    wave.backend.loadBuffer(data, function () {
-      my.clearMarks();
-      my.drawBuffer();
-      my.fireEvent('ready');
+  wave.loadArrayBuffer = function(arraybuffer) {
+    var my = this;
+    this.backend.decodeArrayBuffer(arraybuffer, function (data) {
+      my.loadDecodedBuffer(data);
+      wave.arrayBuffer = data;
     }, function () {
-      my.fireEvent('error', 'Error decoding audio');
+      my.fireEvent('error', 'Error decoding audiobuffer');
     });
   };
   // /hack
 
-  // hack to make it so click only seeks on drag
-  wave.createDrawer = function () {
-    var my = wave;
+  // // hack to make it so click only seeks on drag
+  // wave.createDrawer = function () {
+  //   var my = wave;
 
-    wave.drawer = Object.create(WaveSurfer.Drawer[wave.params.renderer]);
-    wave.drawer.init(wave.params);
+  //   wave.drawer = Object.create(WaveSurfer.Drawer[wave.params.renderer]);
+  //   wave.drawer.init(wave.params);
 
-    wave.drawer.on('redraw', function () {
-      my.drawBuffer();
-    });
+  //   wave.drawer.on('redraw', function () {
+  //     my.drawBuffer();
+  //   });
 
-    // only seek if there was no click and drag
-    wave.drawer.on('click', function (progress) {
-      if (Uploader.movesMade < 3) {
-        my.seekTo(progress);
-      }
-    });
+  //   // only seek if there was no click and drag
+  //   wave.drawer.on('click', function (progress) {
+  //     if (Uploader.movesMade < 3) {
+  //       my.seekTo(progress);
+  //     }
+  //   });
 
-    wave.on('progress', function (progress) {
-      my.drawer.progress(progress);
-    });
-  };
-  // /hack
+  //   wave.on('progress', function (progress) {
+  //     my.drawer.progress(progress);
+  //   });
+  // };
+  // // /hack
 
-  // hack to make marks more precise while waveform is present
-  wave.bindMarks = function () {
-    var my = wave;
-    var prevTime = 0;
+  // // hack to make marks more precise while waveform is present
+  // wave.bindMarks = function () {
+  //   var my = wave;
+  //   var prevTime = 0;
 
-    wave.backend.on('play', function () {
-      // Reset marker events
-      Object.keys(my.markers).forEach(function (id) {
-        my.markers[id].played = false;
-      });
-    });
+  //   wave.backend.on('play', function () {
+  //     // Reset marker events
+  //     Object.keys(my.markers).forEach(function (id) {
+  //       my.markers[id].played = false;
+  //     });
+  //   });
 
-    wave.backend.on('audioprocess', function (time) {
-      Object.keys(my.markers).forEach(function (id) {
-        var marker = my.markers[id];
-        if (!marker.played) {
-          if (marker.position <= time && marker.position >= prevTime) {
-            // Prevent firing the event more than once per playback
-            marker.played = true;
+  //   wave.backend.on('audioprocess', function (time) {
+  //     Object.keys(my.markers).forEach(function (id) {
+  //       var marker = my.markers[id];
+  //       if (!marker.played) {
+  //         if (marker.position <= time && marker.position >= prevTime) {
+  //           // Prevent firing the event more than once per playback
+  //           marker.played = true;
 
-            my.fireEvent('mark', marker);
-            marker.fireEvent('reached', time);
-          }
+  //           my.fireEvent('mark', marker);
+  //           marker.fireEvent('reached', time);
+  //         }
+  //       }
+  //     });
+  //     prevTime = time;
+  //   });
+  // };
+  // // /hack
+
+  // Drag'n'drop
+  wave.bindDragNDrop = function(selector) {
+    var toggleActive = function (e, toggle) {
+      e.stopPropagation();
+      e.preventDefault();
+      toggle ? e.target.classList.add('wavesurfer-dragover') :
+      e.target.classList.remove('wavesurfer-dragover');
+    };
+
+    var handlers = {
+      // Drop event
+      drop: function (e) {
+        toggleActive(e, false);
+
+        // Load the file into wave
+        if (e.dataTransfer.files.length) {
+          wave.loadBlob(e.dataTransfer.files[0]);
+        } else {
+          wave.fireEvent('error', 'Not a file');
         }
-      });
-      prevTime = time;
-    });
-  };
-  // /hack
-  wave.loadArrayBuffer = function(blob) {
-    var my = wave;
-    // Create file reader
-    var reader = new FileReader();
-    reader.addEventListener('progress', function (e) {
-      my.onProgress(e);
-    });
-    reader.addEventListener('load', function (e) {
-      wave.loadBuffer(e.target.result);
-    });
-    reader.addEventListener('error', function () {
-      my.fireEvent('error', 'Error reading file');
-    });
-    reader.readAsArrayBuffer(blob);
-  };
-  // hack to add loadArrayBuffer method
+      },
 
-  // /hack
+      // Drag-over event
+      dragover: function (e) {
+        toggleActive(e, true);
+      },
+
+      // Drag-leave event
+      dragleave: function (e) {
+        toggleActive(e, false);
+      }
+    };
+
+    var dropTarget = document.querySelector(selector);
+    Object.keys(handlers).forEach(function (event) {
+      dropTarget.addEventListener(event, handlers[event]);
+    });
+  };
 
   //
   // flash when reaching a mark
@@ -195,6 +213,7 @@ Template.wave.rendered = function () {
   //
   // init wave
   //
+  console.log("init wave", selector, $(selector+' .waveform'))
   wave.init({
     'container': $(selector+' .waveform')[0],
     'waveColor': waveColors[id],
@@ -211,7 +230,7 @@ Template.wave.rendered = function () {
   });
 
   // bind drag n drop
-  wave.bindDragNDrop($(selector+' .waveform')[0]);
+  wave.bindDragNDrop(selector+' .waveform');
   // reset wave on drop
   $(selector+' .waveform').on('drop', function (e) {
     console.log("resetting "+wave.id);
