@@ -30,7 +30,6 @@ module.exports = React.createClass({
       'bottomBar': 0,
       'loading': false,
       'dragging': [],
-      'uploaderTracks': [],
       'hasLoaded': false,
       'masterVol': 1,
     }
@@ -94,15 +93,6 @@ module.exports = React.createClass({
   setMasterVol: function (val) {
     this.setState({
       'masterVol': val,
-    });
-  },
-
-  addUploaderTrack: function (track) {
-    track.analyze({ 'full': true });
-    var uploaderTracks = this.state.uploaderTracks;
-    uploaderTracks.push(track);
-    this.setState({
-      'uploaderTracks': uploaderTracks,
     });
   },
 
@@ -199,8 +189,7 @@ module.exports = React.createClass({
       'dragging': this.state.dragging,
       'setDragging': this.setDragging,
 
-      'uploaderTracks': this.state.uploaderTracks,
-      'addUploaderTrack': this.addUploaderTrack,
+      'uploaderPlaylist': this.props.uploaderPlaylist,
 
       'loading': this.state.loading,
       'hasLoaded': this.state.hasLoaded,

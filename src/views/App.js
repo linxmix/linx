@@ -9,6 +9,7 @@ var startPage = require('../config').startPage;
 
 var Me = require('../models/Me');
 var SearchResults = require('../models/SearchResults');
+var UploaderPlaylist = require('../models/UploaderPlaylist');
 var Edge = require('../models/Edge');
 
 var Tracks = require('../collections/Tracks');
@@ -28,8 +29,9 @@ module.exports = React.createClass({
   mixins: [ReactBackboneMixin],
 
   getDefaultProps: function () {
-    var searchResults = new SearchResults();
-    var playlists = new Playlists([searchResults], {});
+    var searchResultsPlaylist = new SearchResults();
+    var uploaderPlaylist = new UploaderPlaylist();
+    var playlists = new Playlists([searchResultsPlaylist, uploaderPlaylist], {});
     
     return {
       'model': {
@@ -43,7 +45,8 @@ module.exports = React.createClass({
         'myTracks': new Tracks(),
         'transitions': new Transitions(),
       },
-      'searchResults': searchResults,
+      'searchResults': searchResultsPlaylist,
+      'uploaderPlaylist': uploaderPlaylist,
     }
   },
 

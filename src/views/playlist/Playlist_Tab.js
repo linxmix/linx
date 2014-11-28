@@ -33,6 +33,11 @@ module.exports = React.createClass({
     }
   },
 
+  handleClick: function(tab, e) {
+    var playlist = this.props.playlist;
+    this.props.handleClick(playlist);
+  },
+
   handleChange: function (e) {
     var text = this.refs.editedName.getDOMNode().value;
     this.setState({ 'editedName': text, });
@@ -87,7 +92,7 @@ module.exports = React.createClass({
       'onDrop': this.onDrop,
       'activeClass': 'active item',
       'inactiveClass': 'item',
-      'handleClick': this.props.handleClick,
+      'handleClick': this.handleClick,
       'handleDblClick': this.handleDblClick,
     }));
   },

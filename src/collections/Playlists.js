@@ -52,7 +52,6 @@ module.exports = Backbone.Collection.extend({
         }
       }
     });
-    // TODO: make this count how many actually changed
     alert("Saved " + saved + " playlists. Deleted " + deleted + " playlists.");
   },
 
