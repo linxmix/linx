@@ -1,4 +1,4 @@
-Tracks = new Meteor.Collection('tracks', {
+Songs = new Meteor.Collection('Songs', {
   schema: {
     title: {
       type: String,
@@ -8,14 +8,10 @@ Tracks = new Meteor.Collection('tracks', {
       type: String,
       label: 'Artist',
     },
-    type: {
-      type: String,
-      allowedValues: ['song', 'transition'],
-    }
   }
 });
 
-Tracks.allow({
+Songs.allow({
   insert: function (userId, match) {
     return true;
   },

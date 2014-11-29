@@ -1,5 +1,5 @@
-Template.soundBar.rendered = function() {
+Template.SoundBar.rendered = function() {
   var $sidebar = $('.bottom.sidebar');
-  $sidebar.sidebar({dim: false, overlay: true});
+  $sidebar.sidebar({dimmer: false, animation: 'overlay'});
   $sidebar.sidebar('attach events', '.bottom.launch', 'toggle');
 }

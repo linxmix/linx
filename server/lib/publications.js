@@ -1,3 +1,3 @@
-Meteor.publish("tracks", function () {
-  return Tracks.find();
+Meteor.publish("Songs", function () {
+  return Songs.find();
 });

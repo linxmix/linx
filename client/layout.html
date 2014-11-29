@@ -1,13 +1,22 @@
-<head>
+<template name="layout">
   <div class="ui fixed inverted main menu">
     <div class="container">
       <div class="title item">
         Linx
       </div>
 
+      <a class="item" href="/">Home</a>
+      <a class="item" href="/uploader">Uploader</a>
+
       <div class="right menu">
         <div class="item">Login</div>
       </div>
     </div>
   </div>
-</head>
+
+  <div class="main-container">
+    {{> yield}}
+  </div>
+
+  {{> SoundBar}}
+</template>
