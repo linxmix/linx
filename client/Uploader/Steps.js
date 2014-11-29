@@ -1,14 +1,14 @@
 var steps = [
   {
-    id: 0,
+    id: 1,
     title: 'Select Transition',
   },
   {
-    id: 1,
+    id: 2,
     title: 'Start Song',
   },
   {
-    id: 2,
+    id: 3,
     title: 'End Song',
   },
 ];
@@ -20,7 +20,8 @@ Template.Steps.helpers({
       if (step.id === currentStep) {
         step.stateClass = 'active step';
       } else if (step.id > currentStep) {
-        step.stateClass = 'disabled step';
+        // step.stateClass = 'disabled step';
+        step.stateClass = 'step';
       } else {
         step.stateClass = 'completed step';
       }
@@ -31,6 +32,7 @@ Template.Steps.helpers({
 
 Template.Step.events({
   click: function(e, template) {
-    console.log("step clicked");
+    console.log("step clicked", template);
+    Session.set('uploaderStep', template.data.id)
   }
 });

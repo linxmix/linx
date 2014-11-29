@@ -4,6 +4,32 @@
   </div>
 
   <div class="uploaderContent">
-    {{> UI.dynamic template=activeStep}}
+    <div class="startSong {{startSongHidden}}">
+      <div class="inverted attached ui segment">
+        <div class="ui header">
+          Start Song
+        </div>
+        {{> Track_Wave}}
+      </div>
+    </div>
+
+    <div class="transition">
+      <div class="inverted attached ui segment">
+        <div class="ui header">
+          Transition
+        </div>
+        {{> Track_Wave}}
+      </div>
+    </div>
+
+    <div class="endSong {{endSongHidden}}">
+      <div class="inverted attached ui segment">
+        <div class="ui header">
+          End Song
+        </div>
+        {{> Track_Wave}}
+      </div>
+    </div>
   </div>
+
 </template>
