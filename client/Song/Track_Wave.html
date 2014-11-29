@@ -4,6 +4,7 @@
   {{> ProgressBar}}
 
   {{#if loaded}}
+    {{> TrackMixer}}
   {{else}}
     {{> Drop file=file}}
   {{/if}}
@@ -15,5 +16,16 @@
       <div class="progress"></div>
     </div>
     <div class="label">Loading...</div>
+  </div>
+</template>
+
+<template name="TrackMixer">
+  <div class="ui buttons">
+    <div class="green ui play button">
+      Play
+    </div>
+    <div class="red ui pause button">
+      Pause
+    </div>
   </div>
 </template>

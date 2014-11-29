@@ -1,5 +1,8 @@
 Template.Track_Wave.created = function() {
   this.file = new ReactiveVar;
+  this.loaded = new ReactiveVar;
+  this.loaded.set(false);
+
   this.wave = Object.create(WaveSurfer);
   initWave.call(this);
   this.loadFile = Deps.autorun(loadFile.bind(this));
@@ -12,6 +15,7 @@ Template.Track_Wave.rendered = function() {
     container: this.$('.wave')[0],
     waveColor: 'violet',
     progressColor: 'purple',
+    cursorColor: 'white',
     minPxPerSec: 10,
     height: 197,
     fillParent: true,
@@ -22,7 +26,7 @@ Template.Track_Wave.rendered = function() {
 
 Template.Track_Wave.helpers({
   loaded: function() {
-    return Template.instance().file.get();
+    return Template.instance().loaded.get();
   },
 
   file: function() {
@@ -30,20 +34,34 @@ Template.Track_Wave.helpers({
   }
 });
 
+Template.Track_Wave.events({
+  'click .play': function(e, template) {
+    template.wave.play();
+  },
+
+  'click .pause': function(e, template) {
+    template.wave.pause();
+  },
+})
+
 function initWave() {
   var self = this;
+  var wave = this.wave;
 
-  this.wave.on('loading', function(percent, xhr) {
+  wave.on('loading', function(percent, xhr) {
     self.$('.progress-bar').show();
-    console.log("loading", percent);
     self.$('.progress-bar .bar').css({ 'width': percent + '%' });
   });
 
-  this.wave.on('ready', function() {
-    console.log('ready')
+  wave.on('ready', function() {
     self.$('.progress-bar').hide();
     self.$('.wave').show();
+    self.loaded.set(true);
   });
+
+  wave.on('play', function() {
+    Session.set('playing', wave);
+  })
 }
 
 function loadFile() {
