@@ -1,9 +1,19 @@
 <template name="Track_Wave">
+  <div class="wave">
+  </div>
+  {{> ProgressBar}}
+
   {{#if loaded}}
-    <div class="inverted ui segment">
-      Track
-    </div>
   {{else}}
     {{> Drop file=file}}
   {{/if}}
+</template>
+
+<template name="ProgressBar">
+  <div class="ui active progress progress-bar">
+    <div class="bar" style="width: 0%;">
+      <div class="progress"></div>
+    </div>
+    <div class="label">Loading...</div>
+  </div>
 </template>
