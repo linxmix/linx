@@ -3,6 +3,7 @@ Template.Track_Wave.created = function() {
   this.loaded = new ReactiveVar;
   this.loaded.set(false);
 
+  console.log("create wave");
   this.wave = Object.create(WaveSurfer);
   initWave.call(this);
   this.loadFile = Deps.autorun(loadFile.bind(this));
@@ -68,18 +69,6 @@ function loadFile() {
   var file = this.file.get();
 
   if (file) {
-
-    // hack to access the ArrayBuffer of audio data as it's read
-    this.wave.loadArrayBuffer = function(arraybuffer) {
-      var my = this;
-      this.backend.decodeArrayBuffer(arraybuffer, function (data) {
-        my.loadDecodedBuffer(data);
-        my.arrayBuffer = data;
-      }, function () {
-        my.fireEvent('error', 'Error decoding audiobuffer');
-      });
-    };
-    // /hack
 
     this.wave.loadBlob(file);
   }
