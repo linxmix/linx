@@ -1,0 +1,9 @@
+<template name="Track_Wave">
+  {{#if loaded}}
+    <div class="inverted ui segment">
+      Track
+    </div>
+  {{else}}
+    {{> Drop file=file}}
+  {{/if}}
+</template>

@@ -1,0 +1,17 @@
+<template name="Steps">
+  <div class="ui inverted teal segment">
+    <div class="ui three ordered steps">
+      {{#each steps}}
+        {{> Step}}
+      {{/each}}
+    </div>
+  </div>
+</template>
+
+<template name="Step">
+  <div class={{stateClass}}>
+    <div class="content">
+      <div class="title">{{title}}</div>
+    </div>
+  </div>
+</template>

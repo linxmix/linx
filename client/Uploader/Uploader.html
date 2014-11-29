@@ -1,0 +1,9 @@
+<template name="Uploader">
+  <div class="uploaderSteps">
+    {{> Steps}}
+  </div>
+
+  <div class="uploaderContent">
+    {{> UI.dynamic template=activeStep}}
+  </div>
+</template>

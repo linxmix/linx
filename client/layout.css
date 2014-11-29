@@ -1,0 +1,14 @@
+.main.menu {
+  top: 0;
+}
+
+.main.menu .container {
+  width: 70%;
+  margin: 0 auto;
+}
+
+.main-container {
+  width: 70%;
+  margin: 0 auto;
+  margin-top: 36px;
+}
