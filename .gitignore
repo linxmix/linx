@@ -1,0 +1,12 @@
+node_modules
+/static/index.js
+/static/index.css
+/static/fonts
+npm-debug.log
+*.swp
+*.DS_Store
+linx-pitch.txt
+linx description.txt
+/db
+/testdb
+/deploy
