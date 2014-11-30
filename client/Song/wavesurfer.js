@@ -22,20 +22,32 @@ Meteor.startup(function() {
   };
   // /hack
 
-  WaveSurfer.getPeaks = function() {
+  WaveSurfer.getSlopes = function() {
     var length;
     if (this.params.fillParent && !this.params.scrollParent) {
       length = this.drawer.getWidth();
     } else {
       length = Math.round(this.getDuration() * this.params.minPxPerSec * this.params.pixelRatio);
     }
+    
+    
+// double D[] = new double[C.length-1];
+// for(int i = 0; i < C.length-1; i++)
+//    D[i] = C[i]*(C.length-i-1);
+
+    // calculate derivative
     var peaks = this.backend.getPeaks(length);
+    var d = [];
+    peaks.forEach(function(peak, index) {
+
+    });
+    return peaksObject;
+    
     // coerce into object
     var peaksObject = {}
     _.each(peaks, function(peak, index) {
       peaksObject[index] = peak;
     });
-    return peaksObject;
   }
 
 });
