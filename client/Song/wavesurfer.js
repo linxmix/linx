@@ -1,6 +1,6 @@
+var echoApiKey = 'CWBME38JDGQNEJPXT';
 
 Meteor.startup(function() {
-  console.log("startup", WaveSurfer);
   Archive = new ReactiveVar();
   Archive.set([]);
 
@@ -21,4 +21,21 @@ Meteor.startup(function() {
     });
   };
   // /hack
+
+  WaveSurfer.getPeaks = function() {
+    var length;
+    if (this.params.fillParent && !this.params.scrollParent) {
+      length = this.drawer.getWidth();
+    } else {
+      length = Math.round(this.getDuration() * this.params.minPxPerSec * this.params.pixelRatio);
+    }
+    var peaks = this.backend.getPeaks(length);
+    // coerce into object
+    var peaksObject = {}
+    _.each(peaks, function(peak, index) {
+      peaksObject[index] = peak;
+    });
+    return peaksObject;
+  }
+
 });

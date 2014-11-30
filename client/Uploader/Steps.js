@@ -32,7 +32,6 @@ Template.Steps.helpers({
 
 Template.Step.events({
   click: function(e, template) {
-    console.log("step clicked", template);
     Session.set('uploaderStep', template.data.id)
   }
 });

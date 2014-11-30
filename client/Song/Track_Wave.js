@@ -3,8 +3,10 @@ Template.Track_Wave.created = function() {
   this.loaded = new ReactiveVar;
   this.loaded.set(false);
 
-  console.log("create wave");
-  this.wave = Object.create(WaveSurfer);
+  // get or make wave
+  console.log("create wave", this.data, this.data.wave);
+  this.wave = this.data.wave || Object.create(WaveSurfer);
+
   initWave.call(this);
   this.loadFile = Deps.autorun(loadFile.bind(this));
 }
@@ -18,11 +20,18 @@ Template.Track_Wave.rendered = function() {
     progressColor: 'purple',
     cursorColor: 'white',
     minPxPerSec: 10,
-    height: 197,
+    height: 150,
     fillParent: true,
     cursorWidth: 2,
     renderer: 'Canvas',
   });
+
+  if (this.data.enableDragSelection) {
+    this.wave.enableDragSelection({
+      id: 'guess',
+      color: 'rgba(255, 255, 255, 0.5)',
+    });
+  }
 }
 
 Template.Track_Wave.helpers({
@@ -58,18 +67,25 @@ function initWave() {
     self.$('.progress-bar').hide();
     self.$('.wave').show();
     self.loaded.set(true);
+    console.log("peaks", wave.getPeaks());
   });
 
   wave.on('play', function() {
-    Session.set('playing', wave);
-  })
+    // Session.set('playing', wave);
+  });
+
+  wave.on('region-created', function(region) {
+    // clear previous
+    if (wave.regions.list[region.id]) {
+      wave.regions.list[region.id].remove();
+    }
+  });
 }
 
 function loadFile() {
   var file = this.file.get();
 
   if (file) {
-
     this.wave.loadBlob(file);
   }
 }
