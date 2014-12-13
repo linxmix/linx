@@ -8,7 +8,7 @@ Router.configure({
 
 Router.map(function() {
 
-  this.route('main', {
+  this.route('linx', {
     path: '/',
   });
 
