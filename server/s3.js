@@ -1,18 +1,19 @@
 Meteor.startup(function () {
   Future = Npm.require('fibers/future');
+  s3Client = Knox.createClient({
+    region: 'us-west-2', // NOTE: this must be changed when the bucket goes US-Standard!
+    key: 'AKIAJXXTJVFNQUYJRS7Q',
+    secret: Assets.getText('s3key.txt'),
+    bucket: 'linx-music',
+  });
 });
 
-s3Client = Knox.createClient({
-  region: 'us-west-2', // NOTE: this must be changed when the bucket goes US-Standard!
-  key: 'AKIAIYJQCD622ZS3OMLA',
-  secret: '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',
-  bucket: 'linx-music',
-});
 
 Meteor.methods({
 
   // TODO: will max-keys be an issue? check knox list api for reference
   'getList': function(prefix) {
+    console.log("getlist");
     var fut = new Future();
     s3Client.list({ 'prefix': prefix}, Meteor.bindEnvironment(
       function (err, data) {

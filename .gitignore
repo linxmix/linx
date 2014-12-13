@@ -11,3 +11,4 @@ linx description.txt
 /testdb
 /deploy
 packages/
+private/
