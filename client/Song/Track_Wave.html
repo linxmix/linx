@@ -6,7 +6,9 @@
   {{#if loaded}}
     {{> TrackMixer}}
   {{else}}
-    {{> Drop file=file}}
+    {{#if enableDrop}}
+      {{> Drop file=file}}
+    {{/if}}
   {{/if}}
 </template>
 

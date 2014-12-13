@@ -1,14 +1,13 @@
 Template.Track_Wave.created = function() {
-  this.file = new ReactiveVar;
-  this.loaded = new ReactiveVar;
-  this.loaded.set(false);
+  this.file = new ReactiveVar(null);
+  this.loaded = new ReactiveVar(false);
 
   // get or make wave
-  console.log("create wave", this.data, this.data.wave);
+  console.log("create wave");
   this.wave = this.data.wave || Object.create(WaveSurfer);
 
   initWave.call(this);
-  this.loadFile = Deps.autorun(loadFile.bind(this));
+  Tracker.autorun(loadFile.bind(this));
 }
 
 Template.Track_Wave.rendered = function() {
@@ -39,6 +38,10 @@ Template.Track_Wave.helpers({
     return Template.instance().loaded.get();
   },
 
+  enableDrop: function() {
+    return this.enableDrop;
+  },
+
   file: function() {
     return Template.instance().file;
   }
@@ -55,23 +58,21 @@ Template.Track_Wave.events({
 })
 
 function initWave() {
-  var self = this;
+  var template = this;
   var wave = this.wave;
 
   wave.on('loading', function(percent, xhr) {
-    self.$('.progress-bar').show();
-    self.$('.progress-bar .bar').css({ 'width': percent + '%' });
+    wave.isLoaded = false;
+    template.$('.progress-bar').show();
+    template.$('.progress-bar .bar').css({ 'width': percent + '%' });
   });
 
   wave.on('ready', function() {
-    self.$('.progress-bar').hide();
-    self.$('.wave').show();
-    self.loaded.set(true);
+    wave.isLoaded = true;
+    template.$('.progress-bar').hide();
+    template.$('.wave').show();
+    template.loaded.set(true);
     console.log("peaks", wave.getPeaks());
-  });
-
-  wave.on('play', function() {
-    // Session.set('playing', wave);
   });
 
   wave.on('region-created', function(region) {
@@ -82,10 +83,11 @@ function initWave() {
   });
 }
 
-function loadFile() {
+function loadFile(computation) {
   var file = this.file.get();
 
   if (file) {
     this.wave.loadBlob(file);
+    computation.stop()
   }
 }
