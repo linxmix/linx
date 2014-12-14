@@ -9,5 +9,6 @@ aldeed:collection2
 aldeed:autoform
 classcraft:knox
 reactive-var
-nooitaf:semantic-ui
 iron:router
+nooitaf:semantic-ui
+

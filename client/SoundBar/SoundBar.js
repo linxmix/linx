@@ -23,9 +23,9 @@ Template.SoundBar.created = function() {
 }
 
 Template.SoundBar.rendered = function() {
-  var $sidebar = $('.bottom.sidebar');
-  $sidebar.sidebar({dimPage: false, animation: 'overlay'});
-  $sidebar.sidebar('attach events', '.sidebar-launch', 'toggle');
+  var $soundbar = $('.top.sidebar');
+  $soundbar.sidebar({dimPage: false, transition: 'push'});
+  $soundbar.sidebar('attach events', '.soundbar-launch', 'toggle');
 }
 
 Template.SoundBar.helpers({
