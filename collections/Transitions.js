@@ -1,4 +1,4 @@
-Songs = new Meteor.Collection('Songs', {
+Transitions = new Meteor.Collection('Transitions', {
   schema: {
     _id: {
       type: String,
@@ -6,9 +6,9 @@ Songs = new Meteor.Collection('Songs', {
     },
     type: {
       type: String,
-      defaultValue: 'song',
+      defaultValue: 'transition',
     },
-
+    
     title: {
       type: String,
       label: 'Title',
@@ -37,7 +37,7 @@ Songs = new Meteor.Collection('Songs', {
   }
 });
 
-Songs.allow({
+Transitions.allow({
   insert: function (userId, doc) {
     return true;
   },
