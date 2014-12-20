@@ -8,14 +8,37 @@ Transitions = new Meteor.Collection('Transitions', {
       type: String,
       defaultValue: 'transition',
     },
-    
+    transitionType: {
+      type: String,
+      defaultValue: 'soft',
+    },
+
     title: {
       type: String,
       label: 'Title',
     },
-    artist: {
+    dj: {
       type: String,
-      label: 'Artist',
+      label: 'DJ',
+    },
+
+    inId: {
+      type: String
+    },
+    outId: {
+      type: String
+    },
+    endIn: {
+      type: Number
+    },
+    startEdge: {
+      type: Number
+    },
+    endEdge: {
+      type: Number
+    },
+    startOut: {
+      type: Number
     },
 
     fileType: {
