@@ -1,0 +1,28 @@
+require 'rubygems'
+require 'open-uri'
+
+# BROKEN: use scripts/meteor-dump.sh
+# desc "Backup the live db to local ./dump folder"
+# task :backup_live_db do
+#   uri = `meteor mongo linx.meteor.com --url`
+#   puts "URI", uri
+#   pass = uri.match(/:[^\/].*@/)[0][1..-2]
+#   puts "PASS", pass
+#   puts "Using live db password: #{pass}"
+#   `mongodump -h production-db-b1.meteor.io:27017 -d linx_meteor_com -u client -p #{pass}`
+# end
+
+
+desc "Copy live database to local"
+task :copy_live_db do
+  server =  `meteor mongo --url`
+  uri = URI.parse(server)
+  `mongorestore --host #{uri.host} --port #{uri.port} --db meteor --drop dump/linx_meteor_com/`
+end
+
+desc "Restore last backup"
+task :restore do
+  server =  `meteor mongo --url`
+  uri = URI.parse(server)
+  `mongorestore --host #{uri.host} --port #{uri.port} --db meteor --drop dump/linx_meteor_com/`
+end

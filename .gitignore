@@ -12,3 +12,4 @@ linx description.txt
 /deploy
 packages/
 private/
+dump/
