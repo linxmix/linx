@@ -12,3 +12,4 @@ reactive-var
 iron:router
 nooitaf:semantic-ui
 
+zimme:iron-router-active

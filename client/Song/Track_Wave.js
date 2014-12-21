@@ -7,7 +7,7 @@ Template.Track_Wave.created = function() {
   this.wave = this.data.wave || Object.create(WaveSurfer);
 
   initWave.call(this);
-  Tracker.autorun(loadFile.bind(this));
+  this.autorun(loadFile.bind(this));
 }
 
 Template.Track_Wave.rendered = function() {

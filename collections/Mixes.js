@@ -3,6 +3,10 @@ Mixes = new Meteor.Collection('Mixes', {
     title: {
       type: String,
       label: 'Title',
+    },
+    tracks: {
+      type: [String],
+      label: 'Tracks',
     }
   }
 });

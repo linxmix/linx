@@ -8,8 +8,26 @@ Router.configure({
 
 Router.map(function() {
 
-  this.route('linx', {
-    path: '/',
+  this.route('/', function() {
+    this.redirect('/linx/library');
+  });
+
+  this.route('/linx/:type', function() {
+    var params = this.params;
+    this.render('Linx', {
+      data: function() {
+        return params;
+      }
+    });
+  });
+
+  this.route('/linx/:type/:id', function() {
+    var params = this.params;
+    this.render('Linx', {
+      data: function() {
+        return params;
+      }
+    })    
   });
 
   this.route('Uploader', {

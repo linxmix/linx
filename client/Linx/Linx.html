@@ -1,5 +1,11 @@
 <template name="Linx">
-  {{#each songs}}
-    <p>{{this.title}}</p>
-  {{/each}}
+  <div class="linx">
+    <div class="ui view-select buttons">
+      <div class="ui button {{graphClass}} graph-select">Graph</div>
+      <div class="or"></div>
+      <div class="ui button {{listClass}} list-select">List</div>
+    </div>
+
+    {{> Template.dynamic template=template data=data}}
+  </div>
 </template>
