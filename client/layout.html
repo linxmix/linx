@@ -1,8 +1,18 @@
 <template name="layout">
   {{> SoundBar}}
-  {{> topnav}}
+  {{> SideBar}}
 
   <div class="pusher">
+    {{> topnav}}
+
+    <div class="ui large black right attached fixed sidebar-launch icon button">
+      {{#if sideBarOpen}}
+        <i class="inverted caret left icon"></i>
+      {{else}}
+        <i class="inverted caret right icon"></i>
+      {{/if}}
+    </div>
+    
     <div class="main-container">
       {{> yield}}
     </div>

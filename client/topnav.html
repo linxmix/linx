@@ -1,13 +1,19 @@
 <template name="topnav">
   <div class="ui fixed inverted main menu">
     <div class="container">
-      <a class="{{isActivePath regex='library'}} item" href="/linx/library">Linx</a>
-      <a class="{{isActivePath regex='queue'}} item" href="/linx/queue">Queue</a>
-      <a class="{{isActivePath regex='uploader'}} item" href="/uploader">Uploader</a>
+      <a class="{{isActivePath regex='library'}} item" href="/linx/library">
+        <i class="inverted teal globe icon"></i> Linx
+      </a>
+      <a class="{{isActivePath regex='uploader'}} item" href="/uploader">
+        <i class="inverted orange cloud upload icon"></i> Uploader
+      </a>
 
       <div class="right icon menu">
-        <a class="item soundbar-launch" href="#">SoundBar</a>
-        <div class="item">Login</div>
+        {{> SoundButtons}}
+        
+        <a class="item">
+          <i class="inverted purple user icon"></i> Login
+        </a>
       </div>
     </div>
   </div>

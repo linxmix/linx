@@ -1,5 +1,6 @@
 Session.setDefault("queue", []);
-Session.setDefault("queuePlay", false);
+Session.setDefault("soundBarPlaying", false);
+Session.setDefault("soundBarOpen", false);
 
 // private vars
 var activeWave = new ReactiveVar(0);
@@ -20,13 +21,19 @@ Template.SoundBar.created = function() {
   }
 
   Tracker.autorun(assertPlay);
-}
+};
 
 Template.SoundBar.rendered = function() {
   var $soundbar = $('.top.sidebar');
-  $soundbar.sidebar({dimPage: false, transition: 'push'});
+  $soundbar.sidebar({
+    dimPage: false,
+    transition: 'push',
+    onChange: function() {
+      Session.set('soundBarOpen', $soundbar.sidebar('is hidden'));
+    },
+  });
   $soundbar.sidebar('attach events', '.soundbar-launch', 'toggle');
-}
+};
 
 Template.SoundBar.helpers({
   waves: function() {
@@ -58,33 +65,8 @@ function assertPlay(computation) {
     wave.isLoaded && wave.pause();
   });
 
-  if (Session.get('queuePlay')) {
+  if (Session.get('soundBarPlaying')) {
     var active = waves[activeId];
     active.isLoaded && active.play();
   }
 }
-
-
-/************************/
-/***** SOUND BUTTONS ****/
-/************************/
-
-Template.SoundButtons.helpers({
-  isPlaying: function() {
-    return Session.get('queuePlay');
-  }
-});
-
-Template.SoundButtons.events({
-  'click .playpause': function(e) {
-    Session.set('queuePlay', !Session.get('queuePlay'));
-  },
-
-  'click .back': function(e) {
-    console.log('back');
-  },
-
-  'click .forth': function(e) {
-    console.log('forth');
-  }
-});

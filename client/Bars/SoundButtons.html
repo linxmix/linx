@@ -1,0 +1,20 @@
+<template name="SoundButtons">
+  <div class="ui icon buttons item">
+    <div class="ui basic inverted teal back button"><i class="step backward icon"></i></div>
+    {{#if soundBarPlaying}}
+      <div class="ui inverted green playpause button"><i class="play icon"></i></div>
+    {{else}}
+      <div class="ui inverted red playpause button"><i class="pause icon"></i></div>
+    {{/if}}
+    <div class="ui basic inverted teal forth button"><i class="step forward icon"></i></div>
+  </div>
+  
+  <a class="item soundbar-launch" href="#">
+    <i class="inverted pink music icon"></i>
+    {{#if soundBarOpen}}
+      <i class="inverted caret up icon"></i>
+    {{else}}
+      <i class="inverted caret down icon"></i>
+    {{/if}}
+  </a>
+</template>
