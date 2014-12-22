@@ -3,12 +3,11 @@ Template.Track_Wave.created = function() {
   this.loaded = new ReactiveVar(false);
 
   // get or make wave
-  console.log("create wave");
   this.wave = this.data.wave || Object.create(WaveSurfer);
 
   initWave.call(this);
   this.autorun(loadFile.bind(this));
-}
+};
 
 Template.Track_Wave.rendered = function() {
   // this.$('.wave').hide();
@@ -31,7 +30,7 @@ Template.Track_Wave.rendered = function() {
       color: 'rgba(255, 255, 255, 0.5)',
     });
   }
-}
+};
 
 Template.Track_Wave.helpers({
   loaded: function() {
@@ -55,7 +54,7 @@ Template.Track_Wave.events({
   'click .pause': function(e, template) {
     template.wave.pause();
   },
-})
+});
 
 function initWave() {
   var template = this;
@@ -88,6 +87,6 @@ function loadFile(computation) {
 
   if (file) {
     this.wave.loadBlob(file);
-    computation.stop()
+    computation.stop();
   }
 }

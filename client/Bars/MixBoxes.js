@@ -24,3 +24,43 @@ function onModalText() {
     createMix.set(false);
   }
 }
+
+// MixBox
+
+Template.MixBox.rendered = function() {
+  this.$('.edit').hide();
+  this.$('.edit-buttons').hide();
+
+  // this.$('.dropdown').dropdown({
+  //   transition: 'drop',
+  //   action: function(text, value) {
+  //     console.log("action", text, value);
+  //   },
+  // });
+};
+
+Template.MixBox.events({
+  'click .edit': function(e, template) {
+    template.$('.edit-buttons').toggle();
+  },
+
+  'mouseenter .field': function(e, template) {
+    template.$('.edit').show();
+  },
+
+  'mouseleave .field': function(e, template) {
+    template.$('.edit').hide();
+  },
+
+  'click .remove-mix': function(e, template) {
+    Mixes.remove(this._id);
+  },
+
+  'click .edit-mix': function(e, template) {
+    console.log("edit mix");
+  },
+
+  'click .edit-name': function(e, template) {
+    console.log("edit name");
+  },
+});

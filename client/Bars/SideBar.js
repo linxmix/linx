@@ -2,7 +2,7 @@ Session.setDefault("sideBarOpen", false);
 Session.set("sideBarOpen", false);
 
 Template.SideBar.rendered = function() {
-  var $sidebar = $('.left.sidebar');
+  var $sidebar = this.$('.left.sidebar');
   $sidebar.sidebar({
     closable: false,
     dimPage: false,
@@ -14,8 +14,6 @@ Template.SideBar.rendered = function() {
   $sidebar.sidebar('attach events', '.sidebar-launch', 'toggle');
 
   $sidebar.accordion({exclusive: false, collapsible: true});
-
-  $('.ui.checkbox').checkbox();
 };
 
 Template.SideBar.events({

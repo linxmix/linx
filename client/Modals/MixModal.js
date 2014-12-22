@@ -6,7 +6,7 @@ Template.MixModal.created = function() {
 };
 
 Template.MixModal.rendered = function() {
-  var $modal = $('.mix-modal');
+  var $modal = this.$('.mix-modal');
   $modal.modal({
     detachable: false,
     closable: false,
