@@ -1,6 +1,3 @@
-aldeed:autoform@4.2.1
-aldeed:collection2@2.3.0
-aldeed:simple-schema@1.1.0
 application-configuration@1.0.4
 autoupdate@1.1.4
 base64@1.0.2
@@ -9,6 +6,7 @@ blaze@2.0.4
 blaze-tools@1.0.2
 boilerplate-generator@1.0.2
 callback-hook@1.0.2
+channikhabra:stupid-models@0.0.6
 check@1.0.3
 classcraft:knox@0.9.11
 coffeescript@1.0.5
@@ -42,7 +40,6 @@ minifiers@1.1.3
 minimongo@1.0.6
 mobile-status-bar@1.0.2
 mongo@1.0.10
-mrt:moment@2.6.0
 nooitaf:semantic-ui@1.3.2
 observe-sequence@1.0.4
 ordered-dict@1.0.2

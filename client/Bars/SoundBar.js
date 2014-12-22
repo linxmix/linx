@@ -26,6 +26,7 @@ Template.SoundBar.created = function() {
 Template.SoundBar.rendered = function() {
   var $soundbar = $('.top.sidebar');
   $soundbar.sidebar({
+    closable: false,
     dimPage: false,
     transition: 'push',
     onChange: function() {

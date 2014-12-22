@@ -5,11 +5,10 @@
 
 meteor-platform
 insecure
-aldeed:collection2
-aldeed:autoform
 classcraft:knox
 reactive-var
 iron:router
 nooitaf:semantic-ui
 
 zimme:iron-router-active
+channikhabra:stupid-models

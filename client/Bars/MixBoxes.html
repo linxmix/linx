@@ -1,0 +1,23 @@
+<template name="MixBoxes">
+  <div class="ui inverted form">
+    <div class="grouped fields">
+      {{#each mixes}}
+        {{> MixBox}}
+      {{/each}}
+    </div>
+    {{#if showCreate}}
+      <div class="tiny green ui icon create button">
+        <i class="plus icon"></i> Create New
+      </div>
+    {{/if}}
+  </div>
+</template>
+
+<template name="MixBox">
+  <div class="field">
+    <div class="ui checkbox">
+      <input type="checkbox" name="{{name}}" />
+      <label>{{name}}</label>
+    </div>
+  </div>
+</template>

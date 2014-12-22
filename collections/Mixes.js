@@ -1,15 +1,5 @@
-Mixes = new Meteor.Collection('Mixes', {
-  schema: {
-    title: {
-      type: String,
-      label: 'Title',
-    },
-    tracks: {
-      type: [String],
-      label: 'Tracks',
-    }
-  }
-});
+Mixes = new Meteor.Collection('Mixes');
+MixModel = Model(Mixes);
 
 Mixes.allow({
   insert: function (userId, doc) {
