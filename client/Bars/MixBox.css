@@ -1,0 +1,15 @@
+.edit {
+  position: relative;
+  float: right;
+  cursor: pointer;
+}
+
+.edit.hidden {
+  display: none;
+}
+
+.mixbox-label {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
