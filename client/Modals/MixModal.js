@@ -2,7 +2,8 @@ Session.set('MixModalText', '');
 Session.set('MixModalOpen', false);
 
 Template.MixModal.created = function() {
-  this.autorun(onToggleModal);
+  this.autorun(onToggleModal.bind(this));
+  this.autorun(onModalSubmit.bind(this));
 };
 
 Template.MixModal.rendered = function() {
@@ -49,10 +50,29 @@ function clearModal(e, template) {
 
 function onToggleModal() {
   var $modal = $('.mix-modal');
+  console.log("on toggle modal");
 
-  if (!!Session.get('MixModalOpen')) {
+  if (Session.get('MixModalOpen')) {
     $modal.modal('show');
   } else {
     $modal.modal('hide');
   }
+}
+
+function onModalSubmit() {
+  var modalText = Session.get('MixModalText'),
+      mix = Mixes.findOne(Session.get('editMixInfo'));
+
+  if (modalText === '' || Session.get('MixModalOpen')) { return; }
+
+  // create or edit mix
+  var attrs = {name: modalText};
+  if (!mix) {
+    Mixes.insert(attrs);
+  } else {
+    mix.update(attrs);
+  }
+
+  Session.set('MixModalText', '');
+  Session.set('editMixInfo', undefined);
 }

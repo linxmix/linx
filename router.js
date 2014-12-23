@@ -17,15 +17,24 @@ Router.map(function() {
     path: '/linx',
   });
 
-  this.route('/linx/edit/:_id', function() {
+  this.route('/linx/mix', function() {
+    var mixId = Session.get('editMix');
+    console.log("mixId", mixId);
+    if (_.isEmpty(mixId)) {
+      mixId = 'queue';
+    }
+    console.log("mixId", mixId);
+    this.redirect('/linx/mix/' + mixId);
+  });
+
+  this.route('/linx/mix/:_id', function() {
     Session.set('editMix', this.params._id);
-    console.log("edit');", Session.get('editMix'));
     this.render('MixList');
   });
 
-  this.route('Uploader', {
-    name: 'Uploader',
-    path: '/uploader',
+  this.route('Upload', {
+    name: 'Upload',
+    path: '/upload',
   });
 
 });

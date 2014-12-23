@@ -1,19 +1,19 @@
-Session.setDefault("uploaderStep", 1);
+Session.setDefault("uploadStep", 1);
 
-Template.Uploader.created = function() {
+Template.Upload.created = function() {
   this.startSong = Object.create(WaveSurfer);
   this.transition = Object.create(WaveSurfer);
   this.endSong = Object.create(WaveSurfer);
 }
 
-Template.Uploader.helpers({
+Template.Upload.helpers({
   startSongHidden: function() {
-    var step = Session.get('uploaderStep');
+    var step = Session.get('uploadStep');
     return step === 2 ? '' : 'hidden';
   },
 
   endSongHidden: function() {
-    var step = Session.get('uploaderStep');
+    var step = Session.get('uploadStep');
     return step === 3 ? '' : 'hidden';
   },
 

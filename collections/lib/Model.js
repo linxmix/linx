@@ -1,15 +1,15 @@
 // Hack to allow non-mongo attributes
-var oldFn = Model;
+var _Model = Model;
 Model = function(collection) {
 
-  var model = oldFn.apply(this, arguments);
+  var model = _Model.apply(this, arguments);
 
-  var oldIsMongoAttribute = model.isMongoAttribute;
+  var _isMongoAttribute = model.isMongoAttribute;
   model.isMongoAttribute = function(prop) {
     if (this.nonMongoAttributes.hasOwnProperty(prop)) {
       return false;
     } else {
-      return oldIsMongoAttribute(prop);
+      return _isMongoAttribute(prop);
     }
   };
 

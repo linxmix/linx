@@ -1,4 +1,3 @@
-Session.setDefault("queue", []);
 Session.setDefault("soundBarPlaying", false);
 Session.setDefault("soundBarOpen", false);
 

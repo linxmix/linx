@@ -15,7 +15,7 @@ var steps = [
 
 Template.Steps.helpers({
   steps: function() {
-    var currentStep = Session.get('uploaderStep');
+    var currentStep = Session.get('uploadStep');
     return steps.map(function(step) {
       if (step.id === currentStep) {
         step.stateClass = 'active step';
@@ -32,6 +32,6 @@ Template.Steps.helpers({
 
 Template.Step.events({
   click: function(e, template) {
-    Session.set('uploaderStep', template.data.id)
+    Session.set('uploadStep', template.data.id)
   }
 });
