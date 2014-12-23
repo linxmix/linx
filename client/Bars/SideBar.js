@@ -42,7 +42,7 @@ Template.SideBar.events({
   },
 
   'click .edit-mix': function(e, template) {
-    Session.set('editMix', Session.get('selectedMix'));
+    Router.go('/linx/edit/' + Session.get('selectedMix'));
   },
 });
 

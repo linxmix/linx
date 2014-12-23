@@ -9,28 +9,22 @@ Router.configure({
 Router.map(function() {
 
   this.route('/', function() {
-    this.redirect('/linx/library');
+    this.redirect('/linx');
   });
 
-  this.route('/linx/:type', function() {
-    var params = this.params;
-    this.render('Linx', {
-      data: function() {
-        return params;
-      }
-    });
+  this.route('Linx', {
+    name: 'Linx',
+    path: '/linx',
   });
 
-  this.route('/linx/:type/:id', function() {
-    var params = this.params;
-    this.render('Linx', {
-      data: function() {
-        return params;
-      }
-    })    
+  this.route('/linx/edit/:_id', function() {
+    Session.set('editMix', this.params._id);
+    console.log("edit');", Session.get('editMix'));
+    this.render('MixList');
   });
 
   this.route('Uploader', {
+    name: 'Uploader',
     path: '/uploader',
   });
 

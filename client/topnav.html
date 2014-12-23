@@ -1,10 +1,10 @@
 <template name="topnav">
   <div class="ui fixed inverted main menu">
     <div class="container">
-      <a class="{{isActivePath regex='library'}} item" href="/linx/library">
+      <a class="{{isActivePath regex='^/linx$'}} item" href="/linx">
         <i class="inverted teal globe icon"></i> Linx
       </a>
-      <a class="{{isActivePath regex='uploader'}} item" href="/uploader">
+      <a class="{{isActivePath regex='/uploader'}} item" href="/uploader">
         <i class="inverted orange cloud upload icon"></i> Uploader
       </a>
 
