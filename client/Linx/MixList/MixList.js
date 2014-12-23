@@ -5,13 +5,15 @@ Template.MixList.created = function() {
 
 Template.MixList.helpers({
   songs: function() {
-    var mix = Template.instance().mix.get();
-    return mix.getSongs();
+    return Template.instance().mix.get().getSongs();
+  },
+
+  mix: function() {
+    return Template.instance().mix.get();
   }
 });
 
 function setMix() {
-  // TODO: default to queue
   var mixId = Session.get('editMix');
   this.mix.set(Mixes.findOne(mixId));
 }

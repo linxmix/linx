@@ -15,7 +15,6 @@ Template.MixBox.helpers({
 
 Template.MixBox.events({
   'click .edit': function(e, template) {
-    // template.$('.edit-buttons').toggle();
     $('.mix-edit.dropdown').css({
       'left': event.pageX,
       'top': event.pageY,

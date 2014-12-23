@@ -9,6 +9,12 @@ Template.MixDropdown.rendered = function() {
   });
 };
 
+Template.MixDropdown.helpers({
+  queueClass: function() {
+    return (Session.get('selectedMix') === 'queue') ? 'hidden' : '';
+  },
+});
+
 Template.MixDropdown.events({
   'click .delete-mix': function(e, template) {
     if (window.confirm('Are you sure you want to delete "' + Mixes.findOne(Session.get('selectedMix')).name + '"?')) {

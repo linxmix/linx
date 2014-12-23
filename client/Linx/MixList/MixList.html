@@ -1,0 +1,21 @@
+<template name="MixList">
+  <div class="mixlist">
+    <div class="ui inverted blue segment">
+      {{#with mix}}
+        <h2 class="ui inverted header">
+          <i class="settings icon"></i>
+          <div class="content">
+            {{name}}
+            <div class="sub header">{{length}} Tracks</div>
+          </div>
+        </h2>
+      {{/with}}
+    </div>
+
+    <div class="content">
+      {{#each songs}}
+        <p>{{title}}</p>
+      {{/each}}
+    </div>
+  </div>
+</template>

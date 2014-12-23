@@ -11,8 +11,7 @@ Meteor.publish("Mixes", function () {
 });
 
 Meteor.startup(function() {
-  console.log("startup", Mixes.findOne('queue'));
   if (!Mixes.findOne('queue')) {
-    Mixes.insert({_id: 'queue', name: 'queue'});
+    Mixes.insert({_id: 'queue', name: 'Queue'});
   }
 });

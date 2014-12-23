@@ -4,6 +4,7 @@ MixModel = Model(Mixes);
 MixModel.extend({
   defaultValues: {
     tracks: [],
+    length: 0,
   },
 
   getSongs: function() {
@@ -22,7 +23,7 @@ MixModel.extend({
     } else {
       tracks.splice(index, 0, trackId);
     }
-    this.update({tracks: tracks});
+    this.update({tracks: tracks, length: tracks.length});
   }
 });
 
