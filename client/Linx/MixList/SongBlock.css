@@ -1,0 +1,17 @@
+.songblock {
+  display: inline-block;
+  width: 200px;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  min-height: 500px;
+
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+
+  padding: 10px;
+
+  border-color: #9ecaed;
+  box-shadow: 0 0 10px #9ecaed;
+}

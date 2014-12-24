@@ -1,3 +1,8 @@
-.mix-list .header {
+.mixlist-header {
   margin-bottom: 20px;
+}
+
+.mixlist-content {
+  overflow-x: scroll;
+  white-space: nowrap;
 }

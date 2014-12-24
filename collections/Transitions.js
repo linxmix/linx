@@ -1,4 +1,5 @@
 Transitions = new Meteor.Collection('Transitions');
+TransitionModel = Model(Transitions);
 
 Transitions.allow({
   insert: function (userId, doc) {

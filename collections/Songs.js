@@ -1,4 +1,5 @@
 Songs = new Meteor.Collection('Songs');
+SongModel = Model(Songs);
 
 Songs.allow({
   insert: function (userId, doc) {
