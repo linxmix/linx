@@ -1,0 +1,9 @@
+<template name="SongsBlock">
+  <div class="songsblock">
+    <div class="ui inverted selection list">
+      {{#each songsList}}
+        <div class="item {{isActive}}">{{name}}</div>
+      {{/each}}
+    </div>
+  </div>
+</template>

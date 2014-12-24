@@ -4,8 +4,16 @@ Template.MixList.created = function() {
 };
 
 Template.MixList.helpers({
-  songs: function() {
-    return Template.instance().mix.get().getSongs();
+  songsLists: function() {
+    var songs = Template.instance().mix.get().getSongs();
+    return songs.map(function(song, index) {
+      var songsList = (index === 0) ?
+        Songs.find().fetch() : songs[index - 1].getSongsOut();
+      return {
+        selectedSong: song,
+        songsList: songsList,
+      };
+    });
   },
 
   mix: function() {
