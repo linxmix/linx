@@ -3,6 +3,14 @@ Template.MixList.created = function() {
   this.autorun(setMix.bind(this));
 };
 
+Template.MixList.rendered = function() {  
+  this.$('.mixlist-content').overscroll({
+    persistThumbs: true,
+    thumbColor: '#4F6576',
+    direction: 'horizontal',
+  });
+};
+
 Template.MixList.helpers({
   songsLists: function() {
     var songs = Template.instance().mix.get().getSongs();

@@ -3,6 +3,6 @@
 }
 
 .mixlist-content {
-  overflow-x: scroll;
+  overflow-x: auto;
   white-space: nowrap;
 }

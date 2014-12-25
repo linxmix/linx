@@ -4,6 +4,14 @@
       {{#each songsList}}
         <div class="item {{isActive}}">{{name}}</div>
       {{/each}}
+      <hr/>
+      <div class="ui fluid search">
+        <div class="ui icon input">
+          <input class="prompt" type="text" placeholder="Search Songs...">
+          <i class="search icon"></i>
+        </div>
+        <div class="results"></div>
+      </div>
     </div>
   </div>
 </template>

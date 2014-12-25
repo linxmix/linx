@@ -1,6 +1,6 @@
 <template name="MixList">
   <div class="mixlist">
-    <div class="ui inverted blue segment mixlist-header">
+    <div class="ui inverted purple segment mixlist-header">
       {{#with mix}}
         <h2 class="ui inverted header">
           <i class="settings icon"></i>
@@ -12,7 +12,7 @@
       {{/with}}
     </div>
 
-    <div class="ui inverted segment mixlist-content">
+    <div class="mixlist-content">
       {{#each songsLists}}
         {{> SongsBlock}}
       {{/each}}

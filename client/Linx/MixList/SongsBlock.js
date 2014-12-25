@@ -4,11 +4,23 @@ Template.SongsBlock.created = function() {
 
 Template.SongsBlock.rendered = function() {
   this.$('.songsblock').overscroll({
-    showThumbs: false,
+    // persistThumbs: true,
+    thumbColor: '#4F6576',
     direction: 'vertical',
-  }).scroll(function(e) {
-    console.log("drag start");
-    // e.startPropagation();
+  }).on('mousewheel', function(e) {
+    console.log("scroll", e.currentTarget.scrollLeft, e.currentTarget.scrollTop);
+    e.stopPropagation();
+    // $('.mixlist-content').trigger(e);
+    // TODO: debug
+  });
+
+  // TODO: debug, make reactive
+  this.$('.search').search({
+    type: 'simple',
+    source: Songs.find().fetch(),
+    searchFields: [
+      'title'
+    ],
   });
 };
 
