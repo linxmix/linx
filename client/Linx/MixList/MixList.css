@@ -6,3 +6,15 @@
   overflow-x: auto;
   white-space: nowrap;
 }
+
+/*.mixlist-header-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.mixlist-header-right {
+  position: absolute;
+  top: 0;
+  right: 0;
+}*/

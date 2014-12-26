@@ -4,11 +4,11 @@ Template.MixList.created = function() {
 };
 
 Template.MixList.rendered = function() {  
-  this.$('.mixlist-content').overscroll({
-    persistThumbs: true,
-    thumbColor: '#4F6576',
-    direction: 'horizontal',
-  });
+  // this.$('.mixlist-content').overscroll({
+  //   persistThumbs: true,
+  //   thumbColor: '#4F6576',
+  //   direction: 'horizontal',
+  // });
 };
 
 Template.MixList.helpers({
