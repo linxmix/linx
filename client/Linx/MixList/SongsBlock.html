@@ -1,17 +1,26 @@
 <template name="SongsBlock">
   <div class="songsblock">
+    <div class="songsblock-header">
+      <strong>{{index}}</strong>
+      <div class="songsblock-header-right">
+        <i class="tiny inverted remove icon"></i>
+      </div>
+    </div>
+    <hr/>
+
     <div class="ui inverted selection list">
       {{#each songsList}}
         <div class="item {{isActive}}">{{name}}</div>
       {{/each}}
-      <hr/>
-      <div class="ui fluid search">
-        <div class="ui icon input">
-          <input class="prompt" type="text" placeholder="Search Songs...">
-          <i class="search icon"></i>
-        </div>
-        <div class="results"></div>
+    </div>
+
+    <hr/>
+    <div class="ui fluid search">
+      <div class="ui icon input">
+        <input class="prompt" type="text" placeholder="Search Songs...">
+        <i class="search icon"></i>
       </div>
+      <div class="results"></div>
     </div>
   </div>
 </template>

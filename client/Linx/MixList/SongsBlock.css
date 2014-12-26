@@ -2,9 +2,6 @@
   display: inline-block;
   width: 200px;
 
-  height: 500px;
-  overflow-y: auto;
-
   margin-left: 10px;
   margin-right: 10px;
   margin-top: 10px;
@@ -16,6 +13,41 @@
   border-radius: 3px;
   border-color: #9ecaed;
   box-shadow: 0 0 10px #9ecaed;
+}
+
+.songsblock .list {
+  overflow-y: auto;
+  height: 500px;
+
+}
+
+.songsblock hr {
+  display: block; height: 1px;
+  border: 0; border-top: 1px solid #88898c;
+  margin: 1em 0; padding: 0;
+}
+
+.songsblock-header {
+  color: #dfe0e6;
+}
+
+.songsblock-header strong {
+  margin-left: 3px;
+  font-size: 18px;
+}
+
+.songsblock-header-right {
+  float: right;
+  display: inline;
+}
+
+.songsblock-header-right i {
+  cursor: pointer;
+}
+
+.songsblock .ui.input input {
+  background-color: #dfe0e6;
+  color: #333;
 }
 
 .songsblock .item {

@@ -16,14 +16,23 @@ MixModel.extend({
     }, []);
   },
 
-  addTrack: function(trackId, index) {
-    var tracks = this.tracks;
+  add: function(trackId, index) {
     if (!_.isNumber(index)) {
-      tracks.push(trackId);
+      this.tracks.push(trackId);
     } else {
-      tracks.splice(index, 0, trackId);
+      this.tracks.splice(index, 0, trackId);
     }
-    this.update({tracks: tracks, length: tracks.length});
+    this.update({tracks: this.tracks, length: this.tracks.length});
+  },
+
+  replaceAt: function(trackId, index) {
+    this.tracks[index] = trackId;
+    this.update({tracks: this.tracks});
+  },
+
+  removeAt: function(index) {
+    this.tracks.splice(index, 1);
+    this.update({tracks: this.tracks, length: this.tracks.length});
   }
 });
 

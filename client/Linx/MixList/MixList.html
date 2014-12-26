@@ -3,21 +3,16 @@
 
 
     <div class="ui inverted segment mixlist-header">
-      <a class="mixlist-header-left button icon item">
+      <a class="mixlist-header-left icon item">
         <i class="large inverted arrow left icon"></i>
       </a>
 
-      <h2 class="inverted ui icon header">
-        {{#with mix}}
-          <i class="inverted settings icon"></i>
-          <div class="inverted content">
-            {{name}}
-            <div class="sub header">{{length}} Tracks</div>
-          </div>
-        {{/with}}
-      </h2>
+      {{#with mix}}
+        {{name}}
+        {{length}} Tracks
+      {{/with}}
 
-      <a class="mixlist-header-right button icon">
+      <a class="mixlist-header-right icon item">
         <i class="large inverted arrow right icon"></i>
       </a>      
     </div>

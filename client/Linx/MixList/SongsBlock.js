@@ -3,7 +3,7 @@ Template.SongsBlock.created = function() {
 };
 
 Template.SongsBlock.rendered = function() {
-  this.$('.songsblock').overscroll({
+  this.$('.songsblock .list').overscroll({
     // persistThumbs: true,
     thumbColor: '#4F6576',
     direction: 'vertical',
@@ -40,4 +40,27 @@ Template.SongsBlock.helpers({
     var isActive = selectedSong && (selectedSong._id === this._id);
     return isActive ? 'active' : '';
   }
+});
+
+Template.SongsBlock.events({
+  'click .remove': function(e, template) {
+    console.log("remove", this.index, template.data.index);
+    Mixes.findOne(Session.get('editMix')).removeAt(this.index);
+  },
+
+  'click .selection.list .item': function(e, template) {
+    var selectedSong = template.selectedSong;
+    console.log('select', this._id, this, selectedSong.get());
+
+    if (selectedSong.get()) {
+      if (selectedSong.get()._id !== this._id) {
+        selectedSong.set(this._id);
+        var mix = Mixes.findOne(Session.get('editMix'));
+        mix.replaceAt(this._id, template.data.index);
+      }
+    } else {
+      var mix = Mixes.findOne(Session.get('editMix'));
+      mix.add(this._id);
+    }
+  },
 });
