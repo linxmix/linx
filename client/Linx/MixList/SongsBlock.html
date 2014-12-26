@@ -10,7 +10,12 @@
 
     <div class="ui inverted selection list">
       {{#each songsList}}
-        <div class="item {{isActive}}">{{name}}</div>
+        <div class="item {{isActive}}">
+          <div class="content">
+            <div class="header">{{name}}</div>
+              {{numSongsOut}} {{#if isOne}}Mixout{{else}}Mixouts{{/if}}
+          </div>
+        </div>
       {{/each}}
     </div>
 

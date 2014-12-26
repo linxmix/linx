@@ -39,6 +39,14 @@ Template.SongsBlock.helpers({
     var selectedSong = Template.instance().selectedSong.get();
     var isActive = selectedSong && (selectedSong._id === this._id);
     return isActive ? 'active' : '';
+  },
+
+  numSongsOut: function() {
+    return this.getSongsOut().length;
+  },
+
+  isOne: function() {
+    return this.getSongsOut().length === 1;
   }
 });
 

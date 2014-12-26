@@ -50,7 +50,7 @@
   color: #333;
 }
 
-.songsblock .item {
+.songsblock .item .header {
   overflow-x: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;

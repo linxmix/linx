@@ -16,7 +16,8 @@ Template.MixList.helpers({
     var songs = Template.instance().mix.get().getSongs();
     songs.push(undefined);
     return songs.map(function(song, index) {
-      var songsList = (index === 0) ? [] : songs[index - 1].getSongsOut();
+      // var songsList = (index === 0) ? [] : songs[index - 1].getSongsOut();
+      var songsList = (index === 0) ? Songs.find().fetch() : songs[index - 1].getSongsOut();
       return {
         index: index,
         selectedSong: song,
