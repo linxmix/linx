@@ -2,15 +2,17 @@
   <div class="songsblock">
     <div class="songsblock-header">
       <strong>{{index}}</strong>
+      &nbsp;
+      <span>{{selectedTitle}}</span>
       <div class="songsblock-header-right">
-        <i class="tiny inverted remove icon"></i>
+        <i class="tiny inverted remove icon {{showRemove}}"></i>
       </div>
     </div>
     <hr/>
 
-    <div class="ui inverted selection list">
+    <div class="ui inverted animated selection list">
       {{#each songsList}}
-        <div class="item {{isActive}}">
+        <div class="item {{isActive}} {{hasTransition}}">
           <div class="content">
             <div class="header">{{name}}</div>
               {{numSongsOut}} {{#if isOne}}Mixout{{else}}Mixouts{{/if}}

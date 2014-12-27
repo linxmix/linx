@@ -32,17 +32,34 @@
 }
 
 .songsblock-header strong {
-  margin-left: 3px;
+  margin-left: 1px;
   font-size: 18px;
+}
+
+.songsblock-header span {
+  display: inline-block;
+  vertical-align: text-bottom;
+  width: 126px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  color: #ccc;
 }
 
 .songsblock-header-right {
   float: right;
   display: inline;
+  margin-top: -5px;
+  margin-right: -7px;
 }
 
 .songsblock-header-right i {
   cursor: pointer;
+}
+
+.songsblock-header-right i.hidden {
+  display: none;
 }
 
 .songsblock .ui.input input {
@@ -54,4 +71,13 @@
   overflow-x: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.songsblock .item.active {
+  border: 1px dashed;
+  border-color: #9ecaed;
+}
+
+.songsblock .item.active.transition {
+  border: 1px solid;
 }

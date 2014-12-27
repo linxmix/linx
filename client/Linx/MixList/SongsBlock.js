@@ -41,6 +41,20 @@ Template.SongsBlock.helpers({
     return isActive ? 'active' : '';
   },
 
+  showRemove: function() {
+    var selectedSong = Template.instance().selectedSong.get();
+    return selectedSong ? '' : 'hidden';
+  },
+
+  selectedTitle: function() {
+    var selectedSong = Template.instance().selectedSong.get();
+    return selectedSong && selectedSong.title;
+  }, 
+
+  hasTransition: function() {
+    // TODO
+  },
+
   numSongsOut: function() {
     return this.getSongsOut().length;
   },
@@ -53,7 +67,10 @@ Template.SongsBlock.helpers({
 Template.SongsBlock.events({
   'click .remove': function(e, template) {
     console.log("remove", this.index, template.data.index);
-    Mixes.findOne(Session.get('editMix')).removeAt(this.index);
+    var selectedSong = template.selectedSong;
+    selectedSong.set(null);
+    var mix = Mixes.findOne(Session.get('editMix'));
+    mix.removeAt(this.index);
   },
 
   'click .selection.list .item': function(e, template) {
@@ -62,11 +79,12 @@ Template.SongsBlock.events({
 
     if (selectedSong.get()) {
       if (selectedSong.get()._id !== this._id) {
-        selectedSong.set(this._id);
+        selectedSong.set(this);
         var mix = Mixes.findOne(Session.get('editMix'));
         mix.replaceAt(this._id, template.data.index);
       }
     } else {
+      selectedSong.set(Songs.findOne(this._id));
       var mix = Mixes.findOne(Session.get('editMix'));
       mix.add(this._id);
     }
