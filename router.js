@@ -36,5 +36,4 @@ Router.map(function() {
     name: 'Upload',
     path: '/upload',
   });
-
 });

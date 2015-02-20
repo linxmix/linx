@@ -5,3 +5,34 @@
 .uploadContent .hidden {
   display: none;
 }
+
+.uploadButtons {
+  /*width: 100%;*/
+}
+
+canvas {
+  background-color: #eee;
+}
+
+#testDrawWave {
+  width: 1000px;
+  height: 200px;
+  left: 28px;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+#testDrawWave2 {
+  width: 1000px;
+  height: 200px;
+  left: 28px;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+#testDrawWave3 {
+  width: 1000px;
+  height: 1000px;
+  left: 28px;
+  position: relative;
+}

@@ -71,7 +71,7 @@ function initWave() {
     template.$('.progress-bar').hide();
     template.$('.wave').show();
     template.loaded.set(true);
-    console.log("peaks", wave.getPeaks());
+    template.data.onReady && template.data.onReady(wave);
   });
 
   wave.on('region-created', function(region) {
@@ -86,6 +86,7 @@ function loadFile(computation) {
   var file = this.file.get();
 
   if (file) {
+    this.data.onLoad && this.data.onLoad(this.wave, file);
     this.wave.loadBlob(file);
     computation.stop();
   }

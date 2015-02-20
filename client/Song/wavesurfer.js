@@ -14,24 +14,30 @@ Meteor.startup(function() {
   };
   // /hack
 
-  WaveSurfer.getLength = function() {
-    var length;
-    if (this.params.fillParent && !this.params.scrollParent) {
-      length = this.drawer.getWidth();
-    } else {
-      length = Math.round(this.getDuration() * this.params.minPxPerSec * this.params.pixelRatio);
-    }
-    return length;
-  }
+  WaveSurfer.getSampleRegion = function(startRegion, endRegion, sampleSize) {
+    startRegion = startRegion || 0;
+    endRegion = endRegion || this.backend.buffer.length;
+    sampleSize = sampleSize || 1000;
 
-  WaveSurfer.getPeaks = function() {
-    return this.backend.getPeaks(this.getLength());
-    // TODO: finish
-    // coerce into object
-    // var peaksObject = {}
-    // _.each(peaks, function(peak, index) {
-    //   peaksObject[index] = peak;
-    // });
-  }
+    var buffer = this.backend.buffer;
+    var chan = buffer.getChannelData(0);
+    var length = Math.floor((endRegion - startRegion) / sampleSize);
+    var samples = new Float32Array(length);
+
+    // compute new samples in region
+    for (var i = 0; i < length; i++) {
+      var start = startRegion + ~~(i * sampleSize);
+      var end = start + sampleSize;
+      var avg = 0;
+      // compute average in current sample
+      for (var j = start; j < end; j++) {
+        var value = chan[j];
+        avg += Math.abs(value);
+      }
+      avg /= sampleSize;
+      samples[i] = avg;
+    }
+    return samples;
+  };
 
 });

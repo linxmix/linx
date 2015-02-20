@@ -1,6 +1,11 @@
 <template name="Upload">
-  <div class="uploadSteps">
-    {{> Steps}}
+  <div class="uploadHeader">
+    <div class="uploadSteps">
+      {{> Steps}}
+    </div>
+    <div class="inverted ui button group uploadButtons">
+      <div class="compare button">Compare</div>
+    </div>
   </div>
 
   <div class="uploadContent">
@@ -9,7 +14,7 @@
         <div class="ui header">
           Start Song
         </div>
-        {{> Track_Wave wave=startSong enableDragSelection=true enableDrop=true}}
+        {{> Track_Wave wave=startSong enableDragSelection=true enableDrop=true onReady=onWaveReady}}
       </div>
     </div>
 
@@ -18,7 +23,7 @@
         <div class="ui header">
           Transition
         </div>
-        {{> Track_Wave wave=transition enableDragSelection=true enableDrop=true}}
+        {{> Track_Wave wave=transition enableDragSelection=true enableDrop=true onReady=onWaveReady}}
       </div>
     </div>
 
@@ -27,9 +32,18 @@
         <div class="ui header">
           End Song
         </div>
-        {{> Track_Wave wave=endSong enableDragSelection=true enableDrop=true}}
+        {{> Track_Wave wave=endSong enableDragSelection=true enableDrop=true onReady=onWaveReady}}
       </div>
     </div>
+  </div>
+
+  <div id="testDrawWave">
+  </div>
+
+  <div id="testDrawWave2">
+  </div>
+
+  <div id="testDrawWave3">
   </div>
 
 </template>
