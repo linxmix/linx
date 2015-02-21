@@ -36,47 +36,141 @@ Template.Upload.events({
     var template = Template.instance();
     console.log('click compare', step)
     switch (step) {
-      case 2: compareWaves(template.startSong, template.transition); break;
-      case 3: compareWaves(template.transition, template.endSong); break;
+      case 2: computeWaveMatch(template.startSong, template.transition); break;
+      case 3: computeWaveMatch(template.transition, template.endSong); break;
     }
   },
 });
 
 // find offset of waves
-function compareWaves(wave1, wave2) {
-  console.log("compareWaves", wave1 === wave2);
+function computeWaveMatch(startWave, endWave) {
+  console.log("computeWaveMatch");
 
-  var samples1 = wave1.getSampleRegion();
-  var samples2 = wave2.getSampleRegion();
-  var N = samples1.length + samples2.length;
-  var data1 = new ComplexArray(zeroPad(samples1, N));
-  var data2 = new ComplexArray(zeroPad(samples2, N));
+  function getTargetRegion(wave) {
+    var selectedRegion = wave.regions.list.selected;
+    console.log(selectedRegion);
+
+    if (selectedRegion) {
+      var sampleRate = wave.backend.buffer.sampleRate;
+      return {
+        start: Math.floor(selectedRegion.start * sampleRate),
+        end: Math.floor(selectedRegion.end * sampleRate),
+      };
+    } else {
+      return {
+        start: 0,
+        end: wave.backend.buffer.length,
+      };
+    }
+  }
+
+  // TODO: determine sample size by array size, iterate
+  var sampleSize = 1000;
+  var region1 = getTargetRegion(startWave);
+  var region2 = getTargetRegion(endWave);
+
+  // iterate cross-correlation with 'zooming in' and increasing sample resolution to find accurate match data
+  var samples1, samples2, arraySize, matchData;
+  for (var i = 0; i < 1; i++) {
+    region1.sampleSize = sampleSize;
+    region2.sampleSize = sampleSize;
+    samples1 = startWave.getSampleRegion(region1);
+    samples2 = endWave.getSampleRegion(region2);
+    arraySize = samples1.length + samples2.length;
+
+    matchData = crossCorrelate(samples1, samples2, arraySize);
+
+    // TODO: recompute sampleSize and regions, iterate
+
+  }
+  console.log("drawing data");
+  drawToCanvas('testDrawWave3', matchData);
+
+  // calculate match points on each wave
+  var offsetIndex = arrayMax(matchData.real).index;
+  var offsetSamples = offsetIndex * sampleSize;
+  // TODO: second wave is translated over first, right?
+  var sampleRate1 = startWave.backend.buffer.sampleRate;
+  var matchSamples1 = region1.start;
+  var matchTime1 = matchSamples1 / sampleRate1;
+  var sampleRate2 = endWave.backend.buffer.sampleRate;
+  var matchSamples2 = region2.start + offsetSamples;
+  var matchTime2 = matchSamples2 / sampleRate2;
+
+  console.log("matchTime1", matchTime1);
+  console.log("matchTime2", matchTime2);
+  debugger;
+
+  // create cycle regions
+  var cycleRegion2 = endWave.regions.add({
+    id: 'cycle',
+    start: matchTime2 - 1,
+    end: matchTime2,
+    resize: false,
+    loop: false,
+    drag: false,
+    color: 'rgba(150, 0, 0, 0.4)',
+  });
+  cycleRegion2.on('in', function() {
+    console.log("cycle2in", arguments);
+  });
+  cycleRegion2.on('out', function() {
+    console.log("cycle2out", arguments);
+  });
+
+  var cycleRegion1 = startWave.regions.add({
+    id: 'cycle',
+    start: matchTime1 - 1,
+    end: matchTime1,
+    resize: false,
+    loop: false,
+    drag: false,
+    color: 'rgba(150, 0, 0, 0.4)',
+  });
+  cycleRegion1.on('in', function() {
+    console.log("cycle1in", arguments);
+  });
+  cycleRegion1.on('out', function() {
+    console.log("cycle1out", arguments);
+  });
+
+
+
+  console.log("max", arrayMax(matchData.real));
+
+
+
+
+
+  // TODO: add callback to region.out to play songs
+}
+
+
+function crossCorrelate(samples1, samples2, arraySize) {
+
+  var data1 = new ComplexArray(zeroPad(samples1, arraySize));
+  var data2 = new ComplexArray(zeroPad(samples2, arraySize));
 
   // corr(a, b) = ifft(fft(a_and_zeros) * conj(fft(b_and_zeros)))
-  console.log("compute ffts", N, data1.length, data2.length, data1.real, data2.real);
-  debugger;
+  console.log("compute ffts", data1.length, data2.length, data1.real, data2.real);
   data1.FFT();
   data2.FFT();
 
   // TODO: does it make sense to use min length? what if one array is really short?
   console.log("elementwise multiplication", data1.real, data2.real);
-  data3 = new ComplexArray(N);
-  for (var i = 0; i < N; i++) {
-    data3.real[i] = data1.real[i] * data2.real[i];    
+  var data3 = new ComplexArray(arraySize);
+  for (var i = 0; i < arraySize; i++) {
+    data3.real[i] = data1.real[i] * data2.real[i];
     // take complex conjugate of data2
-    data3.imag[i] = data1.imag[i] * -data2.imag[i];    
+    data3.imag[i] = data1.imag[i] * -data2.imag[i];
   }
 
-  console.log("compute ifft", data3.real)
-  data3.InvFFT();
-
-  console.log("max", arrayMax(data3.real));
-
-  console.log("drawing data");
+  console.log("compute ifft", data3.real);
   drawToCanvas('testDrawWave', data1);
   drawToCanvas('testDrawWave2', data2);
-  drawToCanvas('testDrawWave3', data3);
+  data3.InvFFT();
 
+  return data3;
 }
 
 function arrayMax(arr) {
@@ -105,6 +199,7 @@ function zeroPad(array, size) {
 }
 
 function drawToCanvas(element_id, data) {
+  // $('element_id canvas')
   var
   element = document.getElementById(element_id)
   canvas = document.createElement('canvas'),
@@ -129,6 +224,15 @@ function drawToCanvas(element_id, data) {
 };
 
 // TODO
+// 1. find suggested correlation position
+// 2. test accuracy
+// 3. allow region selection to fine-tune calculation
+// 3. add UI element for adjusting sample size.
+// 4. add UI element to tell user expected length of array they will FFT (size(regionA) + size(regionB))/sampleSize
+
+// 5. scan for correct area with low res, 'zoom in' and increase res to find spot
+
+// Steps
 // 1. normalize,
 // 2. zero pad, at least N = size(a)+size(b)-1, 
 // 2. cross correlate: corr(a, b) = ifft(fft(a_and_zeros) * fft(b_and_zeros[reversed]))

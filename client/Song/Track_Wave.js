@@ -26,8 +26,8 @@ Template.Track_Wave.rendered = function() {
 
   if (this.data.enableDragSelection) {
     this.wave.enableDragSelection({
-      id: 'guess',
-      color: 'rgba(255, 255, 255, 0.5)',
+      id: 'selected',
+      color: 'rgba(255, 255, 255, 0.4)',
     });
   }
 };

@@ -14,10 +14,10 @@ Meteor.startup(function() {
   };
   // /hack
 
-  WaveSurfer.getSampleRegion = function(startRegion, endRegion, sampleSize) {
-    startRegion = startRegion || 0;
-    endRegion = endRegion || this.backend.buffer.length;
-    sampleSize = sampleSize || 1000;
+  WaveSurfer.getSampleRegion = function(regionInfo) {
+    var startRegion = regionInfo.start || 0;
+    var endRegion = regionInfo.end || this.backend.buffer.length;
+    var sampleSize = regionInfo.sampleSize || 1000;
 
     var buffer = this.backend.buffer;
     var chan = buffer.getChannelData(0);
