@@ -65,99 +65,126 @@ function computeWaveMatch(startWave, endWave) {
   }
 
   // TODO: determine sample size by array size, iterate
-  var sampleSize = 1000;
+  var sampleSize = 100;
+  var numMatches = 1;
   var region1 = getTargetRegion(startWave);
   var region2 = getTargetRegion(endWave);
 
   // iterate cross-correlation with 'zooming in' and increasing sample resolution to find accurate match data
-  var samples1, samples2, arraySize, matchData;
+  var samples1, samples2, matchData, offsetIndex, offsetSamples, matches;
   for (var i = 0; i < 1; i++) {
     region1.sampleSize = sampleSize;
     region2.sampleSize = sampleSize;
     samples1 = startWave.getSampleRegion(region1);
     samples2 = endWave.getSampleRegion(region2);
-    arraySize = samples1.length + samples2.length;
 
-    matchData = crossCorrelate(samples1, samples2, arraySize);
+    // samples1 = normalize(samples1);
+    // samples2 = normalize(samples2);
 
-    // TODO: recompute sampleSize and regions, iterate
+    matchData = crossCorrelate(samples1, samples2);
+
+    matches = maxN(Array.prototype.slice.call(matchData.real, 0, matchData.real.length / 2), numMatches);
+
+
+    // recompute sampleSize and regions, iterate
+    // sampleSize = 10;
+    // region2.start = offsetSamples - 10000;
+    // region2.end = offsetSamples + 10000;
+
 
   }
   console.log("drawing data");
-  drawToCanvas('testDrawWave3', matchData);
+  drawToCanvas('testDrawWave3', matchData, true);
 
-  // calculate match points on each wave
-  var offsetIndex = arrayMax(matchData.real).index;
-  var offsetSamples = offsetIndex * sampleSize;
-  // TODO: second wave is translated over first, right?
-  var sampleRate1 = startWave.backend.buffer.sampleRate;
-  var matchSamples1 = region1.start;
-  var matchTime1 = matchSamples1 / sampleRate1;
-  var sampleRate2 = endWave.backend.buffer.sampleRate;
-  var matchSamples2 = region2.start + offsetSamples;
-  var matchTime2 = matchSamples2 / sampleRate2;
+  console.log("matches", matches);
 
-  console.log("matchTime1", matchTime1);
-  console.log("matchTime2", matchTime2);
-  debugger;
 
   // create cycle regions
-  var cycleRegion2 = endWave.regions.add({
-    id: 'cycle',
-    start: matchTime2 - 1,
-    end: matchTime2,
-    resize: false,
-    loop: false,
-    drag: false,
-    color: 'rgba(150, 0, 0, 0.4)',
-  });
-  cycleRegion2.on('in', function() {
-    console.log("cycle2in", arguments);
-  });
-  cycleRegion2.on('out', function() {
-    console.log("cycle2out", arguments);
-  });
+  var sampleRate1 = startWave.backend.buffer.sampleRate;
+  var sampleRate2 = endWave.backend.buffer.sampleRate;
+  var color, matchSamples1, matchTime1, matchSamples2, matchTime2, offsetIndex, offsetSamples;
+  for (var j = 0; j < numMatches; j++) {
 
-  var cycleRegion1 = startWave.regions.add({
-    id: 'cycle',
-    start: matchTime1 - 1,
-    end: matchTime1,
-    resize: false,
-    loop: false,
-    drag: false,
-    color: 'rgba(150, 0, 0, 0.4)',
-  });
-  cycleRegion1.on('in', function() {
-    console.log("cycle1in", arguments);
-  });
-  cycleRegion1.on('out', function() {
-    console.log("cycle1out", arguments);
-  });
+    switch (j) {
+      case 0: color = 'rgba(255, 0, 0, 1)'; break;
+      case 1: color = 'rgba(0, 255, 0, 1)'; break;
+      case 2: color = 'rgba(0, 0, 255, 1)'; break;
+      default: color = 'rgba(255, 255, 0, 1)'; break;
+    }
 
+    // calculate match points on each wave
+    offsetIndex = matches[j].index;
+    offsetSamples = offsetIndex * sampleSize;
+    matchSamples1 = region1.start;
+    matchTime1 = matchSamples1 / sampleRate1;
+    matchSamples2 = region2.start + offsetSamples;
+    matchTime2 = matchSamples2 / sampleRate2;
+    console.log("matchTime1", matchTime1);
+    console.log("matchTime2", matchTime2);
 
+    // create regions
+    var cycleRegion1 = startWave.regions.add({
+      id: 'cycleOut' + j,
+      start: matchTime1,
+      resize: false,
+      loop: false,
+      drag: false,
+      color: color,
+    });
+    if (j === 0) {
+      cycleRegion1.on('in', function() {
+        console.log("cycle1in", this);
+        startWave.pause();
+        endWave.play(matchTime2);
+      });
+    }    
 
-  console.log("max", arrayMax(matchData.real));
+    var cycleRegion2 = endWave.regions.add({
+      id: 'cycleIn' + j,
+      start: matchTime2,
+      resize: false,
+      loop: false,
+      drag: false,
+      color: color,
+    });
+    cycleRegion2.on('in', function() {
+      console.log("cycle2in", this);
+    });
+  }
 
+}
 
-
-
-
-  // TODO: add callback to region.out to play songs
+function normalize(arr) {
+  var max = maxN(arr, 1)[0].val;
+  return [].map.call(arr, function(x) { return x /= max; });
 }
 
 
-function crossCorrelate(samples1, samples2, arraySize) {
-
+function crossCorrelate(samples1, samples2) {
+  var arraySize = (samples1.length + samples2.length) * 2;
   var data1 = new ComplexArray(zeroPad(samples1, arraySize));
   var data2 = new ComplexArray(zeroPad(samples2, arraySize));
+  // var arraySize = samples1.length;
+  // var data1, data2;
+  // if (samples1.length > samples2.length) {
+  //   data1 = new ComplexArray(samples1);
+  //   data2 = new ComplexArray(zeroPad(samples2, arraySize));
+  // } else {
+  //   arraySize = samples2.length;
+  //   data1 = new ComplexArray(zeroPad(samples1, arraySize));
+  //   data2 = new ComplexArray(samples2);
+  // }
 
   // corr(a, b) = ifft(fft(a_and_zeros) * conj(fft(b_and_zeros)))
-  console.log("compute ffts", data1.length, data2.length, data1.real, data2.real);
+  // console.log("compute ffts", data1.length, data2.length, data1.real, data2.real);
   data1.FFT();
   data2.FFT();
 
-  // TODO: does it make sense to use min length? what if one array is really short?
-  console.log("elementwise multiplication", data1.real, data2.real);
+  // normalizeFFT(data1);
+  // normalizeFFT(data2);
+
+  // elementwise multiplication of data1 and data2
+  // console.log("elementwise multiplication", data1.real, data2.real);
   var data3 = new ComplexArray(arraySize);
   for (var i = 0; i < arraySize; i++) {
     data3.real[i] = data1.real[i] * data2.real[i];
@@ -165,7 +192,7 @@ function crossCorrelate(samples1, samples2, arraySize) {
     data3.imag[i] = data1.imag[i] * -data2.imag[i];
   }
 
-  console.log("compute ifft", data3.real);
+  // console.log("compute ifft", data3.real);
   drawToCanvas('testDrawWave', data1);
   drawToCanvas('testDrawWave2', data2);
   data3.InvFFT();
@@ -173,20 +200,29 @@ function crossCorrelate(samples1, samples2, arraySize) {
   return data3;
 }
 
-function arrayMax(arr) {
-  var index = null;
-  var max = -Infinity;
-  for (var i = 0; i < arr.length; i++) {
-    var val = arr[i];
-    if (max < val) {
-      max = val;
-      index = i;
-    }
-  }
-  return {
-    max: max,
-    index: index,
-  };
+function normalizeFFT(complexArr) {
+  var factor = complexArr.length / 2;
+  complexArr.map(function(c_value, i, n) {
+    c_value.real /= factor;
+  });
+}
+
+
+// compute max N 
+function maxN(arr, n) {
+  n = n || 5;
+  var clone = Array.prototype.map.call(arr, function(val, i) {
+    return {
+      index: i,
+      val: val
+    };
+  });
+
+  var sorted = clone.sort(function(a, b) {
+    return b.val - a.val;
+  });
+
+  return sorted.slice(0, n);
 }
 
 function zeroPad(array, size) {
@@ -198,8 +234,9 @@ function zeroPad(array, size) {
   return newArray;
 }
 
-function drawToCanvas(element_id, data) {
-  // $('element_id canvas')
+function drawToCanvas(element_id, data, normalize) {
+  $('#' + element_id + ' canvas').remove();
+
   var
   element = document.getElementById(element_id)
   canvas = document.createElement('canvas'),
@@ -214,36 +251,18 @@ function drawToCanvas(element_id, data) {
 
   context.strokeStyle = 'blue'
   context.beginPath()
+
+  var max = maxN(data.real)[0].val;
+
   data.forEach(function(c_value, i) {
+    var val = normalize ? (1.0 - c_value.real/max) : (1.5 - c_value.real);
     context.lineTo(
       i * width / n,
-      height/2 * (1.5 - c_value.real)
+      height/2 * val
       )
   })
   context.stroke()
 };
-
-// TODO
-// 1. find suggested correlation position
-// 2. test accuracy
-// 3. allow region selection to fine-tune calculation
-// 3. add UI element for adjusting sample size.
-// 4. add UI element to tell user expected length of array they will FFT (size(regionA) + size(regionB))/sampleSize
-
-// 5. scan for correct area with low res, 'zoom in' and increase res to find spot
-
-// Steps
-// 1. normalize,
-// 2. zero pad, at least N = size(a)+size(b)-1, 
-// 2. cross correlate: corr(a, b) = ifft(fft(a_and_zeros) * fft(b_and_zeros[reversed]))
-// 3. improve: 
-// a. "You can get a more precise estimate of the offset (better than the resolution of your samples) by using parabolic/quadratic interpolation on the peak."
-// 4. optimize: 
-// a. "If the signals are real, you can use real FFTs (RFFT/IRFFT) and save half your computation time by only calculating half of the spectrum."
-// b. "stop if you've found a sufficient correlation"
-// c. Round zero padding up to a power of 2.
-// d. tweak samplesize. 
-// e. exploit y-axis symmetry, cut calculations in half
 
 // onload = function() {
 //   var

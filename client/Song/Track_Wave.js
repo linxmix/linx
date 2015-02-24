@@ -28,6 +28,9 @@ Template.Track_Wave.rendered = function() {
     this.wave.enableDragSelection({
       id: 'selected',
       color: 'rgba(255, 255, 255, 0.4)',
+      drag: false,
+      loop: false,
+      resize: false,
     });
   }
 };
