@@ -1,0 +1,56 @@
+.Upload {
+
+  .uploadSteps {
+    margin-bottom: 20px;
+  }
+
+  .uploadContent .hidden {
+    display: none;
+  }
+
+  .uploadButtons {
+    /*width: 100%;*/
+  }
+
+  .draw-wave canvas {
+    background-color: #eee;
+  }
+
+
+  .drop {
+    display: inline-block;
+    min-width: 500px;
+  }
+
+  .SearchLinx {
+    display: inline-block;
+  }
+
+  .LoadUrl {
+    display: inline-block;
+  }
+
+  /* TODO: remove */
+  #testDrawWave {
+    width: 1000px;
+    height: 200px;
+    left: 28px;
+    position: relative;
+    margin-bottom: 20px;
+  }
+
+  #testDrawWave2 {
+    width: 1000px;
+    height: 200px;
+    left: 28px;
+    position: relative;
+    margin-bottom: 20px;
+  }
+
+  #testDrawWave3 {
+    width: 1000px;
+    height: 200px;
+    left: 28px;
+    position: relative;
+  }
+}
