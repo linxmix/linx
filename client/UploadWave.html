@@ -1,0 +1,8 @@
+<template name="UploadWave">
+  <div class="UploadWave">
+    {{#Track_Wave wave=wave enableDragSelection=true enableDrop=true}}
+      {{> SearchLinx onSelect=onSelectSong}}
+      {{> LoadUrl wave=wave onLoad=onLoadUrl}}
+    {{/Track_Wave}}
+  </div>
+</template>

@@ -1,50 +1,52 @@
 <template name="Upload">
-  <div class="uploadHeader">
-    <div class="uploadSteps">
-      {{> Steps}}
-    </div>
-    <div class="inverted ui button group uploadButtons">
-      <div class="compare button">Compare</div>
-    </div>
-  </div>
-
-  <div class="uploadContent">
-    <div class="startSong {{startSongHidden}}">
-      <div class="inverted attached ui segment">
-        <div class="ui header">
-          Start Song
-        </div>
-        {{> Track_Wave wave=startSong enableDragSelection=true enableDrop=true onReady=onWaveReady}}
+  <div class="Upload">
+    <div class="uploadHeader">
+      <div class="uploadSteps">
+        {{> Steps}}
+      </div>
+      <div class="inverted ui button group uploadButtons">
+        <div class="compare button">Compare</div>
       </div>
     </div>
 
-    <div class="transition">
-      <div class="inverted attached ui segment">
-        <div class="ui header">
-          Transition
+    <div class="uploadContent">
+      <div class="startSong {{startSongHidden}}">
+        <div class="inverted attached ui segment">
+          <div class="ui header">
+            Start Song
+          </div>
+          {{> UploadWave wave=startSong}}
         </div>
-        {{> Track_Wave wave=transition enableDragSelection=true enableDrop=true onReady=onWaveReady}}
+      </div>
+
+      <div class="transition">
+        <div class="inverted attached ui segment">
+          <div class="ui header">
+            Transition
+          </div>
+          {{> Track_Wave wave=transition enableDragSelection=true enableDrop=true onReady=onWaveReady}}
+        </div>
+      </div>
+
+      <div class="endSong {{endSongHidden}}">
+        <div class="inverted attached ui segment">
+          <div class="ui header">
+            End Song
+          </div>
+          {{> Track_Wave wave=endSong enableDragSelection=true enableDrop=true onReady=onWaveReady}}
+        </div>
       </div>
     </div>
 
-    <div class="endSong {{endSongHidden}}">
-      <div class="inverted attached ui segment">
-        <div class="ui header">
-          End Song
-        </div>
-        {{> Track_Wave wave=endSong enableDragSelection=true enableDrop=true onReady=onWaveReady}}
-      </div>
+
+    <div id="testDrawWave3" class="draw-wave">
     </div>
-  </div>
 
-  <div id="testDrawWave3" class="draw-wave">
-  </div>
-  
-  <div id="testDrawWave" class="draw-wave">
-  </div>
+    <div id="testDrawWave" class="draw-wave">
+    </div>
 
-  <div id="testDrawWave2" class="draw-wave">
+    <div id="testDrawWave2" class="draw-wave">
+    </div>
+
   </div>
-
-
 </template>

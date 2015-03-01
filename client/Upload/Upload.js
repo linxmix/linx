@@ -28,6 +28,7 @@ Template.Upload.helpers({
   endSong: function() {
     return Template.instance().endSong;
   },
+
 });
 
 Template.Upload.events({

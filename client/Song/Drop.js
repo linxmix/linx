@@ -5,9 +5,7 @@ Template.Drop.created = function() {
 
 Template.Drop.helpers({
   dropClass: function() {
-    var text = "inverted ui segment ";
-    text += Template.instance().dragover.get() ? 'orange' : 'purple';
-    return text;
+    return Template.instance().dragover.get() ? 'orange' : 'purple';
   }
 });
 

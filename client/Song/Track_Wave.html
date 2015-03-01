@@ -6,6 +6,7 @@
   {{#if loaded}}
     {{> TrackMixer}}
   {{else}}
+    {{> UI.contentBlock}}
     {{#if enableDrop}}
       {{> Drop file=file}}
     {{/if}}

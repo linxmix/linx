@@ -14,6 +14,16 @@
   background-color: #eee;
 }
 
+.Upload .SearchLinx {
+  display: inline-block;
+}
+
+.Upload .LoadUrl {
+  display: inline-block;
+}
+
+
+/* TODO: remove */
 #testDrawWave {
   width: 1000px;
   height: 200px;

@@ -64,6 +64,7 @@ function initWave() {
   var wave = this.wave;
 
   wave.on('loading', function(percent, xhr) {
+    template.loaded.set(false);
     wave.isLoaded = false;
     template.$('.progress-bar').show();
     template.$('.progress-bar .bar').css({ 'width': percent + '%' });
