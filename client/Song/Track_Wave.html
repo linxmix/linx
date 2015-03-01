@@ -1,16 +1,18 @@
 <template name="Track_Wave">
-  <div class="wave">
-  </div>
-  {{> ProgressBar}}
+  <div class="Track_Wave">
+    <div class="wave {{hiddenClass}}">
+    </div>
+    {{> ProgressBar}}
 
-  {{#if loaded}}
-    {{> TrackMixer}}
-  {{else}}
-    {{> UI.contentBlock}}
-    {{#if enableDrop}}
-      {{> Drop file=file}}
+    {{#if loaded}}
+      {{> TrackMixer}}
+    {{else}}
+      {{> UI.contentBlock}}
+      {{#if enableDrop}}
+        {{> Drop file=file}}
+      {{/if}}
     {{/if}}
-  {{/if}}
+  </div>
 </template>
 
 <template name="ProgressBar">

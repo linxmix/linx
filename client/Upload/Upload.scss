@@ -1,11 +1,13 @@
 .Upload {
 
-  .uploadSteps {
-    margin-bottom: 20px;
+  .hidden {
+    &.startSong, &.transition, &.endSong {
+      display: none;
+    }
   }
 
-  .uploadContent .hidden {
-    display: none;
+  .uploadSteps {
+    margin-bottom: 20px;
   }
 
   .uploadButtons {
@@ -25,7 +27,7 @@
     display: inline-block;
   }
 
-  .LoadUrl {
+  .SoundcloudInput {
     display: inline-block;
   }
 

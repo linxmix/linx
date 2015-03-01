@@ -1,0 +1,8 @@
+.Track_Wave {
+  // position off screen
+  .wave.hidden {
+    position: absolute;
+    left: -10000px;
+    width: 100%;
+  }
+}

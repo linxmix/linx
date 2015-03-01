@@ -1,9 +1,9 @@
 Template.Track_Wave.created = function() {
-  this.file = new ReactiveVar(null);
   this.loaded = new ReactiveVar(false);
 
   // get or make wave
   this.wave = this.data.wave || Object.create(WaveSurfer);
+  this.file = this.data.file || new ReactiveVar(null);
 
   initWave.call(this);
   this.autorun(loadFile.bind(this));
@@ -36,6 +36,10 @@ Template.Track_Wave.rendered = function() {
 };
 
 Template.Track_Wave.helpers({
+  hiddenClass: function() {
+    return Template.instance().loaded.get() ? '' : 'hidden';
+  },
+
   loaded: function() {
     return Template.instance().loaded.get();
   },

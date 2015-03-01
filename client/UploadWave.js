@@ -1,15 +1,24 @@
+Template.UploadWave.created = function() {
+  this.file = new ReactiveVar(null);
+};
+
 Template.UploadWave.helpers({
-  onLoadUrl: function() {
+  file: function() {
+    return Template.instance().file;
+  },
+
+  onSubmitSoundcloud: function() {
     var template = Template.instance();
     return function(url) {
-      console.log("UploadWave onLoadUrl", url);
+      console.log("UploadWave onSubmitSoundcloud", url);
+      // TODO: make call to api.soundcloud.com/resolve stuff
       template.data.wave.load(url);
     };
   },
 
-  onSelectSong: function() {
+  onSelectLinx: function() {
     return function() {
-      console.log("UploadWave onSelectSong");
+      console.log("UploadWave onSelectLinx");
     };
   }
 });
