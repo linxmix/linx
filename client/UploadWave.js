@@ -11,14 +11,15 @@ Template.UploadWave.helpers({
     var template = Template.instance();
     return function(url) {
       console.log("UploadWave onSubmitSoundcloud", url);
-      // TODO: make call to api.soundcloud.com/resolve stuff
       template.data.wave.load(url);
     };
   },
 
   onSelectLinx: function() {
-    return function() {
-      console.log("UploadWave onSelectLinx");
+    var template = Template.instance();
+    return function(song, results) {
+      console.log("UploadWave onSelectLinx", song, song.getS3Url());
+      template.data.wave.load(song.getS3Url());
     };
   }
 });

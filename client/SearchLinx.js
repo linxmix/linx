@@ -9,10 +9,6 @@ Template.SearchLinx.rendered = function() {
     searchFields: [
       'title', 'artist'
     ],
+    onSelect: this.data.onSelect,
   });
 };
-
-function onSelect(song) {
-  var onSelect = this.data.onSelect;
-  onSelect && onSelect(song);
-}

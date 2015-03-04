@@ -2,6 +2,12 @@ Songs = new Meteor.Collection('Songs');
 SongModel = Model(Songs);
 
 SongModel.extend({
+  getS3Url: function() {
+    var part = 'http://s3-us-west-2.amazonaws.com/linx-music/';
+    // TODO: make this work for non-mp3
+    return part + 'songs/' + this._id + '.mp3';
+  },
+
   getTransitionsIn: function(endTime) {
     // TODO
   },

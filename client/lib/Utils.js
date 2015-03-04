@@ -1,4 +1,6 @@
 Utils = {
+  clientId_Soundcloud: '977ed530a2104a95eaa87f26fa710941',
+
   // migrate transitions from linx meteor v1 to linx meteor v2
   migrateTransitions: function(transitions) {
     transitions.forEach(function(transition) {

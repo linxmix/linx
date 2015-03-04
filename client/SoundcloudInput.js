@@ -1,3 +1,18 @@
+Template.SoundcloudInput.created = function() {
+  this.loading = new ReactiveVar(false);
+  this.error = new ReactiveVar(false);
+};
+
+Template.SoundcloudInput.helpers({
+  loadingClass: function() {
+    return Template.instance().loading.get() ? 'loading' : '';
+  },
+
+  errorClass: function() {
+    return Template.instance().error.get() ? 'error' : '';
+  },
+});
+
 Template.SoundcloudInput.events({
   'keydown': function(e, template) {
     // enter key
@@ -10,9 +25,45 @@ Template.SoundcloudInput.events({
 });
 
 function onSubmit(e, template) {
-  var url = template.$('input').val();
+  var targetUrl = template.$('input').val();
+  var clientId = Utils.clientId_Soundcloud;
   var onSubmit = template.data.onSubmit;
-  console.log("onSubmit", url);
-  // TODO: verify url, error state if not valid
-  onSubmit && onSubmit(url);
+  var loading = template.loading;
+  var error = template.error;
+  console.log("onSubmit", targetUrl);
+
+  // verify url, error state if not valid
+  var regex = /https?:\/\/soundcloud.com\/.*/;
+  if (!targetUrl.match(regex)) {
+    error.set(true);
+    return;
+  } else {
+    error.set(false);
+  }
+
+  // resolve url to get stream_url
+  loading.set(true);
+  $.ajax({
+    type: 'GET',
+    url: 'http://api.soundcloud.com/resolve.json',
+    data: {
+      url: targetUrl,
+      client_id: clientId,
+    },
+    success: function(response) {
+      loading.set(false);
+      console.log("RESPONSE", response);
+      if (!(response && response.streamable && response.stream_url)) {
+        window.alert('Sorry, but SoundCloud won\'t let us steam this url', targetUrl);
+      } else {
+        var resultUrl = response.stream_url += '?client_id=' + clientId;
+        onSubmit && onSubmit(resultUrl);
+      }
+    },
+    error: function(response) {
+      loading.set(false);
+      error.set(true);
+      window.alert('404 error', response);
+    }
+  });
 }
