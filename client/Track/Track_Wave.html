@@ -5,7 +5,7 @@
     {{> ProgressBar}}
 
     {{#if loaded}}
-      {{> TrackMixer}}
+      {{> TrackMixer wave=wave}}
     {{else}}
       {{> UI.contentBlock}}
       {{#if enableDrop}}
@@ -19,17 +19,6 @@
   <div class="ui active blue progress progress-bar">
     <div class="bar" style="width: 0%;">
       <div class="progress"></div>
-    </div>
-  </div>
-</template>
-
-<template name="TrackMixer">
-  <div class="ui buttons">
-    <div class="green ui play button">
-      Play
-    </div>
-    <div class="red ui pause button">
-      Pause
     </div>
   </div>
 </template>

@@ -50,22 +50,17 @@ Template.Track_Wave.helpers({
 
   file: function() {
     return Template.instance().file;
+  },
+
+  wave: function() {
+    return Template.instance().wave;
   }
-});
-
-Template.Track_Wave.events({
-  'click .play': function(e, template) {
-    template.wave.play();
-  },
-
-  'click .pause': function(e, template) {
-    template.wave.pause();
-  },
 });
 
 function initWave() {
   var template = this;
   var wave = this.wave;
+  wave.meta = new ReactiveVar({});
 
   wave.on('loading', function(percent, xhr) {
     template.loaded.set(false);
@@ -77,9 +72,19 @@ function initWave() {
   wave.on('ready', function() {
     wave.isLoaded = true;
     template.$('.progress-bar').hide();
-    template.$('.wave').show();
     template.loaded.set(true);
     template.data.onReady && template.data.onReady(wave);
+  });
+
+  wave.on('empty', function() {
+    wave.isLoaded = false,
+    template.loaded.set(false);
+  });
+
+  wave.on('error', function(errorMessage) {
+    template.$('.progress-bar').hide();
+    template.$('.progress-bar .bar').css({ 'width': 0 });
+    window.alert("Wave Load Error: ", errorMessage);
   });
 
   wave.on('region-created', function(region) {

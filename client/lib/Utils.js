@@ -1,6 +1,14 @@
 Utils = {
   clientId_Soundcloud: '977ed530a2104a95eaa87f26fa710941',
 
+  createLocalModel: function(collection, attrs) {
+    attrs = attrs || {};
+    attrs._local = true;
+    var newId = collection._collection.insert(attrs);
+    var newModel = collection.findOne(newId);
+    return newModel;
+  },
+
   // migrate transitions from linx meteor v1 to linx meteor v2
   migrateTransitions: function(transitions) {
     transitions.forEach(function(transition) {

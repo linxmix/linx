@@ -9,17 +9,18 @@ Template.UploadWave.helpers({
 
   onSubmitSoundcloud: function() {
     var template = Template.instance();
-    return function(url) {
-      console.log("UploadWave onSubmitSoundcloud", url);
-      template.data.wave.load(url);
+    // create new song with given soundcloudAttrs
+    return function(soundcloudAttrs) {
+      var newTrack = Utils.createLocalModel(Songs);
+      newTrack.setSoundcloud(soundcloudAttrs);
+      template.data.wave.loadTrack(newTrack, 'soundcloud');
     };
   },
 
   onSelectLinx: function() {
     var template = Template.instance();
-    return function(song, results) {
-      console.log("UploadWave onSelectLinx", song, song.getS3Url());
-      template.data.wave.load(song.getS3Url());
+    return function(track, results) {
+      template.data.wave.loadTrack(track, 's3');
     };
   }
 });

@@ -24,7 +24,7 @@
           <div class="ui header">
             Transition
           </div>
-          {{> Track_Wave wave=transition enableDragSelection=true enableDrop=true onReady=onWaveReady}}
+          {{> UploadWave wave=transition isTransition=true}}
         </div>
       </div>
 
@@ -33,7 +33,7 @@
           <div class="ui header">
             End Song
           </div>
-          {{> Track_Wave wave=endSong enableDragSelection=true enableDrop=true onReady=onWaveReady}}
+          {{> UploadWave wave=endSong}}
         </div>
       </div>
     </div>

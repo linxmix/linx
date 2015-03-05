@@ -1,5 +1,6 @@
 var echoApiKey = 'CWBME38JDGQNEJPXT';
 
+// Augment WaveSurfer Prototype
 Meteor.startup(function() {
 
   // hack to access the ArrayBuffer of audio data as it's read
@@ -38,6 +39,41 @@ Meteor.startup(function() {
       samples[i] = avg;
     }
     return samples;
+  };
+
+  WaveSurfer.loadTrack = function(track, source) {
+    if (track) {
+      this.meta.set({
+        _id: track._id,
+        title: track.title,
+        artist: track.artist,
+        source: source,
+      });
+      console.log("LOAD TRACK", this.meta.get());
+      this.load(track.getStreamUrl(source));
+    }
+  };
+
+  WaveSurfer.getMeta = function(attr) {
+    var meta = this.meta && this.meta.get();
+    if (meta) {
+      return meta[attr];
+    }
+  };
+
+  WaveSurfer.reset = function() {
+    var meta = this.meta && this.meta.get();
+    if (meta) {
+      this.meta.set({});
+    }
+    this.empty();
+  };
+
+  // Hack to add empty event
+  var _empty = WaveSurfer.empty;
+  WaveSurfer.empty = function() {
+    _empty.apply(this, arguments);
+    this.fireEvent('empty');
   };
 
 });

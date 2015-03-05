@@ -8,9 +8,12 @@
         <div class="eight wide column">
           {{> Drop file=file}}
         </div>
-        <div class="four wide column">
-          {{> SoundcloudInput wave=wave onSubmit=onSubmitSoundcloud}}
-        </div>
+        {{#if isTransition}}
+        {{else}}
+          <div class="four wide column">
+            {{> SoundcloudInput wave=wave onSubmit=onSubmitSoundcloud}}
+          </div>
+        {{/if}}
       </div>
     {{/Track_Wave}}
   </div>
