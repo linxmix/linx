@@ -5,9 +5,11 @@
     {{> ProgressBar}}
 
     {{#if loaded}}
-      {{> TrackMixer wave=wave}}
+      {{#TrackMixer wave=wave}}
+        {{> UI.contentBlock}}
+      {{/TrackMixer}}
     {{else}}
-      {{> UI.contentBlock}}
+      {{> UI.elseBlock}}
       {{#if enableDrop}}
         {{> Drop file=file}}
       {{/if}}

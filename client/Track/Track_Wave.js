@@ -3,6 +3,7 @@ Template.Track_Wave.created = function() {
 
   // get or make wave
   this.wave = this.data.wave || Object.create(WaveSurfer);
+  console.log("track wave file", this.data.file);
   this.file = this.data.file || new ReactiveVar(null);
 
   initWave.call(this);

@@ -6,7 +6,7 @@
         <div class="sub header">{{artist}}</div>
       </div>
     </div>
-    <div class="ui buttons">
+    <div class="inverted ui menu">
       <div class="green ui play icon button">
         <i class="play icon"></i>
         Play
@@ -15,14 +15,7 @@
         <i class="pause icon"></i>
         Pause
       </div>
-      <div class="teal ui empty icon button">
-        <i class="trash icon"></i>
-        Reset
-      </div>
-      <div class="purple ui upload icon button">
-        <i class="cloud upload icon"></i>
-        Upload
-      </div>
+      {{> UI.contentBlock}}
     </div>
   </div>
 </template>

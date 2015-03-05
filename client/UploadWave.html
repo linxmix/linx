@@ -1,6 +1,19 @@
 <template name="UploadWave">
   <div class="UploadWave">
     {{#Track_Wave wave=wave enableDragSelection=true file=file}}
+      <!-- when track is loaded -->
+      <div class="ui inverted right menu">
+        <div class="teal ui empty icon button">
+          <i class="trash icon"></i>
+          Reset
+        </div>
+        <div class="purple ui upload icon button">
+          <i class="cloud upload icon"></i>
+          Upload
+        </div>
+      </div>
+    {{else}}
+      <!-- when track is not loaded -->
       <div class="ui grid">
         <div class="four wide column">
           {{> SearchLinx onSelect=onSelectLinx}}

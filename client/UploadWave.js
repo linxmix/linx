@@ -1,10 +1,10 @@
 Template.UploadWave.created = function() {
-  this.file = new ReactiveVar(null);
+  this.data.file = new ReactiveVar(null);
 };
 
 Template.UploadWave.helpers({
   file: function() {
-    return Template.instance().file;
+    return Template.instance().data.file;
   },
 
   onSubmitSoundcloud: function() {
@@ -23,4 +23,14 @@ Template.UploadWave.helpers({
       template.data.wave.loadTrack(track, 's3');
     };
   }
+});
+
+Template.UploadWave.events({
+  'click .empty': function(e, template) {
+    template.data.wave.reset();
+  },
+
+  'click .upload': function(e, template) {
+    console.log('click upload', template);
+  },
 });
