@@ -12,6 +12,10 @@ Template.UploadWaveControls.events({
   },
 
   'click .upload': function(e, template) {
-    console.log('click upload', template);
+    uploadTrack.call(template.data.wave);
   },
 });
+
+function uploadTrack(wave) {
+  var track = wave.getTrack();
+}

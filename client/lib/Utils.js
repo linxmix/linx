@@ -1,6 +1,4 @@
 Utils = {
-  clientId_Soundcloud: '977ed530a2104a95eaa87f26fa710941',
-
   createLocalModel: function(collection, attrs) {
     attrs = attrs || {};
     attrs._local = true;

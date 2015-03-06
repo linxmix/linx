@@ -26,7 +26,7 @@ Template.SoundcloudInput.events({
 
 function onSubmit(e, template) {
   var targetUrl = template.$('input').val();
-  var clientId = Utils.clientId_Soundcloud;
+  var clientId = Config.clientId_Soundcloud;
   var onSubmit = template.data.onSubmit;
   var loading = template.loading;
   var error = template.error;

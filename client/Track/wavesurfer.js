@@ -1,5 +1,3 @@
-var echoApiKey = 'CWBME38JDGQNEJPXT';
-
 // Augment WaveSurfer Prototype
 Meteor.startup(function() {
 
