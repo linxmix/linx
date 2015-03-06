@@ -38,8 +38,26 @@ function loadFile(computation) {
   if (file) {
     var wave = this.data.wave;
     var collection = this.data.isTransition ? Transitions : Songs;
-    var newTrack = Utils.createLocalModel(collection, {title: file.name});
     wave.loadBlob(file);
-    wave.loadTrack(newTrack);
+
+    // load mp3 file tags
+    id3(file, function(err, tags) {
+      console.log("TAGS", err, tags);
+      var attrs;
+      // fallback to filename on tag parse error
+      if (err) {
+        console.error(err);
+        attrs = { title: file.name };
+      } else {
+        attrs = {
+          title: tags.title,
+          artist: tags.artist,
+          album: tags.album,
+        };
+      }
+      var newTrack = Utils.createLocalModel(collection, attrs);
+      wave.loadTrack(newTrack);
+    });
+
   }
 }
