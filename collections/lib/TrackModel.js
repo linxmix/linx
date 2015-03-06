@@ -1,9 +1,26 @@
-TrackModel = {
+TrackModel = _.extend({
   setSoundcloud: function(options) {
     console.log("set soundcloud", options);
     this.soundcloud = options;
     this.title = options.title;
     this.artist = options.user && options.user.username;
+    this.save();
+  },
+
+  loadMp3Tags: function(file) {
+    id3(file, function(err, tags) {
+      console.log("load tags", tags, file.name);
+      // fallback to filename on tag parse error
+      if (err) {
+        console.error(err);
+        this.title = file.name;
+      } else {
+        this.title = tags.title;
+        this.artist = tags.artist;
+        this.album = tags.album;
+      }
+      this.save();
+    }.bind(this));
   },
 
   getSoundcloudUrl: function() {
@@ -43,4 +60,4 @@ TrackModel = {
     throw 'getLinxType undefined';
   },
 
-}
+}, LinxModel);

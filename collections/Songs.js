@@ -4,10 +4,13 @@ SongModel = Model(Songs);
 SongModel.extend(TrackModel);
 
 SongModel.extend({
-  defaultValues: {},
+  defaultValues: {
+    linxType: 'song',
+    source: 's3',
+  },
 
   getLinxType: function() {
-    return 'songs';
+    return this.linxType;
   },
 
   getTransitionsIn: function(endTime) {

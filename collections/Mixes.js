@@ -1,6 +1,8 @@
 Mixes = new Meteor.Collection('Mixes');
 MixModel = Model(Mixes);
 
+MixModel.extend(LinxModel);
+
 MixModel.extend({
   defaultValues: {
     tracks: [],

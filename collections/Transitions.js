@@ -4,10 +4,12 @@ TransitionModel = Model(Transitions);
 TransitionModel.extend(TrackModel);
 
 TransitionModel.extend({
-  defaultValues: {},
+  defaultValues: {
+    linxType: 'transition',
+  },
 
   getLinxType: function() {
-    return 'transition';
+    return this.linxType;
   },
 
   getSongsIn: function(endTime) {
