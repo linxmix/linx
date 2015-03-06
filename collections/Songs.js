@@ -22,17 +22,30 @@ SongModel.extend({
   },
 
   getS3Url: function() {
-    var part = 'http://s3-us-west-2.amazonaws.com/linx-music/';
+    var part = 'http://s3-us-west-2.amazonaws.com/linx-music';
     // TODO: make this work for non-mp3
-    return part + 'songs/' + this._id + '.mp3';
+    return part + '/songs/' + this._id + '.mp3';
   },
 
   getStreamUrl: function(source) {
+    source = source || this.getSource();
     switch (source) {
       case 'soundcloud': return this.getSoundcloudUrl();
       case 's3': return this.getS3Url();
       default: throw 'Uknown source given to getStreamUrl: ' + source;
     }
+  },
+
+  getSource: function() {
+    if (this.soundcloud) {
+      return 'soundcloud';
+    } else {
+      return 's3';
+    }
+  },
+
+  getLinxType: function() {
+    return 'song';
   },
 
   getTransitionsIn: function(endTime) {

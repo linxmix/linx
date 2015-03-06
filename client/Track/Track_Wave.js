@@ -3,11 +3,8 @@ Template.Track_Wave.created = function() {
 
   // get or make wave
   this.wave = this.data.wave || Object.create(WaveSurfer);
-  console.log("track wave file", this.data.file);
-  this.file = this.data.file || new ReactiveVar(null);
 
   initWave.call(this);
-  this.autorun(loadFile.bind(this));
 };
 
 Template.Track_Wave.rendered = function() {
@@ -43,14 +40,6 @@ Template.Track_Wave.helpers({
 
   loaded: function() {
     return Template.instance().loaded.get();
-  },
-
-  enableDrop: function() {
-    return this.enableDrop;
-  },
-
-  file: function() {
-    return Template.instance().file;
   },
 
   wave: function() {
@@ -94,14 +83,4 @@ function initWave() {
       wave.regions.list[region.id].remove();
     }
   });
-}
-
-function loadFile(computation) {
-  var file = this.file.get();
-
-  if (file) {
-    this.data.onLoad && this.data.onLoad(this.wave, file);
-    this.wave.loadBlob(file);
-    computation.stop();
-  }
 }

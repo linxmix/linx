@@ -41,17 +41,31 @@ Meteor.startup(function() {
     return samples;
   };
 
-  WaveSurfer.loadTrack = function(track, source) {
+  WaveSurfer.loadTrack = function(track, streamUrl) {
     if (track) {
-      this.meta.set({
+      var source = track.getSource();
+      this.setMeta({
         _id: track._id,
         title: track.title,
         artist: track.artist,
         source: source,
+        linxType: track.getLinxType(),
       });
       console.log("LOAD TRACK", this.meta.get());
-      this.load(track.getStreamUrl(source));
     }
+    if (streamUrl) {
+      this.load(streamUrl);
+    }
+  };
+
+  WaveSurfer.setMeta = function(attrs) {
+    this.meta.set({
+      _id: attrs._id,
+      title: attrs.title,
+      artist: attrs.artist,
+      source: attrs.source,
+      linxType: attrs.linxType,
+    });
   };
 
   WaveSurfer.getMeta = function(attr) {
@@ -60,6 +74,18 @@ Meteor.startup(function() {
       return meta[attr];
     }
   };
+
+  WaveSurfer.getTrack = function() {
+    var trackId = this.getMeta('_id');
+    var linxType = this.getMeta('linxType');
+    console.log("getTrack", trackId, linxType);
+    if (trackId && linxType) {
+      switch (linxType) {
+        case 'song': return Songs.findOne(trackId);
+        case 'transition': return Transitions.findOne(trackId);
+      }
+    }
+  },
 
   WaveSurfer.reset = function() {
     var meta = this.meta && this.meta.get();

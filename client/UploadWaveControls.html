@@ -1,0 +1,19 @@
+<template name="UploadWaveControls">
+  <div class="ui inverted right menu UploadWaveControls">
+    <div class="inverted teal ui empty icon button">
+      <i class="trash icon"></i>
+      Reset
+    </div>
+    {{#if needsUpload}}
+      <div class="inverted orange ui upload icon button">
+        <i class="cloud upload icon"></i>
+        Upload
+      </div>
+    {{else}}
+      <div class="basic inverted disabled ui icon button">
+        <i class="check icon"></i>
+        Uploaded
+      </div>
+    {{/if}}
+  </div>
+</template>

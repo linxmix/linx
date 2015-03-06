@@ -50,7 +50,6 @@ function clearModal(e, template) {
 
 function onToggleModal() {
   var $modal = $('.mix-modal');
-  console.log("on toggle modal");
 
   if (Session.get('MixModalOpen')) {
     $modal.modal('show');

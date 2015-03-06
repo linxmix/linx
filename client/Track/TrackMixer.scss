@@ -1,15 +1,16 @@
 .TrackMixer {
-  .header {
-    position: absolute;
-    width: 100%;
-    text-align: center;
+  .ui.header {
+    margin-top: 10px;
+    // position: absolute;
+    // width: 100%;
+    // text-align: center;
 
     .content {
-      width: 100%;
+      // width: 100%;
     }
   }
 
   .sub-header {
-    text-align: center;
+    // text-align: center;
   }
 }
