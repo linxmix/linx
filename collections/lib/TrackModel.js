@@ -1,4 +1,16 @@
 TrackModel = _.extend({
+  getEchonestAnalysis: function(cb) {
+    // TODO
+  },
+
+  getEchonestProfile: function(cb) {
+    // TODO
+  },
+
+  uploadToBackend: function(cb) {
+    // TODO
+  },
+
   setSoundcloud: function(options) {
     console.log("set soundcloud", options);
     this.soundcloud = options;
@@ -19,6 +31,7 @@ TrackModel = _.extend({
         this.artist = tags.artist;
         this.album = tags.album;
       }
+      console.log("save", this);
       this.save();
     }.bind(this));
   },

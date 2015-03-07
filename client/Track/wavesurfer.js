@@ -41,15 +41,20 @@ Meteor.startup(function() {
 
   WaveSurfer.loadTrack = function(track, streamUrl) {
     if (track) {
-      var source = track.getSource();
+      var isLocal = (typeof track._local === 'boolean') && track._local;
       this.setMeta({
         _id: track._id,
+        _local: isLocal,
         title: track.title,
         artist: track.artist,
-        source: source,
-        linxType: track.getLinxType(),
+        linxType: track.linxType,
       });
-      console.log("LOAD TRACK", this.meta.get());
+      console.log("load track", track, streamUrl);
+      // set inverse relationship
+      var wave = this;
+      track.getWave = function() {
+        return wave;
+      };
     }
     if (streamUrl) {
       this.load(streamUrl);
@@ -57,11 +62,12 @@ Meteor.startup(function() {
   };
 
   WaveSurfer.setMeta = function(attrs) {
-    this.meta.set({
+    attrs = attrs || {};
+    this.meta && this.meta.set({
       _id: attrs._id,
+      _local: attrs._local,
       title: attrs.title,
       artist: attrs.artist,
-      source: attrs.source,
       linxType: attrs.linxType,
     });
   };
@@ -77,27 +83,19 @@ Meteor.startup(function() {
     var trackId = this.getMeta('_id');
     var linxType = this.getMeta('linxType');
     console.log("getTrack", trackId, linxType);
-    if (trackId && linxType) {
-      switch (linxType) {
-        case 'song': return Songs.findOne(trackId);
-        case 'transition': return Transitions.findOne(trackId);
-      }
+    if (trackId) {
+      var collection = linxType === 'song' ? Songs : Transitions;
+      return collection.findOne(trackId);
     }
   },
 
   WaveSurfer.reset = function() {
     var meta = this.meta && this.meta.get();
     if (meta) {
-      this.meta.set({});
+      this.setMeta(null);
     }
     this.empty();
-  };
-
-  // Hack to add empty event
-  var _empty = WaveSurfer.empty;
-  WaveSurfer.empty = function() {
-    _empty.apply(this, arguments);
-    this.fireEvent('empty');
+    this.fireEvent('reset');
   };
 
 });

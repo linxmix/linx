@@ -12,3 +12,11 @@ Template.SearchLinx.rendered = function() {
     onSelect: this.data.onSelect,
   });
 };
+
+Template.SearchLinx.helpers({
+  loadingClass: function() {
+    var wave = Template.instance().data.wave;
+    var waveIsLoading = wave.isLoading && wave.isLoading.get();
+    return waveIsLoading ? 'loading' : '';
+  }
+});

@@ -9,10 +9,6 @@ SongModel.extend({
     source: 's3',
   },
 
-  getLinxType: function() {
-    return this.linxType;
-  },
-
   getTransitionsIn: function(endTime) {
     // TODO
   },

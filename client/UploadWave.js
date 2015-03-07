@@ -1,7 +1,7 @@
 Template.UploadWave.created = function() {
   var file = this.data.file = new ReactiveVar(null);
 
-  this.data.wave.on('empty', function() {
+  this.data.wave.on('reset', function() {
     file.set(null);
   });
 

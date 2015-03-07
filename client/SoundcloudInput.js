@@ -1,11 +1,14 @@
 Template.SoundcloudInput.created = function() {
-  this.loading = new ReactiveVar(false);
+  this.isLoadingAjax = new ReactiveVar(false);
   this.error = new ReactiveVar(false);
 };
 
 Template.SoundcloudInput.helpers({
   loadingClass: function() {
-    return Template.instance().loading.get() ? 'loading' : '';
+    var template = Template.instance();
+    var waveIsLoading = template.data.wave.isLoading && template.data.wave.isLoading.get();
+    var isLoadingAjax = template.isLoadingAjax.get();
+    return waveIsLoading || isLoadingAjax ? 'loading' : '';
   },
 
   errorClass: function() {
@@ -28,7 +31,7 @@ function onSubmit(e, template) {
   var targetUrl = template.$('input').val();
   var clientId = Config.clientId_Soundcloud;
   var onSubmit = template.data.onSubmit;
-  var loading = template.loading;
+  var isLoadingAjax = template.isLoadingAjax;
   var error = template.error;
   console.log("onSubmit", targetUrl);
 
@@ -42,7 +45,7 @@ function onSubmit(e, template) {
   }
 
   // resolve url to get stream_url
-  loading.set(true);
+  isLoadingAjax.set(true);
   $.ajax({
     type: 'GET',
     url: 'http://api.soundcloud.com/resolve.json',
@@ -51,7 +54,7 @@ function onSubmit(e, template) {
       client_id: clientId,
     },
     success: function(response) {
-      loading.set(false);
+      isLoadingAjax.set(false);
       console.log("RESPONSE", response);
       if (!(response && response.streamable && response.stream_url)) {
         window.alert('Sorry, but SoundCloud won\'t let us steam this url', targetUrl);
@@ -60,7 +63,7 @@ function onSubmit(e, template) {
       }
     },
     error: function(response) {
-      loading.set(false);
+      isLoadingAjax.set(false);
       error.set(true);
       window.alert('404 error', response);
     }

@@ -1,9 +1,6 @@
 Template.Track_Wave.created = function() {
-  this.loaded = new ReactiveVar(false);
-
   // get or make wave
   this.wave = this.data.wave || Object.create(WaveSurfer);
-
   initWave.call(this);
 };
 
@@ -35,11 +32,11 @@ Template.Track_Wave.rendered = function() {
 
 Template.Track_Wave.helpers({
   hiddenClass: function() {
-    return Template.instance().loaded.get() ? '' : 'hidden';
+    return Template.instance().wave.isLoaded.get() ? '' : 'hidden';
   },
 
-  loaded: function() {
-    return Template.instance().loaded.get();
+  isLoaded: function() {
+    return Template.instance().wave.isLoaded.get();
   },
 
   wave: function() {
@@ -50,25 +47,27 @@ Template.Track_Wave.helpers({
 function initWave() {
   var template = this;
   var wave = this.wave;
-  wave.meta = new ReactiveVar({});
+  wave.isLoaded = new ReactiveVar(false);
+  wave.isLoading = new ReactiveVar(false);
+  wave.meta = new ReactiveVar(null);
 
   wave.on('loading', function(percent, xhr) {
-    template.loaded.set(false);
-    wave.isLoaded = false;
+    wave.isLoaded.set(false);
+    wave.isLoading.set(true);
     template.$('.progress-bar').show();
     template.$('.progress-bar .bar').css({ 'width': percent + '%' });
   });
 
   wave.on('ready', function() {
-    wave.isLoaded = true;
+    wave.isLoaded.set(true);
+    wave.isLoading.set(false);
     template.$('.progress-bar').hide();
-    template.loaded.set(true);
     template.data.onReady && template.data.onReady(wave);
   });
 
-  wave.on('empty', function() {
-    wave.isLoaded = false,
-    template.loaded.set(false);
+  wave.on('reset', function() {
+    wave.isLoaded.set(false);
+    wave.isLoading.set(false);
   });
 
   wave.on('error', function(errorMessage) {
