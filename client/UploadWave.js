@@ -36,11 +36,11 @@ Template.UploadWave.helpers({
 function loadFiles(computation) {
   var data = this.data;
   var files = data.files.get();
+  var wave = data.wave;
 
   // Load files and get mp3 data
-  if (files) {
+  if (files && wave.files !== files) {
     var file = files[0];
-    var wave = data.wave;
     wave.files = files;
     wave.loadBlob(file);
 
@@ -49,7 +49,6 @@ function loadFiles(computation) {
     });
     newTrack.loadMp3Tags(file);
     wave.loadTrack(newTrack);
-
   }
 }
 

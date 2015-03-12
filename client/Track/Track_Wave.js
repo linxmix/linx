@@ -55,6 +55,7 @@ function initWave() {
     wave.isLoading.set(true);
     template.$('.progress-bar').show();
 
+    // update progress bar
     if (percent !== lastPercent) {
       lastPercent = percent;
       var text = {};
@@ -70,10 +71,9 @@ function initWave() {
     }
   });
 
-  wave.on('uploadFinish', function(e, result) {
+  wave.on('uploadFinish', function() {
     wave.isLoading.set(false);
     template.$('.progress-bar').hide();
-    console.log("uploadFinish", result);
   });
 
   wave.on('ready', function() {

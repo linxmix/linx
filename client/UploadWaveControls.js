@@ -23,7 +23,7 @@ Template.UploadWaveControls.events({
     // upload track to backend, then analyze
     wave.uploadToBackend(function() {
       if (!wave.isAnalyzed()) {
-        wave.getEchonestAnalysis();
+        // wave.getEchonestAnalysis();
       }
     });
   },

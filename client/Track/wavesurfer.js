@@ -163,7 +163,6 @@ Meteor.startup(function() {
   WaveSurfer.getTrack = function() {
     var trackId = this.getMeta('_id');
     var linxType = this.getMeta('linxType');
-    console.log("getTrack", trackId, linxType);
     if (trackId) {
       var collection = linxType === 'song' ? Songs : Transitions;
       return collection.findOne(trackId);
