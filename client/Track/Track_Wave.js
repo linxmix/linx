@@ -5,7 +5,6 @@ Template.Track_Wave.created = function() {
 };
 
 Template.Track_Wave.rendered = function() {
-  // this.$('.wave').hide();
   this.$('.progress-bar').hide();
   this.wave.init({
     container: this.$('.wave')[0],
@@ -51,10 +50,24 @@ function initWave() {
   wave.isLoading = new ReactiveVar(false);
   wave.meta = new ReactiveVar(null);
 
-  wave.on('loading', function(percent, xhr) {
+  var lastPercent;
+  wave.on('loading', function(percent, xhr, type) {
     wave.isLoading.set(true);
     template.$('.progress-bar').show();
-    template.$('.progress-bar .bar').css({ 'width': percent + '%' });
+
+    if (percent !== lastPercent) {
+      lastPercent = percent;
+      var text = {};
+      switch (type) {
+        case 'upload': text = { active: "Uploading...", success: "Uploaded!" }; break;
+        case 'analyze': text = { active: "Analyzing...", success: "Analyzed!" }; break;
+        default: text = { active: "Loading...", success: "Decoding..." };
+      }
+      template.$('.progress-bar').progress({
+        percent: percent,
+        text: text,
+      });
+    }
   });
 
   wave.on('uploadFinish', function(e, result) {
@@ -77,7 +90,7 @@ function initWave() {
 
   wave.on('error', function(errorMessage) {
     template.$('.progress-bar').hide();
-    template.$('.progress-bar .bar').css({ 'width': 0 });
+    // template.$('.progress-bar .bar').css({ 'width': 0 });
     window.alert("Wave Load Error: ", errorMessage);
   });
 

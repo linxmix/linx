@@ -80,7 +80,7 @@ Meteor.startup(function() {
       var uploads = S3.collection.find().fetch();
       var upload = uploads[0];
       if (upload) {
-        wave.fireEvent('loading', upload.percent_uploaded);
+        wave.fireEvent('loading', upload.percent_uploaded, undefined, 'upload');
         if (upload.percent_uploaded === 100) {
           computation.stop();
         }
