@@ -1,21 +1,20 @@
 TrackModel = _.extend({
-  getEchonestAnalysis: function(cb) {
-    // TODO
+
+  isLocal: function() {
+    return (typeof this._local === 'boolean') && this._local;
   },
 
-  getEchonestProfile: function(cb) {
+  setEchonest: function(attrs) {
     // TODO
+    throw "Error: TrackModel.setEchonest unimplemented";
+    this.save();
   },
 
-  uploadToBackend: function(cb) {
-    // TODO
-  },
-
-  setSoundcloud: function(options) {
-    console.log("set soundcloud", options);
-    this.soundcloud = options;
-    this.title = options.title;
-    this.artist = options.user && options.user.username;
+  setSoundcloud: function(attrs) {
+    console.log("set soundcloud", attrs);
+    this.soundcloud = attrs;
+    this.title = attrs.title;
+    this.artist = attrs.user && attrs.user.username;
     this.save();
   },
 
@@ -49,6 +48,7 @@ TrackModel = _.extend({
   getS3Url: function() {
     var part = 'http://s3-us-west-2.amazonaws.com/linx-music';
     // TODO: make this work for non-mp3
+    // TODO: make work for songs / transitions
     return part + '/songs/' + this._id + '.mp3';
   },
 

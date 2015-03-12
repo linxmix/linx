@@ -1,5 +1,4 @@
 Template.SearchLinx.rendered = function() {
-  // TODO: debug, make reactive
   var songs = Songs.find().fetch();
   songs.forEach(function(song) {
     song.description = song.artist;

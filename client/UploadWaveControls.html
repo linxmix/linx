@@ -4,15 +4,26 @@
       <i class="trash icon"></i>
       Reset
     </div>
-    {{#if needsUpload}}
-      <div class="inverted orange ui upload icon button">
+    {{#if isLocal}}
+      <div class="inverted orange ui save icon button {{loadingClass}}">
         <i class="cloud upload icon"></i>
-        Upload
+        Save
       </div>
     {{else}}
-      <div class="basic inverted disabled ui icon button">
+      <div class="basic inverted disabled ui icon button {{loadingClass}}">
         <i class="check icon"></i>
-        Uploaded
+        Saved
+      </div>
+    {{/if}}
+    {{#if isAnalyzed}}
+      <div class="basic inverted disabled ui icon button {{loadingClass}}">
+        <i class="check icon"></i>
+        Analyzed
+      </div>
+    {{else}}
+      <div class="inverted purple ui analyze icon button {{loadingClass}}">
+        <i class="file audio outline icon"></i>
+        Analyze
       </div>
     {{/if}}
   </div>

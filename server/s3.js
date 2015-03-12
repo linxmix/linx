@@ -44,15 +44,15 @@ Meteor.methods({
     });
   },
 
-  'putArray': function (array, url) {
+  'putArray': function (array, url, onProgress) {
     this.unblock();
-    putArray(array, url, 0);
+    putArray(array, url, onProgress, 0);
   },
 
 });
 
 // put given array to the s3 server at given url
-function putArray(array, url, attempt) {
+function putArray(array, url, onProgress, attempt) {
   var buffer = new Buffer(array);
   console.log("PUTTING TO URL: "+url);
 
@@ -70,7 +70,7 @@ function putArray(array, url, attempt) {
       // reattempt on error if less than 3 attempts
       if (attempt < 3) {
         console.log(error);
-        putArray(array, url, ++attempt);
+        putArray(array, url, onProgress, ++attempt);
       } else {
         console.log("ERROR: failed putArray 3 times for url: "+url+"; giving up on PUT");
         handling = false;
@@ -95,7 +95,12 @@ function putArray(array, url, attempt) {
       fut['return']({ successFlag: true });
     });
 
+    req.on('progress', function() {
+      console.log("HELLO PROGRESS", arguments);
+    });
+
     res.resume();
   });
+
   return fut.wait();
 }

@@ -52,10 +52,14 @@ function initWave() {
   wave.meta = new ReactiveVar(null);
 
   wave.on('loading', function(percent, xhr) {
-    wave.isLoaded.set(false);
     wave.isLoading.set(true);
     template.$('.progress-bar').show();
     template.$('.progress-bar .bar').css({ 'width': percent + '%' });
+  });
+
+  wave.on('uploadFinish', function() {
+    wave.isLoading.set(false);
+    template.$('.progress-bar').hide();
   });
 
   wave.on('ready', function() {

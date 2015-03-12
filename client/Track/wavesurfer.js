@@ -39,12 +39,75 @@ Meteor.startup(function() {
     return samples;
   };
 
+  WaveSurfer.getEchonestAnalysis = function(cb) {
+    var track = this.getTrack();
+    if (!track) {
+      throw 'Error: cannot get echonest analysis of a wave without a track';
+    }
+    if (this.isLocal()) {
+      throw 'Error: cannot get echonest analysis of a local track';
+    }
+    if (this.isAnalyzed()) {
+      throw 'Error: wave is already analyzed';
+    }
+    // TODO: try to get profile, fire uploading events while going
+    //       -> upload to echo nest in multi-stage process.
+    //       -> https://github.com/linxmix/linx/issues/347
+    //       -> make sure this is idempotent
+    var streamUrl = track.getStreamUrl();
+  },
+
+  WaveSurfer.uploadToBackend = function(cb) {
+    var track = this.getTrack();
+    if (!track) {
+      throw 'Error: cannot upload a wave without a track';
+    }
+    if (!this.isLocal()) {
+      throw 'Error: cannot upload a wave that is not local';
+    }
+
+    // on completion, persist track and fire finish event
+    var wave = this;
+    function next() {
+      track.persist();
+      wave.fireEvent('uploadFinish');
+      cb && cb();
+    }
+
+    // upload to appropriate backend
+    switch (track.getSource()) {
+      case 's3': this._uploadToS3(next); break;
+      case 'soundcloud': next(); break; // already exists on SC
+      default: throw "Error: unknown track source: " + track.getSource();
+    }
+  },
+
+  WaveSurfer._uploadToS3 = function(cb) {
+    var wave = this;
+    var track = wave.getTrack();
+    var url = track.getS3Url();
+
+    function onFinish() {
+      if (cb) {
+        cb();
+      } else {
+        wave.fireEvent('uploadFinish');
+      }
+    }
+
+    function onProgress() {
+      console.log("ON PROGRESS", arguments);
+    };
+
+    console.log("uploading wave to url: " + url);
+    Meteor.call('putArray', new Uint8Array(wave.arrayBuffer), url, onProgress, onFinish);
+  },
+
   WaveSurfer.loadTrack = function(track, streamUrl) {
     if (track) {
-      var isLocal = (typeof track._local === 'boolean') && track._local;
       this.setMeta({
         _id: track._id,
-        _local: isLocal,
+        isLocal: track.isLocal(),
         title: track.title,
         artist: track.artist,
         linxType: track.linxType,
@@ -61,13 +124,24 @@ Meteor.startup(function() {
     }
   };
 
+  WaveSurfer.isLocal = function() {
+    var isLocal = this.getMeta('isLocal');
+    return (typeof isLocal === 'boolean') && isLocal;
+  },
+
+  WaveSurfer.isAnalyzed = function() {
+    return !!this.getMeta('echonestAnalysis');
+  },
+
+  // All reactive metadata for waves
   WaveSurfer.setMeta = function(attrs) {
     attrs = attrs || {};
     this.meta && this.meta.set({
       _id: attrs._id,
-      _local: attrs._local,
+      isLocal: attrs.isLocal,
       title: attrs.title,
       artist: attrs.artist,
+      echonestAnalysis: attrs.echonestAnalysis,
       linxType: attrs.linxType,
     });
   };
