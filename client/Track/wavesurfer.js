@@ -1,18 +1,6 @@
 // Augment WaveSurfer Prototype
 Meteor.startup(function() {
 
-  // hack to access the ArrayBuffer of audio data as it's read
-  WaveSurfer.loadArrayBuffer = function(arraybuffer) {
-    var my = this;
-    this.backend.decodeArrayBuffer(arraybuffer, function (data) {
-      my.loadDecodedBuffer(data);
-      my.arrayBuffer = data;
-    }, function () {
-      my.fireEvent('error', 'Error decoding audiobuffer');
-    });
-  };
-  // /hack
-
   WaveSurfer.getSampleRegion = function(regionInfo) {
     var startRegion = regionInfo.start || 0;
     var endRegion = regionInfo.end || this.backend.buffer.length;
@@ -87,20 +75,30 @@ Meteor.startup(function() {
     var track = wave.getTrack();
     var url = track.getS3Url();
 
-    function onFinish() {
-      if (cb) {
-        cb();
-      } else {
-        wave.fireEvent('uploadFinish');
+    // track progress
+    Tracker.autorun(function(computation) {
+      var uploads = S3.collection.find().fetch();
+      var upload = uploads[0];
+      if (upload) {
+        wave.fireEvent('loading', upload.percent_uploaded);
+        if (upload.percent_uploaded === 100) {
+          computation.stop();
+        }
       }
-    }
+    });
 
-    function onProgress() {
-      console.log("ON PROGRESS", arguments);
-    };
-
-    console.log("uploading wave to url: " + url);
-    Meteor.call('putArray', new Uint8Array(wave.arrayBuffer), url, onProgress, onFinish);
+    console.log("uploading wave", this.getMeta('name'));
+    S3.upload(wave.files, track.getS3Prefix(), function(error, result) {
+      if (error) {
+        throw error;
+      }
+      console.log("RESULT", result);
+      var s3FileName = result.relative_url.split('/')[1];
+      wave.setTrackMeta({ s3FileName: s3FileName });
+      console.log("fileName", s3FileName, "track", wave.getTrack());
+      cb && cb(error, result);
+      wave.fireEvent('uploadFinish', error, result);
+    });
   },
 
   WaveSurfer.loadTrack = function(track, streamUrl) {
@@ -144,6 +142,15 @@ Meteor.startup(function() {
       echonestAnalysis: attrs.echonestAnalysis,
       linxType: attrs.linxType,
     });
+  };
+
+  WaveSurfer.setTrackMeta = function(attrs) {
+    attrs = attrs || {};
+    var track = this.getTrack();
+    if (track) {
+      _.extend(track, attrs);
+      track.save();
+    }
   };
 
   WaveSurfer.getMeta = function(attr) {

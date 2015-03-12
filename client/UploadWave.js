@@ -1,16 +1,16 @@
 Template.UploadWave.created = function() {
-  var file = this.data.file = new ReactiveVar(null);
+  var files = this.data.files = new ReactiveVar(null);
 
   this.data.wave.on('reset', function() {
-    file.set(null);
+    files.set(null);
   });
 
-  this.autorun(loadFile.bind(this));
+  this.autorun(loadFiles.bind(this));
 };
 
 Template.UploadWave.helpers({
-  file: function() {
-    return Template.instance().data.file;
+  files: function() {
+    return Template.instance().data.files;
   },
 
   onSubmitSoundcloud: function() {
@@ -33,13 +33,15 @@ Template.UploadWave.helpers({
   }
 });
 
-function loadFile(computation) {
+function loadFiles(computation) {
   var data = this.data;
-  var file = data.file.get();
+  var files = data.files.get();
 
-  // Load file and get mp3 data
-  if (file) {
+  // Load files and get mp3 data
+  if (files) {
+    var file = files[0];
     var wave = data.wave;
+    wave.files = files;
     wave.loadBlob(file);
 
     var newTrack = makeNewTrack({

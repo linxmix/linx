@@ -57,9 +57,10 @@ function initWave() {
     template.$('.progress-bar .bar').css({ 'width': percent + '%' });
   });
 
-  wave.on('uploadFinish', function() {
+  wave.on('uploadFinish', function(e, result) {
     wave.isLoading.set(false);
     template.$('.progress-bar').hide();
+    console.log("uploadFinish", result);
   });
 
   wave.on('ready', function() {

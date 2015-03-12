@@ -27,9 +27,9 @@ Template.Drop.events({
     e.preventDefault();
     template.dragover.set(false);
 
-    // load file
+    // load files
     if (e.originalEvent.dataTransfer.files.length) {
-      template.data.file.set(e.originalEvent.dataTransfer.files[0]);
+      template.data.files.set(e.originalEvent.dataTransfer.files);
     }
   }
 });

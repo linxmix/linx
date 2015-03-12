@@ -21,12 +21,11 @@ TrackModel = _.extend({
   loadMp3Tags: function(file) {
     id3(file, function(err, tags) {
       console.log("load tags", tags, file.name);
-      // fallback to filename on tag parse error
       if (err) {
         console.error(err);
         this.title = file.name;
       } else {
-        this.title = tags.title;
+        this.title = tags.title || file.name;
         this.artist = tags.artist;
         this.album = tags.album;
       }
@@ -48,8 +47,7 @@ TrackModel = _.extend({
   getS3Url: function() {
     var part = 'http://s3-us-west-2.amazonaws.com/linx-music';
     // TODO: make this work for non-mp3
-    // TODO: make work for songs / transitions
-    return part + '/songs/' + this._id + '.mp3';
+    return part + this.getS3Prefix() + this._id + '.mp3';
   },
 
   getStreamUrl: function(source) {
@@ -71,6 +69,10 @@ TrackModel = _.extend({
 
   getLinxType: function() {
     throw 'getLinxType undefined';
+  },
+
+  getS3Prefix: function() {
+    return this.getLinxType() === 'song' ? '/songs/' : '/transitions/';
   },
 
 }, LinxModel);

@@ -1,11 +1,12 @@
+S3.config = {
+  key: 'AKIAJXXTJVFNQUYJRS7Q',
+  secret: Assets.getText('s3key.txt'),
+  region: 'us-west-2', // NOTE: this must be changed when the bucket goes US-Standard!
+  bucket: 'linx-music',
+};
+
 Meteor.startup(function () {
   Future = Npm.require('fibers/future');
-  s3Client = Knox.createClient({
-    region: 'us-west-2', // NOTE: this must be changed when the bucket goes US-Standard!
-    key: 'AKIAJXXTJVFNQUYJRS7Q',
-    secret: Assets.getText('s3key.txt'),
-    bucket: 'linx-music',
-  });
 });
 
 
