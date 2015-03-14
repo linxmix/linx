@@ -14,13 +14,18 @@ Template.SearchLinx.rendered = function() {
 
     // Transitions
     } else {
-      searchFields = ['inSongTitle', 'outSongTitle'];
+      searchFields = ['title'];
       source = Transitions.find().fetch(searchParams);
       source.forEach(function(transition) {
+        // TODO: move into transition.getTitle()?
         var inSong = transition.getInSong();
-        transition.title = transition.inSongTitle = inSong && inSong.title;
+        var inSongTitle = inSong && inSong.title;
         var outSong = transition.getOutSong();
-        transition.description = transition.outSongTitle = outSong && outSong.title;
+        var outSongTitle = outSong && outSong.title;
+        transition.title = inSongTitle + ' TO ' + outSongTitle;
+        if (transition.hasIssue) {
+          transition.description = transition.hasIssue;
+        }
       });
     }
 

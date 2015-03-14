@@ -118,12 +118,12 @@ Meteor.startup(function() {
   WaveSurfer.persistTrack = withErrorHandling(function() {
     var track = this.getTrack();
     track.persist();
-    this.refreshTrack(track);
+    this.loadTrack(track);
     return track;
   }, 'persistTrack');
 
-  WaveSurfer.refreshTrack = withErrorHandling(function(track) {
-    this.loadTrack(track || this.getTrack());
+  WaveSurfer.refreshTrack = withErrorHandling(function() {
+    this.loadTrack(this.getTrack().refresh());
   }, 'refreshTrack');
   //
   // /Database Updates
@@ -132,6 +132,7 @@ Meteor.startup(function() {
   WaveSurfer.loadTrack = withErrorHandling(function(track, streamUrl) {
     console.log("load track", track, streamUrl);
     if (track) {
+      track.refresh();
       this._setMeta({
         _id: track._id,
         isLocal: track.isLocal(),
@@ -161,7 +162,7 @@ Meteor.startup(function() {
   WaveSurfer.reset = withErrorHandling(function() {
     var meta = this.meta && this.meta.get();
     if (meta) {
-      this._setMeta(null);
+      this.meta.set(null);
     }
     this.empty();
     this.fireEvent('reset');
@@ -219,14 +220,14 @@ Meteor.startup(function() {
         function onSuccess(response) {
           Meteor.clearInterval(loadingInterval);
           wave.fireEvent('uploadFinish');
-          console.log("ANALYSIS SUCCESS", response);
+          wave._setMeta({ echonestAnalysis: response });
           cb && cb();
         }
 
         // attempt 5 times with 3 seconds between each.
         var count = 0;
         function attempt() {
-          loadingInterval = wave.setLoadingInterval('analyze', undefined, 5000);
+          loadingInterval = wave.setLoadingInterval('analyze', undefined, 3000);
           console.log("fetching echonest analysis: ", "attempt: " + count, track);
 
           $.ajax({

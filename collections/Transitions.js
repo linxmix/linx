@@ -6,7 +6,6 @@ TransitionModel.extend(TrackModel);
 TransitionModel.extend({
   defaultValues: {
     linxType: 'transition',
-    hasIssue: 'incomplete',
   },
 
   getInSong: function() {

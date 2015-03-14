@@ -64,6 +64,12 @@ function loadFiles(computation) {
 // TODO: move creation logic to wavesurfer.js
 function makeNewTrack(attrs) {
   console.log("makeNewTrack", attrs);
-  var collection = attrs.linxType === 'transition' ? Transitions : Songs;
+  var collection;
+  if (attrs.linxType === 'transition') {
+    collection = Transitions;
+    attrs.hasIssue = 'incomplete';
+  } else {
+    collection = Songs;
+  }
   return Utils.createLocalModel(collection, attrs);
 }
