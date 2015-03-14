@@ -1,0 +1,12 @@
+{
+  "predef": {
+    "Meteor": true,
+    "Template": true,
+    "Tracker": true,
+    "WaveSurfer": true,
+    "id3": true,
+    "Config": true,
+    "Utils": true,
+    "S3": true
+  }
+}
