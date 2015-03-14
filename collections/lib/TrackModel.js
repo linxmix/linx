@@ -4,36 +4,6 @@ TrackModel = _.extend({
     return (typeof this._local === 'boolean') && this._local;
   },
 
-  setEchonest: function(attrs) {
-    // TODO
-    throw "Error: TrackModel.setEchonest unimplemented";
-    this.save();
-  },
-
-  setSoundcloud: function(attrs) {
-    console.log("set soundcloud", attrs);
-    this.soundcloud = attrs;
-    this.title = attrs.title;
-    this.artist = attrs.user && attrs.user.username;
-    this.save();
-  },
-
-  loadMp3Tags: function(file) {
-    id3(file, function(err, tags) {
-      console.log("load tags", tags, file.name);
-      if (err) {
-        console.error(err);
-        this.title = file.name;
-      } else {
-        this.title = tags.title || file.name;
-        this.artist = tags.artist;
-        this.album = tags.album;
-      }
-      console.log("save", this);
-      this.save();
-    }.bind(this));
-  },
-
   getSoundcloudUrl: function() {
     var soundcloud = this.soundcloud;
     if (soundcloud && soundcloud.stream_url) {
@@ -68,7 +38,7 @@ TrackModel = _.extend({
   },
 
   getLinxType: function() {
-    throw 'getLinxType undefined';
+    return this.linxType;
   },
 
   getS3Prefix: function() {

@@ -1,23 +1,23 @@
 LinxModel = {
-  // make persist not change id
-  persist: function() {
-    this.db().remove(this._id);
-    delete this._local;
-    // delete this._id;
-    this.save();
-  },
 
-  // refresh wave on model refresh
-  refresh: function(){
+  // fix StupidModel bug
+  refresh: function() {
     this.extend(this.getMongoAttributes(this.db().findOne(this._id)));
-    if (this.getWave) {
-      this.getWave().loadTrack(this);
-    }
   },
 
   // fix StupidModel bug
-  getMongoAttributes: function() {
-    // TODO: do this
-    console.log('getMongoAttributes');
+  getMongoAttributes: function(includeId) {
+    var mongoValues = {};
+    for(var prop in this) {
+      if (this.hasOwnProperty(prop) && this.isMongoAttribute(prop)) {
+        mongoValues[prop] = this[prop];
+      }
+    }
+
+    if (includeId) {
+      mongoValues._id = this._id;
+    }
+
+    return mongoValues;
   }
 };

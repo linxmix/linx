@@ -20,8 +20,8 @@ Template.UploadWave.helpers({
       var newTrack = makeNewTrack({
         linxType: data.isTransition ? 'transition' : 'song'
       });
-      newTrack.setSoundcloud(soundcloudAttrs);
-      data.wave.loadTrack(newTrack, newTrack.getStreamUrl());
+      data.wave.loadTrack(newTrack);
+      data.wave.setSoundcloud(soundcloudAttrs);
     };
   },
 
@@ -47,8 +47,8 @@ function loadFiles(computation) {
     var newTrack = makeNewTrack({
       linxType: data.isTransition ? 'transition' : 'song'
     });
-    newTrack.loadMp3Tags(file);
     wave.loadTrack(newTrack);
+    wave.loadMp3Tags(file);
   }
 }
 

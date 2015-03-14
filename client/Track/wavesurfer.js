@@ -1,6 +1,59 @@
 // Augment WaveSurfer Prototype
 Meteor.startup(function() {
 
+  //
+  // Database Updates
+  //
+  WaveSurfer.setEchonest = function(attrs) {
+    // TODO
+    throw "Error: WaveSurfer.setEchonest unimplemented";
+    this.saveTrack(attrs);
+  },
+
+  WaveSurfer.setSoundcloud = function(attrs) {
+    var newAttrs = {};
+    console.log("set soundcloud", attrs);
+    newAttrs.soundcloud = attrs;
+    newAttrs.title = attrs.title;
+    newAttrs.artist = attrs.user && attrs.user.username;
+    this.saveTrack(newAttrs);
+    this.load(this.getTrack().getSoundcloudUrl());
+  },
+
+  WaveSurfer.loadMp3Tags = function(file) {
+    id3(file, function(err, tags) {
+      console.log("load tags", tags, file.name);
+      var newAttrs = {};
+      if (err) {
+        console.error(err);
+        newAttrs.title = file.name;
+      } else {
+        newAttrs.title = tags.title || file.name;
+        newAttrs.artist = tags.artist;
+        newAttrs.album = tags.album;
+        newAttrs.id3Tags = tags;
+      }
+      this.saveTrack(newAttrs);
+    }.bind(this));
+  },
+
+  WaveSurfer.saveTrack = function(attrs) {
+    var track = this.getTrack();
+    track._upsert(attrs);
+    this.loadTrack(track);
+    return track;
+  },
+
+  WaveSurfer.persistTrack = function() {
+    var track = this.getTrack();
+    track.persist();
+    this.loadTrack(track);
+    return track;
+  },
+  //
+  // /Database Updates
+  //
+
   WaveSurfer.getSampleRegion = function(regionInfo) {
     var startRegion = regionInfo.start || 0;
     var endRegion = regionInfo.end || this.backend.buffer.length;
@@ -57,7 +110,7 @@ Meteor.startup(function() {
     // on completion, persist track and fire finish event
     var wave = this;
     function next() {
-      track.persist();
+      wave.persistTrack();
       wave.fireEvent('uploadFinish');
       cb && cb();
     }
@@ -73,7 +126,6 @@ Meteor.startup(function() {
   WaveSurfer._uploadToS3 = function(cb) {
     var wave = this;
     var track = wave.getTrack();
-    var url = track.getS3Url();
 
     // track progress
     Tracker.autorun(function(computation) {
@@ -87,35 +139,29 @@ Meteor.startup(function() {
       }
     });
 
-    console.log("uploading wave", this.getMeta('name'));
+    console.log("uploading wave", this.getMeta('title'));
     S3.upload(wave.files, track.getS3Prefix(), function(error, result) {
       if (error) {
         throw error;
       }
       console.log("RESULT", result);
       var s3FileName = result.relative_url.split('/')[1];
-      wave.setTrackMeta({ s3FileName: s3FileName });
-      console.log("fileName", s3FileName, "track", wave.getTrack());
+      wave.saveTrack({ s3FileName: s3FileName });
+      wave.fireEvent('uploadFinish');
       cb && cb(error, result);
-      wave.fireEvent('uploadFinish', error, result);
     });
   },
 
   WaveSurfer.loadTrack = function(track, streamUrl) {
+    console.log("load track", track, streamUrl);
     if (track) {
-      this.setMeta({
+      this._setMeta({
         _id: track._id,
         isLocal: track.isLocal(),
         title: track.title,
         artist: track.artist,
         linxType: track.linxType,
       });
-      console.log("load track", track, streamUrl);
-      // set inverse relationship
-      var wave = this;
-      track.getWave = function() {
-        return wave;
-      };
     }
     if (streamUrl) {
       this.load(streamUrl);
@@ -132,7 +178,7 @@ Meteor.startup(function() {
   },
 
   // All reactive metadata for waves
-  WaveSurfer.setMeta = function(attrs) {
+  WaveSurfer._setMeta = function(attrs) {
     attrs = attrs || {};
     this.meta && this.meta.set({
       _id: attrs._id,
@@ -144,15 +190,6 @@ Meteor.startup(function() {
     });
   };
 
-  WaveSurfer.setTrackMeta = function(attrs) {
-    attrs = attrs || {};
-    var track = this.getTrack();
-    if (track) {
-      _.extend(track, attrs);
-      track.save();
-    }
-  };
-
   WaveSurfer.getMeta = function(attr) {
     var meta = this.meta && this.meta.get();
     if (meta) {
@@ -160,6 +197,7 @@ Meteor.startup(function() {
     }
   };
 
+  // Get a carbon copy of the track
   WaveSurfer.getTrack = function() {
     var trackId = this.getMeta('_id');
     var linxType = this.getMeta('linxType');
@@ -172,7 +210,7 @@ Meteor.startup(function() {
   WaveSurfer.reset = function() {
     var meta = this.meta && this.meta.get();
     if (meta) {
-      this.setMeta(null);
+      this._setMeta(null);
     }
     this.empty();
     this.fireEvent('reset');
