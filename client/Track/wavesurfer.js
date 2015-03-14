@@ -255,6 +255,7 @@ Meteor.startup(function() {
       $.ajax({
         type: "GET",
         url: 'http://developer.echonest.com/api/v4/track/profile',
+        cache: false, // do not cache so we get a fresh analysis_url
         data: {
           api_key: Config.apiKey_Echonest,
           bucket: 'audio_summary',

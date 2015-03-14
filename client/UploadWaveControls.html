@@ -9,22 +9,26 @@
         <i class="cloud upload icon"></i>
         Save
       </div>
+      <div class="basic inverted disabled ui icon button">
+        <i class="{{analyzeIconClass}}"></i>
+        {{analyzeButtonText}}
+      </div>
     {{else}}
-      <div class="basic inverted disabled ui icon button {{loadingClass}}">
+      <div class="basic inverted disabled ui icon button">
         <i class="check icon"></i>
         Saved
       </div>
-    {{/if}}
-    {{#if isAnalyzed}}
-      <div class="basic inverted disabled ui icon button {{loadingClass}}">
-        <i class="check icon"></i>
-        Analyzed
-      </div>
-    {{else}}
-      <div class="inverted purple ui analyze icon button {{loadingClass}}">
-        <i class="file audio outline icon"></i>
-        Analyze
-      </div>
+      {{#if isAnalyzed}}
+        <div class="basic inverted disabled ui icon button">
+          <i class="{{analyzeIconClass}}"></i>
+          {{analyzeButtonText}}
+        </div>
+      {{else}}
+        <div class="inverted purple ui analyze icon button {{loadingClass}}">
+          <i class="{{analyzeIconClass}}"></i>
+          {{analyzeButtonText}}
+        </div>
+      {{/if}}
     {{/if}}
   </div>
 </template>
