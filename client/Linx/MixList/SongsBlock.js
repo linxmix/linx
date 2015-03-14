@@ -55,12 +55,12 @@ Template.SongsBlock.helpers({
     // TODO
   },
 
-  numSongsOut: function() {
-    return this.getSongsOut().length;
+  numOutSongs: function() {
+    return this.getOutSongs().length;
   },
 
   isOne: function() {
-    return this.getSongsOut().length === 1;
+    return this.getOutSongs().length === 1;
   }
 });
 

@@ -26,6 +26,12 @@ Template.UploadWave.helpers({
     };
   },
 
+  linxSearchParams: function() {
+    return {};
+    // TODO: if isTransition, depend on startSongId and endSongId
+    // TODO: checkbox to search for issues?
+  },
+
   onSelectLinx: function() {
     // TODO: move creation logic to wavesurfer.js
     var template = Template.instance();
@@ -55,6 +61,7 @@ function loadFiles(computation) {
   }
 }
 
+// TODO: move creation logic to wavesurfer.js
 function makeNewTrack(attrs) {
   console.log("makeNewTrack", attrs);
   var collection = attrs.linxType === 'transition' ? Transitions : Songs;

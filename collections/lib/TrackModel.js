@@ -1,4 +1,7 @@
 TrackModel = _.extend({
+  defaultValues: {
+    hasIssue: false,
+  },
 
   isLocal: function() {
     return (typeof this._local === 'boolean') && this._local;

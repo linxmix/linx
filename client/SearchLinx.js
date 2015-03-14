@@ -1,15 +1,36 @@
 Template.SearchLinx.rendered = function() {
-  var songs = Songs.find().fetch();
-  songs.forEach(function(song) {
-    song.description = song.artist;
-  });
-  this.$('.search').search({
-    source: songs,
-    searchFields: [
-      'title', 'artist'
-    ],
-    onSelect: this.data.onSelect,
-  });
+
+  Tracker.autorun(function() {
+    var searchParams = this.data.searchParams || {};
+    var source, searchFields;
+
+    // Songs
+    if (!this.data.isTransition) {
+      searchFields = ['title', 'artist'];
+      source = Songs.find().fetch(searchParams);
+      source.forEach(function(song) {
+        song.description = song.artist;
+      });
+
+    // Transitions
+    } else {
+      searchFields = ['inSongTitle', 'outSongTitle'];
+      source = Transitions.find().fetch(searchParams);
+      source.forEach(function(transition) {
+        var inSong = transition.getInSong();
+        transition.title = transition.inSongTitle = inSong && inSong.title;
+        var outSong = transition.getOutSong();
+        transition.description = transition.outSongTitle = outSong && outSong.title;
+      });
+    }
+
+    // setup semantic search module
+    this.$('.search').search({
+      source: source,
+      searchFields: searchFields,
+      onSelect: this.data.onSelect,
+    });
+  }.bind(this));
 };
 
 Template.SearchLinx.helpers({

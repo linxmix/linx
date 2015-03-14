@@ -214,8 +214,7 @@ Meteor.startup(function() {
       // fetch profile before analyzing
       this.fetchEchonestProfile(function() {
         var track = wave.getTrack();
-        console.log("fetching echonest analysis", track);
-        var loadingInterval = wave.setLoadingInterval('analyze', undefined, 5000);
+        var loadingInterval;
 
         function onSuccess(response) {
           Meteor.clearInterval(loadingInterval);
@@ -224,15 +223,29 @@ Meteor.startup(function() {
           cb && cb();
         }
 
-        $.ajax({
-          type: "GET",
-          url: track.echonest.audio_summary.analysis_url,
-          success: onSuccess,
-          error: function(xhr) {
-            Meteor.clearInterval(loadingInterval);
-            wave.fireEvent('error', 'echonest analysis error: ' + xhr.responseText);
-          },
-        });
+        // attempt 5 times with 3 seconds between each.
+        var count = 0;
+        function attempt() {
+          loadingInterval = wave.setLoadingInterval('analyze', undefined, 5000);
+          console.log("fetching echonest analysis: ", "attempt: " + count, track);
+
+          $.ajax({
+            type: "GET",
+            url: track.echonest.audio_summary.analysis_url,
+            success: onSuccess,
+            error: function(xhr) {
+              Meteor.clearInterval(loadingInterval);
+              // retry on error
+              if (count++ <= 5) {
+                Meteor.setTimeout(attempt, 3000);
+              } else {
+                wave.fireEvent('error', 'echonest analysis error: ' + xhr.responseText);
+              }
+            },
+          });
+        }
+
+        attempt();
       });
     }
   }, 'fetchEchonestAnalysis');

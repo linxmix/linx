@@ -6,17 +6,26 @@ TransitionModel.extend(TrackModel);
 TransitionModel.extend({
   defaultValues: {
     linxType: 'transition',
+    hasIssue: 'incomplete',
+  },
+
+  getInSong: function() {
+    return Songs.findOne(this.inId);
+  },
+
+  getOutSong: function() {
+    return Songs.findOne(this.outId);
   },
 
   getLinxType: function() {
     return this.linxType;
   },
 
-  getSongsIn: function(endTime) {
+  getInSongs: function(endTime) {
     // TODO
   },
 
-  getSongsOut: function(startTime) {
+  getOutSongs: function(startTime) {
     // TODO
   }
 });

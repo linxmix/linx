@@ -7,7 +7,7 @@
       <!-- when track is not loaded -->
       <div class="ui grid">
         <div class="four wide column">
-          {{> SearchLinx wave=wave onSelect=onSelectLinx}}
+          {{> SearchLinx wave=wave onSelect=onSelectLinx isTransition=isTransition searchParams=linxSearchParams}}
         </div>
         <div class="eight wide column">
           {{> Drop files=files}}
