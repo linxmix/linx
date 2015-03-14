@@ -38,6 +38,7 @@ TrackModel = _.extend({
   },
 
   getLinxType: function() {
+    if (!this.linxType) { throw 'Error: track has no linxType'; }
     return this.linxType;
   },
 

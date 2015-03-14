@@ -61,6 +61,7 @@ function initWave() {
       var text = {};
       switch (type) {
         case 'upload': text = { active: "Uploading...", success: "Uploaded!" }; break;
+        case 'profile': text = { active: "Getting Profile...", success: "Got Profile!" }; break;
         case 'analyze': text = { active: "Analyzing...", success: "Analyzed!" }; break;
         default: text = { active: "Loading...", success: "Decoding..." };
       }
@@ -90,7 +91,7 @@ function initWave() {
 
   wave.on('error', function(errorMessage) {
     template.$('.progress-bar').hide();
-    // template.$('.progress-bar .bar').css({ 'width': 0 });
+    wave.isLoading.set(false);
     window.alert("Wave Load Error: ", errorMessage);
   });
 

@@ -40,15 +40,19 @@ Meteor.startup(function() {
   WaveSurfer.saveTrack = function(attrs) {
     var track = this.getTrack();
     track._upsert(attrs);
-    this.loadTrack(track);
+    this.refreshTrack();
     return track;
   },
 
   WaveSurfer.persistTrack = function() {
     var track = this.getTrack();
     track.persist();
-    this.loadTrack(track);
+    this.refreshTrack(track);
     return track;
+  },
+
+  WaveSurfer.refreshTrack = function(track) {
+    this.loadTrack(track || this.getTrack());
   },
   //
   // /Database Updates
@@ -80,7 +84,10 @@ Meteor.startup(function() {
     return samples;
   };
 
-  WaveSurfer.getEchonestAnalysis = function(cb) {
+  //
+  // Network Calls
+  //
+  WaveSurfer.fetchEchonestAnalysis = function(cb) {
     var track = this.getTrack();
     if (!track) {
       throw 'Error: cannot get echonest analysis of a wave without a track';
@@ -96,6 +103,50 @@ Meteor.startup(function() {
     //       -> https://github.com/linxmix/linx/issues/347
     //       -> make sure this is idempotent
     var streamUrl = track.getStreamUrl();
+    console.log("getting Echonest Analysis", streamUrl);
+
+    // TODO: check if already have analysis
+    this.fetchEchonestProfile(function() {
+      // TODO: continue
+    });
+
+
+  },
+
+  WaveSurfer.fetchEchonestProfile = function(cb) {
+    var track = this.getTrack();
+    if (!(track && track.getStreamUrl())) {
+      throw 'Error: cannot get echonest profile of a wave without a track';
+    }
+    console.log("getting Echonest Profile");
+
+    var streamUrl = track.getStreamUrl();
+    // TODO: implement alreadyHave;
+    if (!'alreadyHave') {
+      cb && cb();
+    } else {
+
+      var wave = this;
+      // TODO: set interval to call loading events
+      wave.fireEvent('loading', 0, undefined, 'profile');
+      $.ajax({
+        type: "POST",
+        url: 'http://developer.echonest.com/api/v4/track/upload',
+        data: {
+          api_key: Config.apiKey_Echonest,
+          url: streamUrl
+        },
+        success: function(response) {
+          wave.fireEvent('uploadFinish');
+          wave.setEchonest(response);
+          cb && cb();
+        },
+        error: function(xhr) {
+          wave.fireEvent('error', 'echonest upload error: ' + xhr.responseText);
+        },
+      });
+
+    }
   },
 
   WaveSurfer.uploadToBackend = function(cb) {
@@ -151,6 +202,9 @@ Meteor.startup(function() {
       cb && cb(error, result);
     });
   },
+  //
+  // /Network Calls
+  //
 
   WaveSurfer.loadTrack = function(track, streamUrl) {
     console.log("load track", track, streamUrl);
@@ -168,15 +222,6 @@ Meteor.startup(function() {
     }
   };
 
-  WaveSurfer.isLocal = function() {
-    var isLocal = this.getMeta('isLocal');
-    return (typeof isLocal === 'boolean') && isLocal;
-  },
-
-  WaveSurfer.isAnalyzed = function() {
-    return !!this.getMeta('echonestAnalysis');
-  },
-
   // All reactive metadata for waves
   WaveSurfer._setMeta = function(attrs) {
     attrs = attrs || {};
@@ -188,6 +233,27 @@ Meteor.startup(function() {
       echonestAnalysis: attrs.echonestAnalysis,
       linxType: attrs.linxType,
     });
+  };
+
+  WaveSurfer.reset = function() {
+    var meta = this.meta && this.meta.get();
+    if (meta) {
+      this._setMeta(null);
+    }
+    this.empty();
+    this.fireEvent('reset');
+  };
+
+  //
+  // Reactive functions
+  //
+  WaveSurfer.isLocal = function() {
+    var isLocal = this.getMeta('isLocal');
+    return (typeof isLocal === 'boolean') && isLocal;
+  };
+
+  WaveSurfer.isAnalyzed = function() {
+    return !!this.getMeta('echonestAnalysis');
   };
 
   WaveSurfer.getMeta = function(attr) {
@@ -205,15 +271,9 @@ Meteor.startup(function() {
       var collection = linxType === 'song' ? Songs : Transitions;
       return collection.findOne(trackId);
     }
-  },
-
-  WaveSurfer.reset = function() {
-    var meta = this.meta && this.meta.get();
-    if (meta) {
-      this._setMeta(null);
-    }
-    this.empty();
-    this.fireEvent('reset');
   };
+  //
+  // /Reactive Functions
+  //
 
 });

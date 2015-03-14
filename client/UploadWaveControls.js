@@ -23,7 +23,7 @@ Template.UploadWaveControls.events({
     // upload track to backend, then analyze
     wave.uploadToBackend(function() {
       if (!wave.isAnalyzed()) {
-        // wave.getEchonestAnalysis();
+        wave.fetchEchonestAnalysis();
       }
     });
   },
@@ -33,10 +33,10 @@ Template.UploadWaveControls.events({
     if (wave.isLocal()) {
       // if wave is local, upload to backend, then analyze
       wave.uploadToBackend(function() {
-        wave.getEchonestAnalysis();
+        wave.fetchEchonestAnalysis();
       });
     } else {
-      wave.getEchonestAnalysis();
+      wave.fetchEchonestAnalysis();
     }
   }
 });

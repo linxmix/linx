@@ -14,6 +14,7 @@ Template.UploadWave.helpers({
   },
 
   onSubmitSoundcloud: function() {
+    // TODO: move creation logic to wavesurfer.js
     var data = Template.instance().data;
     // create new track with given soundcloudAttrs
     return function(soundcloudAttrs) {
@@ -26,6 +27,7 @@ Template.UploadWave.helpers({
   },
 
   onSelectLinx: function() {
+    // TODO: move creation logic to wavesurfer.js
     var template = Template.instance();
     return function(track, results) {
       template.data.wave.loadTrack(track, track.getStreamUrl());
@@ -44,6 +46,7 @@ function loadFiles(computation) {
     wave.files = files;
     wave.loadBlob(file);
 
+    // TODO: move creation logic to wavesurfer.js
     var newTrack = makeNewTrack({
       linxType: data.isTransition ? 'transition' : 'song'
     });
