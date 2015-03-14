@@ -1,4 +1,5 @@
 Session.setDefault('queueBufferLength', 2);
+Session.setDefault('debug', false);
 
 Session.set('editMix', undefined);
 Session.set('editMixInfo', undefined);

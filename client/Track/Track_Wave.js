@@ -92,7 +92,7 @@ function initWave() {
   wave.on('error', function(errorMessage) {
     template.$('.progress-bar').hide();
     wave.isLoading.set(false);
-    window.alert("Wave Load Error: ", errorMessage);
+    window.alert("Wave Load Error: " + (errorMessage || 'unknown error'));
   });
 
   wave.on('region-created', function(region) {
