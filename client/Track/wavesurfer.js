@@ -1,7 +1,6 @@
 // Augment WaveSurfer Prototype
 Meteor.startup(function() {
 
-  var lastError;
   function withErrorHandling(fn, name) {
     return function() {
       try {
@@ -10,14 +9,24 @@ Meteor.startup(function() {
         }
         return fn.apply(this, arguments);
       } catch (error) {
-        if (error !== lastError) {
-          lastError = error;
-          this.fireEvent('error', error && error.message || error);
-          throw error;
-        }
+        console.error(error.stack);
+        this.fireEvent('error', error && error.message || error);
       }
     };
   }
+
+  WaveSurfer.setLoadingInterval = withErrorHandling(function(type, xhr, time) {
+    var percent = 0;
+    var wave = this;
+    var loadingInterval = Meteor.setInterval(function() {
+      wave.fireEvent('loading', percent, undefined, type);
+      if (percent === 100) {
+        Meteor.clearInterval(loadingInterval);
+      }
+      percent += 1;
+    }, time / 100);
+    return loadingInterval;
+  }, 'setLoadingInterval');
 
   WaveSurfer.getSampleRegion = withErrorHandling(function(regionInfo) {
     var startRegion = regionInfo.start || 0;
@@ -53,7 +62,7 @@ Meteor.startup(function() {
   WaveSurfer.getCrossloadTime = withErrorHandling(function() {
     var bufferLength = this.getBufferLength();
     var SC_FACTOR = 1 / 3904; // milliseconds per buffer element
-    var S3_FACTOR = 1 / 3904; // TODO
+    var S3_FACTOR = 1 / 1936;
     var source = this.getTrack().getSource();
     var factor = (source === 'soundcloud') ? SC_FACTOR : S3_FACTOR;
     return factor * bufferLength;
@@ -64,13 +73,12 @@ Meteor.startup(function() {
   //
   WaveSurfer.setEchonest = withErrorHandling(function(attrs) {
     console.log("set echonest", attrs);
-    attrs = _.clone(attrs.response.track);
-    // TODO
-    // this.saveTrack({
-    //   echonest: attrs,      
-    //   title: attrs.title,
-    //   artist: attrs.artist,
-    // });
+    attrs = attrs.response.track;
+    this.saveTrack({
+      echonest: attrs,      
+      title: attrs.title,
+      artist: attrs.artist,
+    });
   }, 'setEchonest');
 
   WaveSurfer.setSoundcloud = withErrorHandling(function(attrs) {
@@ -140,14 +148,14 @@ Meteor.startup(function() {
   // All reactive metadata for waves
   WaveSurfer._setMeta = withErrorHandling(function(attrs) {
     attrs = attrs || {};
-    this.meta && this.meta.set({
+    this.meta && this.meta.set(_.defaults({
       _id: attrs._id,
       isLocal: attrs.isLocal,
       title: attrs.title,
       artist: attrs.artist,
       echonestAnalysis: attrs.echonestAnalysis,
       linxType: attrs.linxType,
-    });
+    }, this.meta.get()));
   }, '_setMeta');
 
   WaveSurfer.reset = withErrorHandling(function() {
@@ -195,78 +203,96 @@ Meteor.startup(function() {
   // Network Calls
   //
   WaveSurfer.fetchEchonestAnalysis = withErrorHandling(function(cb) {
-    var track = this.getTrack();
-    if (!track) {
-      throw 'Error: cannot get echonest analysis of a wave without a track';
-    }
-    if (this.isLocal()) {
-      throw 'Error: cannot get echonest analysis of a local track';
-    }
-    if (this.isAnalyzed()) {
-      throw 'Error: wave is already analyzed';
-    }
-    // TODO: try to get profile, fire uploading events while going
-    //       -> upload to echo nest in multi-stage process.
-    //       -> https://github.com/linxmix/linx/issues/347
-    //       -> make sure this is idempotent
-    var streamUrl = track.getStreamUrl();
-    console.log("getting Echonest Analysis", streamUrl);
 
-    // TODO: check if already have analysis
-    this.fetchEchonestProfile(function() {
-      // TODO: continue
-    });
+    // If already have analysis, short circuit
+    if (this.getMeta('echonestAnalysis')) {
+      console.log("Track already has echonest analysis, skipping", track);
+      cb && cb();
+    } else {
+      var wave = this;
 
+      // fetch profile before analyzing
+      this.fetchEchonestProfile(function() {
+        var track = wave.getTrack();
+        console.log("fetching echonest analysis", track);
+        var loadingInterval = wave.setLoadingInterval('analyze', undefined, 5000);
 
+        function onSuccess(response) {
+          Meteor.clearInterval(loadingInterval);
+          wave.fireEvent('uploadFinish');
+          console.log("ANALYSIS SUCCESS", response);
+          cb && cb();
+        }
+
+        $.ajax({
+          type: "GET",
+          url: track.echonest.audio_summary.analysis_url,
+          success: onSuccess,
+          error: function(xhr) {
+            Meteor.clearInterval(loadingInterval);
+            wave.fireEvent('error', 'echonest analysis error: ' + xhr.responseText);
+          },
+        });
+      });
+    }
   }, 'fetchEchonestAnalysis');
 
   WaveSurfer.fetchEchonestProfile = withErrorHandling(function(cb) {
-    var track = this.getTrack();
-    if (!(track && track.getStreamUrl())) {
-      throw 'Error: cannot get echonest profile of a wave without a track';
-    }
+    var wave = this;
+    // first get echonestId of track
+    this.fetchEchonestId(function(echonestId) {
+      console.log("fetching echonest profile", wave.getTrack());
+      var loadingInterval = wave.setLoadingInterval('profile', undefined, 2000);
 
-    // if already have profile, continue
-    if (track.echonest) {
-      console.log("Track already has echonest profile, skipping", track);
-      cb && cb();
-    } else {
-      console.log("getting Echonest Profile", track);
-      var wave = this;
-      var streamUrl = track.getStreamUrl();
-
-      // set progress loadingInterval based on track length
-      var percent = 0;
-      var crossLoadTime = this.getCrossloadTime();
-      var loadingInterval = Meteor.setInterval(function() {
-        wave.fireEvent('loading', percent, undefined, 'profile');
-        if (percent === 100) {
-          Meteor.clearInterval(loadingInterval);
-        }
-        percent += 1;
-      }, crossLoadTime / 100);
-
-      // after uploading: get profile
       function onSuccess(response) {
-        $.ajax({
-          type: "GET",
-          url: 'http://developer.echonest.com/api/v4/track/profile',
-          data: {
-            api_key: Config.apiKey_Echonest,
-            bucket: 'audio_summary',
-            format: 'json',
-            id: response.response.track.id
-          },
-          success: function(response) {
-            Meteor.clearInterval(loadingInterval);
-            wave.fireEvent('uploadFinish');
-            wave.setEchonest(response);
-            cb && cb();
-          }
-        });
+        Meteor.clearInterval(loadingInterval);
+        wave.fireEvent('uploadFinish');
+        wave.setEchonest(response);
+        cb && cb();
       }
 
-      // send request
+      // send profile request
+      $.ajax({
+        type: "GET",
+        url: 'http://developer.echonest.com/api/v4/track/profile',
+        data: {
+          api_key: Config.apiKey_Echonest,
+          bucket: 'audio_summary',
+          format: 'json',
+          id: echonestId,
+        },
+        success: onSuccess,
+        error: function(xhr) {
+          Meteor.clearInterval(loadingInterval);
+          wave.fireEvent('error', 'echonest profile error: ' + xhr.responseText);
+        },
+      });      
+    });
+  }, 'fetchEchonestProfile');
+
+  WaveSurfer.fetchEchonestId = withErrorHandling(function(cb) {
+    if (this.isLocal()) {
+      throw new Error('Cannot get echonestId of a wave without saving to backend first', this);
+    }
+
+    // short-circuit if we already have the id
+    var track = this.getTrack();
+    if (track.echonest) {
+      console.log("track already has echonest id, skipping", track);
+      cb && cb(track.echonest.id);
+    } else {
+      console.log("getting echonestId of track", track);
+      var wave = this;
+      var streamUrl = track.getStreamUrl();
+      var loadingInterval = wave.setLoadingInterval('profile', undefined, this.getCrossloadTime());
+
+      function onSuccess(response) {
+        Meteor.clearInterval(loadingInterval);
+        wave.fireEvent('uploadFinish');
+        cb && cb(response.response.track.id);
+      }
+
+      // start upload
       $.ajax({
         type: "POST",
         url: 'http://developer.echonest.com/api/v4/track/upload',
@@ -276,20 +302,20 @@ Meteor.startup(function() {
         },
         success: onSuccess,
         error: function(xhr) {
+          Meteor.clearInterval(loadingInterval);
           wave.fireEvent('error', 'echonest upload error: ' + xhr.responseText);
         },
       });
-
     }
-  }, 'fetchEchonestProfile');
+  }, 'fetchEchonestId');
 
   WaveSurfer.uploadToBackend = withErrorHandling(function(cb) {
     var track = this.getTrack();
     if (!track) {
-      throw 'Error: cannot upload a wave without a track';
+      throw new Error('Cannot upload a wave without a track', this);
     }
     if (!this.isLocal()) {
-      throw 'Error: cannot upload a wave that is not local';
+      throw new Error('Cannot upload a wave that is not local', this);
     }
 
     // on completion, persist track and fire finish event
