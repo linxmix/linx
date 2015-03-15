@@ -1,25 +1,6 @@
 // Augment WaveSurfer Prototype
 Meteor.startup(function() {
 
-// TODO
-    // WaveSurfer.getArrayBuffer = function (url, callback) {
-    //     var my = this;
-    //     var ajax = WaveSurfer.util.ajax({
-    //         url: url,
-    //         responseType: 'arraybuffer'
-    //     });
-    //     this.tmpEvents.push(
-    //         ajax.on('progress', function (e) {
-    //             my.onProgress(e);
-    //         }),
-    //         ajax.on('success', callback),
-    //         ajax.on('error', function (e) {
-    //           debugger;
-    //             my.fireEvent('error', 'XHR error: ' + e.target.statusText);
-    //         })
-    //     );
-    //     return ajax;
-    // };
   function withErrorHandling(fn, name) {
     return function() {
       try {
@@ -424,7 +405,10 @@ Meteor.startup(function() {
     });
 
     console.log("uploading wave", this.getMeta('title'));
-    S3.upload(wave.files, track.getS3Prefix(), function(error, result) {
+    S3.upload({
+      files: wave.files,
+      path: track.getS3Prefix(),
+    }, function(error, result) {
       if (error) { throw error; }
       console.log("RESULT", result);
       var s3FileName = result.relative_url.split('/')[1];

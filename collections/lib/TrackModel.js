@@ -18,10 +18,10 @@ TrackModel = _.extend({
   },
 
   getS3Url: function() {
-    var part = 'http://s3-us-west-2.amazonaws.com/linx-music';
+    var part = 'http://s3-us-west-2.amazonaws.com/linx-music/';
     // TODO: make this work for non-mp3
     var fileName = this.s3FileName || this._id + '.mp3';
-    return part + this.getS3Prefix() + fileName;
+    return part + this.getS3Prefix() + '/' + fileName;
   },
 
   getStreamUrl: function(source) {
@@ -47,7 +47,7 @@ TrackModel = _.extend({
   },
 
   getS3Prefix: function() {
-    return this.getLinxType() === 'song' ? '/songs/' : '/transitions/';
+    return this.getLinxType() + 's';
   },
 
 }, LinxModel);
