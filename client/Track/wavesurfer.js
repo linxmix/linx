@@ -424,7 +424,10 @@ Meteor.startup(function() {
     });
 
     console.log("uploading wave", this.getMeta('title'));
-    S3.upload(wave.files, track.getS3Prefix(), function(error, result) {
+    S3.upload({
+      files: wave.files,
+      path: track.getS3Prefix(),
+    }, function(error, result) {
       if (error) { throw error; }
       console.log("RESULT", result);
       var s3FileName = result.relative_url.split('/')[1];
