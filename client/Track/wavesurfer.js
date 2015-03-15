@@ -1,6 +1,25 @@
 // Augment WaveSurfer Prototype
 Meteor.startup(function() {
 
+// TODO
+    // WaveSurfer.getArrayBuffer = function (url, callback) {
+    //     var my = this;
+    //     var ajax = WaveSurfer.util.ajax({
+    //         url: url,
+    //         responseType: 'arraybuffer'
+    //     });
+    //     this.tmpEvents.push(
+    //         ajax.on('progress', function (e) {
+    //             my.onProgress(e);
+    //         }),
+    //         ajax.on('success', callback),
+    //         ajax.on('error', function (e) {
+    //           debugger;
+    //             my.fireEvent('error', 'XHR error: ' + e.target.statusText);
+    //         })
+    //     );
+    //     return ajax;
+    // };
   function withErrorHandling(fn, name) {
     return function() {
       try {
