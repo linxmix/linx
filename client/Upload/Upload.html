@@ -4,9 +4,12 @@
       <div class="uploadSteps">
         {{> Steps}}
       </div>
-      <div class="inverted ui button group uploadButtons">
-        <div class="compare button">Compare</div>
-      </div>
+      {{#if showCompareButton}}
+        <div class="huge inverted basic ui icon button {{compareButtonClass}}">
+          {{compareButtonText}}
+          <i class="{{compareButtonIcon}}"></i>
+        </div>
+      {{/if}}
     </div>
 
     <div class="uploadContent">

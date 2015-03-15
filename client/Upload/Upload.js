@@ -6,6 +6,33 @@ Template.Upload.created = function() {
   this.endSong = Object.create(WaveSurfer);
 };
 
+function getActiveWaves(template) {
+  switch (Session.get('uploadStep')) {
+    case 1: return [template.transition];
+    case 2: return [template.transition, template.startSong];
+    case 3: return [template.transition, template.endSong];
+  }
+}
+
+function wavesAreLoaded(template) {
+  return getActiveWaves(template).reduce(function(allAnalyzed, wave) {
+    return allAnalyzed && wave.isLoaded();
+  }, true);
+}
+
+function wavesAreAnalyzed(template) {
+  return getActiveWaves(template).reduce(function(allAnalyzed, wave) {
+    return allAnalyzed && wave.isAnalyzed();
+  }, true);
+}
+
+
+function regionsAreSelected(template) {
+  return getActiveWaves(template).reduce(function(allAnalyzed, wave) {
+    return allAnalyzed && wave.hasSelectedRegion();
+  }, true);
+}
+
 Template.Upload.helpers({
   startSongHidden: function() {
     var step = Session.get('uploadStep');
@@ -15,6 +42,49 @@ Template.Upload.helpers({
   endSongHidden: function() {
     var step = Session.get('uploadStep');
     return step === 3 ? '' : 'hidden';
+  },
+
+  showCompareButton: function() {
+    return !Session.equals('uploadStep', 1);
+  },
+
+  compareButtonClass: function() {
+    var template = Template.instance();
+    if (!wavesAreLoaded(template)) {
+      return 'disabled';
+    } else if (!wavesAreAnalyzed(template)) {
+      return 'purple analyze';
+    } else if (!regionsAreSelected(template)) {
+      return 'disabled';
+    } else {
+      return 'compare';
+    }
+  },
+
+  compareButtonIcon: function() {
+    var template = Template.instance();
+    if (!wavesAreLoaded(template)) {
+      return 'pointing down icon';
+    } else if (!wavesAreAnalyzed(template)) {
+      return 'file audio outline icon';
+    } else if (!regionsAreSelected(template)) {
+      return 'pointing down icon';
+    } else {
+      return 'exchange icon';
+    }
+  },
+
+  compareButtonText: function() {
+    var template = Template.instance();
+    if (!wavesAreLoaded(template)) {
+      return 'Select Tracks';
+    } else if (!wavesAreAnalyzed(template)) {
+      return 'Analyze';
+    } else if (!regionsAreSelected(template)) {
+      return 'Select Regions';
+    } else {
+      return 'Compare';
+    }
   },
 
   startSong: function() {
@@ -32,14 +102,14 @@ Template.Upload.helpers({
 });
 
 Template.Upload.events({
-  'click .compare': function(e) {
-    var step = Session.get('uploadStep');
-    var template = Template.instance();
-    console.log('click compare', step)
-    switch (step) {
-      case 2: computeWaveMatch(template.startSong, template.transition); break;
-      case 3: computeWaveMatch(template.transition, template.endSong); break;
-    }
+  'click .compare-button.analyze': function(e) {
+    // TODO
+    console.log("click analyze", getActiveWaves(this));
+  },
+
+  'click .compare-button.compare': function(e) {
+    // TODO
+    console.log("click compare", getActiveWaves(this));
   },
 });
 
@@ -47,37 +117,16 @@ Template.Upload.events({
 function computeWaveMatch(startWave, endWave) {
   console.log("computeWaveMatch");
 
-  function getTargetRegion(wave) {
-    var selectedRegion = wave.regions.list.selected;
-    console.log(selectedRegion);
-
-    if (selectedRegion) {
-      var sampleRate = wave.backend.buffer.sampleRate;
-      return {
-        start: Math.floor(selectedRegion.start * sampleRate),
-        end: Math.floor(selectedRegion.end * sampleRate),
-      };
-    } else {
-      return {
-        start: 0,
-        end: wave.backend.buffer.length,
-      };
-    }
-  }
-
   // TODO: determine sample size by array size, iterate
   var sampleSize = 100;
   var numMatches = 1;
-  var region1 = getTargetRegion(startWave);
-  var region2 = getTargetRegion(endWave);
+  var sampleRegion1, sampleRegion2;
 
   // iterate cross-correlation with 'zooming in' and increasing sample resolution to find accurate match data
   var samples1, samples2, matchData, offsetIndex, offsetSamples, matches;
   for (var i = 0; i < 1; i++) {
-    region1.sampleSize = sampleSize;
-    region2.sampleSize = sampleSize;
-    samples1 = startWave.getSampleRegion(region1);
-    samples2 = endWave.getSampleRegion(region2);
+    samples1 = startWave.getSampleRegion('selected', sampleSize);
+    samples2 = endWave.getSampleRegion('selected');
 
     // samples1 = normalize(samples1);
     // samples2 = normalize(samples2);

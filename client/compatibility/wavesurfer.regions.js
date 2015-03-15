@@ -19,7 +19,7 @@ WaveSurfer.Regions = {
 
         region.on('remove', (function () {
             delete this.list[region.id];
-        }).bind(this));
+        }.bind(this)));
 
         return region;
     },

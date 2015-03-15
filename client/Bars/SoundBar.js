@@ -62,11 +62,11 @@ function cycleQueue() {
 function assertPlay(computation) {
   var activeId = activeWave.get();
   waves.forEach(function(wave) {
-    wave.isLoaded && wave.pause();
+    wave.isLoaded() && wave.pause();
   });
 
   if (Session.get('soundBarPlaying')) {
     var active = waves[activeId];
-    active.isLoaded && active.play();
+    active.isLoaded() && active.play();
   }
 }

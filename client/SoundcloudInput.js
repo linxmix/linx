@@ -6,7 +6,7 @@ Template.SoundcloudInput.created = function() {
 Template.SoundcloudInput.helpers({
   loadingClass: function() {
     var template = Template.instance();
-    var waveIsLoading = template.data.wave.isLoading && template.data.wave.isLoading.get();
+    var waveIsLoading = template.data.wave.isLoading && template.data.wave.isLoading();
     var isLoadingAjax = template.isLoadingAjax.get();
     return waveIsLoading || isLoadingAjax ? 'loading' : '';
   },

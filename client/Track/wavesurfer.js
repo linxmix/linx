@@ -28,19 +28,30 @@ Meteor.startup(function() {
     return loadingInterval;
   }, 'setLoadingInterval');
 
-  WaveSurfer.getSampleRegion = withErrorHandling(function(regionInfo) {
-    var startRegion = regionInfo.start || 0;
-    var endRegion = regionInfo.end || this.backend.buffer.length;
-    var sampleSize = regionInfo.sampleSize || 1000;
+  WaveSurfer.getSampleRegion = withErrorHandling(function(regionId, sampleSize) {
+    var wave = this;
+    var targetRegion = wave.getRegion(regionId);
+
+    // first compute start and end samples
+    var startSample, endSample;
+    if (targetRegion) {
+      var sampleRate = wave.backend.buffer.sampleRate;
+      startSample = Math.floor(targetRegion.start * sampleRate);
+      endSample = Math.floor(targetRegion.end * sampleRate);
+    } else {
+      startSample = 0;
+      endSample = wave.backend.buffer.length;
+    }
+    console.log("get sample region", targetRegion);
 
     var buffer = this.backend.buffer;
     var chan = buffer.getChannelData(0);
-    var length = Math.floor((endRegion - startRegion) / sampleSize);
+    var length = Math.floor((endSample - startSample) / sampleSize);
     var samples = new Float32Array(length);
 
     // compute new samples in region
     for (var i = 0; i < length; i++) {
-      var start = startRegion + ~~(i * sampleSize);
+      var start = startSample + ~~(i * sampleSize);
       var end = start + sampleSize;
       var avg = 0;
       // compute average in current sample
@@ -53,6 +64,23 @@ Meteor.startup(function() {
     }
     return samples;
   }, 'getSampleRegion');
+
+  WaveSurfer.updateRegion = withErrorHandling(function(region) {
+    var regions = this.getMeta('regions');
+    regions[region.id] = region;
+    this.setMeta({
+      regions: regions,
+    });
+  }, 'setRegion');
+
+  WaveSurfer.hasSelectedRegion = withErrorHandling(function(regionId) {
+    return !!this.getRegion('selected');
+  }, 'hasSelectedRegion');
+
+  WaveSurfer.getRegion = withErrorHandling(function(regionId) {
+    var regions = this.getMeta('regions');
+    return regions[regionId];
+  }, 'getRegion');
 
   WaveSurfer.getBufferLength = withErrorHandling(function() {
     return this.backend.buffer && this.backend.buffer.length;
@@ -123,7 +151,9 @@ Meteor.startup(function() {
   }, 'persistTrack');
 
   WaveSurfer.refreshTrack = withErrorHandling(function() {
-    this.loadTrack(this.getTrack().refresh());
+    var track = this.getTrack();
+    track.refresh();
+    this.loadTrack(track);
   }, 'refreshTrack');
   //
   // /Database Updates
@@ -156,6 +186,7 @@ Meteor.startup(function() {
       artist: attrs.artist,
       echonestAnalysis: attrs.echonestAnalysis,
       linxType: attrs.linxType,
+      regions: attrs.regions || {},
     }, this.meta.get()));
   }, '_setMeta');
 
@@ -179,6 +210,14 @@ Meteor.startup(function() {
   WaveSurfer.isAnalyzed = withErrorHandling(function() {
     return !!this.getMeta('echonestAnalysis');
   }, 'isAnalyzed');
+
+  WaveSurfer.isLoaded = withErrorHandling(function() {
+    return this.loaded && this.loaded.get();
+  }, 'isLoaded');
+
+  WaveSurfer.isLoading = withErrorHandling(function() {
+    return this.loading && this.loading.get();
+  }, 'isLoading');
 
   WaveSurfer.getMeta = withErrorHandling(function(attr) {
     var meta = this.meta && this.meta.get();

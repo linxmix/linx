@@ -22,7 +22,7 @@ Template.Track_Wave.rendered = function() {
     this.wave.enableDragSelection({
       id: 'selected',
       color: 'rgba(255, 255, 255, 0.4)',
-      drag: false,
+      // drag: false,
       loop: false,
       resize: false,
     });
@@ -31,11 +31,11 @@ Template.Track_Wave.rendered = function() {
 
 Template.Track_Wave.helpers({
   hiddenClass: function() {
-    return Template.instance().wave.isLoaded.get() ? '' : 'hidden';
+    return Template.instance().wave.isLoaded() ? '' : 'hidden';
   },
 
   isLoaded: function() {
-    return Template.instance().wave.isLoaded.get();
+    return Template.instance().wave.isLoaded();
   },
 
   wave: function() {
@@ -46,13 +46,13 @@ Template.Track_Wave.helpers({
 function initWave() {
   var template = this;
   var wave = this.wave;
-  wave.isLoaded = new ReactiveVar(false);
-  wave.isLoading = new ReactiveVar(false);
+  wave.loaded = new ReactiveVar(false);
+  wave.loading = new ReactiveVar(false);
   wave.meta = new ReactiveVar(null);
 
   var lastPercent;
   wave.on('loading', function(percent, xhr, type) {
-    wave.isLoading.set(true);
+    wave.loading.set(true);
     template.$('.progress-bar').show();
 
     // update progress bar
@@ -73,32 +73,31 @@ function initWave() {
   });
 
   wave.on('uploadFinish', function() {
-    wave.isLoading.set(false);
+    wave.loading.set(false);
     template.$('.progress-bar').hide();
   });
 
   wave.on('ready', function() {
-    wave.isLoaded.set(true);
-    wave.isLoading.set(false);
+    wave.loaded.set(true);
+    wave.loading.set(false);
     template.$('.progress-bar').hide();
     template.data.onReady && template.data.onReady(wave);
   });
 
   wave.on('reset', function() {
-    wave.isLoaded.set(false);
-    wave.isLoading.set(false);
+    wave.loaded.set(false);
+    wave.loading.set(false);
   });
 
   wave.on('error', function(errorMessage) {
     template.$('.progress-bar').hide();
-    wave.isLoading.set(false);
-    window.alert("Wave Load Error: " + (errorMessage || 'unknown error'));
+    wave.loading.set(false);
+    window.alert("Wave Error: " + (errorMessage || 'unknown error'));
   });
 
-  wave.on('region-created', function(region) {
-    // clear previous
-    if (wave.regions.list[region.id]) {
-      wave.regions.list[region.id].remove();
-    }
-  });
+  // sync with wave.getMeta('regions')
+  wave.on('region-created', wave.updateRegion);
+  wave.on('region-updated', wave.updateRegion);
+  wave.on('region-updated-end', wave.updateRegion);
+  wave.on('region-removed', wave.updateRegion);
 }

@@ -8,7 +8,7 @@ Template.UploadWaveControls.helpers({
   },
 
   loadingClass: function() {
-    return Template.instance().data.wave.isLoading.get() ? 'loading' : '';
+    return Template.instance().data.wave.isLoading() ? 'loading' : '';
   },
 
   analyzeIconClass: function() {
