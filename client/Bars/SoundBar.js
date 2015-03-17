@@ -13,7 +13,7 @@ var waves = [];
 Template.SoundBar.created = function() {
   // create waves
   for (var i = 0; i < Session.get('queueBufferLength'); i++) {
-    var wave = Object.create(WaveSurfer);
+    var wave = Utils.createWaveSurfer();
     wave.queueId = i;
     waves.push(wave);
     wave.on('finish', cycleQueue);

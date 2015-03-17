@@ -7,10 +7,6 @@ Template.UploadWaveControls.helpers({
     return Template.instance().data.wave.isAnalyzed();
   },
 
-  isLoading: function() {
-    return Template.instance().data.wave.isLoading();
-  },
-
   loadingClass: function() {
     return Template.instance().data.wave.isLoading() ? 'loading' : '';
   },
@@ -30,12 +26,10 @@ Template.UploadWaveControls.events({
   },
 
   'click .save': function(e, template) {
-    var wave = template.data.wave;
-    wave.uploadToBackend();
+    template.data.wave.uploadToBackend();
   },
 
   'click .analyze': function(e, template) {
-    var wave = template.data.wave;
-    wave.fetchEchonestAnalysis();
+    template.data.wave.fetchEchonestAnalysis();
   }
 });

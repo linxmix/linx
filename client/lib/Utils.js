@@ -7,6 +7,15 @@ Utils = {
     return newModel;
   },
 
+  createWaveSurfer: function() {
+    var wave = Object.create(WaveSurfer);
+    wave.loaded = new ReactiveVar(false);
+    wave.loading = new ReactiveVar(false);
+    wave.meta = new ReactiveVar(null);
+    wave.loadingIntervals = [];
+    return wave;
+  },
+
   // migrate transitions from linx meteor v1 to linx meteor v2
   migrateTransitions: function(transitions) {
     transitions.forEach(function(transition) {

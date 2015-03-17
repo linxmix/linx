@@ -1,6 +1,6 @@
 Template.Track_Wave.created = function() {
   // get or make wave
-  this.wave = this.data.wave || Object.create(WaveSurfer);
+  var wave = this.wave = this.data.wave || Utils.createWaveSurfer();
   initWave.call(this);
 };
 
@@ -46,10 +46,6 @@ Template.Track_Wave.helpers({
 function initWave() {
   var template = this;
   var wave = this.wave;
-  wave.loaded = new ReactiveVar(false);
-  wave.loading = new ReactiveVar(false);
-  wave.meta = new ReactiveVar(null);
-  wave.loadingIntervals = [];
 
   var lastPercent;
   wave.on('loading', function(percent, xhr, type) {

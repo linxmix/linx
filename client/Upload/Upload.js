@@ -1,9 +1,9 @@
 Session.setDefault("uploadStep", 1);
 
 Template.Upload.created = function() {
-  this.startSong = Object.create(WaveSurfer);
-  this.transition = Object.create(WaveSurfer);
-  this.endSong = Object.create(WaveSurfer);
+  this.startSong = Utils.createWaveSurfer();
+  this.transition = Utils.createWaveSurfer();
+  this.endSong = Utils.createWaveSurfer();
 };
 
 function getActiveWaves(template) {
@@ -11,12 +11,25 @@ function getActiveWaves(template) {
     case 1: return [template.transition];
     case 2: return [template.transition, template.startSong];
     case 3: return [template.transition, template.endSong];
+    default: return [];
   }
+}
+
+function wavesAreLoading(template) {
+  return getActiveWaves(template).reduce(function(allLoading, wave) {
+    return allLoading || wave.isLoading();
+  }, false);
 }
 
 function wavesAreLoaded(template) {
   return getActiveWaves(template).reduce(function(allAnalyzed, wave) {
     return allAnalyzed && wave.isLoaded();
+  }, true);
+}
+
+function wavesAreSaved(template) {
+  return getActiveWaves(template).reduce(function(allSaved, wave) {
+    return allSaved && !wave.isLocal();
   }, true);
 }
 
@@ -49,9 +62,14 @@ Template.Upload.helpers({
   },
 
   compareButtonClass: function() {
+    console.log("compar button class")
     var template = Template.instance();
-    if (!wavesAreLoaded(template)) {
+    if (wavesAreLoading(template)) {
+      return 'disabled loading';
+    } else if (!wavesAreLoaded(template)) {
       return 'disabled';
+    } else if (!wavesAreSaved(template)) {
+      return 'orange cloud save';
     } else if (!wavesAreAnalyzed(template)) {
       return 'purple analyze';
     } else if (!regionsAreSelected(template)) {
@@ -63,8 +81,12 @@ Template.Upload.helpers({
 
   compareButtonIcon: function() {
     var template = Template.instance();
-    if (!wavesAreLoaded(template)) {
+    if (wavesAreLoading(template)) {
+      return 'loading icon';
+    } else if (!wavesAreLoaded(template)) {
       return 'pointing down icon';
+    } else if (!wavesAreSaved(template)) {
+      return 'cloud upload icon';
     } else if (!wavesAreAnalyzed(template)) {
       return 'file audio outline icon';
     } else if (!regionsAreSelected(template)) {
@@ -78,6 +100,8 @@ Template.Upload.helpers({
     var template = Template.instance();
     if (!wavesAreLoaded(template)) {
       return 'Select Tracks';
+    } else if (!wavesAreSaved(template)) {
+      return 'Save';
     } else if (!wavesAreAnalyzed(template)) {
       return 'Analyze';
     } else if (!regionsAreSelected(template)) {
@@ -102,14 +126,25 @@ Template.Upload.helpers({
 });
 
 Template.Upload.events({
-  'click .compare-button.analyze': function(e) {
-    // TODO
-    console.log("click analyze", getActiveWaves(this));
+  'click .compare-button.save': function(e, template) {
+    getActiveWaves(template).filter(function(wave) {
+      return wave.isLocal();
+    }).forEach(function(wave) {
+      wave.uploadToBackend();
+    });
   },
 
-  'click .compare-button.compare': function(e) {
+  'click .compare-button.analyze': function(e, template) {
+    getActiveWaves(template).filter(function(wave) {
+      return !wave.isAnalyzed();
+    }).forEach(function(wave) {
+      wave.fetchEchonestAnalysis();
+    });
+  },
+
+  'click .compare-button.compare': function(e, template) {
     // TODO
-    console.log("click compare", getActiveWaves(this));
+    console.log("click compare", getActiveWaves(template));
   },
 });
 
