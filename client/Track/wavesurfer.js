@@ -419,7 +419,7 @@ Meteor.startup(function() {
       path: track.getS3Prefix(),
     }, function(error, result) {
       if (error) { throw error; }
-      if (!this.getTrack()) { return; }
+      if (!wave.getTrack()) { return; }
       console.log("RESULT", result);
       var urlParts = result.relative_url.split('/');
       var s3FileName = urlParts[urlParts.length - 1];
