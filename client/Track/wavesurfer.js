@@ -25,6 +25,7 @@ Meteor.startup(function() {
       }
       percent += 1;
     }, time / 100);
+    wave.loadingIntervals.push(loadingInterval);
     return loadingInterval;
   }, 'setLoadingInterval');
 
@@ -195,6 +196,12 @@ Meteor.startup(function() {
     if (meta) {
       this.meta.set(null);
     }
+    this.loadingIntervals && this.loadingIntervals.forEach(function(interval) {
+      Meteor.clearInterval(interval);
+    });
+    this.loadingComputations && this.loadingComputations.forEach(function(computation) {
+      computation.stop();
+    });
     this.empty();
     this.fireEvent('reset');
   }, 'reset');
@@ -402,6 +409,8 @@ Meteor.startup(function() {
           computation.stop();
         }
       }
+      // add to wave computations if doesn't already exist
+      wave.addLoadingComputation(computation);
     });
 
     console.log("uploading wave", this.getMeta('title'));
@@ -410,8 +419,10 @@ Meteor.startup(function() {
       path: track.getS3Prefix(),
     }, function(error, result) {
       if (error) { throw error; }
+      if (!this.getTrack()) { return; }
       console.log("RESULT", result);
-      var s3FileName = result.relative_url.split('/')[1];
+      var urlParts = result.relative_url.split('/');
+      var s3FileName = urlParts[urlParts.length - 1];
       wave.saveTrack({ s3FileName: s3FileName });
       wave.fireEvent('uploadFinish');
       cb && cb(error, result);
@@ -420,5 +431,12 @@ Meteor.startup(function() {
   //
   // /Network Calls
   //
+
+  WaveSurfer.addLoadingComputation = withErrorHandling(function(computation) {
+    var computations = this.loadingComputations = this.loadingComputations || [];
+    if (computations.indexOf(computation) < 0) {
+      computations.push(computation);
+    }
+  }, 'addLoadingComputation');
 
 });

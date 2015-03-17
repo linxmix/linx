@@ -7,6 +7,10 @@ Template.UploadWaveControls.helpers({
     return Template.instance().data.wave.isAnalyzed();
   },
 
+  isLoading: function() {
+    return Template.instance().data.wave.isLoading();
+  },
+
   loadingClass: function() {
     return Template.instance().data.wave.isLoading() ? 'loading' : '';
   },

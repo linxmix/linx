@@ -49,6 +49,7 @@ function initWave() {
   wave.loaded = new ReactiveVar(false);
   wave.loading = new ReactiveVar(false);
   wave.meta = new ReactiveVar(null);
+  wave.loadingIntervals = [];
 
   var lastPercent;
   wave.on('loading', function(percent, xhr, type) {
@@ -87,6 +88,7 @@ function initWave() {
   wave.on('reset', function() {
     wave.loaded.set(false);
     wave.loading.set(false);
+    template.$('.progress-bar').hide();
   });
 
   wave.on('error', function(errorMessage) {
