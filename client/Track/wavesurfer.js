@@ -76,15 +76,6 @@ Meteor.startup(function() {
     }
   }, 'setRegion');
 
-  WaveSurfer.hasSelectedRegion = withErrorHandling(function() {
-    return !!this.getRegion('selected');
-  }, 'hasSelectedRegion');
-
-  WaveSurfer.getRegion = withErrorHandling(function(regionId) {
-    var regions = this.getMeta('regions');
-    return regions[regionId];
-  }, 'getRegion');
-
   WaveSurfer.getBufferLength = withErrorHandling(function() {
     return this.backend.buffer && this.backend.buffer.length;
   }, 'getBufferLength');
@@ -212,13 +203,26 @@ Meteor.startup(function() {
   //
   // Reactive functions
   //
+  WaveSurfer.hasSelectedRegion = withErrorHandling(function() {
+    return !!this.getRegion('selected');
+  }, 'hasSelectedRegion');
+
+  WaveSurfer.getRegion = withErrorHandling(function(regionId) {
+    var regions = this.getMeta('regions');
+    return regions[regionId];
+  }, 'getRegion');
+
   WaveSurfer.isLocal = withErrorHandling(function() {
     var isLocal = this.getMeta('isLocal');
     return (typeof isLocal === 'boolean') && isLocal;
   }, 'isLocal');
 
+  WaveSurfer.getAnalysis = withErrorHandling(function() {
+    return this.getMeta('echonestAnalysis');
+  }, 'getAnalysis');
+
   WaveSurfer.isAnalyzed = withErrorHandling(function() {
-    return !!this.getMeta('echonestAnalysis');
+    return !!this.getAnalysis();
   }, 'isAnalyzed');
 
   WaveSurfer.isLoaded = withErrorHandling(function() {

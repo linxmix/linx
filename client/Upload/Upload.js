@@ -144,8 +144,57 @@ Template.Upload.events({
 
   'click .compare-button.compare': function(e, template) {
     console.log("click compare", getActiveWaves(template));
+    var activeWaves = getActiveWaves(template);
+    var matches = compareSegs(getSegs(activeWaves[0]), getSegs(activeWaves[1]));
+    var bestMatches = _.sortBy(matches, 'dist');
+    console.log("best matches", bestMatches);
   },
 });
+
+function getSegs(wave) {
+  var THRESH = 0.5;
+  var analysis = wave.getAnalysis();
+  var segments = analysis.segments;
+  var selectedRegion = wave.getRegion('selected');
+  return _.filter(segments, function (seg) {
+    var isWithinConfidence = (seg.confidence >= THRESH);
+    var isWithinRegion = (seg.start >= selectedRegion.start) &&
+      (seg.start <= selectedRegion.end);
+    return isWithinRegion && isWithinConfidence;
+  });
+}
+
+function compareSegs(segs1, segs2) {
+  var matches = [];
+  segs1.forEach(function (seg1) {
+    segs2.forEach(function (seg2) {
+      // compute distance between segs
+      matches.push({
+        'seg1': seg1.start,
+        'seg2': seg2.start,
+        'dist': euclidean_distance(seg1.timbre, seg2.timbre),
+      });
+    });
+  });
+  return matches;
+}
+
+// expects v1 and v2 to be the same length and composition
+function euclidean_distance(v1, v2) {
+  //debug("computing distance", v1, v2);
+  var sum = 0;
+  for (var i = 0; i < v1.length; i++) {
+    // recursive for nested arrays
+    //if (v1[i] instanceof Array) {
+    //  sum += euclidean_distance(v1[i], v2[i]);
+    //} else {
+      var delta = v2[i] - v1[i];
+      sum += delta * delta;
+    //}
+    //debug("running total", sum);
+  }
+  return Math.sqrt(sum);
+}
 
 // find offset of waves
 function computeWaveMatch(startWave, endWave) {
