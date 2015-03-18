@@ -9,7 +9,7 @@ Template.Upload.created = function() {
 function getActiveWaves(template) {
   switch (Session.get('uploadStep')) {
     case 1: return [template.transition];
-    case 2: return [template.transition, template.startSong];
+    case 2: return [template.startSong, template.transition];
     case 3: return [template.transition, template.endSong];
     default: return [];
   }
@@ -39,12 +39,15 @@ function wavesAreAnalyzed(template) {
   }, true);
 }
 
-
 function regionsAreSelected(template) {
   return getActiveWaves(template).reduce(function(allHaveRegions, wave) {
-    console.log("region is selected", wave.getMeta('title'), wave.getRegion('selected'));
     return allHaveRegions && wave.hasSelectedRegion();
   }, true);
+}
+
+function wavesAreCompared(template) {
+  // TODO
+  return true;
 }
 
 Template.Upload.helpers({
@@ -58,8 +61,12 @@ Template.Upload.helpers({
     return step === 3 ? '' : 'hidden';
   },
 
-  showCompareButton: function() {
+  showCompareButtons: function() {
     return !Session.equals('uploadStep', 1);
+  },
+
+  wavesAreCompared: function() {
+    return wavesAreCompared(Template.instance());
   },
 
   compareButtonClass: function() {
@@ -142,12 +149,81 @@ Template.Upload.events({
     });
   },
 
+  'click .compare-button-one': function(e, template) {
+    // TODO
+  },
+
+  'click .compare-button-two': function(e, template) {
+    // TODO
+  },
+
+  'click .compare-button-three': function(e, template) {
+    // TODO
+  },
+
   'click .compare-button.compare': function(e, template) {
     console.log("click compare", getActiveWaves(template));
     var activeWaves = getActiveWaves(template);
-    var matches = compareSegs(getSegs(activeWaves[0]), getSegs(activeWaves[1]));
+    var startWave = activeWaves[0];
+    var endWave = activeWaves[1];
+    var matches = compareSegs(getSegs(startWave), getSegs(endWave));
     var bestMatches = _.sortBy(matches, 'dist');
     console.log("best matches", bestMatches);
+
+    // create cycle regions
+    for (var i = 0; i < 3; i++) {
+
+      var color;
+      // switch (i) {
+      //   case 0: color = 'rgba(255, 0, 0, 1)'; break;
+      //   case 1: color = 'rgba(0, 255, 0, 1)'; break;
+      //   case 2: color = 'rgba(0, 0, 255, 1)'; break;
+      //   default: color = 'rgba(255, 255, 0, 1)'; break;
+      // }
+
+      switch (i) {
+        case 0: color = '#2ecc40'; break;
+        case 1: color = '#ff695e'; break;
+        case 2: color = '#54c8ff'; break;
+        default: color = 'rgba(255, 255, 0, 1)'; break;
+      }
+
+      var match = bestMatches[i];
+      var matchTime1 = match.seg1;
+      var matchTime2 = match.seg2;
+
+      // create regions
+      var cycleRegion1 = startWave.regions.add({
+        id: 'cycleOut' + i,
+        start: matchTime1,
+        resize: false,
+        loop: false,
+        drag: false,
+        color: color,
+      });
+        console.log("matchTime2", matchTime2);
+      if (i === 0) {
+        var playTime2 = matchTime2;
+        cycleRegion1.on('in', function() {
+          console.log("cycle1in", this);
+          startWave.pause();
+          console.log("playTime2", playTime2);
+          endWave.play(playTime2);
+        });
+      }    
+
+      var cycleRegion2 = endWave.regions.add({
+        id: 'cycleIn' + i,
+        start: matchTime2,
+        resize: false,
+        loop: false,
+        drag: false,
+        color: color,
+      });
+      cycleRegion2.on('in', function() {
+        console.log("cycle2in", this);
+      });
+    }
   },
 });
 
@@ -236,9 +312,9 @@ function computeWaveMatch(startWave, endWave) {
   var sampleRate1 = startWave.backend.buffer.sampleRate;
   var sampleRate2 = endWave.backend.buffer.sampleRate;
   var color, matchSamples1, matchTime1, matchSamples2, matchTime2, offsetIndex, offsetSamples;
-  for (var j = 0; j < numMatches; j++) {
+  for (var i = 0; i < numMatches; i++) {
 
-    switch (j) {
+    switch (i) {
       case 0: color = 'rgba(255, 0, 0, 1)'; break;
       case 1: color = 'rgba(0, 255, 0, 1)'; break;
       case 2: color = 'rgba(0, 0, 255, 1)'; break;
@@ -246,7 +322,7 @@ function computeWaveMatch(startWave, endWave) {
     }
 
     // calculate match points on each wave
-    offsetIndex = matches[j].index;
+    offsetIndex = matches[i].index;
     offsetSamples = offsetIndex * sampleSize;
     matchSamples1 = region1.start;
     matchTime1 = matchSamples1 / sampleRate1;
@@ -257,14 +333,14 @@ function computeWaveMatch(startWave, endWave) {
 
     // create regions
     var cycleRegion1 = startWave.regions.add({
-      id: 'cycleOut' + j,
+      id: 'cycleOut' + i,
       start: matchTime1,
       resize: false,
       loop: false,
       drag: false,
       color: color,
     });
-    if (j === 0) {
+    if (i === 0) {
       cycleRegion1.on('in', function() {
         console.log("cycle1in", this);
         startWave.pause();
@@ -273,7 +349,7 @@ function computeWaveMatch(startWave, endWave) {
     }    
 
     var cycleRegion2 = endWave.regions.add({
-      id: 'cycleIn' + j,
+      id: 'cycleIn' + i,
       start: matchTime2,
       resize: false,
       loop: false,
