@@ -16,14 +16,14 @@ function getActiveWaves(template) {
 }
 
 function wavesAreLoading(template) {
-  return getActiveWaves(template).reduce(function(allLoading, wave) {
-    return allLoading || wave.isLoading();
+  return getActiveWaves(template).reduce(function(anyLoading, wave) {
+    return anyLoading || wave.isLoading();
   }, false);
 }
 
 function wavesAreLoaded(template) {
-  return getActiveWaves(template).reduce(function(allAnalyzed, wave) {
-    return allAnalyzed && wave.isLoaded();
+  return getActiveWaves(template).reduce(function(allLoaded, wave) {
+    return allLoaded && wave.isLoaded();
   }, true);
 }
 
@@ -41,8 +41,9 @@ function wavesAreAnalyzed(template) {
 
 
 function regionsAreSelected(template) {
-  return getActiveWaves(template).reduce(function(allAnalyzed, wave) {
-    return allAnalyzed && wave.hasSelectedRegion();
+  return getActiveWaves(template).reduce(function(allHaveRegions, wave) {
+    console.log("region is selected", wave.getMeta('title'), wave.getRegion('selected'));
+    return allHaveRegions && wave.hasSelectedRegion();
   }, true);
 }
 
@@ -62,7 +63,6 @@ Template.Upload.helpers({
   },
 
   compareButtonClass: function() {
-    console.log("compar button class")
     var template = Template.instance();
     if (wavesAreLoading(template)) {
       return 'disabled loading';
@@ -143,7 +143,6 @@ Template.Upload.events({
   },
 
   'click .compare-button.compare': function(e, template) {
-    // TODO
     console.log("click compare", getActiveWaves(template));
   },
 });

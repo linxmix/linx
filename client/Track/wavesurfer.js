@@ -68,13 +68,15 @@ Meteor.startup(function() {
 
   WaveSurfer.updateRegion = withErrorHandling(function(region) {
     var regions = this.getMeta('regions');
-    regions[region.id] = region;
-    this.setMeta({
-      regions: regions,
-    });
+    if (region && region.id) {
+      regions[region.id] = region;
+      this._setMeta({
+        regions: regions,
+      });
+    }
   }, 'setRegion');
 
-  WaveSurfer.hasSelectedRegion = withErrorHandling(function(regionId) {
+  WaveSurfer.hasSelectedRegion = withErrorHandling(function() {
     return !!this.getRegion('selected');
   }, 'hasSelectedRegion');
 
@@ -180,15 +182,16 @@ Meteor.startup(function() {
   // All reactive metadata for waves
   WaveSurfer._setMeta = withErrorHandling(function(attrs) {
     attrs = attrs || {};
-    this.meta && this.meta.set(_.defaults({
+    this.meta.set(_.defaults({
       _id: attrs._id,
       isLocal: attrs.isLocal,
       title: attrs.title,
       artist: attrs.artist,
       echonestAnalysis: attrs.echonestAnalysis,
       linxType: attrs.linxType,
-      regions: attrs.regions || {},
-    }, this.meta.get()));
+      regions: attrs.regions,
+    // defaults
+    }, this.meta.get(), { regions: {} }));
   }, '_setMeta');
 
   WaveSurfer.reset = withErrorHandling(function() {
@@ -420,7 +423,6 @@ Meteor.startup(function() {
     }, function(error, result) {
       if (error) { throw error; }
       if (!wave.getTrack()) { return; }
-      console.log("RESULT", result);
       var urlParts = result.relative_url.split('/');
       var s3FileName = urlParts[urlParts.length - 1];
       wave.saveTrack({ s3FileName: s3FileName });

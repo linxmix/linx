@@ -23,8 +23,8 @@ Template.Track_Wave.rendered = function() {
       id: 'selected',
       color: 'rgba(255, 255, 255, 0.4)',
       // drag: false,
+      // resize: false,
       loop: false,
-      resize: false,
     });
   }
 };
@@ -93,9 +93,9 @@ function initWave() {
     window.alert("Wave Error: " + (errorMessage || 'unknown error'));
   });
 
+
   // sync with wave.getMeta('regions')
-  wave.on('region-created', wave.updateRegion);
-  wave.on('region-updated', wave.updateRegion);
-  wave.on('region-updated-end', wave.updateRegion);
-  wave.on('region-removed', wave.updateRegion);
+  wave.on('region-created', wave.updateRegion.bind(wave));
+  wave.on('region-updated-end', wave.updateRegion.bind(wave));
+  wave.on('region-removed', wave.updateRegion.bind(wave));
 }

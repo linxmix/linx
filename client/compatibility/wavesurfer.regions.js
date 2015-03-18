@@ -10,7 +10,7 @@ WaveSurfer.Regions = {
         this.list = {};
     },
 
-    /* Remove a region. */
+    /* Add a region. */
     add: function (params) {
         var region = Object.create(WaveSurfer.Region);
         region.init(params, this.wavesurfer);
@@ -85,6 +85,12 @@ WaveSurfer.Region = {
 
         this.bindInOut();
         this.render();
+
+        // DKANE FIX: remove previous region if exists
+        var prevRegion = wavesurfer.regions.list[this.id];
+        if (prevRegion) {
+          prevRegion.remove();
+        }
 
         this.wavesurfer.fireEvent('region-created', this);
     },
