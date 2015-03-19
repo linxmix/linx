@@ -66,7 +66,7 @@ Meteor.startup(function() {
     return samples;
   }, 'getSampleRegion');
 
-  WaveSurfer.updateRegion = withErrorHandling(function(region) {
+  WaveSurfer._updateRegion = withErrorHandling(function(region) {
     var regions = this.getMeta('regions');
     if (region && region.id) {
       regions[region.id] = region;
@@ -157,13 +157,8 @@ Meteor.startup(function() {
     console.log("load track", track, streamUrl);
     if (track) {
       track.refresh();
-      this._setMeta({
-        _id: track._id,
-        isLocal: track.isLocal(),
-        title: track.title,
-        artist: track.artist,
-        linxType: track.linxType,
-      });
+      track.isLocal = track.isLocal();
+      this._setMeta(track);
     }
     if (streamUrl) {
       this.load(streamUrl);
@@ -181,8 +176,12 @@ Meteor.startup(function() {
       echonestAnalysis: attrs.echonestAnalysis,
       linxType: attrs.linxType,
       regions: attrs.regions,
+      mixPointIds: attrs.mixPointIds,
+    }, this.meta.get(), {
     // defaults
-    }, this.meta.get(), { regions: {} }));
+      regions: {},
+      mixPointIds: [],
+    }));
   }, '_setMeta');
 
   WaveSurfer.reset = withErrorHandling(function() {
@@ -203,6 +202,104 @@ Meteor.startup(function() {
   //
   // Reactive functions
   //
+  WaveSurfer.setMixIn = withErrorHandling(function(id) {
+    var prevId = this.getMeta('mixIn');
+    if (id !== prevId) {
+      // add if not already there
+      if (id && !this.hasMixPoint(id)) {
+        this.addMixPoint(id);
+      }
+      this._setMeta({ mixIn: id });
+    }
+    // TODO: setup trigger regions, based on mixPoint
+
+  }, 'setMixIn');
+
+  WaveSurfer.setMixOut = withErrorHandling(function(id) {
+    // TODO
+  }, 'setMixOut');
+
+  WaveSurfer.persistMixPoints = withErrorHandling(function() {
+    // TODO: delete deleted mix points?
+    // save mix points
+    this.getMixPoints().forEach(function(mixPoint) {
+      mixPoint.persist();
+    });
+    // save track references
+    this.saveTrack({ mixPointIds: this.getMeta('mixPointIds') });
+  }, 'persistMixPoints');
+
+  WaveSurfer.addMixPoint = withErrorHandling(function(id) {
+    var mixPointIds = this.getMeta('mixPointIds');
+    mixPointIds.push(id);
+    this._setMeta({ mixPointIds: mixPointIds });
+  }, 'addMixPoint');
+
+  WaveSurfer.drawMixPoints = function() {
+    var wave = this;
+    this.getMixPoints().forEach(function(mixPoint, i) {
+      var color;
+      // switch (i) {
+      //   case 0: color = 'rgba(255, 0, 0, 1)'; break;
+      //   case 1: color = 'rgba(0, 255, 0, 1)'; break;
+      //   case 2: color = 'rgba(0, 0, 255, 1)'; break;
+      //   default: color = 'rgba(255, 255, 0, 1)'; break;
+      // }
+
+      switch (i) {
+        case 0: color = '#2ecc40'; break;
+        case 1: color = '#ff695e'; break;
+        case 2: color = '#54c8ff'; break;
+        default: color = 'rgba(255, 255, 0, 1)'; break;
+      }
+
+      if (!wave.getRegion(mixPoint.id)) {
+        wave.regions.add({
+          id: mixPoint.id,
+          start: mixPoint.startIn, // TODO
+          resize: false,
+          loop: false,
+          drag: false,
+          color: color,
+        });
+      }
+    });
+  };
+
+  // TODO: autorun drawing mixpoints on mixpoints change
+  //       which half (in or out) of mixPoint to draw depends on inId and outId
+
+  // does not delete MixPoint models
+  WaveSurfer.removeMixPoint = withErrorHandling(function(id) {
+    if (this.hasMixPoint(id)) {
+      // possibly remove from mixIn and mixOut
+      if (this.getMeta('mixIn') === id) {
+        this.setMixIn(null);
+      }
+      if (this.getMeta('mixOut') === id) {
+        this.setMixOut(null);
+      }
+
+      var mixPointIds = this.getMeta('mixPointIds');
+      mixPointIds = mixPointIds.filter(function(existingId) {
+        return id !== existingId;
+      });
+      this._setMeta({ mixPointIds: mixPointIds });
+    }
+  }, 'removeMixPoint');
+
+  WaveSurfer.hasMixPoint = withErrorHandling(function(id) {
+    return !!_.find(this.getMeta('mixPointIds'), function(mixPointId) {
+      return mixPointId === id;
+    });
+  }, 'hasMixPoint');
+
+  WaveSurfer.getMixPoints = withErrorHandling(function() {
+    return (this.getMeta('mixPointIds') || []).map(function(id) {
+      return MixPoints.findOne(id);
+    });
+  }, 'getMixPoints');
+
   WaveSurfer.hasSelectedRegion = withErrorHandling(function() {
     return !!this.getRegion('selected');
   }, 'hasSelectedRegion');

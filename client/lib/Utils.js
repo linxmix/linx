@@ -7,8 +7,26 @@ Utils = {
     return newModel;
   },
 
+  createMixPoint: function(attrs) {
+    if (!(attrs.inTrack && attrs.outTrack)) {
+      throw Error('Error: createMixPoint without inTrack and outTrack', attrs);
+    }
+    // convert tracks to just type and id
+    attrs.inTrack = {
+      id: attrs.inTrack.id,
+      linxType: attrs.inTrack.getLinxType(),
+    };
+    attrs.outTrack = {
+      id: attrs.outTrack.id,
+      linxType: attrs.outTrack.getLinxType(),
+    };
+    return Utils.createLocalModel(MixPoints, attrs);
+  },
+
   createWaveSurfer: function() {
     var wave = Object.create(WaveSurfer);
+
+    // initialize vars
     wave.loaded = new ReactiveVar(false);
     wave.loading = new ReactiveVar(false);
     wave.meta = new ReactiveVar(null);

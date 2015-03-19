@@ -69,6 +69,8 @@ function initWave() {
     }
   });
 
+  Meteor.autorun(wave.drawMixPoints.bind(wave));
+
   wave.on('uploadFinish', function() {
     wave.loading.set(false);
     template.$('.progress-bar').hide();
@@ -95,7 +97,7 @@ function initWave() {
 
 
   // sync with wave.getMeta('regions')
-  wave.on('region-created', wave.updateRegion.bind(wave));
-  wave.on('region-updated-end', wave.updateRegion.bind(wave));
-  wave.on('region-removed', wave.updateRegion.bind(wave));
+  wave.on('region-created', wave._updateRegion.bind(wave));
+  wave.on('region-updated-end', wave._updateRegion.bind(wave));
+  wave.on('region-removed', wave._updateRegion.bind(wave));
 }

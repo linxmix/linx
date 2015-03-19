@@ -1,6 +1,7 @@
 TrackModel = _.extend({
   defaultValues: {
     hasIssue: false,
+    mixPointIds: [], // array of mix point ids
   },
 
   isLocal: function() {
