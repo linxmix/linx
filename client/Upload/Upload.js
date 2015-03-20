@@ -175,24 +175,28 @@ Template.Upload.events({
     var inTrack = inWave.getTrack();
     var outTrack = outWave.getTrack();
     var mixPoints = bestMatches.map(function(match) {
-      return Utils.createMixPoint({
-        inTrack: inTrack,
+      return Utils.createLocalModel(MixPoints, {
+        inId: inTrack._id,
+        inLinxType: inTrack.linxType,
         endIn: match.seg1,
-        outTrack: outTrack,
+
+        outId: outTrack._id,
+        outLinxType: outTrack.linxType,
         startOut: match.seg2,
       });
     });
 
-    // set initial mixIn and mixOut
-    inTrack.setMixOut(mixPoints[0]);
-    outTrack.setMixIn(mixPoints[0]);
+    // clear old mixPoints
+    inWave.removeMixPoints();
+    outWave.removeMixPoints();
 
-    // set other mixPoints
-    for (var i = 1; i < 3; i++) {
-      var mixPoint = mixPoints[i];
-      inTrack.addMixPoint(mixPoint);
-      outTrack.addMixPoint(mixPoint);
-    }
+    // set new mixPoints
+    var length = 3;
+    inWave.addMixPoints(_.pluck(mixPoints.slice(0, length), '_id'));
+    outWave.addMixPoints(_.pluck(mixPoints.slice(0, length), '_id'));
+
+    // set active mixPoint
+    Utils.setMixPoint(mixPoints[0], inWave, outWave);
   },
 });
 

@@ -6,8 +6,22 @@ MixPointModel.extend(LinxModel);
 MixPointModel.extend({
   defaultValues: {
     type: '', // 'in' or 'out'
-    inTrack: null, // object with id and linxType
-    outTrack: null, // object with id and linxType
+    endIn: 0, // end time of inTrack
+    startOut: 0, // start time of outTrack
+    inId: null, // _id of inTrack
+    inLinxType: null, // linxType of inTrack
+    outId: null, // _id of outTrack
+    outLinxType: null, // linxType of outTrack
+  },
+
+  getStart: function(trackId) {
+    if (this.inId === trackId) {
+      return this.endIn;
+    } else if (this.outId === trackId) {
+      return this.startOut;
+    } else {
+      throw Error("Error: could not get start for MixPoint with track: " + trackId);
+    }
   },
 
   getInTrack: function() {

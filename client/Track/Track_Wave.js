@@ -69,8 +69,6 @@ function initWave() {
     }
   });
 
-  Meteor.autorun(wave.drawMixPoints.bind(wave));
-
   wave.on('uploadFinish', function() {
     wave.loading.set(false);
     template.$('.progress-bar').hide();

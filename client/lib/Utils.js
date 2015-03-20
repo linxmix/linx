@@ -1,26 +1,39 @@
 Utils = {
+
+  setMixPoint: function(mixPoint, inWave, outWave) {
+    inWave.setMixOut(mixPoint._id);
+    outWave.setMixIn(mixPoint._id);
+    var mixOutRegion = inWave.getRegion(mixPoint._id);
+    mixOutRegion.on('in', function() {
+      inWave.pause();
+      outWave.play(mixPoint.startOut);
+    });
+  },
+
+  withErrorHandling: function(fn, name) {
+    return function() {
+      try {
+        if (Session.get('debug')) {
+          console.log("DEBUG: calling method '" + name + "' with args: ", arguments);
+        }
+        return fn.apply(this, arguments);
+      } catch (error) {
+        console.error(error.stack);
+        if (this.fireEvent) {
+          this.fireEvent('error', error && error.message || error);
+        } else {
+          throw error;
+        }
+      }
+    };
+  },
+
   createLocalModel: function(collection, attrs) {
     attrs = attrs || {};
     attrs._local = true;
     var newId = collection._collection.insert(attrs);
     var newModel = collection.findOne(newId);
     return newModel;
-  },
-
-  createMixPoint: function(attrs) {
-    if (!(attrs.inTrack && attrs.outTrack)) {
-      throw Error('Error: createMixPoint without inTrack and outTrack', attrs);
-    }
-    // convert tracks to just type and id
-    attrs.inTrack = {
-      id: attrs.inTrack.id,
-      linxType: attrs.inTrack.getLinxType(),
-    };
-    attrs.outTrack = {
-      id: attrs.outTrack.id,
-      linxType: attrs.outTrack.getLinxType(),
-    };
-    return Utils.createLocalModel(MixPoints, attrs);
   },
 
   createWaveSurfer: function() {
