@@ -3,8 +3,7 @@ Meteor.startup(function() {
 
   WaveSurfer.setMixIn = Utils.withErrorHandling(function(id) {
     var prevId = this.getMeta('mixIn');
-    debugger;
-    if (id && id !== prevId) {
+    if (id !== prevId) {
       // add if not already there
       if (!this.hasMixPoint(id)) {
         this.addMixPoint(id);
@@ -23,10 +22,11 @@ Meteor.startup(function() {
       this._setMeta({ mixOut: id });
 
       // remove previous handler, if any
+      console.log('prevInRegion', prevId, prevInRegion);
       if (prevId) {
-        var prevInRegion = inWave.getRegion(prevId);
+        var prevInRegion = inWave && inWave.getRegion(prevId);
         // TODO: does this work?
-        prevInRegion.off('in');
+        prevInRegion && prevInRegion.un('in');
       }
     }
   }, 'setMixOut');

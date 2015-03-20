@@ -9,20 +9,9 @@
           <i class="{{compareButtonIcon}}"></i>
           {{compareButtonText}}
         </div>
-        {{#if wavesAreCompared}}
-          <div class="inverted red ui bottom-attached compare-button-one icon button">
-            <i class="volume up icon"></i>
-            1
-          </div>
-          <div class="inverted green ui bottom-attached compare-button-two icon button">
-            <i class="volume up icon"></i>
-            2
-          </div>
-          <div class="inverted blue ui bottom-attached compare-button-three icon button">
-            <i class="volume up icon"></i>
-            3
-          </div>
-        {{/if}}
+        {{#each mixPointButtons}}
+          {{> MixPointButton}}
+        {{/each}}
       {{/if}}
     </div>
 
@@ -54,16 +43,11 @@
         </div>
       </div>
     </div>
+  </div>
+</template>
 
-
-    <div id="testDrawWave3" class="draw-wave">
-    </div>
-
-    <div id="testDrawWave" class="draw-wave">
-    </div>
-
-    <div id="testDrawWave2" class="draw-wave">
-    </div>
-
+<template name="MixPointButton">
+  <div class="{{buttonClass}} mix-point inverted ui bottom-attached icon button">
+    <i class="{{iconClass}}"></i>
   </div>
 </template>

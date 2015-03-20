@@ -88,6 +88,8 @@ Meteor.startup(function() {
       linxType: attrs.linxType,
       regions: attrs.regions,
       mixPointIds: attrs.mixPointIds,
+      mixIn: attrs.mixIn,
+      mixOut: attrs.mixOut,
     }, this.meta.get(), {
     // defaults
       regions: {},

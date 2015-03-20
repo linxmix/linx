@@ -1,7 +1,8 @@
 Utils = {
 
   setMixPoint: function(mixPoint, inWave, outWave) {
-    inWave.setMixOut(mixPoint._id);
+    console.log("setting mix point", mixPoint, inWave.getMeta('title'), outWave.getMeta('title'));
+    inWave.setMixOut(mixPoint._id, inWave);
     outWave.setMixIn(mixPoint._id);
     var mixOutRegion = inWave.getRegion(mixPoint._id);
     mixOutRegion.on('in', function() {
