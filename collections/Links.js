@@ -4,11 +4,11 @@ LinkModel = Graviton.Model.extend({
       collectionName: 'users',
       field: 'createdBy'
     },
-    trackFrom: {
+    fromTrack: {
       collectionName: 'tracks',
       field: 'fromTrackId',
     },
-    trackTo: {
+    toTrack: {
       collectionName: 'tracks',
       field: 'toTrackId',
     },
@@ -20,8 +20,12 @@ LinkModel = Graviton.Model.extend({
     }
   },
   defaults: {
-    endFrom: 0, // end time of fromTrack
-    startTo: 0, // start time of toTrack
+    flags: [],
+    playCount: 0,
+    fromTime: 0, // end time of fromTrack
+    fromVol: 1, // volume of fromTrack
+    toTime: 0, // start time of toTrack
+    toVol:  1, // volume of toTrack
   }
 }, {
 

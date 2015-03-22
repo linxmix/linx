@@ -16,6 +16,7 @@ MixModel = Graviton.Model.extend({
     }
   },
   defaults: {
+    playCount: 0,
   }
 }, {
 

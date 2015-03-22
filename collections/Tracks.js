@@ -14,18 +14,19 @@ TrackModel = Graviton.Model.extend({
       collectionName: 'mixes',
       foreignKey: 'trackIds',
     },
-    linksTo: {
+    toLinks: {
       collectionName: 'links',
       foreignKey: 'toTrackId',
     },
-    linksFrom: {
+    fromLinks: {
       collectionName: 'links',
       foreignKey: 'fromTrackId',
     }
   },
   defaults: {
     flags: [],
-    type: 'song', // one of song or mix
+    type: 'song', // one of 'song', 'transition' or 'mix'
+    playCount: 0,
   }
 }, {
 
