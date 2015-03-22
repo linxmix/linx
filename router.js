@@ -1,39 +1,57 @@
 Router.configure({
   layoutTemplate: 'layout',
   loadingTemplate: 'loading',
+  // load: function() {
+  //   $('.content').animate({
+  //     left: "-1000px",
+  //     scrollTop: 0
+  //   }, 400, function() {
+  //       $(this).animate({ left: "0px" }, 400);
+  //   });
+  //   this.next();
+  // },
   waitOn: function() {
-    return [Meteor.subscribe('Songs'), Meteor.subscribe('Transitions'), Meteor.subscribe('Mixes')];
+    return [Meteor.subscribe('Tracks'), Meteor.subscribe('Links'), Meteor.subscribe('Mixes')];
   }
 });
 
-Router.map(function() {
-
-  this.route('/', function() {
-    this.redirect('/linx');
-  });
-
-  this.route('Linx', {
-    name: 'Linx',
-    path: '/linx',
-  });
-
-  this.route('/linx/mix', function() {
-    var mixId = Session.get('editMix');
-    console.log("mixId", mixId);
-    if (_.isEmpty(mixId)) {
-      mixId = 'queue';
-    }
-    console.log("mixId", mixId);
-    this.redirect('/linx/mix/' + mixId);
-  });
-
-  this.route('/linx/mix/:_id', function() {
-    Session.set('editMix', this.params._id);
-    this.render('MixList');
-  });
-
-  this.route('Upload', {
-    name: 'Upload',
-    path: '/upload',
-  });
+Router.route('/login', {
+  name: 'login',
 });
+
+Router.route('/upload', {
+  name: 'Upload',
+});
+
+Router.route('/tracks', {
+  name: 'Tracks',
+  data: function() {
+    return Tracks.all();
+  }
+});
+
+Router.route('/tracks/:_id', {
+  name: 'TrackView',
+  data: function() {
+    return Tracks.findOne(this.params._id);
+  }
+});
+
+Router.route('/tracks/:_id/edit', {
+  name: 'TrackEdit',
+  data: function() {
+    return Tracks.findOne(this.params._id);
+  }
+});
+
+// Router.onBeforeAction(function () {
+//   // all properties available in the route function
+//   // are also available here such as this.params
+//   console.log("onBeforeAction", Meteor.userId());
+//   if (!Meteor.userId()) {
+//     // if the user is not logged in, redirect to login
+//     this.redirect('login');
+//   } else {
+//     this.next();
+//   }
+// });

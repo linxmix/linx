@@ -1,14 +1,25 @@
-Mixes = new Meteor.Collection('Mixes');
-MixModel = Model(Mixes);
-
-MixModel.extend(LinxModel);
-
-MixModel.extend({
-  defaultValues: {
-    tracks: [],
-    length: 0,
+MixModel = Graviton.Model.extend({
+  belongsTo: {
+    user: {
+      collectionName: 'users',
+      field: 'createdBy'
+    },
   },
+  belongsToMany: {
+    tracks: {
+      collectionName: 'tracks',
+      field: 'trackIds',
+    },
+    links: {
+      collectionName: 'links',
+      field: 'linkIds',
+    }
+  },
+  defaults: {
+  }
+}, {
 
+  // TODO: convert these to graviton
   getSongs: function() {
     var tracks = this.tracks;
     return tracks.reduce(function(acc, trackId) {
@@ -36,8 +47,16 @@ MixModel.extend({
     this.tracks.splice(index, 1);
     this.update({tracks: this.tracks, length: this.tracks.length});
   }
+  // /TODO
+
 });
 
+Mixes = Graviton.define("mixes", {
+  modelCls: MixModel,
+  timestamps: true,
+});
+
+// TODO: either fill these out or move them into Meteor.methods
 Mixes.allow({
   insert: function (userId, doc) {
     return true;

@@ -1,9 +1,9 @@
-Meteor.publish("Songs", function () {
-  return Songs.find();
+Meteor.publish("Tracks", function () {
+  return Tracks.find();
 });
 
-Meteor.publish("Transitions", function () {
-  return Transitions.find();
+Meteor.publish("Links", function () {
+  return Links.find();
 });
 
 Meteor.publish("Mixes", function () {
