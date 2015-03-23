@@ -11,7 +11,7 @@ Router.configure({
   //   this.next();
   // },
   waitOn: function() {
-    return [Meteor.subscribe('Tracks'), Meteor.subscribe('Links'), Meteor.subscribe('Mixes')];
+    return [Meteor.subscribe('Tracks'), Meteor.subscribe('Links'), Meteor.subscribe('Mixes') ];
   }
 });
 

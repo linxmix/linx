@@ -48,7 +48,6 @@ Utils = {
     return wave;
   },
 
-  // TODO
   // migrate transitions from linx meteor v1 to linx meteor v2
   migrateOldLinx: function(songs, transitions) {
     var userId = Meteor.userId();
@@ -61,20 +60,22 @@ Utils = {
       var track = Tracks.create({
         _id: song._id,
         createdBy: userId,
-        title: song.title,
+        title: song.title || song.name,
         artist: song.artist,
-        s3FileName: song._id + song.fileType,
+        s3FileName: song._id + "." + song.fileType,
         type: "song",
         flags: [],
         playCount: song.playCount,
       });
+      console.log("made song track", track);
     });
 
-    var fromTrack = Tracks.findOne(transition.startSong);
-    var toTrack = Tracks.findOne(transition.endSong);
 
     // build tracks and links from transitions
     transitions.forEach(function(transition) {
+      var fromTrack = Tracks.findOne(transition.startSong);
+      var toTrack = Tracks.findOne(transition.endSong);
+
       // create transition track
       var transitionTrack = Tracks.create({
         _id: transition._id,
@@ -86,6 +87,7 @@ Utils = {
         flags: [],
         playCount: transition.playCount,
       });
+      console.log("made transition track", transitionTrack);
 
       // create link from startSong -> transition
       var link1 = Links.create({
@@ -102,6 +104,7 @@ Utils = {
 
         playCount: transition.playCount,
       });
+      console.log("made link1", link1);
 
       // create link from transition -> endSong
       var link2 = Links.create({
@@ -118,6 +121,7 @@ Utils = {
 
         playCount: transition.playCount,
       });
+      console.log("made link2", link2);
 
     });
 
