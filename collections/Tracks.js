@@ -42,12 +42,12 @@ TrackModel = Graviton.Model.extend({
 
   setSoundcloud: function(attrs) {
     console.log("set soundcloud", attrs);
-    this.saveTrack({
+    this.set({
       soundcloud: attrs,
       title: attrs.title,
       artist: attrs.user && attrs.user.username,
     });
-    this.load(this.getTrack().getSoundcloudUrl());
+    this.save();
   },
 
   loadMp3Tags: function(file) {
@@ -63,7 +63,8 @@ TrackModel = Graviton.Model.extend({
         newAttrs.album = tags.album;
         newAttrs.id3Tags = tags;
       }
-      this.saveTrack(newAttrs);
+      this.set(newAttrs);
+      this.save();
     }.bind(this));
   },
 
@@ -97,24 +98,19 @@ TrackModel = Graviton.Model.extend({
       default: throw 'Uknown source given to getStreamUrl: ' + source;
     }
   },
+  // /TODO
 
   getSource: function() {
-    if (this.soundcloud) {
+    if (this.get('soundcloud')) {
       return 'soundcloud';
     } else {
       return 's3';
     }
   },
 
-  getLinxType: function() {
-    if (!this.linxType) { throw 'Error: track has no linxType'; }
-    return this.linxType;
-  },
-
   getS3Prefix: function() {
-    return this.getLinxType() + 's';
+    return this.get('type') + 's';
   },
-  // /TODO
 
 });
 

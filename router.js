@@ -23,22 +23,15 @@ Router.route('/upload', {
   name: 'Upload',
 });
 
-Router.route('/tracks', {
-  name: 'Tracks',
+Router.route('/track/', {
+  name: 'TrackIndexPage',
   data: function() {
     return Tracks.all();
   }
 });
 
-Router.route('/tracks/:_id', {
-  name: 'TrackView',
-  data: function() {
-    return Tracks.findOne(this.params._id);
-  }
-});
-
-Router.route('/tracks/:_id/edit', {
-  name: 'TrackEdit',
+Router.route('/track/:_id', {
+  name: 'TrackPage',
   data: function() {
     return Tracks.findOne(this.params._id);
   }

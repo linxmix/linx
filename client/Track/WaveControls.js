@@ -1,4 +1,12 @@
-Template.UploadWaveControls.helpers({
+Template.WaveControls.helpers({
+  title: function() {
+    return Template.instance().data.wave.getMeta('title');
+  },
+
+  artist: function() {
+    return Template.instance().data.wave.getMeta('artist');
+  },
+
   isLocal: function() {
     return Template.instance().data.wave.isLocal();
   },
@@ -20,7 +28,15 @@ Template.UploadWaveControls.helpers({
   },
 });
 
-Template.UploadWaveControls.events({
+Template.WaveControls.events({
+  'click .play': function(e, template) {
+    template.data.wave.play();
+  },
+
+  'click .pause': function(e, template) {
+    template.data.wave.pause();
+  },
+  
   'click .empty': function(e, template) {
     template.data.wave.reset();
   },

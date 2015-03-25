@@ -5,11 +5,20 @@
     {{> ProgressBar}}
 
     {{#if isLoaded}}
-      {{#TrackMixer wave=wave}}
-        {{> UI.contentBlock}}
-      {{/TrackMixer}}
+      {{> WaveControls wave=wave}}
     {{else}}
-      {{> UI.elseBlock}}
+      <!-- when track is not loaded -->
+      <div class="ui grid">
+        <div class="four wide column">
+          {{> SearchLinx wave=wave onSelect=onSelectLinx}}
+        </div>
+        <div class="eight wide column">
+          {{> Drop files=files}}
+        </div>
+        <div class="four wide column">
+          {{> SoundcloudInput wave=wave onSubmit=onSubmitSoundcloud}}
+        </div>
+      </div>
     {{/if}}
   </div>
 </template>
