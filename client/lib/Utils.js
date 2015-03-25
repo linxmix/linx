@@ -37,17 +37,6 @@ Utils = {
     return newModel;
   },
 
-  createWaveSurfer: function() {
-    var wave = Object.create(WaveSurfer);
-
-    // initialize vars
-    wave.loaded = new ReactiveVar(false);
-    wave.loading = new ReactiveVar(false);
-    wave.meta = new ReactiveVar(null);
-    wave.loadingIntervals = [];
-    return wave;
-  },
-
   // migrate transitions from linx meteor v1 to linx meteor v2
   migrateOldLinx: function(songs, transitions) {
     var userId = Meteor.userId();

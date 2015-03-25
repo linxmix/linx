@@ -1,16 +1,27 @@
 Template.Track_Wave.created = function() {
-  // get or make wave
-  var wave = this.wave = this.data.wave || Utils.createWaveSurfer();
+  var wave = this.data.wave = Waves.create();
   var files = this.data.files = new ReactiveVar(null);
-  initWave.call(this);
 
-  this.autorun(loadFiles.bind(this));
+  prepWave.call(this, arguments);
+
+  this.autorun(function() {
+    var _files = files.get();
+    // Load files and get mp3 data
+    if (_files && _files !== wave.get('files')) {
+      wave.loadFiles(_files);
+    }
+  });
 };
 
 Template.Track_Wave.rendered = function() {
-  this.$('.progress-bar').hide();
-  this.wave.init({
-    container: this.$('.wave')[0],
+  var template = this;
+  var wave = template.data.wave;
+  var wavesurfer = wave.getWaveSurfer();
+
+  template.$('.progress-bar').hide();
+
+  wavesurfer.init({
+    container: template.$('.wave')[0],
     waveColor: 'violet',
     progressColor: 'purple',
     cursorColor: 'white',
@@ -21,8 +32,8 @@ Template.Track_Wave.rendered = function() {
     renderer: 'Canvas',
   });
 
-  if (this.data.enableDragSelection) {
-    this.wave.enableDragSelection({
+  if (template.enableDragSelection) {
+    wavesurfer.enableDragSelection({
       id: 'selected',
       color: 'rgba(255, 255, 255, 0.4)',
       // drag: false,
@@ -30,46 +41,53 @@ Template.Track_Wave.rendered = function() {
       loop: false,
     });
   }
+
+  if (template.data.track) {
+    wave.loadTrack(template.data.track);
+  }
 };
 
 Template.Track_Wave.helpers({
   hiddenClass: function() {
-    return Template.instance().wave.isLoaded() ? '' : 'hidden';
+    return Template.instance().data.wave.get('loaded') ? '' : 'hidden';
   },
 
   isLoaded: function() {
-    return Template.instance().wave.isLoaded();
+    return Template.instance().data.wave.get('loaded');
   },
 
   wave: function() {
-    return Template.instance().wave;
+    return Template.instance().data.wave;
   },
 
   onSubmitSoundcloud: function() {
-    var wave = Template.instance().wave;
+    var wave = Template.instance().data.wave;
     // create new track with given response
     return function(response) {
       var newTrack = Tracks.build();
       newTrack.setSoundcloud(response);
-      wave.loadTrack(newTrack, newTrack.getStreamUrl());
+      wave.loadTrack(newTrack);
     };
   },
 
   onSelectLinx: function() {
-    var wave = Template.instance().wave;
+    var wave = Template.instance().data.wave;
     return function(track, results) {
-      wave.loadTrack(track, track.getStreamUrl());
+      wave.loadTrack(track);
     };
   }
 });
 
-function initWave() {
+function prepWave() {
   var template = this;
-  var wave = this.wave;
+  var wave = template.data.wave;
+  var wavesurfer = wave.createWaveSurfer();
+  wavesurfer.model = wave;
 
   var lastPercent;
-  wave.on('loading', function(percent, xhr, type) {
-    wave.loading.set(true);
+  wavesurfer.on('loading', function(percent, xhr, type) {
+    wave.set('loading', true);
+    wave.save();
     template.$('.progress-bar').show();
 
     // update progress bar
@@ -89,52 +107,20 @@ function initWave() {
     }
   });
 
-  wave.on('uploadFinish', function() {
-    wave.loading.set(false);
+  wavesurfer.on('uploadFinish', function() {
     template.$('.progress-bar').hide();
   });
 
-  wave.on('ready', function() {
-    wave.loaded.set(true);
-    wave.loading.set(false);
+  wavesurfer.on('ready', function() {
     template.$('.progress-bar').hide();
-    template.data.onReady && template.data.onReady(wave);
   });
 
-  wave.on('reset', function() {
-    wave.loaded.set(false);
-    wave.loading.set(false);
+  wavesurfer.on('reset', function() {
     template.$('.progress-bar').hide();
     template.files.set(null);
   });
 
-  wave.on('error', function(errorMessage) {
+  wavesurfer.on('error', function(errorMessage) {
     template.$('.progress-bar').hide();
-    wave.loading.set(false);
-    window.alert("Wave Error: " + (errorMessage || 'unknown error'));
   });
-
-
-  // sync with wave.getMeta('regions')
-  wave.on('region-created', wave._updateRegion.bind(wave));
-  wave.on('region-updated-end', wave._updateRegion.bind(wave));
-  wave.on('region-removed', wave._updateRegion.bind(wave));
-}
-
-function loadFiles(computation) {
-  var data = this.data;
-  var files = data.files.get();
-  var wave = wave;
-
-  // Load files and get mp3 data
-  if (files && wave.files !== files) {
-    var file = files[0];
-    wave.files = files;
-    wave.loadBlob(file);
-
-    // TODO: move creation logic to wavesurfer.js
-    var newTrack = Tracks.build();
-    newTrack.loadMp3Tags(file);
-    wave.loadTrack(newTrack);
-  }
 }
