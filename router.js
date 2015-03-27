@@ -14,27 +14,22 @@ Router.configure({
     return [Meteor.subscribe('Tracks'), Meteor.subscribe('Links'), Meteor.subscribe('Mixes') ];
   }
 });
+Router.map(function() {
+  this.route('test1', {
+    path: '/test1',
+    template: 'Test1',
+    data: function() {
+      return Tracks.all();
+    }
+  });
 
-Router.route('/login', {
-  name: 'login',
-});
-
-Router.route('/upload', {
-  name: 'Upload',
-});
-
-Router.route('/track/', {
-  name: 'TrackIndexPage',
-  data: function() {
-    return Tracks.all();
-  }
-});
-
-Router.route('/track/:_id', {
-  name: 'TrackPage',
-  data: function() {
-    return Tracks.findOne(this.params._id);
-  }
+  this.route('test2', {
+    path: '/test2',
+    template: 'Test1',
+    data: function() {
+      return Tracks.all();
+    }
+  });
 });
 
 // Router.onBeforeAction(function () {

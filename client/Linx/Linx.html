@@ -1,9 +1,23 @@
-<template name="Linx">
-  <div class="linx">
-    <div class="ui view-select buttons">
-      <div class="ui button {{graphClass}} graph-select">Graph</div>
-      <div class="or"></div>
-      <div class="ui button {{listClass}} list-select">List</div>
-    </div>
+<template name="Test1">
+  {{#linkTo route="test1" class="my-cls"}}
+    <span style="color: orange;">
+      Test Link 1
+    </span>
+  {{/linkTo}}
+  {{> Test3}}
+</template>
+
+<template name="Test2">
+  {{#linkTo route="test2" class="my-cls"}}
+    <span style="color: orange;">
+      Test Link 2
+    </span>
+  {{/linkTo}}
+  {{> Test3}}
+</template>
+
+<template name="Test3">
+  <div class="TEST">
+    Test3 Template
   </div>
 </template>
