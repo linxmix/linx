@@ -1,5 +1,5 @@
 Template.Track_Wave.created = function() {
-  this.data = this.data || {};
+  var _idTrack = this.data._idTrack;
   var wave = this.data.wave = Waves.create();
   var files = this.data.files = new ReactiveVar(null);
 

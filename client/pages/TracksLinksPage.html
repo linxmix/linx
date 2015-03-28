@@ -1,0 +1,32 @@
+<template name="TracksLinksPage">
+  <div class="TracksLinksPage">
+
+    <h1 class="inverted ui center aligned header">
+      <div class="content">
+        {{pageHeader}}
+        <div class="sub header">
+          {{pageSubHeader}}
+        </div>
+      </div>
+    </h1>
+
+    <div class="inverted attached ui segment">
+      <div class="ui header">
+        Track A
+      </div>
+      {{> Track_Wave _idTrack=_idA onReady=onTrackAReady}}
+    </div>
+
+    <div class="inverted attached ui segment">
+      <div class="ui header">
+        Track B
+      </div>
+      {{> Track_Wave _idTrack=_idB onReady=onTrackBReady}}
+    </div>
+
+    <div class="details">
+      {{> yield "details"}}
+    </div>
+
+  </div>
+</template>

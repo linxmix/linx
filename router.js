@@ -48,8 +48,10 @@ Router.map(function() {
       var _idA = this.params._idA;
       var _idB = this.params._idB;
       return {
-        trackA: Tracks.findOne(_idA),
-        trackB: Tracks.findOne(_idB),
+        pageHeader: "Track Links",
+        pageSubHeader: "Select Tracks",
+        _idA: _idA,
+        _idB: _idB,
         links: Utils.findAllLinks(_idA, _idB),
       };
     },
@@ -66,10 +68,10 @@ Router.map(function() {
       var _idA = this.params._idA;
       var _idB = this.params._idB;
       return {
-        trackA: Tracks.findOne(_idA),
-        trackB: Tracks.findOne(_idB),
+        _idA: _idA,
+        _idB: _idB,
         links: Utils.findAllLinks(_idA, _idB),
-        selectedLink: Links.findOne(this.params._idLink)
+        selectedLink: this.params._idLink
       };
     },
     action: assertTwoTracks,
@@ -85,8 +87,8 @@ Router.map(function() {
       var _idA = this.params._idA;
       var _idB = this.params._idB;
       return {
-        trackA: Tracks.findOne(_idA),
-        trackB: Tracks.findOne(_idB),
+        _idA: _idA,
+        _idB: _idB,
         links: Utils.findAllLinks(_idA, _idB),
       };
     },
@@ -98,7 +100,7 @@ Router.map(function() {
     template: 'TrackPage',
     data: function() {
       return {
-        track: Tracks.findOne(this.params._id),
+        _id: this.params._id,
       };
     },
   });
