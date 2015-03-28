@@ -21,8 +21,7 @@ Template.SearchLinx.rendered = function() {
 
 Template.SearchLinx.helpers({
   loadingClass: function() {
-    var wave = Template.instance().data.wave;
-    var waveIsLoading = wave.isLoading && wave.isLoading();
-    return waveIsLoading ? 'loading' : '';
+    var wave = Waves.findOne(Template.instance().data._idWave);
+    return wave && wave.get('loading') ? 'loading' : '';
   }
 });

@@ -5,18 +5,18 @@
     {{> ProgressBar}}
 
     {{#if isLoaded}}
-      {{> WaveControls wave=wave}}
+      {{> WaveControls _idWave=_idWave}}
     {{else}}
       <!-- when track is not loaded -->
       <div class="ui grid">
         <div class="four wide column">
-          {{> SearchLinx wave=wave onSelect=onSelectLinx}}
+          {{> SearchLinx _idWave=_idWave onSelect=onSelectLinx}}
         </div>
         <div class="eight wide column">
-          {{> Drop files=files}}
+          {{> Drop _idWave=_idWave}}
         </div>
         <div class="four wide column">
-          {{> SoundcloudInput wave=wave onSubmit=onSubmitSoundcloud}}
+          {{> SoundcloudInput _idWave=_idWave onSubmit=onSubmitSoundcloud}}
         </div>
       </div>
     {{/if}}

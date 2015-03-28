@@ -1,22 +1,14 @@
 Template.Track_Wave.created = function() {
-  var _idTrack = this.data._idTrack;
-  var wave = this.data.wave = Waves.create();
-  var files = this.data.files = new ReactiveVar(null);
-
-  prepWave.call(this, arguments);
-
-  this.autorun(function() {
-    var _files = files.get();
-    // Load files and get mp3 data
-    if (_files && _files !== wave.get('files')) {
-      wave.loadFiles(_files);
-    }
-  });
+  // setup wave
+  var wave = Waves.create();
+  this.data._idWave = wave.get('_id');
+  prepWaveSurfer(wave, this);
 };
 
 Template.Track_Wave.rendered = function() {
   var template = this;
-  var wave = template.data.wave;
+  var data = template.data;
+  var wave = Waves.findOne(data._idWave);
   var wavesurfer = wave.getWaveSurfer();
 
   template.$('.progress-bar').hide();
@@ -37,32 +29,29 @@ Template.Track_Wave.rendered = function() {
     wavesurfer.enableDragSelection({
       id: 'selected',
       color: 'rgba(255, 255, 255, 0.4)',
-      // drag: false,
-      // resize: false,
       loop: false,
     });
   }
 
-  if (template.data.track) {
-    wave.loadTrack(template.data.track);
-  }
+  // TODO
+  // if (data._idTrack) {
+  //   wave.loadTrack(data._idTrack);
+  // }
 };
 
 Template.Track_Wave.helpers({
   hiddenClass: function() {
-    return Template.instance().data.wave.get('loaded') ? '' : 'hidden';
+    var wave = Waves.findOne(Template.instance().data._idWave);
+    return wave.get('loaded') ? '' : 'hidden';
   },
 
   isLoaded: function() {
-    return Template.instance().data.wave.get('loaded');
-  },
-
-  wave: function() {
-    return Template.instance().data.wave;
+    var wave = Waves.findOne(Template.instance().data._idWave);
+    return wave.get('loaded');
   },
 
   onSubmitSoundcloud: function() {
-    var wave = Template.instance().data.wave;
+    var wave = Waves.findOne(Template.instance().data._idWave);
     // create new track with given response
     return function(response) {
       var newTrack = Tracks.build();
@@ -72,16 +61,14 @@ Template.Track_Wave.helpers({
   },
 
   onSelectLinx: function() {
-    var wave = Template.instance().data.wave;
+    var wave = Waves.findOne(Template.instance().data._idWave);
     return function(track, results) {
       wave.loadTrack(track);
     };
   }
 });
 
-function prepWave() {
-  var template = this;
-  var wave = template.data.wave;
+function prepWaveSurfer(wave, template) {
   var wavesurfer = wave.createWaveSurfer();
   wavesurfer.model = wave;
 

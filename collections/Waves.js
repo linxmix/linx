@@ -1,28 +1,41 @@
-// cached buffers
-WaveSurferBuffers = {
-  MAX_BUFFERS: 2,
-  ids: [],
-  buffers: [],
-  add: function(id, buffer) {
-    if (!id || this.get(id)) {
-      return;
-    }
-    console.log("adding buffer");
-    if (this.buffers.length >= this.MAX_BUFFERS) {
-      this.remove();
-    }
-    this.ids.unshift(id);
-    this.buffers.unshift(buffer);
-  },
-  remove: function() {
-    console.log("removing buffer");
-    this.ids = this.ids.slice(0, this.MAX_BUFFERS);
-    this.buffers = this.buffers.slice(0, this.MAX_BUFFERS);
-  },
-  get: function(id) {
-    if (!id) { return; }
-    var index = this.ids.indexOf(id);
-    return index > -1 ? this.buffers[index] : undefined;
+// TODO:
+// finish WaveSurfers hash
+// destroy wavesurfer on template destroy
+// write WaveControls
+// test wave load flows
+// then continue on with TracksLinksPage
+
+// // cached buffers
+// WaveSurferBuffers = {
+//   MAX_BUFFERS: 2,
+//   ids: [],
+//   buffers: [],
+//   add: function(id, buffer) {
+//     if (!id || this.get(id)) {
+//       return;
+//     }
+//     console.log("adding buffer");
+//     if (this.buffers.length >= this.MAX_BUFFERS) {
+//       this.remove();
+//     }
+//     this.ids.unshift(id);
+//     this.buffers.unshift(buffer);
+//   },
+//   remove: function() {
+//     console.log("removing buffer");
+//     this.ids = this.ids.slice(0, this.MAX_BUFFERS);
+//     this.buffers = this.buffers.slice(0, this.MAX_BUFFERS);
+//   },
+//   get: function(id) {
+//     if (!id) { return; }
+//     var index = this.ids.indexOf(id);
+//     return index > -1 ? this.buffers[index] : undefined;
+//   }
+// };
+
+WaveSurfers = {
+  add: function(id, wavesurfer) {
+    this[id] = wavesurfer;
   }
 };
 
@@ -54,7 +67,7 @@ WaveModel = Graviton.Model.extend({
 }, {
   createWaveSurfer: function() {
     var wave = this;
-    var wavesurfer = this.wavesurfer = Object.create(WaveSurfer);
+    var wavesurfer = Object.create(WaveSurfer);
 
     wavesurfer.on('uploadFinish', function() {
       wave.set('loading', false);
@@ -82,6 +95,10 @@ WaveModel = Graviton.Model.extend({
   // wave.on('region-created', wave._updateRegion.bind(wave));
   // wave.on('region-updated-end', wave._updateRegion.bind(wave));
   // wave.on('region-removed', wave._updateRegion.bind(wave));
+
+    // add to WaveSurfers hash
+    WaveSurfers.add(this.get('_id'), wavesurfer);
+
     return wavesurfer;
   },
 

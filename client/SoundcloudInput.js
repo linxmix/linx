@@ -1,18 +1,19 @@
 Template.SoundcloudInput.created = function() {
-  this.isLoadingAjax = new ReactiveVar(false);
-  this.error = new ReactiveVar(false);
+  this.data.isLoadingAjax = new ReactiveVar(false);
+  this.data.error = new ReactiveVar(false);
 };
 
 Template.SoundcloudInput.helpers({
   loadingClass: function() {
-    var template = Template.instance();
-    var waveIsLoading = template.data.wave.isLoading && template.data.wave.isLoading();
-    var isLoadingAjax = template.isLoadingAjax.get();
+    var data = Template.instance().data;
+    var wave = Waves.findOne(data._idWave);
+    var waveIsLoading = wave && wave.get('isLoading');
+    var isLoadingAjax = data.isLoadingAjax.get();
     return waveIsLoading || isLoadingAjax ? 'loading' : '';
   },
 
   errorClass: function() {
-    return Template.instance().error.get() ? 'error' : '';
+    return Template.instance().data.error.get() ? 'error' : '';
   },
 });
 
@@ -28,18 +29,19 @@ Template.SoundcloudInput.events({
 });
 
 function onSubmit(e, template) {
+  var data = template.data;
   var targetUrl = template.$('input').val();
   var clientId = Config.clientId_Soundcloud;
-  var onSubmit = template.data.onSubmit;
-  var isLoadingAjax = template.isLoadingAjax;
-  var error = template.error;
+
+  var onSubmit = data.onSubmit;
+  var isLoadingAjax = data.isLoadingAjax;
+  var error = data.error;
   console.log("onSubmit", targetUrl);
 
   // verify url, error state if not valid
   var regex = /https?:\/\/soundcloud.com\/.*/;
   if (!targetUrl.match(regex)) {
-    error.set(true);
-    return;
+    return error.set(true);
   } else {
     error.set(false);
   }
