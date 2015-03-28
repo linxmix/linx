@@ -16,7 +16,7 @@ Router.configure({
 });
 
 // redirect to tracks.link if we have two tracks
-function assertOneTrack() {
+function assertLtTwoTracks() {
   var _idA = this.params._idA;
   var _idB = this.params._idB;
   if (Tracks.findOne(_idA) && Tracks.findOne(_idB)) {
@@ -55,7 +55,7 @@ Router.map(function() {
         links: Utils.findAllLinks(_idA, _idB),
       };
     },
-    action: assertOneTrack,
+    action: assertLtTwoTracks,
   });
 
   this.route('tracks.link', {

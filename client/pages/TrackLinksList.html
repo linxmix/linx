@@ -1,0 +1,18 @@
+<template name="TrackLinksList">
+  {{#if links}}
+    <h3 class="inverted center aligned ui header">Linked Tracks</h3>
+    <div class="inverted ui list">
+      {{#each links}}
+        {{> TrackLinkList}}
+      {{/each}}
+      <a class="item">Getting Started</a>
+      <a class="item">Introduction</a>
+      <a class="item">Languages</a>
+      <a class="item">Review</a>
+    </div>
+  {{/if}}
+</template>
+
+<template name="TrackLinkList">
+  <a class="item">{{trackName}}</a>
+</template>
