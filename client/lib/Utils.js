@@ -1,5 +1,18 @@
 Utils = {
 
+  // find all links to and from track a and track b
+  findAllLinks: function(_idA, _idB) {
+    return Links.find({
+      $or: [{
+        fromTrackId: _idA,
+        toTrackId: _idB,
+      }, {
+        fromTrackId: _idB,
+        toTrackId: _idA,
+      }]
+    }).fetch();
+  },
+
   setMixPoint: function(mixPoint, inWave, outWave) {
     console.log("setting mix point", mixPoint, inWave.getMeta('title'), outWave.getMeta('title'));
     inWave.setMixOut(mixPoint._id, inWave);
