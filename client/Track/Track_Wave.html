@@ -1,24 +1,33 @@
 <template name="Track_Wave">
   <div class="Track_Wave">
-    <div class="wave {{hiddenClass}}">
+    <div class="wave {{waveClass}}">
     </div>
     {{> ProgressBar}}
 
     {{#if isLoaded}}
-      {{> WaveControls _idWave=_idWave}}
-    {{else}}
-      <!-- when track is not loaded -->
-      <div class="ui grid">
-        <div class="four wide column">
-          {{> SearchLinx _idWave=_idWave onSelect=onSelectLinx}}
-        </div>
-        <div class="eight wide column">
-          {{> Drop _idWave=_idWave}}
-        </div>
-        <div class="four wide column">
-          {{> SoundcloudInput _idWave=_idWave onSubmit=onSubmitSoundcloud}}
+      <!-- Header -->
+      <div class="inverted ui header">
+        <div class="content">
+          {{trackTitle}}
+          <div class="sub header">{{trackArtist}}</div>
         </div>
       </div>
+      {{> WaveControls _idWave=_idWave}}
+    {{else}}
+      {{#unless isLoading}}
+        <!-- when track is not loaded -->
+        <div class="ui grid">
+          <div class="four wide column">
+            {{> SearchLinx onSelect=onSelectLinx}}
+          </div>
+          <div class="eight wide column">
+            {{> Drop _idWave=_idWave}}
+          </div>
+          <div class="four wide column">
+            {{> SoundcloudInput onSubmit=onSubmitSoundcloud}}
+          </div>
+        </div>
+      {{/unless}}
     {{/if}}
   </div>
 </template>

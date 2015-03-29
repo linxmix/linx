@@ -1,51 +1,57 @@
 Template.WaveControls.helpers({
-  title: function() {
-    return Template.instance().data.wave.getMeta('title');
-  },
-
-  artist: function() {
-    return Template.instance().data.wave.getMeta('artist');
+  isPlaying: function() {
+    var wave = getWave(Template.instance());
+    return wave.get('playing');
   },
 
   isLocal: function() {
-    return Template.instance().data.wave.isLocal();
+    var wave = getWave(Template.instance());
+    return wave.get('local');
   },
 
   isAnalyzed: function() {
-    return Template.instance().data.wave.isAnalyzed();
+    var wave = getWave(Template.instance());
+    return wave.get('analyzed');
   },
 
   loadingClass: function() {
-    return Template.instance().data.wave.isLoading() ? 'loading' : '';
+    var wave = getWave(Template.instance());
+    return wave.get('loading') ? 'loading' : '';
   },
 
   analyzeIconClass: function() {
-    return Template.instance().data.wave.isAnalyzed() ? 'check icon' : 'file audio outline icon';
+    var wave = getWave(Template.instance());
+    return wave.get('analyzed') ? 'check icon' : 'file audio outline icon';
   },
 
   analyzeButtonText: function() {
-    return Template.instance().data.wave.isAnalyzed() ? 'Analyzed' : 'Analyze';
+    var wave = getWave(Template.instance());
+    return wave.get('analyzed') ? 'Analyzed' : 'Analyze';
   },
 });
 
 Template.WaveControls.events({
-  'click .play': function(e, template) {
-    template.data.wave.play();
-  },
-
-  'click .pause': function(e, template) {
-    template.data.wave.pause();
+  'click .playpause': function(e, template) {
+    var wave = getWave(template);
+    wave.playpause();
   },
   
   'click .empty': function(e, template) {
-    template.data.wave.reset();
+    var wave = getWave(template);
+    wave.reset();
   },
 
   'click .save': function(e, template) {
-    template.data.wave.uploadToBackend();
+    // TODO
+    // wavesurfer.uploadToBackend();
   },
 
   'click .analyze': function(e, template) {
-    template.data.wave.fetchEchonestAnalysis();
+    // TODO
+    // wavesurfer.fetchEchonestAnalysis();
   }
 });
+
+function getWave(template) {
+  return Waves.findOne(template.data._idWave);
+}

@@ -1,43 +1,20 @@
-// TODO:
-// finish WaveSurfers hash
-// destroy wavesurfer on template destroy
-// write WaveControls
-// test wave load flows
-// then continue on with TracksLinksPage
-
-// // cached buffers
-// WaveSurferBuffers = {
-//   MAX_BUFFERS: 2,
-//   ids: [],
-//   buffers: [],
-//   add: function(id, buffer) {
-//     if (!id || this.get(id)) {
-//       return;
-//     }
-//     console.log("adding buffer");
-//     if (this.buffers.length >= this.MAX_BUFFERS) {
-//       this.remove();
-//     }
-//     this.ids.unshift(id);
-//     this.buffers.unshift(buffer);
-//   },
-//   remove: function() {
-//     console.log("removing buffer");
-//     this.ids = this.ids.slice(0, this.MAX_BUFFERS);
-//     this.buffers = this.buffers.slice(0, this.MAX_BUFFERS);
-//   },
-//   get: function(id) {
-//     if (!id) { return; }
-//     var index = this.ids.indexOf(id);
-//     return index > -1 ? this.buffers[index] : undefined;
-//   }
-// };
-
-WaveSurfers = {
-  add: function(id, wavesurfer) {
-    this[id] = wavesurfer;
+Meteor.startup(function() {
+  if (Meteor.isClient) {
+    WaveSurfers = {
+      add: function(_id, wavesurfer) {
+        this[_id] = wavesurfer;
+      },
+      get: function(_id) {
+        return this[_id];
+      },
+      destroy: function(_id) {
+        var wavesurfer = this[_id];
+        wavesurfer && wavesurfer.destroy();
+        delete this[_id];
+      }
+    };
   }
-};
+});
 
 WaveModel = Graviton.Model.extend({
   belongsTo: {
@@ -59,15 +36,50 @@ WaveModel = Graviton.Model.extend({
     }
   },
   defaults: {
+    playing: false,
+
     regions: {},
+    analyzed: false,
+    local: true, // TODO
     loaded: false,
-    loadingIntervals: [],
     loading: false,
+    loadingIntervals: [],
   },
 }, {
+  play: function() {
+    var wavesurfer = this.getWaveSurfer();
+    if (wavesurfer) {
+      this.set('playing', true);
+      this.save();
+      wavesurfer.play();
+    }
+  },
+
+  pause: function() {
+    var wavesurfer = this.getWaveSurfer();
+    if (wavesurfer) {
+      this.set('playing', false);
+      this.save();
+      wavesurfer.pause();
+    }
+  },
+
+  playpause: function() {
+    if (this.get('playing')) {
+      this.pause();
+    } else {
+      this.play();
+    }
+  },
+
   createWaveSurfer: function() {
     var wave = this;
     var wavesurfer = Object.create(WaveSurfer);
+
+    // destroy prev
+    if (this.getWaveSurfer()) {
+      this.destroyWaveSurfer();
+    }
 
     wavesurfer.on('uploadFinish', function() {
       wave.set('loading', false);
@@ -76,13 +88,6 @@ WaveModel = Graviton.Model.extend({
 
     wavesurfer.on('ready', function() {
       wave.set({ 'loaded': true, 'loading': false });
-      wave.save();
-      console.log("trackId", wave.get('trackId'));
-      WaveSurferBuffers.add(wave.get('trackId'), wavesurfer.backend.buffer);
-    });
-
-    wavesurfer.on('reset', function() {
-      wave.set({ 'loaded': false, 'loading': false, 'trackId': undefined });
       wave.save();
     });
 
@@ -102,9 +107,18 @@ WaveModel = Graviton.Model.extend({
     return wavesurfer;
   },
 
+  getWaveSurfer: function() {
+    return WaveSurfers.get(this.get('_id'));
+  },
+
+  destroyWaveSurfer: function() {
+    WaveSurfers.destroy(this.get('_id'));
+  },
+
   loadFiles: function(files) {
     var file = files[0];
     var wavesurfer = this.getWaveSurfer();
+    wavesurfer.files = files;
     wavesurfer.loadBlob(file);
     var newTrack = Tracks.build();
     newTrack.loadMp3Tags(file);
@@ -113,25 +127,23 @@ WaveModel = Graviton.Model.extend({
 
   loadTrack: function(track) {
     var wavesurfer = this.getWaveSurfer();
-    console.log("load track", track, track.getStreamUrl());
-    console.log("ids", track.get('_id'), this.get('trackId'));
     if (this.get('trackId') !== track.get('_id')) {
+      console.log("load track", track.get('title'), track.getStreamUrl());
       // set track
       this.set('trackId', track.get('_id'));
-      // load audio from cache
-      var cachedBuffer = WaveSurferBuffers.get(track.get('_id'));
-      if (cachedBuffer) {
-        console.log("CACHE HIT");
-        wavesurfer.loadDecodedBuffer(cachedBuffer);
-      } else {
-        wavesurfer.load(track.getStreamUrl());
-      }
+      this.save();
+      // load track into wavesurfer
+      wavesurfer.load(track.getStreamUrl());
+    } else {
+      console.log("track already loaded", track.get('title'));
     }
   },
 
-  getWaveSurfer: function() {
-    return this.wavesurfer;
-  },
+  reset: function() {
+    this.set({ 'loaded': false, 'loading': false });
+    this.save();
+    this.getWaveSurfer().reset();
+  }
 });
 
 Waves = Graviton.define("waves", {

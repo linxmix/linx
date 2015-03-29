@@ -1,14 +1,19 @@
 Template.Track_Wave.created = function() {
-  // setup wave
   var wave = Waves.create();
-  this.data._idWave = wave.get('_id');
+  console.log("create wave", wave.get('_id'));
+  this._idWave = wave.get('_id');
   prepWaveSurfer(wave, this);
 };
 
+Template.Track_Wave.destroyed = function() {
+  var wave = getWave(this);
+  wave.destroyWaveSurfer();
+};
+
 Template.Track_Wave.rendered = function() {
+  console.log("render wave");
   var template = this;
-  var data = template.data;
-  var wave = Waves.findOne(data._idWave);
+  var wave = getWave(template);
   var wavesurfer = wave.getWaveSurfer();
 
   template.$('.progress-bar').hide();
@@ -33,25 +38,45 @@ Template.Track_Wave.rendered = function() {
     });
   }
 
-  // TODO
-  // if (data._idTrack) {
-  //   wave.loadTrack(data._idTrack);
-  // }
+  // load track if given
+  var _idTrack = template.data._idTrack;
+  if (_idTrack) {
+    wave.loadTrack(Tracks.findOne(_idTrack));
+  }
 };
 
 Template.Track_Wave.helpers({
-  hiddenClass: function() {
-    var wave = Waves.findOne(Template.instance().data._idWave);
+  _idWave: function() {
+    return Template.instance()._idWave;
+  },
+
+  waveClass: function() {
+    var wave = getWave(Template.instance());
     return wave.get('loaded') ? '' : 'hidden';
   },
 
+  trackTitle: function() {
+    var track = getTrack(Template.instance());
+    return (track && track.get('title')) || 'No Title';
+  },
+
+  trackArtist: function() {
+    var track = getTrack(Template.instance());
+    return (track && track.get('artist')) || 'No Artist';
+  },
+
   isLoaded: function() {
-    var wave = Waves.findOne(Template.instance().data._idWave);
+    var wave = getWave(Template.instance());
     return wave.get('loaded');
   },
 
+  isLoading: function() {
+    var wave = getWave(Template.instance());
+    return wave.get('loading');
+  },
+
   onSubmitSoundcloud: function() {
-    var wave = Waves.findOne(Template.instance().data._idWave);
+    var wave = getWave(Template.instance());
     // create new track with given response
     return function(response) {
       var newTrack = Tracks.build();
@@ -61,7 +86,7 @@ Template.Track_Wave.helpers({
   },
 
   onSelectLinx: function() {
-    var wave = Waves.findOne(Template.instance().data._idWave);
+    var wave = getWave(Template.instance());
     return function(track, results) {
       wave.loadTrack(track);
     };
@@ -101,14 +126,24 @@ function prepWaveSurfer(wave, template) {
 
   wavesurfer.on('ready', function() {
     template.$('.progress-bar').hide();
+    template.data.onReady && template.data.onReady(template.data.deck, getWave(template).get('trackId'));
   });
 
   wavesurfer.on('reset', function() {
     template.$('.progress-bar').hide();
-    template.files.set(null);
+    template.data.onReset && template.data.onReset(template.data.deck);
   });
 
   wavesurfer.on('error', function(errorMessage) {
     template.$('.progress-bar').hide();
   });
+}
+
+function getWave(template) {
+  return Waves.findOne(template._idWave);
+}
+
+function getTrack(template) {
+  var wave = getWave(template);
+  return wave.track();
 }

@@ -1,24 +1,19 @@
 <template name="WaveControls">
   <div class="WaveControls">
 
-    <!-- Header -->
-    <div class="inverted ui header">
-      <div class="content">
-        {{title}}
-        <div class="sub header">{{artist}}</div>
-      </div>
-    </div>
-
     <!-- Left Menu -->
     <div class="inverted ui menu">
-      <div class="inverted green ui play icon button">
-        <i class="play icon"></i>
-        Play
-      </div>
-      <div class="inverted red ui pause icon button">
-        <i class="pause icon"></i>
-        Pause
-      </div>
+      {{#unless isPlaying}}
+        <div class="inverted green ui playpause icon button">
+          <i class="play icon"></i>
+          Play
+        </div>
+      {{else}}
+        <div class="inverted red ui playpause icon button">
+          <i class="pause icon"></i>
+          Pause
+        </div>
+      {{/unless}}
 
       <!-- Right Menu -->
       <div class="ui inverted right menu UploadWaveControls">

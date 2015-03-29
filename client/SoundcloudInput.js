@@ -1,19 +1,17 @@
 Template.SoundcloudInput.created = function() {
-  this.data.isLoadingAjax = new ReactiveVar(false);
-  this.data.error = new ReactiveVar(false);
+  this.ajaxIsLoading = new ReactiveVar(false);
+  this.error = new ReactiveVar(false);
+  console.log("soundcloud input created");
 };
 
 Template.SoundcloudInput.helpers({
   loadingClass: function() {
-    var data = Template.instance().data;
-    var wave = Waves.findOne(data._idWave);
-    var waveIsLoading = wave && wave.get('isLoading');
-    var isLoadingAjax = data.isLoadingAjax.get();
-    return waveIsLoading || isLoadingAjax ? 'loading' : '';
+    var ajaxIsLoading = Template.instance().ajaxIsLoading.get();
+    return ajaxIsLoading ? 'loading' : '';
   },
 
   errorClass: function() {
-    return Template.instance().data.error.get() ? 'error' : '';
+    return Template.instance().error.get() ? 'error' : '';
   },
 });
 
@@ -29,13 +27,12 @@ Template.SoundcloudInput.events({
 });
 
 function onSubmit(e, template) {
-  var data = template.data;
   var targetUrl = template.$('input').val();
   var clientId = Config.clientId_Soundcloud;
 
-  var onSubmit = data.onSubmit;
-  var isLoadingAjax = data.isLoadingAjax;
-  var error = data.error;
+  var onSubmit = template.data.onSubmit;
+  var ajaxIsLoading = template.ajaxIsLoading;
+  var error = template.error;
   console.log("onSubmit", targetUrl);
 
   // verify url, error state if not valid
@@ -47,7 +44,7 @@ function onSubmit(e, template) {
   }
 
   // resolve url to get stream_url
-  isLoadingAjax.set(true);
+  ajaxIsLoading.set(true);
   $.ajax({
     type: 'GET',
     url: 'http://api.soundcloud.com/resolve.json',
@@ -56,7 +53,7 @@ function onSubmit(e, template) {
       client_id: clientId,
     },
     success: function(response) {
-      isLoadingAjax.set(false);
+      ajaxIsLoading.set(false);
       console.log("RESPONSE", response);
       if (!(response && response.streamable && response.stream_url)) {
         window.alert('Sorry, but SoundCloud won\'t let us steam this url', targetUrl);
@@ -65,7 +62,7 @@ function onSubmit(e, template) {
       }
     },
     error: function(response) {
-      isLoadingAjax.set(false);
+      ajaxIsLoading.set(false);
       error.set(true);
       window.alert('404 error', response);
     }

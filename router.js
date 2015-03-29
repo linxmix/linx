@@ -39,7 +39,7 @@ function assertTwoTracks() {
 
 Router.map(function() {
   this.route('tracks.links', {
-    path: '/tracks/:_idA?/links/:_idB?',
+    path: '/tracks/links/:_idA?/:_idB?',
     template: 'TracksLinksPage',
     yieldRegions: {
       'TrackLinksList': {to: 'details'},
@@ -59,7 +59,7 @@ Router.map(function() {
   });
 
   this.route('tracks.link', {
-    path: '/tracks/:_idA/links/:_idB/link/:_idLink?',
+    path: '/tracks/links/:_idA/:_idB/link/:_idLink?',
     template: 'TracksLinksPage',
     yieldRegions: {
       'TracksLinksList': {to: 'details'},

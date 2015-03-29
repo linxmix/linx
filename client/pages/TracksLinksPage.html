@@ -16,13 +16,13 @@
       <div class="ui header">
         Track A
       </div>
-      {{> Track_Wave _idTrack=_idA onReady=onTrackAReady}}
+      {{> Track_Wave deck="A" _idTrack=_idA onReady=onTrackReady onReset=onTrackReset}}
     </div>
     <div class="inverted attached ui segment">
       <div class="ui header">
         Track B
       </div>
-      {{> Track_Wave _idTrack=_idB onReady=onTrackBReady}}
+      {{> Track_Wave deck="B" _idTrack=_idB onReady=onTrackReady onReset=onTrackReset}}
     </div>
 
     <div class="inverted ui divider"></div>
