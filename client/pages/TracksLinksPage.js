@@ -19,5 +19,11 @@ function onTrackReady(deck, _idTrack) {
 }
 
 function onTrackReset(deck) {
-  onTrackReady.call(this, deck);
+  console.log("on track reset", deck);
+  var _idA = this.data._idA;
+  var _idB = this.data._idB;
+  Router.go("tracks.links", {
+    _idA: deck === "A" ? null : _idA,
+    _idB: deck === "B" ? null : _idB,
+  });
 }

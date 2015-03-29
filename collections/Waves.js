@@ -140,7 +140,7 @@ WaveModel = Graviton.Model.extend({
   },
 
   reset: function() {
-    this.set({ 'loaded': false, 'loading': false });
+    this.set({ 'loaded': false, 'loading': false, 'trackId': undefined });
     this.save();
     this.getWaveSurfer().reset();
   }

@@ -39,9 +39,9 @@ Template.Track_Wave.rendered = function() {
   }
 
   // load track if given
-  var _idTrack = template.data._idTrack;
-  if (_idTrack) {
-    wave.loadTrack(Tracks.findOne(_idTrack));
+  var track = Tracks.findOne(template.data._idTrack);
+  if (track) {
+    wave.loadTrack(track);
   }
 };
 

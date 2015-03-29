@@ -38,8 +38,18 @@ function assertTwoTracks() {
 }
 
 Router.map(function() {
+  this.route('track', {
+    path: '/tracks/:_id',
+    template: 'TrackPage',
+    data: function() {
+      return {
+        _id: this.params._id,
+      };
+    },
+  });
+
   this.route('tracks.links', {
-    path: '/tracks/links/:_idA?/:_idB?',
+    path: '/tracks/:_idA/links/:_idB?',
     template: 'TracksLinksPage',
     yieldRegions: {
       'TrackLinksList': {to: 'details'},
@@ -48,18 +58,18 @@ Router.map(function() {
       var _idA = this.params._idA;
       var _idB = this.params._idB;
       return {
-        pageHeader: "Track Links",
+        pageHeader: "Link Tracks",
         pageSubHeader: "Select Tracks",
         _idA: _idA,
         _idB: _idB,
         links: Utils.findAllLinks(_idA, _idB),
       };
     },
-    action: assertLtTwoTracks,
+    onBeforeAction: assertLtTwoTracks,
   });
 
   this.route('tracks.link', {
-    path: '/tracks/links/:_idA/:_idB/link/:_idLink?',
+    path: '/tracks/:_idA/links/:_idB/link/:_idLink?',
     template: 'TracksLinksPage',
     yieldRegions: {
       'TracksLinksList': {to: 'details'},
@@ -68,13 +78,15 @@ Router.map(function() {
       var _idA = this.params._idA;
       var _idB = this.params._idB;
       return {
+        pageHeader: "Track Links",
+        pageSubHeader: "Select Link",
         _idA: _idA,
         _idB: _idB,
         links: Utils.findAllLinks(_idA, _idB),
         selectedLink: this.params._idLink
       };
     },
-    action: assertTwoTracks,
+    onBeforeAction: assertTwoTracks,
   });
 
   this.route('tracks.link.edit', {
@@ -87,22 +99,14 @@ Router.map(function() {
       var _idA = this.params._idA;
       var _idB = this.params._idB;
       return {
+        pageHeader: "Edit Links",
+        pageSubHeader: "Select Link",
         _idA: _idA,
         _idB: _idB,
         links: Utils.findAllLinks(_idA, _idB),
       };
     },
-    action: assertTwoTracks,
-  });
-
-  this.route('track', {
-    path: '/tracks/:_id',
-    template: 'TrackPage',
-    data: function() {
-      return {
-        _id: this.params._id,
-      };
-    },
+    onBeforeAction: assertTwoTracks,
   });
 });
 
