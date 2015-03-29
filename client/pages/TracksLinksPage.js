@@ -9,6 +9,7 @@ Template.TracksLinksPage.helpers({
 });
 
 function onTrackReady(deck, _idTrack) {
+  _idTrack = _idTrack || null;
   console.log("on track ready", deck, _idTrack);
   var _idA = this.data._idA;
   var _idB = this.data._idB;

@@ -26,6 +26,10 @@ WaveModel = Graviton.Model.extend({
       collectionName: 'tracks',
       field: 'trackId',
     },
+    newTrack: {
+      collectionName: 'newTracks',
+      field: 'newTrackId',
+    },
     linkFrom: {
       collectionName: 'links',
       field: 'linkFromId',
@@ -40,7 +44,6 @@ WaveModel = Graviton.Model.extend({
 
     regions: {},
     analyzed: false,
-    local: true, // TODO
     loaded: false,
     loading: false,
     loadingIntervals: [],
@@ -120,9 +123,10 @@ WaveModel = Graviton.Model.extend({
     var wavesurfer = this.getWaveSurfer();
     wavesurfer.files = files;
     wavesurfer.loadBlob(file);
-    var newTrack = Tracks.build();
+    var newTrack = this.createNewTrack();
     newTrack.loadMp3Tags(file);
-    this.loadTrack(newTrack);
+    this.set('newTrackId', newTrack.get('_id'));
+    this.save();
   },
 
   loadTrack: function(track) {
@@ -139,8 +143,57 @@ WaveModel = Graviton.Model.extend({
     }
   },
 
+  createNewTrack: function(attrs) {
+    var newTrack = NewTracks.create(attrs || {});
+    return newTrack;
+  },
+
+  loadNewTrack: function(track) {
+    var wavesurfer = this.getWaveSurfer();
+    if (this.get('newTrackId') !== track.get('_id')) {
+      console.log("load new track", track.get('title'), track.getStreamUrl());
+      // set track
+      this.set('newTrackId', track.get('_id'));
+      this.save();
+      // load track into wavesurfer
+      wavesurfer.load(track.getStreamUrl());
+    } else {
+      console.log("track already loaded", track.get('title'));
+    }
+  },
+
+  saveNewTrack: function() {
+    var newTrack = this.newTrack();
+    if (newTrack) {
+      var track = Tracks.create(newTrack.attributes);
+      this.set({
+        trackId: track.get('_id'),
+        newTrackId: null,
+      });
+      this.save();
+      newTrack.remove();
+    }
+  },
+
+  hasNewTrack: function() {
+    return !!this.get('newTrackId');
+  },
+
+  getTrack: function() {
+    if (this.get('trackId')) {
+      return this.track();
+    } else {
+      return this.newTrack();
+    }
+  },
+
   reset: function() {
-    this.set({ 'loaded': false, 'loading': false, 'trackId': undefined });
+    this.set({
+      'loaded': false,
+      'loading': false,
+      'trackId': undefined,
+      'newTrackId': undefined
+    });
     this.save();
     this.getWaveSurfer().reset();
   }

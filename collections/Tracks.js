@@ -74,7 +74,7 @@ TrackModel = Graviton.Model.extend({
   },
 
   getSoundcloudUrl: function() {
-    var soundcloud = this.soundcloud;
+    var soundcloud = this.get('soundcloud');
     if (soundcloud && soundcloud.stream_url) {
       var clientId = Config.clientId_Soundcloud;
       return soundcloud.stream_url + '?client_id=' + clientId;
@@ -86,7 +86,7 @@ TrackModel = Graviton.Model.extend({
   getS3Url: function() {
     var part = 'http://s3-us-west-2.amazonaws.com/linx-music/';
     // TODO: make this work for non-mp3
-    var fileName = this.s3FileName || this._id + '.mp3';
+    var fileName = this.get('s3FileName') || this.get('_id') + '.mp3';
     return part + this.getS3Prefix() + '/' + fileName;
   },
 
@@ -116,6 +116,12 @@ TrackModel = Graviton.Model.extend({
 
 Tracks = Graviton.define("tracks", {
   modelCls: TrackModel,
+  timestamps: true,
+});
+
+NewTracks = Graviton.define("newTracks", {
+  modelCls: TrackModel,
+  persist: false,
   timestamps: true,
 });
 

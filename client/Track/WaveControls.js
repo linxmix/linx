@@ -6,7 +6,7 @@ Template.WaveControls.helpers({
 
   isLocal: function() {
     var wave = getWave(Template.instance());
-    return wave.get('local');
+    return wave.hasNewTrack();
   },
 
   isAnalyzed: function() {

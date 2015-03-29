@@ -79,9 +79,9 @@ Template.Track_Wave.helpers({
     var wave = getWave(Template.instance());
     // create new track with given response
     return function(response) {
-      var newTrack = Tracks.build();
+      var newTrack = wave.createNewTrack();
       newTrack.setSoundcloud(response);
-      wave.loadTrack(newTrack);
+      wave.loadNewTrack(newTrack);
     };
   },
 
@@ -145,5 +145,5 @@ function getWave(template) {
 
 function getTrack(template) {
   var wave = getWave(template);
-  return wave.track();
+  return wave.getTrack();
 }

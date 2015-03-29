@@ -58,7 +58,7 @@ function onSubmit(e, template) {
       if (!(response && response.streamable && response.stream_url)) {
         window.alert('Sorry, but SoundCloud won\'t let us steam this url', targetUrl);
       } else {
-        onSubmit && onSubmit(response);
+        onSubmit(response);
       }
     },
     error: function(response) {
