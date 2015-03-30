@@ -1,7 +1,6 @@
 Template.SoundcloudInput.created = function() {
   this.ajaxIsLoading = new ReactiveVar(false);
   this.error = new ReactiveVar(false);
-  console.log("soundcloud input created");
 };
 
 Template.SoundcloudInput.helpers({

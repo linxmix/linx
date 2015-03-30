@@ -1,8 +1,14 @@
 .SearchLinx {
   width: 100%;
+  .icon.input {
+    width: 100%;
+  }
 }
 
 // TODO: why doesn't it work to put it in SoundcloudInput.scss?
 .SoundcloudInput {
   width: 100%;
+  .icon.input {
+    width: 100%;
+  }
 }

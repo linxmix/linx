@@ -26,12 +26,27 @@ function assertLtTwoTracks() {
   }
 }
 
-// redirect to tracks.links if we don't have two tracks
+function getTrackIds(params) {
+  var _idA = params._idA;
+  var _idB = params._idB;
+  var _ids = [_idA, _idB];
+  return _ids.reduce(function(_ids, _id) {
+    if (Tracks.findOne(_id)) {
+      _ids.push(_id);
+    }
+    return _ids;
+  }, []);
+}
+
+// redirect to track.links if we don't have two tracks
 function assertTwoTracks() {
-  var _idA = this.params._idA;
-  var _idB = this.params._idB;
-  if (!(Tracks.findOne(_idA) && Tracks.findOne(_idB))) {
-    Router.go('tracks.links', { _idA: _idA, _idB: _idB });
+  var _idTracks = getTrackIds(this.params);
+  if (_idTracks.length !== 2) {
+    Router.go('track.links', {
+      _idA: this.params._idA,
+      _idB: this.params._idB,
+      _idActive: _idTracks[0],
+    });
   } else {
     this.render();
   }
@@ -48,7 +63,7 @@ Router.map(function() {
     },
   });
 
-  this.route('tracks.links', {
+  this.route('track.links', {
     path: '/tracks/:_idA/links/:_idB?',
     template: 'TracksLinksPage',
     yieldRegions: {
@@ -57,12 +72,16 @@ Router.map(function() {
     data: function() {
       var _idA = this.params._idA;
       var _idB = this.params._idB;
+      var _idTracks = getTrackIds(this.params);
+  console.log("loadedTracks", _idTracks);
+
       return {
         pageHeader: "Link Tracks",
         pageSubHeader: "Select Tracks",
         _idA: _idA,
         _idB: _idB,
-        links: Utils.findAllLinks(_idA, _idB),
+        _idTrack: _idTracks[0],
+        // links: Utils.findAllLinks(_idA, _idB),
       };
     },
     onBeforeAction: assertLtTwoTracks,

@@ -1,6 +1,5 @@
 Template.Track_Wave.created = function() {
   var wave = Waves.create();
-  console.log("create wave", wave.get('_id'));
   this._idWave = wave.get('_id');
   prepWaveSurfer(wave, this);
 };
@@ -11,7 +10,6 @@ Template.Track_Wave.destroyed = function() {
 };
 
 Template.Track_Wave.rendered = function() {
-  console.log("render wave");
   var template = this;
   var wave = getWave(template);
   var wavesurfer = wave.getWaveSurfer();

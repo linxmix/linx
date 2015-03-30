@@ -2,15 +2,33 @@ Utils = {
 
   // find all links to and from track a and track b
   findAllLinks: function(_idA, _idB) {
-    return Links.find({
-      $or: [{
-        fromTrackId: _idA,
-        toTrackId: _idB,
-      }, {
-        fromTrackId: _idB,
-        toTrackId: _idA,
-      }]
-    }).fetch();
+    if (!Tracks.findOne(_idA)) {
+      return Links.find({
+        $or: [{
+          fromTrackId: _idB,
+        }, {
+          toTrackId: _idB,
+        }]
+      }).fetch();
+    } else if (!Tracks.findOne(_idB)) {
+      return Links.find({
+        $or: [{
+          fromTrackId: _idA,
+        }, {
+          toTrackId: _idA,
+        }]
+      }).fetch();
+    } else {
+      return Links.find({
+        $or: [{
+          fromTrackId: _idA,
+          toTrackId: _idB,
+        }, {
+          fromTrackId: _idB,
+          toTrackId: _idA,
+        }]
+      }).fetch();
+    }
   },
 
   setMixPoint: function(mixPoint, inWave, outWave) {
