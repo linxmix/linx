@@ -68,9 +68,8 @@ TrackModel = Graviton.Model.extend({
     }.bind(this));
   },
 
-  // TODO: convert these to graviton
-  isLocal: function() {
-    return (typeof this._local === 'boolean') && this._local;
+  getAllLinks: function() {
+    return this.toLinks.all().concat(this.fromLinks.all());
   },
 
   getSoundcloudUrl: function() {

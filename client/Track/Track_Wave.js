@@ -37,10 +37,18 @@ Template.Track_Wave.rendered = function() {
   }
 
   // load track if given
-  var track = Tracks.findOne(template.data._idTrack);
-  if (track) {
-    wave.loadTrack(track);
-  }
+  var lastId;
+  template.autorun(function() {
+    var newId = Template.currentData()._idTrack;
+    if (newId !== lastId) {
+      lastId = newId;
+      var track = Tracks.findOne(newId);
+      console.log("load track if given", track);
+      if (track) {
+        getWave(template).loadTrack(track);
+      }
+    }
+  });
 };
 
 Template.Track_Wave.helpers({
@@ -74,9 +82,10 @@ Template.Track_Wave.helpers({
   },
 
   onSubmitSoundcloud: function() {
-    var wave = getWave(Template.instance());
+    var template = Template.instance();
     // create new track with given response
     return function(response) {
+      var wave = getWave(template);
       var newTrack = wave.createNewTrack();
       newTrack.setSoundcloud(response);
       wave.loadNewTrack(newTrack);
@@ -84,8 +93,9 @@ Template.Track_Wave.helpers({
   },
 
   onSelectLinx: function() {
-    var wave = getWave(Template.instance());
-    return function(track, results) {
+    var template = Template.instance();
+    return function(track) {
+      var wave = getWave(template);
       wave.loadTrack(track);
     };
   }

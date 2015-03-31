@@ -102,7 +102,7 @@ Utils = {
         createdBy: userId,
         title: fromTrack.get('title') + ' - ' + toTrack.get('title'),
         artist: transition.dj,
-        s3FileName: transition._id + transition.fileType,
+        s3FileName: transition._id + '.' + transition.fileType,
         type: "transition",
         flags: [],
         playCount: transition.playCount,

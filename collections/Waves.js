@@ -130,8 +130,8 @@ WaveModel = Graviton.Model.extend({
   },
 
   loadTrack: function(track) {
-    var wavesurfer = this.getWaveSurfer();
     if (this.get('trackId') !== track.get('_id')) {
+      var wavesurfer = this.getWaveSurfer();
       console.log("load track", track.get('title'), track.getStreamUrl());
       // set track
       this.set('trackId', track.get('_id'));
@@ -149,8 +149,8 @@ WaveModel = Graviton.Model.extend({
   },
 
   loadNewTrack: function(track) {
-    var wavesurfer = this.getWaveSurfer();
     if (this.get('newTrackId') !== track.get('_id')) {
+      var wavesurfer = this.getWaveSurfer();
       console.log("load new track", track.get('title'), track.getStreamUrl());
       // set track
       this.set('newTrackId', track.get('_id'));
@@ -195,6 +195,7 @@ WaveModel = Graviton.Model.extend({
       'newTrackId': undefined
     });
     this.save();
+    console.log("reset", this.get('trackId'));
     this.getWaveSurfer().reset();
   }
 });

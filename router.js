@@ -11,7 +11,7 @@ Router.configure({
   //   this.next();
   // },
   waitOn: function() {
-    return [Meteor.subscribe('Tracks'), Meteor.subscribe('Links'), Meteor.subscribe('Mixes') ];
+    return [Meteor.subscribe('Tracks'), Meteor.subscribe('Links'), Meteor.subscribe('Mixes'), Meteor.subscribe('Songs'), Meteor.subscribe('Transitions') ];
   }
 });
 
@@ -20,7 +20,7 @@ function assertLtTwoTracks() {
   var _idA = this.params._idA;
   var _idB = this.params._idB;
   if (Tracks.findOne(_idA) && Tracks.findOne(_idB)) {
-    Router.go('tracks.link', { _idA: _idA, _idB: _idB });
+    Router.go('tracks.links', { _idA: _idA, _idB: _idB });
   } else {
     this.render();
   }
@@ -53,6 +53,11 @@ function assertTwoTracks() {
 }
 
 Router.map(function() {
+  this.route('login', {
+    path: '/login',
+    template: 'login',
+  });
+
   this.route('track', {
     path: '/tracks/:_id',
     template: 'TrackPage',
@@ -73,10 +78,9 @@ Router.map(function() {
       var _idA = this.params._idA;
       var _idB = this.params._idB;
       var _idTracks = getTrackIds(this.params);
-  console.log("loadedTracks", _idTracks);
 
       return {
-        pageHeader: "Link Tracks",
+        pageHeader: "Track Links",
         pageSubHeader: "Select Tracks",
         _idA: _idA,
         _idB: _idB,
@@ -87,7 +91,7 @@ Router.map(function() {
     onBeforeAction: assertLtTwoTracks,
   });
 
-  this.route('tracks.link', {
+  this.route('tracks.links', {
     path: '/tracks/:_idA/links/:_idB/link/:_idLink?',
     template: 'TracksLinksPage',
     yieldRegions: {
@@ -96,8 +100,9 @@ Router.map(function() {
     data: function() {
       var _idA = this.params._idA;
       var _idB = this.params._idB;
+
       return {
-        pageHeader: "Track Links",
+        pageHeader: "Link Tracks",
         pageSubHeader: "Select Link",
         _idA: _idA,
         _idB: _idB,
@@ -109,7 +114,7 @@ Router.map(function() {
   });
 
   this.route('tracks.link.edit', {
-    path: '/tracks/links/:_idA/:_idB/edit',
+    path: '/tracks/:_idA/links/:_idB/edit',
     template: 'TracksLinksEditPage',
     yieldRegions: {
       'TracksLinksEditList': {to: 'details'},
