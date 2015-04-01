@@ -68,7 +68,7 @@ MixModel = Graviton.Model.extend({
 
 });
 
-Mixes = Utils.defineCollection("mixes", {
+Mixes = Graviton.define("mixes", {
   modelCls: MixModel,
   timestamps: true,
 });
