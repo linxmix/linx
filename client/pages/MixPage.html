@@ -1,0 +1,60 @@
+<template name="MixPage">
+  <div class="MixPage">
+
+    <!-- Header -->
+    <h1 class="inverted ui center aligned header">
+      <div class="content">
+        Mix Builder
+        <div class="sub header">
+          {{mix.attributes.title}}
+        </div>
+      </div>
+    </h1>
+
+    <!-- Menu -->
+    <div class="inverted bottom-attached basic ui icon buttons">
+      <div class="ui save button {{saveButtonClass}}"><i class="save icon"></i> Save</div>
+    </div>
+
+    <!-- Tracks -->
+
+    {{#if tracks}}
+      <div class="inverted attached ui segment">
+        <div class="inverted ui fluid accordion">
+          {{#each tracksInfo}}
+            {{> TrackAccordion}}
+            <div class="inverted ui divider"></div>
+          {{/each}}
+        </div>
+      </div>
+    {{/if}}
+
+    <!-- Add Track -->
+    <div class="inverted attached ui segment">
+      <h2 class="inverted center aligned ui header">Add Track</h2>
+      {{#unless refreshNewTrack}}
+        {{> Track_Wave onReady=onNewTrack}}
+      {{/unless}}
+    </div>
+
+<!-- 
+    <div class="ui details grid">
+      <div class="eight wide centered column">
+        {{> TrackLinksList _idTrack=lastTrackId}}
+      </div>
+    </div>
+ -->
+
+
+  </div>
+</template>
+
+<template name="TrackAccordion">
+  <div class="title {{activeClass}}">
+    <i class="dropdown icon"></i>
+    {{track.attributes.title}}
+  </div>
+  <div class="content {{activeClass}}">
+    {{> Track_Wave _idTrack=track.attributes._id}}
+  </div>
+</template>

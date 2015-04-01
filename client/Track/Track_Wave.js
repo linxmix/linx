@@ -134,7 +134,15 @@ function prepWaveSurfer(wave, template) {
 
   wavesurfer.on('ready', function() {
     template.$('.progress-bar').hide();
-    template.data.onReady && template.data.onReady(template.data.deck, getWave(template).get('trackId'));
+    var onReady = template.data.onReady;
+    if (onReady) {
+      var deck = template.data.deck;
+      if (deck) {
+        onReady(deck, getWave(template).get('trackId'));
+      } else {
+        onReady(getWave(template).get('trackId'));
+      }
+    }
   });
 
   wavesurfer.on('reset', function() {

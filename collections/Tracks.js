@@ -27,7 +27,7 @@ TrackModel = Graviton.Model.extend({
     flags: [],
     type: 'song', // one of 'song', 'transition' or 'mix'
     playCount: 0,
-  }
+  },
 }, {
 
   setEchonest: function(attrs) {
