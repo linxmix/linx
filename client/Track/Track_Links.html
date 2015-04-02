@@ -1,0 +1,25 @@
+<template name="Track_Links">
+  {{#Wave wave=wave}}
+    <!-- when wave is loaded -->
+    <div class="inverted ui header">
+      <div class="content">
+        {{trackTitle}}
+        <div class="sub header">{{trackArtist}}</div>
+      </div>
+    </div>
+    {{> WaveControls _idWave=_idWave}}
+  {{else}}
+    <!-- when wave is not loaded -->
+    <div class="ui grid">
+      <div class="four wide column">
+        {{> SearchLinx onSelect=onSelectLinx}}
+      </div>
+      <div class="eight wide column">
+        {{> Drop _idWave=_idWave}}
+      </div>
+      <div class="four wide column">
+        {{> SoundcloudInput onSubmit=onSubmitSoundcloud}}
+      </div>
+    </div>
+  {{/Wave}}
+</template>

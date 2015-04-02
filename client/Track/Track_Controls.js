@@ -1,12 +1,25 @@
-Template.WaveControls.helpers({
+Template.Track_Controls.created = function() {
+  Utils.initTemplateModel.call(this, 'track');
+};
+
+function getTrack(template) {
+  return template.data.track;
+}
+
+function getWave(template) {
+  return getTrack(template).get('wave');
+}
+
+// TODO: move some/all/none of these functions to track?
+Template.Track_Controls.helpers({
   isPlaying: function() {
     var wave = getWave(Template.instance());
     return wave.get('playing');
   },
 
   isLocal: function() {
-    var wave = getWave(Template.instance());
-    return wave.hasNewTrack();
+    var track = getTrack(Template.instance());
+    return !track.get('_id');
   },
 
   isAnalyzed: function() {
@@ -30,7 +43,7 @@ Template.WaveControls.helpers({
   },
 });
 
-Template.WaveControls.events({
+Template.Track_Controls.events({
   'click .playpause': function(e, template) {
     var wave = getWave(template);
     wave.playpause();
@@ -51,7 +64,3 @@ Template.WaveControls.events({
     // wavesurfer.fetchEchonestAnalysis();
   }
 });
-
-function getWave(template) {
-  return Waves.findOne(template.data._idWave);
-}

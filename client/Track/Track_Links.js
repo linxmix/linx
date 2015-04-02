@@ -1,15 +1,41 @@
-Template.Track_Wave.created = function() {
-  var wave = Waves.create();
-  this._idWave = wave.get('_id');
-  prepWaveSurfer(wave, this);
+Template.Track_Links.created = function() {
+
+  // update model if changed
+  this.autorun(function() {
+    var data = Template.currentData();
+    if (data.model && data.model !== model.get()) {
+      model.set(data.model);
+      // also reload wave
+      wave.loadTrack(model.get());
+    }
+  }.bind(this));
+
+  // update wave if changed
+  this.autorun(function() {
+    var data = Template.currentData();
+    if (data.wave && data.wave !== wave.get()) {
+      wave.set(data.track);
+      // also reload track
+      wave.loadTrack();
+    }
+  }.bind(this));
 };
 
-Template.Track_Wave.destroyed = function() {
+Template.Track_Links.destroyed = function() {
   var wave = getWave(this);
   wave.destroyWaveSurfer();
 };
 
-Template.Track_Wave.rendered = function() {
+function getWave(template) {
+  return template.wave.get();
+}
+
+function getTrack(template) {
+  var wave = getWave(template);
+  return wave.getTrack();
+}
+
+Template.Track_Links.rendered = function() {
   var template = this;
   var wave = getWave(template);
   var wavesurfer = wave.getWaveSurfer();
@@ -51,7 +77,7 @@ Template.Track_Wave.rendered = function() {
   });
 };
 
-Template.Track_Wave.helpers({
+Template.Track_Links.helpers({
   _idWave: function() {
     return Template.instance()._idWave;
   },
@@ -153,13 +179,4 @@ function prepWaveSurfer(wave, template) {
   wavesurfer.on('error', function(errorMessage) {
     template.$('.progress-bar').hide();
   });
-}
-
-function getWave(template) {
-  return Waves.findOne(template._idWave);
-}
-
-function getTrack(template) {
-  var wave = getWave(template);
-  return wave.getTrack();
 }

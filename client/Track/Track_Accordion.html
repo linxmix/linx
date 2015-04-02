@@ -1,0 +1,38 @@
+<template name="Track_Accordion">
+  <div class="title {{activeClass}}">
+    <i class="dropdown icon"></i>
+    {{position}}. {{track.attributes.title}}
+  </div>
+  <div class="content {{activeClass}}">
+    {{#if activeClass}}
+      {{#Track_Wave track=track}}
+        <!-- when wave is loaded -->
+        <div class="inverted ui header">
+          <div class="content">
+            {{track.attributes.title}}
+            <div class="sub header">{{track.attributes.artist}}</div>
+          </div>
+        </div>
+        {{> Track_Accordion_Controls track=track}}
+      {{/Track_Wave}}
+    {{/if}}
+  </div>
+</template>
+
+<template name="Track_Accordion_Controls">
+  <div class="Track_Accordion_Controls">
+    <div class="inverted ui menu">
+      {{#unless isPlaying}}
+        <div class="inverted green ui playpause icon button">
+          <i class="play icon"></i>
+          Play
+        </div>
+      {{else}}
+        <div class="inverted red ui playpause icon button">
+          <i class="pause icon"></i>
+          Pause
+        </div>
+      {{/unless}}
+    </div>
+  </div>
+</template>

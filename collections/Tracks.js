@@ -6,10 +6,6 @@ TrackModel = Graviton.Model.extend({
     },
   },
   hasMany: {
-    waves: {
-      collectionName: 'waves',
-      foreignKey: 'trackId',
-    },
     mixes: {
       collectionName: 'mixes',
       foreignKey: 'trackIds',
@@ -29,6 +25,21 @@ TrackModel = Graviton.Model.extend({
     playCount: 0,
   },
 }, {
+  initWave: function(template) {
+    if (this.get('wave')) {
+      // TODO: will a track ever have more than one wave? what happens if so?
+      throw new Error("Track already has a wave", this.get('title'));
+    }
+    var wave = Waves.create();
+    this.set('wave', wave);
+    wave.init(template);
+    wave.loadTrack(this);
+  },
+
+  destroyWave: function() {
+    this.get('wave').destroy();
+    this.set('wave', undefined);
+  },
 
   setEchonest: function(attrs) {
     console.log("set echonest", attrs);
@@ -97,7 +108,6 @@ TrackModel = Graviton.Model.extend({
       default: throw 'Uknown source given to getStreamUrl: ' + source;
     }
   },
-  // /TODO
 
   getSource: function() {
     if (this.get('soundcloud')) {
@@ -115,12 +125,6 @@ TrackModel = Graviton.Model.extend({
 
 Tracks = Graviton.define("tracks", {
   modelCls: TrackModel,
-  timestamps: true,
-});
-
-NewTracks = Graviton.define("newTracks", {
-  modelCls: TrackModel,
-  persist: false,
   timestamps: true,
 });
 

@@ -19,8 +19,8 @@
       <h3 class="inverted left aligned ui header">{{trackCountText}}</h3>
       <!-- Tracks -->
       <div class="inverted ui fluid accordion">
-        {{#each tracksInfo}}
-          {{> TrackAccordion}}
+        {{#each tracksAccordion}}
+          {{> Track_Accordion}}
         {{/each}}
       </div>
     </div>
@@ -28,28 +28,15 @@
     <!-- Add Track -->
     <div class="inverted attached ui segment">
       <h3 class="inverted center aligned ui header">Add Track</h3>
-      {{#unless refreshNewTrack}}
-        {{> Track_Wave onReady=onNewTrack}}
-      {{/unless}}
+      <!-- {{> Track_Wave onReady=onNewTrack}} -->
 
       <div class="ui suggestions grid">
         <div class="eight wide centered column">
-          {{> TrackLinksList _idTrack=lastTrackId}}
+          Suggestions
+          <!-- {{> TrackLinksList _idTrack=lastTrackId}} -->
         </div>
       </div>
     </div>
 
-  </div>
-</template>
-
-<template name="TrackAccordion">
-  <div class="title {{activeClass}}">
-    <i class="dropdown icon"></i>
-    {{position}}. {{track.attributes.title}}
-  </div>
-  <div class="content {{activeClass}}">
-    {{#if activeClass}}
-      {{> Track_Wave _idTrack=track.attributes._id}}
-    {{/if}}
   </div>
 </template>

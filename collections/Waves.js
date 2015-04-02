@@ -16,6 +16,7 @@ Meteor.startup(function() {
   }
 });
 
+// Graviton Model to wrap WaveSurfer
 WaveModel = Graviton.Model.extend({
   belongsTo: {
     user: {
@@ -25,10 +26,6 @@ WaveModel = Graviton.Model.extend({
     track: {
       collectionName: 'tracks',
       field: 'trackId',
-    },
-    newTrack: {
-      collectionName: 'newTracks',
-      field: 'newTrackId',
     },
     linkFrom: {
       collectionName: 'links',
@@ -75,49 +72,7 @@ WaveModel = Graviton.Model.extend({
     }
   },
 
-  createWaveSurfer: function() {
-    var wave = this;
-    var wavesurfer = Object.create(WaveSurfer);
-
-    // destroy prev
-    if (this.getWaveSurfer()) {
-      this.destroyWaveSurfer();
-    }
-
-    wavesurfer.on('uploadFinish', function() {
-      wave.set('loading', false);
-      wave.save();
-    });
-
-    wavesurfer.on('ready', function() {
-      wave.set({ 'loaded': true, 'loading': false });
-      wave.save();
-    });
-
-    wavesurfer.on('error', function(errorMessage) {
-      wave.set('loaded', false);
-      wave.save();
-      window.alert("Wave Error: " + (errorMessage || 'unknown error'));
-    });
-  // sync with wave.getMeta('regions')
-  // wave.on('region-created', wave._updateRegion.bind(wave));
-  // wave.on('region-updated-end', wave._updateRegion.bind(wave));
-  // wave.on('region-removed', wave._updateRegion.bind(wave));
-
-    // add to WaveSurfers hash
-    WaveSurfers.add(this.get('_id'), wavesurfer);
-
-    return wavesurfer;
-  },
-
-  getWaveSurfer: function() {
-    return WaveSurfers.get(this.get('_id'));
-  },
-
-  destroyWaveSurfer: function() {
-    WaveSurfers.destroy(this.get('_id'));
-  },
-
+  // TODO: figure this one out
   loadFiles: function(files) {
     var file = files[0];
     var wavesurfer = this.getWaveSurfer();
@@ -143,61 +98,118 @@ WaveModel = Graviton.Model.extend({
     }
   },
 
-  createNewTrack: function(attrs) {
-    var newTrack = NewTracks.create(attrs || {});
-    return newTrack;
-  },
-
-  loadNewTrack: function(track) {
-    if (this.get('newTrackId') !== track.get('_id')) {
-      var wavesurfer = this.getWaveSurfer();
-      console.log("load new track", track.get('title'), track.getStreamUrl());
-      // set track
-      this.set('newTrackId', track.get('_id'));
-      this.save();
-      // load track into wavesurfer
-      wavesurfer.load(track.getStreamUrl());
-    } else {
-      console.log("track already loaded", track.get('title'));
-    }
-  },
-
-  saveNewTrack: function() {
-    var newTrack = this.newTrack();
-    if (newTrack) {
-      var track = Tracks.create(newTrack.attributes);
-      this.set({
-        trackId: track.get('_id'),
-        newTrackId: null,
-      });
-      this.save();
-      newTrack.remove();
-    }
-  },
-
-  hasNewTrack: function() {
-    return !!this.get('newTrackId');
-  },
-
-  getTrack: function() {
-    if (this.get('trackId')) {
-      return this.track();
-    } else {
-      return this.newTrack();
-    }
-  },
-
   reset: function() {
     this.set({
       'loaded': false,
       'loading': false,
       'trackId': undefined,
-      'newTrackId': undefined
     });
     this.save();
-    console.log("reset", this.get('trackId'));
+    console.log("wave reset", this.get('trackId'));
     this.getWaveSurfer().reset();
-  }
+  },
+
+  init: function(template) {
+    var wavesurfer = this.createWaveSurfer();
+
+    // Initialize wavesurfer
+    var wave = this;
+    template.$('.progress-bar').hide();
+
+    wavesurfer.init({
+      container: template.$('.wave')[0],
+      waveColor: 'violet',
+      progressColor: 'purple',
+      cursorColor: 'white',
+      minPxPerSec: 10,
+      height: 150,
+      fillParent: true,
+      cursorWidth: 2,
+      renderer: 'Canvas',
+    });
+
+    if (template.enableDragSelection) {
+      wavesurfer.enableDragSelection({
+        id: 'selected',
+        color: 'rgba(255, 255, 255, 0.4)',
+        loop: false,
+      });
+    }
+
+    // Setup Handlers
+    var lastPercent;
+    wavesurfer.on('loading', function(percent, xhr, type) {
+      wave.set({ 'loading': true, 'loaded': false });
+      template.$('.progress-bar').show();
+
+      // update progress bar
+      if (percent !== lastPercent) {
+        lastPercent = percent;
+        var text = {};
+        switch (type) {
+          case 'upload': text = { active: "Uploading...", success: "Uploaded!" }; break;
+          case 'profile': text = { active: "Getting Profile...", success: "Got Profile!" }; break;
+          case 'analyze': text = { active: "Analyzing...", success: "Analyzed!" }; break;
+          default: text = { active: "Loading...", success: "Decoding..." };
+        }
+        template.$('.progress-bar').progress({
+          percent: percent,
+          text: text,
+        });
+      }
+    });
+
+    wavesurfer.on('uploadFinish', function() {
+      template.$('.progress-bar').hide();
+      wave.set('loading', false);
+      wave.save();
+    });
+
+    wavesurfer.on('ready', function() {
+      template.$('.progress-bar').hide();
+      wave.set({ 'loaded': true, 'loading': false });
+      wave.save();
+    });
+
+    wavesurfer.on('reset', function() {
+      template.$('.progress-bar').hide();
+    });
+
+    wavesurfer.on('error', function(errorMessage) {
+      template.$('.progress-bar').hide();
+      wave.set('loaded', false);
+      wave.save();
+      window.alert("Wave Error: " + (errorMessage || 'unknown error'));
+    });
+  },
+
+  createWaveSurfer: function() {
+    var wavesurfer = Object.create(WaveSurfer);
+
+    // destroy prev
+    if (this.getWaveSurfer()) {
+      this.destroyWaveSurfer();
+    }
+
+    // add to WaveSurfers hash
+    WaveSurfers.add(this.get('_id'), wavesurfer);
+
+    return wavesurfer;
+  },
+
+  getWaveSurfer: function() {
+    return WaveSurfers.get(this.get('_id'));
+  },
+
+  destroy: function() {
+    this.destroyWaveSurfer();
+    this.remove();
+  },
+
+  destroyWaveSurfer: function() {
+    WaveSurfers.destroy(this.get('_id'));
+  },
+
 });
 
 Waves = Graviton.define("waves", {
