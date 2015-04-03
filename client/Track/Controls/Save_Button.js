@@ -11,9 +11,9 @@ function getWave(template) {
 }
 
 Template.Save_Button.helpers({
-  isLocal: function() {
+  isDirty: function() {
     var track = getTrack(Template.instance());
-    return !track.get('_id');
+    return track.isDirty();
   },
   
   loadingClass: function() {

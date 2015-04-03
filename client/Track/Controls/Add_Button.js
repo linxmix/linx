@@ -11,8 +11,8 @@ function getWave(template) {
 }
 
 Template.Add_Button.helpers({
-  isLocal: function() {
+  isDirty: function() {
     var track = getTrack(Template.instance());
-    return !track.get('_id');
+    return track.isDirty();
   },
 });

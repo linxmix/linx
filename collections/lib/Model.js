@@ -1,17 +1,19 @@
 // Augment Graviton Model
 Graviton.Model.prototype.isDirty = function() {
   var updatedAt = this.getUpdatedAt().get();
-  return this._pendingMods.length !== 0;
+  return !this.get('_id') || this._pendingMods.length !== 0;
 };
 
 Graviton.Model.prototype.refresh = function() {
   var dbModel = this._collection.findOne(this.get('_id'));
   this.set(dbModel.attributes);
+  this._pendingMods = [];
 };
 
 Graviton.Model.prototype.cloneFrom = function(model) {
   this._id = model.get('_id');
   this.set(model.attributes);
+  this._pendingMods = [];
 };
 
 Graviton.Model.prototype.getUpdatedAt = function() {
