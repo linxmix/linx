@@ -1,0 +1,13 @@
+<template name="Save_Button">
+  {{#if isLocal}}
+    <div class="inverted orange ui save icon button {{loadingClass}}">
+      <i class="cloud upload icon"></i>
+      Save
+    </div>
+  {{else}}
+    <div class="basic inverted disabled ui icon button">
+      <i class="check icon"></i>
+      Saved
+    </div>
+  {{/if}}
+</template>

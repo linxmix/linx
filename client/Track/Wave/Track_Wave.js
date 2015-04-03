@@ -37,6 +37,25 @@ Template.Track_Wave.helpers({
     var wave = getWave(Template.instance());
     return wave.get('loading');
   },
+
+  onSubmitSoundcloud: function() {
+    var template = Template.instance();
+    // load response into track, then load wave
+    return function(response) {
+      var track = getTrack(template);
+      var wave = getWave(template);
+      track.setSoundcloud(response);
+      wave.loadTrack(track);
+    };
+  },
+
+  onSelectLinx: function() {
+    return function(track) {
+      // TODO: can we modify Template.currentData()? how else to do this? set _id then refresh? make this a copy?
+      var track = Template.currentData().track;
+    }.bind(this);
+  },
+
 });
 
 function initWave(template) {

@@ -1,4 +1,5 @@
 Template.Drop.created = function() {
+  Utils.initTemplateModel.call(this, 'track');
   this.dragover = new ReactiveVar(false);
 };
 
@@ -28,8 +29,9 @@ Template.Drop.events({
 
     // load files
     if (e.originalEvent.dataTransfer.files.length) {
-      var wave = Waves.findOne(template.data._idWave);
-      wave.loadFiles(e.originalEvent.dataTransfer.files);
+
+      var track = Template.currentData().track;
+      track.loadFiles(e.originalEvent.dataTransfer.files);
     }
   }
 });

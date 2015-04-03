@@ -1,0 +1,13 @@
+<template name="Analyze_Button">
+  {{#if isAnalyzed}}
+    <div class="basic inverted disabled ui icon button">
+      <i class="check icon"></i>
+      Analyzed
+    </div>
+  {{else}}
+    <div class="inverted purple ui analyze icon button {{loadingClass}}">
+      <i class="audio file outline icon"></i>
+      Analyze
+    </div>
+  {{/if}}
+</template>

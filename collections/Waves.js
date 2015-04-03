@@ -72,16 +72,12 @@ WaveModel = Graviton.Model.extend({
     }
   },
 
-  // TODO: figure this one out
   loadFiles: function(files) {
     var file = files[0];
     var wavesurfer = this.getWaveSurfer();
+    // store reference to pass to uploading to s3
     wavesurfer.files = files;
     wavesurfer.loadBlob(file);
-    var newTrack = this.createNewTrack();
-    newTrack.loadMp3Tags(file);
-    this.set('newTrackId', newTrack.get('_id'));
-    this.save();
   },
 
   loadTrack: function(track) {

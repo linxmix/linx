@@ -1,0 +1,31 @@
+Template.Save_Button.created = function() {
+  Utils.initTemplateModel.call(this, 'track');
+};
+
+function getTrack(template) {
+  return template.data.track;
+}
+
+function getWave(template) {
+  return getTrack(template).get('wave');
+}
+
+Template.Save_Button.helpers({
+  isLocal: function() {
+    var track = getTrack(Template.instance());
+    console.log('isLocal', track);
+    return !track.get('_id');
+  },
+  
+  loadingClass: function() {
+    var wave = getWave(Template.instance());
+    return wave.get('loading') ? 'loading' : '';
+  },
+});
+
+Template.Save_Button.events({
+  'click .save': function(e, template) {
+    var wave = getWave(template);
+    // TODO
+  },
+});

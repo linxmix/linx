@@ -5,9 +5,30 @@
     {{> ProgressBar}}
 
     {{#if isLoaded}}
+      {{#unless hideHeader}}
+        <div class="inverted ui header">
+          <div class="content">
+            {{track.attributes.title}}
+            <div class="sub header">{{track.attributes.artist}}</div>
+          </div>
+        </div>
+      {{/unless}}
       {{> UI.contentBlock}}
     {{else}}
       {{#unless isLoading}}
+        {{#unless hideLoadOptions}}
+          <div class="ui grid">
+            <div class="four wide column">
+              {{> SearchLinx onSelect=onSelectLinx}}
+            </div>
+            <div class="eight wide column">
+              {{> Drop track=track}}
+            </div>
+            <div class="four wide column">
+              {{> SoundcloudInput onSubmit=onSubmitSoundcloud}}
+            </div>
+          </div>
+        {{/unless}}
         {{> UI.elseBlock}}
       {{/unless}}
     {{/if}}

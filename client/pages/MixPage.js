@@ -1,7 +1,6 @@
 Template.MixPage.created = function() {
   Utils.initTemplateModel.call(this, 'mix');
 
-  // setup active tracks
   this.activeTracks = new ReactiveVar([]);
 };
 
@@ -56,13 +55,12 @@ Template.MixPage.helpers({
     return trackIds[trackIds.length - 1];
   },
 
-  onNewTrack: function() {
-    var template = Template.instance();
-    return function(wave) {
-      var mix = getMix(template);
-      mix.appendTrack(wave.get('trackId'));
-    };
-  }
+  addTrack: function() {
+    var mix = getMix(Template.instance());
+    return function(track) {
+      mix.appendTrack(track.get('_id'));
+    }.bind(this);
+  },
 });
 
 Template.MixPage.events({
@@ -77,5 +75,30 @@ Template.MixPage.events({
         _id: mix.get('_id')
       });
     }
+  }
+});
+
+Template.Track_Adder.created = function() {
+  this.track = new ReactiveVar(Tracks.build());
+};
+
+Template.Track_Adder.helpers({
+  track: function() {
+    return Template.instance().track.get();
+  },
+});
+
+function resetTrack(template) {
+  template.track.set(Tracks.build());
+}
+
+Template.Track_Adder.events({
+  'click .add': function(e, template){
+    template.data.addTrack(template.track.get());
+    resetTrack(template);
+  },
+
+  'click .reset': function(e, template) {
+    resetTrack(template);
   }
 });

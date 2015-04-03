@@ -48,7 +48,6 @@ TrackModel = Graviton.Model.extend({
       title: attrs.title,
       artist: attrs.artist,
     });
-    this.save();
   },
 
   setSoundcloud: function(attrs) {
@@ -58,7 +57,6 @@ TrackModel = Graviton.Model.extend({
       title: attrs.title,
       artist: attrs.user && attrs.user.username,
     });
-    this.save();
   },
 
   loadMp3Tags: function(file) {
@@ -75,8 +73,13 @@ TrackModel = Graviton.Model.extend({
         newAttrs.id3Tags = tags;
       }
       this.set(newAttrs);
-      this.save();
     }.bind(this));
+  },
+
+  loadFiles: function(files) {
+    var file = files[0];
+    this.get('wave').loadFiles(files);
+    this.loadMp3Tags(file);
   },
 
   getAllLinks: function() {

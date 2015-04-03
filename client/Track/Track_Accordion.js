@@ -33,30 +33,3 @@ Template.Track_Accordion.events({
     mix.updateTemplate();
   }
 });
-
-/*** Track_Accordion_Controls ***/
-Template.Track_Accordion_Controls.created = function() {
-  Utils.initTemplateModel.call(this, 'track');
-};
-
-function getTrack(template) {
-  return template.data.track;
-}
-
-function getWave(template) {
-  return getTrack(template).get('wave');
-}
-
-Template.Track_Accordion_Controls.helpers({
-  isPlaying: function() {
-    var wave = getWave(Template.instance());
-    return wave.get('playing');
-  },
-});
-
-Template.Track_Accordion_Controls.events({
-  'click .playpause': function(e, template) {
-    var wave = getWave(template);
-    wave.playpause();
-  },
-});

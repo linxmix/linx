@@ -28,15 +28,27 @@
     <!-- Add Track -->
     <div class="inverted attached ui segment">
       <h3 class="inverted center aligned ui header">Add Track</h3>
-      <!-- {{> Track_Wave onReady=onNewTrack}} -->
+      {{> Track_Adder addTrack=addTrack}}
 
       <div class="ui suggestions grid">
         <div class="eight wide centered column">
-          Suggestions
-          <!-- {{> TrackLinksList _idTrack=lastTrackId}} -->
+          {{> TrackLinksList _idTrack=lastTrackId}}
         </div>
       </div>
     </div>
 
   </div>
+</template>
+
+<template name="Track_Adder">
+  {{#Track_Wave track=track}}
+    <div class="inverted ui menu">
+      {{> Play_Button track=track}}
+      <div class="ui inverted right menu">
+        {{> Reset_Button track=track}}
+        {{> Save_Button track=track}}
+        {{> Add_Button track=track}}
+      </div>
+    </div>
+  {{/Track_Wave}}
 </template>
