@@ -21,6 +21,8 @@ TrackModel = Graviton.Model.extend({
   },
   defaults: {
     flags: [],
+    title: 'No Title',
+    artist: 'No Artist',
     type: 'song', // one of 'song', 'transition' or 'mix'
     playCount: 0,
   },
@@ -30,10 +32,12 @@ TrackModel = Graviton.Model.extend({
       // TODO: will a track ever have more than one wave? what happens if so?
       throw new Error("Track already has a wave", this.get('title'));
     }
+
+    // create wave, setup relationships
     var wave = Waves.create();
     this.set('wave', wave);
+    wave.set('track', this);
     wave.init(template);
-    wave.loadTrack(this);
   },
 
   destroyWave: function() {
@@ -97,6 +101,7 @@ TrackModel = Graviton.Model.extend({
   },
 
   getS3Url: function() {
+    if (!this.get('_id')) { return; }
     var part = 'http://s3-us-west-2.amazonaws.com/linx-music/';
     // TODO: make this work for non-mp3
     var fileName = this.get('s3FileName') || this.get('_id') + '.mp3';

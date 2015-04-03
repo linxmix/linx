@@ -50,17 +50,25 @@ Template.Track_Wave.helpers({
   },
 
   onSelectLinx: function() {
-    return function(track) {
-      // TODO: can we modify Template.currentData()? how else to do this? set _id then refresh? make this a copy?
-      var track = Template.currentData().track;
+    var template = Template.instance();
+    // clone selected, then load wave
+    return function(selectedTrack) {
+      var track = getTrack(template);
+      track.cloneFrom(selectedTrack);
     }.bind(this);
   },
 
+  onDropTrack: function() {
+    var template = Template.instance();
+    // load files into track
+    return function(files) {
+      var track = getTrack(template);
+      track.loadFiles(files);
+    };
+  }
 });
 
 function initWave(template) {
-
-  // bail if we aren't ready
   if (!template.isRendered) {
     return;
   }

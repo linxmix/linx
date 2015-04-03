@@ -50,7 +50,6 @@ WaveModel = Graviton.Model.extend({
     var wavesurfer = this.getWaveSurfer();
     if (wavesurfer) {
       this.set('playing', true);
-      this.save();
       wavesurfer.play();
     }
   },
@@ -59,7 +58,6 @@ WaveModel = Graviton.Model.extend({
     var wavesurfer = this.getWaveSurfer();
     if (wavesurfer) {
       this.set('playing', false);
-      this.save();
       wavesurfer.pause();
     }
   },
@@ -80,27 +78,12 @@ WaveModel = Graviton.Model.extend({
     wavesurfer.loadBlob(file);
   },
 
-  loadTrack: function(track) {
-    if (this.get('trackId') !== track.get('_id')) {
-      var wavesurfer = this.getWaveSurfer();
-      console.log("load track", track.get('title'), track.getStreamUrl());
-      // set track
-      this.set('trackId', track.get('_id'));
-      this.save();
-      // load track into wavesurfer
-      wavesurfer.load(track.getStreamUrl());
-    } else {
-      console.log("track already loaded", track.get('title'));
-    }
-  },
-
   reset: function() {
     this.set({
       'loaded': false,
       'loading': false,
       'trackId': undefined,
     });
-    this.save();
     console.log("wave reset", this.get('trackId'));
     this.getWaveSurfer().reset();
   },
@@ -158,13 +141,11 @@ WaveModel = Graviton.Model.extend({
     wavesurfer.on('uploadFinish', function() {
       template.$('.progress-bar').hide();
       wave.set('loading', false);
-      wave.save();
     });
 
     wavesurfer.on('ready', function() {
       template.$('.progress-bar').hide();
       wave.set({ 'loaded': true, 'loading': false });
-      wave.save();
     });
 
     wavesurfer.on('reset', function() {
@@ -174,9 +155,24 @@ WaveModel = Graviton.Model.extend({
     wavesurfer.on('error', function(errorMessage) {
       template.$('.progress-bar').hide();
       wave.set('loaded', false);
-      wave.save();
       window.alert("Wave Error: " + (errorMessage || 'unknown error'));
     });
+
+    // Autorun loadTrack
+    this.stopAutoload();
+    var lastUrl;
+    this.set('autoload', Tracker.autorun(function() {
+      var track = this.get('track');
+      var streamUrl = track && track.getStreamUrl();
+      if (streamUrl && streamUrl !== lastUrl) {
+        lastUrl = streamUrl;
+        this.getWaveSurfer().load(streamUrl);
+      }
+    }.bind(this)));
+  },
+
+  stopAutoload: function() {
+    this.get('autoload') && this.get('autoload').stop();
   },
 
   createWaveSurfer: function() {
@@ -198,6 +194,7 @@ WaveModel = Graviton.Model.extend({
   },
 
   destroy: function() {
+    this.stopAutoload();
     this.destroyWaveSurfer();
     this.remove();
   },

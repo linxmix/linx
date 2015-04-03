@@ -1,5 +1,5 @@
 Template.Drop.created = function() {
-  Utils.initTemplateModel.call(this, 'track');
+  Utils.requireTemplateData.call(this, 'onDrop');
   this.dragover = new ReactiveVar(false);
 };
 
@@ -27,11 +27,9 @@ Template.Drop.events({
     e.preventDefault();
     template.dragover.set(false);
 
-    // load files
+    // call handler
     if (e.originalEvent.dataTransfer.files.length) {
-
-      var track = Template.currentData().track;
-      track.loadFiles(e.originalEvent.dataTransfer.files);
+      Template.currentData().onDrop(e.originalEvent.dataTransfer.files);
     }
   }
 });

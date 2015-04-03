@@ -13,7 +13,6 @@ function getWave(template) {
 Template.Save_Button.helpers({
   isLocal: function() {
     var track = getTrack(Template.instance());
-    console.log('isLocal', track);
     return !track.get('_id');
   },
   

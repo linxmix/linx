@@ -134,7 +134,6 @@ function prepWaveSurfer(wave, template) {
   var lastPercent;
   wavesurfer.on('loading', function(percent, xhr, type) {
     wave.set('loading', true);
-    wave.save();
     template.$('.progress-bar').show();
 
     // update progress bar

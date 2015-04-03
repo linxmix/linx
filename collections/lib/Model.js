@@ -4,6 +4,15 @@ Graviton.Model.prototype.isDirty = function() {
   return this._pendingMods.length !== 0;
 };
 
+Graviton.Model.prototype.refresh = function() {
+  var dbModel = this._collection.findOne(this.get('_id'));
+  this.set(dbModel.attributes);
+};
+
+Graviton.Model.prototype.cloneFrom = function(model) {
+  this.set(model.attributes);
+};
+
 Graviton.Model.prototype.getUpdatedAt = function() {
   var updatedAt = this._updatedAt;
   if (!updatedAt) {
