@@ -89,8 +89,6 @@ Template.Track_Adder.helpers({
 });
 
 function resetTrack(template) {
-  var oldTrack = template.track.get();
-  oldTrack.destroy();
   template.track.set(Tracks.build());
 }
 

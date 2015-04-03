@@ -28,16 +28,33 @@ TrackModel = Graviton.Model.extend({
   },
 }, {
   initWave: function(template) {
-    if (this.get('wave')) {
+    if (this.getWave()) {
       // TODO: will a track ever have more than one wave? what happens if so?
-      throw new Error("Track already has a wave", this.get('title'));
+      console.log(this.getWave());
+      throw new Error("Track already has a wave " + this.get('title'));
     }
 
     // create wave, setup relationships
     var wave = Waves.create();
-    this.set('wave', wave);
-    wave.set('track', this);
+    this.setWave(wave);
     wave.init(template);
+    this.loadWave();
+  },
+
+  setWave: function(wave) {
+    this.wave = this.wave || new ReactiveVar();
+    this.wave.set(wave);
+  },
+
+  getWave: function() {
+    this.wave = this.wave || new ReactiveVar();
+    return this.wave && this.wave.get();
+  },
+
+  loadWave: function() {
+    var streamUrl = this.getStreamUrl();
+    var wave = this.getWave();
+    wave && streamUrl && wave.loadUrl(streamUrl);
   },
 
   destroy: function() {
@@ -45,8 +62,8 @@ TrackModel = Graviton.Model.extend({
   },
 
   destroyWave: function() {
-    this.get('wave').destroy();
-    this.set('wave', undefined);
+    this.getWave().destroy();
+    this.setWave(undefined);
   },
 
   setEchonest: function(attrs) {
@@ -86,7 +103,7 @@ TrackModel = Graviton.Model.extend({
 
   loadFiles: function(files) {
     var file = files[0];
-    this.get('wave').loadFiles(files);
+    this.getWave().loadFiles(files);
     this.loadMp3Tags(file);
   },
 
@@ -105,7 +122,6 @@ TrackModel = Graviton.Model.extend({
   },
 
   getS3Url: function() {
-    console.log("getS3Url", this.get('_id'));
     if (!this.get('_id')) { return; }
     var part = 'http://s3-us-west-2.amazonaws.com/linx-music/';
     // TODO: make this work for non-mp3
@@ -135,7 +151,7 @@ TrackModel = Graviton.Model.extend({
   },
 
   saveToBackend: function(cb) {
-    var wave = this.get('wave');
+    var wave = this.getWave();
     var files = wave && wave.get('files');
     if (!(wave && files)) {
       throw new Error('Cannot upload a track without a wave and files: ' + this.get('title'));
@@ -160,7 +176,7 @@ TrackModel = Graviton.Model.extend({
 
   _uploadToS3: function(cb) {
     var track = this;
-    var wave = this.get('wave');
+    var wave = this.getWave();
 
     // track progress
     Tracker.autorun(function(computation) {

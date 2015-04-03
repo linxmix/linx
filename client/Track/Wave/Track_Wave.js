@@ -1,7 +1,9 @@
 Template.Track_Wave.created = function() {
   Utils.initTemplateModel.call(this, 'track', function(newModel, prevModel) {
-    console.log("model changed", newModel, prevModel);
     initWave(this);
+    if (prevModel) {
+      prevModel.destroyWave();
+    }
   });
 };
 
@@ -17,7 +19,7 @@ Template.Track_Wave.rendered = function() {
 // TODO: how to better default wave before template is rendered?
 function getWave() {
   var track = Template.currentData().track;
-  return track.get('wave') || Waves.build();
+  return track.getWave() || Waves.build();
 }
 
 Template.Track_Wave.helpers({
@@ -41,6 +43,7 @@ Template.Track_Wave.helpers({
     // load response into track, then load wave
     return function(response) {
       track.setSoundcloud(response);
+      track.loadWave();
     }.bind(Template.instance());
   },
 
@@ -49,7 +52,7 @@ Template.Track_Wave.helpers({
     // clone selected, then load wave
     return function(selectedTrack) {
       track.cloneFrom(selectedTrack);
-      console.log("selctLinx", track, selectedTrack)
+      track.loadWave();
     }.bind(Template.instance());
   },
 
@@ -69,6 +72,5 @@ function initWave(template) {
 
   // Initialize wave
   var track = Template.currentData().track;
-  console.log("init wave", track)
   track.initWave(template);
 }

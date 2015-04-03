@@ -70,6 +70,10 @@ WaveModel = Graviton.Model.extend({
     }
   },
 
+  loadUrl: function(url) {
+    this.getWaveSurfer().load(url);
+  },
+
   loadFiles: function(files) {
     // store reference to pass to uploading to s3
     this.set('files', files);
@@ -148,20 +152,6 @@ WaveModel = Graviton.Model.extend({
       wave.set('loaded', false);
       window.alert("Wave Error: " + (errorMessage || 'unknown error'));
     });
-
-    // Autorun loadTrack
-    this.stopAutoload();
-    var lastUrl;
-    console.log("setting autoload", this.get('autoload'), this);
-    this.set('autoload', Tracker.autorun(function() {
-      var track = this.get('track');
-      var streamUrl = track && track.getStreamUrl();
-      // console.log("autoload", track, streamUrl);
-      if (streamUrl && streamUrl !== lastUrl) {
-        lastUrl = streamUrl;
-        this.getWaveSurfer().load(streamUrl);
-      }
-    }.bind(this)));
   },
 
   onUploadFinish: function() {
@@ -170,10 +160,6 @@ WaveModel = Graviton.Model.extend({
 
   onLoading: function(options) {
     this.getWaveSurfer().fireEvent('loading', options.percent, options.xhr, options.type);
-  },
-
-  stopAutoload: function() {
-    // this.get('autoload') && this.get('autoload').stop();
   },
 
   createWaveSurfer: function() {
@@ -195,8 +181,6 @@ WaveModel = Graviton.Model.extend({
   },
 
   destroy: function() {
-    console.log("destroy wave", this);
-    this.stopAutoload();
     this.destroyWaveSurfer();
     this.remove();
   },

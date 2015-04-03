@@ -7,7 +7,7 @@ function getTrack(template) {
 }
 
 function getWave(template) {
-  return getTrack(template).get('wave');
+  return getTrack(template).getWave();
 }
 
 Template.Save_Button.helpers({
