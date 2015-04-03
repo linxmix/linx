@@ -24,7 +24,7 @@ Template.Save_Button.helpers({
 
 Template.Save_Button.events({
   'click .save': function(e, template) {
-    var wave = getWave(template);
-    // TODO
+    var track = getTrack(template);
+    track.saveToBackend();
   },
 });

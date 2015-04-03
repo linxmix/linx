@@ -1,11 +1,12 @@
 Template.Track_Wave.created = function() {
   Utils.initTemplateModel.call(this, 'track', function(newModel, prevModel) {
+    console.log("model changed", newModel, prevModel);
     initWave(this);
   });
 };
 
 Template.Track_Wave.destroyed = function() {
-  getTrack(this).destroyWave();
+  Template.currentData().track.destroyWave();
 };
 
 Template.Track_Wave.rendered = function() {
@@ -14,57 +15,50 @@ Template.Track_Wave.rendered = function() {
 };
 
 // TODO: how to better default wave before template is rendered?
-function getWave(template) {
-  return getTrack(template).get('wave') || Waves.build();
-}
-
-function getTrack(template) {
-  return template.data.track;
+function getWave() {
+  var track = Template.currentData().track;
+  return track.get('wave') || Waves.build();
 }
 
 Template.Track_Wave.helpers({
   hiddenClass: function() {
-    var wave = getWave(Template.instance());
+    var wave = getWave.call(this);
     return wave.get('loaded') ? '' : 'hidden';
   },
 
   isLoaded: function() {
-    var wave = getWave(Template.instance());
+    var wave = getWave.call(this);
     return wave.get('loaded');
   },
 
   isLoading: function() {
-    var wave = getWave(Template.instance());
+    var wave = getWave.call(this);
     return wave.get('loading');
   },
 
   onSubmitSoundcloud: function() {
-    var template = Template.instance();
+    var track = Template.currentData().track;
     // load response into track, then load wave
     return function(response) {
-      var track = getTrack(template);
-      var wave = getWave(template);
       track.setSoundcloud(response);
-      wave.loadTrack(track);
-    };
+    }.bind(Template.instance());
   },
 
   onSelectLinx: function() {
-    var template = Template.instance();
+    var track = Template.currentData().track;
     // clone selected, then load wave
     return function(selectedTrack) {
-      var track = getTrack(template);
       track.cloneFrom(selectedTrack);
-    }.bind(this);
+      console.log("selctLinx", track, selectedTrack)
+    }.bind(Template.instance());
   },
 
   onDropTrack: function() {
-    var template = Template.instance();
+    var track = Template.currentData().track;
     // load files into track
     return function(files) {
-      var track = getTrack(template);
       track.loadFiles(files);
-    };
+    }.bind(Template.instance());
   }
 });
 
@@ -74,6 +68,7 @@ function initWave(template) {
   }
 
   // Initialize wave
-  var track = getTrack(template);
+  var track = Template.currentData().track;
+  console.log("init wave", track)
   track.initWave(template);
 }

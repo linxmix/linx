@@ -71,21 +71,12 @@ WaveModel = Graviton.Model.extend({
   },
 
   loadFiles: function(files) {
+    // store reference to pass to uploading to s3
+    this.set('files', files);
+    // load file into wavesurfer
     var file = files[0];
     var wavesurfer = this.getWaveSurfer();
-    // store reference to pass to uploading to s3
-    wavesurfer.files = files;
     wavesurfer.loadBlob(file);
-  },
-
-  reset: function() {
-    this.set({
-      'loaded': false,
-      'loading': false,
-      'trackId': undefined,
-    });
-    console.log("wave reset", this.get('trackId'));
-    this.getWaveSurfer().reset();
   },
 
   init: function(template) {
@@ -161,9 +152,11 @@ WaveModel = Graviton.Model.extend({
     // Autorun loadTrack
     this.stopAutoload();
     var lastUrl;
+    console.log("setting autoload", this.get('autoload'), this);
     this.set('autoload', Tracker.autorun(function() {
       var track = this.get('track');
       var streamUrl = track && track.getStreamUrl();
+      // console.log("autoload", track, streamUrl);
       if (streamUrl && streamUrl !== lastUrl) {
         lastUrl = streamUrl;
         this.getWaveSurfer().load(streamUrl);
@@ -171,8 +164,16 @@ WaveModel = Graviton.Model.extend({
     }.bind(this)));
   },
 
+  onUploadFinish: function() {
+    this.getWaveSurfer().fireEvent('uploadFinish');
+  },
+
+  onLoading: function(options) {
+    this.getWaveSurfer().fireEvent('loading', options.percent, options.xhr, options.type);
+  },
+
   stopAutoload: function() {
-    this.get('autoload') && this.get('autoload').stop();
+    // this.get('autoload') && this.get('autoload').stop();
   },
 
   createWaveSurfer: function() {
@@ -194,6 +195,7 @@ WaveModel = Graviton.Model.extend({
   },
 
   destroy: function() {
+    console.log("destroy wave", this);
     this.stopAutoload();
     this.destroyWaveSurfer();
     this.remove();

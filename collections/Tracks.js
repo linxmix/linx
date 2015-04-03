@@ -40,6 +40,10 @@ TrackModel = Graviton.Model.extend({
     wave.init(template);
   },
 
+  destroy: function() {
+    this.destroyWave();
+  },
+
   destroyWave: function() {
     this.get('wave').destroy();
     this.set('wave', undefined);
@@ -101,6 +105,7 @@ TrackModel = Graviton.Model.extend({
   },
 
   getS3Url: function() {
+    console.log("getS3Url", this.get('_id'));
     if (!this.get('_id')) { return; }
     var part = 'http://s3-us-west-2.amazonaws.com/linx-music/';
     // TODO: make this work for non-mp3
@@ -127,6 +132,66 @@ TrackModel = Graviton.Model.extend({
 
   getS3Prefix: function() {
     return this.get('type') + 's';
+  },
+
+  saveToBackend: function(cb) {
+    var wave = this.get('wave');
+    var files = wave && wave.get('files');
+    if (!(wave && files)) {
+      throw new Error('Cannot upload a track without a wave and files: ' + this.get('title'));
+    }
+    console.log("uploading track", this.get('title'));
+
+    // on completion, persist track and fire finish event
+    var track = this;
+    function next() {
+      wave.onUploadFinish();
+      track.save();
+      cb && cb();
+    }
+
+    // upload to appropriate backend
+    switch (track.getSource()) {
+      case 's3': this._uploadToS3(next); break;
+      case 'soundcloud': next(); break; // already exists on SC
+      default: throw "Error: unknown track source: " + track.getSource();
+    }
+  },
+
+  _uploadToS3: function(cb) {
+    var track = this;
+    var wave = this.get('wave');
+
+    // track progress
+    Tracker.autorun(function(computation) {
+      var uploads = S3.collection.find().fetch();
+      var upload = uploads[0];
+      if (upload) {
+        var percent = upload.percent_uploaded;
+        wave.onLoading({
+          type: 'upload',
+          percent: percent
+        });
+        if (percent === 100) {
+          computation.stop();
+        }
+      }
+      // TODO: figure out what this did
+      // add to wave computations if doesn't already exist
+      // wave.addLoadingComputation(computation);
+    });
+
+    S3.upload({
+      files: wave.get('files'),
+      path: track.getS3Prefix(),
+    }, function(error, result) {
+      if (error) { throw error; }
+      // update track with new s3FileName
+      var urlParts = result.relative_url.split('/');
+      var s3FileName = urlParts[urlParts.length - 1];
+      track.set({ s3FileName: s3FileName });
+      cb && cb(error, result);
+    });
   },
 
 });

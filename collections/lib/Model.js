@@ -10,6 +10,7 @@ Graviton.Model.prototype.refresh = function() {
 };
 
 Graviton.Model.prototype.cloneFrom = function(model) {
+  this._id = model.get('_id');
   this.set(model.attributes);
 };
 
