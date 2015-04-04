@@ -43,6 +43,9 @@ MixModel = Graviton.Model.extend({
   },
 
   removeTrackAt: function(index) {
+    if (!(_.isNumber(index) && index > -1)) {
+      return;
+    };
     var trackIds = this.get('trackIds');
     trackIds.splice(index, 1);
     return this.set({
@@ -51,7 +54,7 @@ MixModel = Graviton.Model.extend({
   },
 
   removeTrack: function(trackId) {
-    return this.removeTrackAt(trackId, this.get('trackIds').indexOf(trackId));
+    return this.removeTrackAt(this.get('trackIds').indexOf(trackId));
   },
 
   // TODO: convert these to graviton

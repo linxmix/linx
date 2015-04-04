@@ -1,6 +1,8 @@
 Template.Track_Accordion.created = function() {
   Utils.initTemplateModel.call(this, 'track');
   Utils.initTemplateModel.call(this, 'mix');
+
+  Utils.requireTemplateData.call(this, 'activeTracks');
 };
 
 Template.Track_Accordion.helpers({
@@ -27,9 +29,9 @@ Template.Track_Accordion.events({
     data.activeTracks.set(activeTracks);
   },
 
-  'click .remove': function(e, template) {
+  'click .remove-button': function(e, template) {
     var mix = template.data.mix;
-    mix.removeTrack(template.data._id);
-    mix.updateTemplate();
+    var track = template.data.track;
+    mix.removeTrack(track.get('_id'));
   }
 });

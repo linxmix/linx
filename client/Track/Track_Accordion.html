@@ -1,7 +1,10 @@
 <template name="Track_Accordion">
   <div class="title {{activeClass}}">
-    <i class="dropdown icon"></i>
+    <i class="inverted green dropdown icon"></i>
     {{position}}. {{track.attributes.title}}
+    <div class="remove-button mini right floated circular inverted red ui icon button">
+      <i class="remove icon"></i>
+    </div>
   </div>
   <div class="content {{activeClass}}">
     {{#if activeClass}}
