@@ -1,13 +1,20 @@
 <template name="Save_Button">
-  {{#if isDirty}}
-    <div class="inverted orange ui save icon button {{loadingClass}}">
+  {{#if isLoading}}
+    <div class="basic inverted disabled ui loading icon button">
       <i class="cloud upload icon"></i>
-      Save
+      Saving...
     </div>
   {{else}}
-    <div class="basic inverted disabled ui icon button">
-      <i class="check icon"></i>
-      Saved
-    </div>
+    {{#if isDirty}}
+      <div class="inverted orange ui save icon button">
+        <i class="cloud upload icon"></i>
+        Save
+      </div>
+    {{else}}
+      <div class="basic inverted disabled ui icon button">
+        <i class="check icon"></i>
+        Saved
+      </div>
+    {{/if}}
   {{/if}}
 </template>

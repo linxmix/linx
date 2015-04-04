@@ -113,7 +113,9 @@ WaveModel = Graviton.Model.extend({
     // Setup Handlers
     var lastPercent;
     wavesurfer.on('loading', function(percent, xhr, type) {
-      wave.set({ 'loading': true, 'loaded': false });
+      if (!wave.get('loading')) {
+        wave.set('loading', true);
+      }
       template.$('.progress-bar').show();
 
       // update progress bar

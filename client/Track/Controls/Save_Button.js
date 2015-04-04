@@ -16,9 +16,9 @@ Template.Save_Button.helpers({
     return track.isDirty();
   },
   
-  loadingClass: function() {
+  isLoading: function() {
     var wave = getWave(Template.instance());
-    return wave.get('loading') ? 'loading' : '';
+    return wave.get('loading');
   },
 });
 

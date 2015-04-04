@@ -179,12 +179,13 @@ TrackModel = Graviton.Model.extend({
     var wave = this.getWave();
 
     // track progress
+    var uploadFinished = false;
     Tracker.autorun(function(computation) {
       var uploads = S3.collection.find().fetch();
       var upload = uploads[0];
       if (upload) {
         var percent = upload.percent_uploaded;
-        wave.onLoading({
+        !uploadFinished && wave.onLoading({
           type: 'upload',
           percent: percent
         });
@@ -201,6 +202,7 @@ TrackModel = Graviton.Model.extend({
       files: wave.get('files'),
       path: track.getS3Prefix(),
     }, function(error, result) {
+      uploadFinished = true;
       if (error) { throw error; }
       // update track with new s3FileName
       var urlParts = result.relative_url.split('/');
