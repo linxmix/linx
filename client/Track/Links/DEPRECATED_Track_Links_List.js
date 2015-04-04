@@ -1,4 +1,4 @@
-Template.TrackLinksList.helpers({
+Template.Track_Links_List_Deprecated.helpers({
   trackLinksInfo: function() {
     var activeTrackId = Template.instance().data._idTrack;
     var activeTrack = Tracks.findOne(activeTrackId);
@@ -47,7 +47,7 @@ Template.TrackLinksList.helpers({
   },
 });
 
-Template.TrackLinkList.events({
+Template.Track_Link_List_Deprecated.events({
   'click': function(e, template) {
     var _id = template.data._id;
     var current = Router.current();

@@ -49,10 +49,10 @@ Template.MixPage.helpers({
     });
   },
 
-  lastTrackId: function() {
+  prevTrack: function() {
     var mix = getMix(Template.instance());
-    var trackIds = mix.get('trackIds');
-    return trackIds[trackIds.length - 1];
+    var tracks = mix.tracks.all();
+    return tracks[tracks.length - 1];
   },
 
   addTrack: function() {

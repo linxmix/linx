@@ -193,9 +193,6 @@ TrackModel = Graviton.Model.extend({
           computation.stop();
         }
       }
-      // TODO: figure out what this did
-      // add to wave computations if doesn't already exist
-      // wave.addLoadingComputation(computation);
     });
 
     S3.upload({

@@ -31,9 +31,19 @@
       {{> Track_Adder addTrack=addTrack}}
 
       <div class="ui suggestions grid">
-        <div class="eight wide centered column">
-          {{> TrackLinksList _idTrack=lastTrackId}}
+        <div class="eight wide column">
+          <h4 class="inverted center aligned ui header">
+            <div class="content">
+              Tracks From
+              <div class="sub header">{{prevTrack.attributes.title}}</div>
+            </div>
+          </h4>
+          {{> Track_Links_List track=prevTrack linkIds=prevTrackattributes.fromLinkIds onClick=addTrack hideHeader=true}}
         </div>
+        <!-- <div class="eight wide column">
+          <h4 class="inverted center aligned ui header">Links To {{nextTrack.attributes.title}}</h4>
+          {{> Track_Links_List links=nextTrackLinks hideHeader=true}}
+        </div> -->
       </div>
     </div>
 

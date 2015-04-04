@@ -1,6 +1,8 @@
-<template name="TrackLinksList">
+<template name="Track_Links_List_Deprecated">
   {{#if trackLinksInfo}}
-    <h3 class="inverted center aligned ui header">Linked Tracks</h3>
+    {{#unless hideHeader}}
+      <h3 class="inverted center aligned ui header">Linked Tracks</h3>
+    {{/unless}}
     <div class="inverted ui list">
       {{#each trackLinksInfo}}
         {{> TrackLinkList}}
@@ -9,7 +11,7 @@
   {{/if}}
 </template>
 
-<template name="TrackLinkList">
+<template name="Track_Link_List_Deprecated">
   <a class="item">
     {{trackTitle}}
     <a class="inverted green circular ui label">
