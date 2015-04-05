@@ -1,6 +1,19 @@
 .Track_Accordion {
+  $semantic-mini-button-height: 26px;
+
   .column.accordion-column {
-    // match mini button size
-    line-height: 26px;
+    line-height: $semantic-mini-button-height
+  }
+
+  .divider .button {
+    height: $semantic-mini-button-height;
+    width: $semantic-mini-button-height;
+
+    .icon {
+      position: relative;
+      top: -5px;
+      left: -3px;
+      font-size: 10px;
+    }
   }
 }

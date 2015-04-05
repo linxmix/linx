@@ -1,8 +1,5 @@
 <template name="Track_Accordion">
   <div class="Track_Accordion">
-    <div class="inverted horizontal ui divider">
-      <i class="linkify icon"></i> 
-    </div>
 
     <div class="title {{activeClass}}">
       <div class="ui grid">
@@ -10,14 +7,11 @@
           {{position}}.
         </div>
         <div class="eight wide center aligned column accordion-column">
-          {{track.attributes.title}} - {{track.attributes.artist}}
+          <i class="dropdown icon {{activeClass}}"></i> {{track.attributes.title}} - {{track.attributes.artist}}
         </div>
         <div class="four wide column accordion-column">
-          <div class="remove-button mini right floated circular inverted red ui icon button">
+          <div class="remove-track mini right floated circular inverted red ui icon button">
             <i class="remove icon"></i>
-          </div>
-          <div class="add-button mini right floated circular {{addButtonClass}} inverted basic green ui icon button">
-            <i class="add icon"></i>
           </div>
         </div>
       </div>
@@ -30,5 +24,15 @@
         {{/Track_Wave}}
       {{/if}}
     </div>
+
+    <div class="inverted horizontal ui divider">
+      <div class="view-link mini circular inverted basic teal ui icon button">
+        <i class="linkify icon"></i>
+      </div>
+      <div class="add-track mini circular inverted basic green ui icon button">
+        <i class="add icon"></i>
+      </div>
+    </div>
+
   </div>
 </template>
