@@ -26,9 +26,11 @@
     </div>
 
     <div class="inverted horizontal ui divider">
-      <div class="view-link mini circular inverted basic teal ui icon button">
-        <i class="linkify icon"></i>
-      </div>
+      {{#if showLinkButton}}
+        <div class="view-link mini circular inverted basic orange ui icon button">
+          <i class="linkify icon"></i>
+        </div>
+      {{/if}}
       <div class="add-track mini circular inverted basic green ui icon button">
         <i class="add icon"></i>
       </div>

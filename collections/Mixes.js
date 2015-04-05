@@ -28,6 +28,11 @@ MixModel = Graviton.Model.extend({
     return this.addTrackAt(trackId, this.get('trackIds').length);
   },
 
+  getTrackAt: function(index) {
+    var trackIds = this.get('trackIds');
+    return Tracks.findOne(trackIds[index]);
+  },
+
   addTrackAt: function(trackId, index) {
     var trackIds = this.get('trackIds');
     trackIds.splice(index, 0, trackId);
@@ -45,9 +50,7 @@ MixModel = Graviton.Model.extend({
   },
 
   removeTrackAt: function(index) {
-    if (!(_.isNumber(index) && index > -1)) {
-      return;
-    };
+    if (!(_.isNumber(index) && index > -1)) { return; }
     var trackIds = this.get('trackIds');
     trackIds.splice(index, 1);
     return this.set({

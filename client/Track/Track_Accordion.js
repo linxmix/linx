@@ -2,6 +2,9 @@ Template.Track_Accordion.created = function() {
   Utils.initTemplateModel.call(this, 'track');
   Utils.initTemplateModel.call(this, 'mix');
 
+  Utils.requireTemplateData.call(this, 'addModalTrackIndex');
+  Utils.requireTemplateData.call(this, 'position');
+
   this.isActive = new ReactiveVar(false);
 };
 
@@ -10,6 +13,13 @@ Template.Track_Accordion.helpers({
     var isActive = Template.instance().isActive;
     return isActive.get() ? 'active' : '';
   },
+
+  showLinkButton: function() {
+    var data = Template.currentData();
+    var pos = data.position;
+    var mix = data.mix;
+    return pos < mix.get('trackIds.length');
+  }
 });
 
 Template.Track_Accordion.events({
@@ -26,8 +36,21 @@ Template.Track_Accordion.events({
     mix.removeTrack(track.get('_id'));
   },
 
-  'click .add-button': function(e, template) {
+  'click .add-track': function(e, template) {
     e.preventDefault();
     e.stopPropagation();
+    var data = template.data;
+    // open add modal with this index
+    data.addModalTrackIndex.set(data.position);
+  },
+
+  'click .view-link': function(e, template) {
+    var trackA = template.data.track;
+    var mix = template.data.mix;
+    var trackB = mix.getTrackAt(template.data.position);
+    Router.go('tracks.links', {
+      _idA: trackA.get('_id'),
+      _idB: trackB.get('_id'),
+    });
   },
 });

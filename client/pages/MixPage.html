@@ -16,8 +16,9 @@
       <div class="orange ui save-mix button {{saveButtonClass}}"><i class="cloud upload icon"></i> Save</div>
     </div>
     <h3 class="inverted left aligned ui header">{{trackCountText}}</h3>
+
+    <!-- Track Accordions -->
     <div class="inverted attached ui segment">
-      <!-- Tracks -->
       <div class="inverted ui fluid accordion">
         {{#each tracksAccordion}}
           {{> Track_Accordion}}
@@ -25,51 +26,9 @@
       </div>
     </div>
 
-    <!-- Add Track -->
-    <div class="inverted attached ui segment" style="display: none;">
-
-      <h3 class="inverted center aligned ui header">
-        Add Track
-      </h3>
-      {{> Track_Adder addTrack=addTrack}}
-
-      <div class="hidden ui divider"></div>
-
-      <div class="ui suggestions grid">
-        <div class="eight wide column">
-          <h4 class="inverted center aligned ui header">
-            <div class="content">
-              Tracks From
-              <div class="sub header">{{prevTrack.attributes.title}}</div>
-            </div>
-          </h4>
-          {{> Track_Links_List track=prevTrack linkIds=prevTrack.attributes.fromLinkIds onClick=addTrack hideHeader=true}}
-        </div>
-
-        <div class="eight wide column">
-          <h4 class="inverted center aligned ui header">
-            <div class="content">
-              Tracks To
-              <div class="sub header">{{nextTrack.attributes.title}}</div>
-            </div>
-          </h4>
-          <!-- {{> Track_Links_List track=nextTrack linkIds=nextTrack.attributes.toLinkIds onClick=addTrack hideHeader=true}} -->
-        </div>
-      </div>
-    </div>
-
+    <!-- Add Track Modal -->
+    {{#if isAddModalOpen}}
+      {{> Add_Track_Modal onSubmit=addTrack onCancel=resetAddModal prevTrack=prevTrack nextTrack=nextTrack}}
+    {{/if}}
   </div>
-</template>
-
-<template name="Track_Adder">
-  {{#Track_Wave track=track}}
-    <div class="inverted ui menu">
-      {{> Play_Button track=track}}
-      <div class="ui inverted right menu">
-        {{> Reset_Button track=track}}
-        {{> Save_Button track=track}}
-        {{> Add_Button track=track}}
-      </div>
-    </div>
-  {{/Track_Wave}}
 </template>

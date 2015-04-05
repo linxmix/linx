@@ -1,5 +1,7 @@
 Template.MixPage.created = function() {
   Utils.initTemplateModel.call(this, 'mix');
+
+  this.addModalTrackIndex = new ReactiveVar(-1);
 };
 
 function getMix(template) {
@@ -35,12 +37,14 @@ Template.MixPage.helpers({
 
   tracksAccordion: function() {
     var template = Template.instance();
+    var addModalTrackIndex = template.addModalTrackIndex;
     var mix = getMix(template);
     return mix.get('trackIds').map(function(trackId, i) {
       var track = Tracks.findOne(trackId);
       var pos = i + 1;
       return {
         position: pos,
+        addModalTrackIndex: addModalTrackIndex,
         track: track,
         mix: mix,
       };
@@ -48,23 +52,41 @@ Template.MixPage.helpers({
   },
 
   prevTrack: function() {
-    var mix = getMix(Template.instance());
-    var tracks = mix.tracks.all();
-    return tracks[tracks.length - 1];
+    var template = Template.instance();
+    var index = template.addModalTrackIndex.get();
+    var mix = getMix(template);
+    return mix.getTrackAt(index - 1);
   },
 
   nextTrack: function() {
-    var mix = getMix(Template.instance());
-    var tracks = mix.tracks.all();
-    return tracks[tracks.length - 1];
+    var template = Template.instance();
+    var index = template.addModalTrackIndex.get();
+    var mix = getMix(template);
+    return mix.getTrackAt(index);
   },
 
   addTrack: function() {
-    var mix = getMix(Template.instance());
+    var template = Template.instance();
     return function(track) {
-      mix.appendTrack(track.get('_id'));
+      var index = template.addModalTrackIndex.get();
+      var mix = template.data.mix;
+      mix.addTrackAt(track.get('_id'), index);
+      template.addModalTrackIndex.set(-1);
     }.bind(this);
   },
+
+  resetAddModal: function() {
+    var template = Template.instance();
+    return function() {
+      template.addModalTrackIndex.set(-1);
+    };
+  },
+
+  isAddModalOpen: function() {
+    var template = Template.instance();
+    var index = template.addModalTrackIndex.get();
+    return index > -1;
+  }
 });
 
 Template.MixPage.events({
@@ -79,30 +101,5 @@ Template.MixPage.events({
         _id: mix.get('_id')
       });
     }
-  }
-});
-
-Template.Track_Adder.created = function() {
-  this.track = new ReactiveVar(Tracks.build());
-};
-
-Template.Track_Adder.helpers({
-  track: function() {
-    return Template.instance().track.get();
-  },
-});
-
-function resetTrack(template) {
-  template.track.set(Tracks.build());
-}
-
-Template.Track_Adder.events({
-  'click .add': function(e, template){
-    template.data.addTrack(template.track.get());
-    resetTrack(template);
-  },
-
-  'click .reset': function(e, template) {
-    resetTrack(template);
   }
 });

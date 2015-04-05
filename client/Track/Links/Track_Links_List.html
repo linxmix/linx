@@ -5,7 +5,7 @@
     {{/unless}}
     <div class="inverted ui list">
       {{#each trackLinksInfo}}
-        {{> TrackLinkList}}
+        {{> Track_Link_List}}
       {{/each}}
     </div>
   {{/if}}
@@ -13,7 +13,7 @@
 
 <template name="Track_Link_List">
   <a class="item">
-    {{trackTitle}}
+    {{track.attributes.title}}
     {{#if fromCount}}
       <a class="inverted green circular ui label">
         {{fromCount}}

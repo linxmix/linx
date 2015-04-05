@@ -111,6 +111,14 @@ TrackModel = Graviton.Model.extend({
     return this.toLinks.all().concat(this.fromLinks.all());
   },
 
+  getToLinkIds: function() {
+    return _.pluck(this.toLinks.all(), '_id');
+  },
+
+  getFromLinkIds: function() {
+    return _.pluck(this.fromLinks.all(), '_id');
+  },
+
   getSoundcloudUrl: function() {
     var soundcloud = this.get('soundcloud');
     if (soundcloud && soundcloud.stream_url) {
