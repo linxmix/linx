@@ -11,12 +11,12 @@
       </div>
     </h1>
 
-    <div class="inverted bottom-attached basic ui track-menu icon buttons">
+    <div class="inverted bottom-attached right floated basic ui track-menu icon buttons">
       <div class="orange ui save-mix button {{saveButtonClass}}"><i class="cloud upload icon"></i> Save</div>
     </div>
+    <h3 class="inverted left aligned ui header">{{trackCountText}}</h3>
     <div class="inverted attached ui segment">
       <!-- Menu -->
-      <h3 class="inverted left aligned ui header">{{trackCountText}}</h3>
       <!-- Tracks -->
       <div class="inverted ui fluid accordion">
         {{#each tracksAccordion}}
@@ -27,23 +27,36 @@
 
     <!-- Add Track -->
     <div class="inverted attached ui segment">
-      <h3 class="inverted center aligned ui header">Add Track</h3>
+
+      <h3 class="inverted center aligned ui header">
+        Add Track at <span class="semantic-green">{{addPos}}</span>
+      </h3>
       {{> Track_Adder addTrack=addTrack}}
+
+      <div class="hidden ui divider"></div>
 
       <div class="ui suggestions grid">
         <div class="eight wide column">
           <h4 class="inverted center aligned ui header">
+            <i class="sign out icon"></i>
             <div class="content">
               Tracks From
               <div class="sub header">{{prevTrack.attributes.title}}</div>
             </div>
           </h4>
-          {{> Track_Links_List track=prevTrack linkIds=prevTrackattributes.fromLinkIds onClick=addTrack hideHeader=true}}
+          {{> Track_Links_List track=prevTrack linkIds=prevTrack.attributes.fromLinkIds onClick=addTrack hideHeader=true}}
         </div>
-        <!-- <div class="eight wide column">
-          <h4 class="inverted center aligned ui header">Links To {{nextTrack.attributes.title}}</h4>
-          {{> Track_Links_List links=nextTrackLinks hideHeader=true}}
-        </div> -->
+
+        <div class="eight wide column">
+          <h4 class="inverted center aligned ui header">
+            <i class="sign in icon"></i>
+            <div class="content">
+              Tracks To
+              <div class="sub header">{{nextTrack.attributes.title}}</div>
+            </div>
+          </h4>
+          <!-- {{> Track_Links_List track=nextTrack linkIds=nextTrack.attributes.toLinkIds onClick=addTrack hideHeader=true}} -->
+        </div>
       </div>
     </div>
 

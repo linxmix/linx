@@ -22,3 +22,13 @@
   position: fixed;
   top: 63px;
 }
+
+// TODO: move these to common
+.center-aligned {
+  text-align: center;
+}
+
+$semantic-green: #2ecc40;
+.semantic-green {
+  color: $semantic-green !important;
+}

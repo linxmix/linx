@@ -3,15 +3,30 @@ Template.Track_Accordion.created = function() {
   Utils.initTemplateModel.call(this, 'mix');
 
   Utils.requireTemplateData.call(this, 'activeTracks');
+  Utils.requireTemplateData.call(this, 'addPos');
 };
 
 Template.Track_Accordion.helpers({
+  dropdownIconClass: function() {
+    var data = Template.currentData();
+    var addPos = data.addPos.get();
+    var position = data.position;
+    return addPos === position ? 'green' : '';
+  },
+
+  addButtonClass: function() {
+    var data = Template.currentData();
+    var addPos = data.addPos.get();
+    var position = data.position;
+    return addPos === position ? 'active' : '';
+  },
+
   activeClass: function() {
     var data = Template.currentData();
     var track = data.track;
     var activeTracks = data.activeTracks.get();
     return _.contains(activeTracks, track.get('_id')) ? 'active' : '';
-  }
+  },
 });
 
 Template.Track_Accordion.events({
@@ -30,8 +45,16 @@ Template.Track_Accordion.events({
   },
 
   'click .remove-button': function(e, template) {
+    e.preventDefault();
+    e.stopPropagation();
     var mix = template.data.mix;
     var track = template.data.track;
     mix.removeTrack(track.get('_id'));
-  }
+  },
+
+  'click .add-button': function(e, template) {
+    e.preventDefault();
+    e.stopPropagation();
+    template.data.addPos.set(template.data.position);
+  },
 });

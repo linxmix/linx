@@ -1,16 +1,34 @@
 <template name="Track_Accordion">
-  <div class="title {{activeClass}}">
-    <i class="inverted green dropdown icon"></i>
-    {{position}}. {{track.attributes.title}}
-    <div class="remove-button mini right floated circular inverted red ui icon button">
-      <i class="remove icon"></i>
+  <div class="Track_Accordion">
+    <div class="inverted horizontal ui divider">
+      <i class="linkify icon"></i> 
     </div>
-  </div>
-  <div class="content {{activeClass}}">
-    {{#if activeClass}}
-      {{#Track_Wave track=track hideLoadOptions=true}}
-        {{> Play_Button track=track}}
-      {{/Track_Wave}}
-    {{/if}}
+
+    <div class="title {{activeClass}}">
+      <div class="ui grid">
+        <div class="four wide column accordion-column">
+          {{position}}.
+        </div>
+        <div class="eight wide center aligned column accordion-column">
+          {{track.attributes.title}} - {{track.attributes.artist}}
+        </div>
+        <div class="four wide column accordion-column">
+          <div class="remove-button mini right floated circular inverted red ui icon button">
+            <i class="remove icon"></i>
+          </div>
+          <div class="add-button mini right floated circular {{addButtonClass}} inverted basic green ui icon button">
+            <i class="add icon"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="content {{activeClass}}">
+      {{#if activeClass}}
+        {{#Track_Wave track=track hideLoadOptions=true}}
+          {{> Play_Button track=track}}
+        {{/Track_Wave}}
+      {{/if}}
+    </div>
   </div>
 </template>

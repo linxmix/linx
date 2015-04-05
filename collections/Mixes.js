@@ -19,6 +19,8 @@ MixModel = Graviton.Model.extend({
     playCount: 0,
     title: 'New Mix',
     isLocal: false,
+    trackIds: [],
+    linkIds: [],
   }
 }, {
 
