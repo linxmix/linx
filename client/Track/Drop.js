@@ -5,7 +5,7 @@ Template.Drop.created = function() {
 
 Template.Drop.helpers({
   dropClass: function() {
-    return Template.instance().dragover.get() ? 'orange' : 'purple';
+    return Template.instance().dragover.get() ? 'orange drag-over' : 'blue';
   }
 });
 
