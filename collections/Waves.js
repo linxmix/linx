@@ -194,15 +194,14 @@ WaveModel = Graviton.Model.extend({
   },
 
   getBufferLength: function() {
-    return Graviton.Model.prototype.get.call(this.getWaveSurfer(), 'backend.buffer.length');
+    return Graviton.getProperty(this.getWaveSurfer(), 'backend.buffer.length');
   },
 
   // Returns time (ms) required to upload from source server to Echonest
-  getCrossloadTime: function() {
+  getCrossloadTime: function(source) {
     var bufferLength = this.getBufferLength();
     var SC_FACTOR = 1 / 3904; // milliseconds per buffer element
     var S3_FACTOR = 1 / 1936;
-    var source = this.getSource();
     var factor = (source === 'soundcloud') ? SC_FACTOR : S3_FACTOR;
     return factor * bufferLength;
   },
@@ -245,6 +244,7 @@ WaveModel = Graviton.Model.extend({
   },
 
   onUploadFinish: function() {
+    console.log("onFinish");
     this.getWaveSurfer().fireEvent('uploadFinish');
   },
 
@@ -271,6 +271,7 @@ WaveModel = Graviton.Model.extend({
   },
 
   getWaveSurfer: function() {
+    console.log("getWaveSurfers", this, this.get('_id'), WaveSurfers)
     return WaveSurfers.get(this.get('_id'));
   },
 

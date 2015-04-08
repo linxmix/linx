@@ -24,7 +24,6 @@ Template.Analyze_Button.helpers({
 
 Template.Analyze_Button.events({
   'click .analyze': function(e, template) {
-    var wave = getWave(template);
-    // TODO
+    getTrack(template).fetchEchonestAnalysis();   
   },
 });

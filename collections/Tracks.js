@@ -235,7 +235,7 @@ TrackModel = Graviton.Model.extend({
     var percent = 0;
     var wave = this.getWave();
     var loadingInterval = Meteor.setInterval(function() {
-      wave.onLoading({
+      wave.onLoading.call(wave, {
         percent: percent,
         type: options.type,
       });
@@ -264,7 +264,7 @@ TrackModel = Graviton.Model.extend({
 
         function onSuccess(response) {
           Meteor.clearInterval(loadingInterval);
-          wave.onUploadFinish();
+          wave.onUploadFinish.call(wave);
           track.setEchonestAnalysis(response);
           cb && cb();
         }
@@ -313,7 +313,7 @@ TrackModel = Graviton.Model.extend({
       function onSuccess(response) {
         Meteor.clearInterval(loadingInterval);
         wave.onUploadFinish();
-        track.setEchonest(response);
+        track.setEchonest(Graviton.getProperty(response, 'response.track'));
         track.save();
         cb && cb();
       }
@@ -330,7 +330,9 @@ TrackModel = Graviton.Model.extend({
           id: echonestId,
         },
         success: onSuccess,
-        error: wave.onError,
+        error: function() {
+          wave.onError.apply(wave, arguments);
+        }
       });      
     });
   },
@@ -348,12 +350,12 @@ TrackModel = Graviton.Model.extend({
       var streamUrl = track.getStreamUrl();
       var loadingInterval = track.setLoadingInterval({
         type: 'profile',
-        time: track.getCrossloadTime()
+        time: wave.getCrossloadTime(track.getSource())
       });
 
       function onSuccess(response) {
         Meteor.clearInterval(loadingInterval);
-        wave.fireEvent('uploadFinish');
+        wave.onUploadFinish();
         cb && cb(response.response.track.id);
       }
 
