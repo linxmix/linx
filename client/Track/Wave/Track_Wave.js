@@ -1,10 +1,9 @@
 Template.Track_Wave.created = function() {
   Utils.initTemplateModel.call(this, 'track', function(newModel, prevModel) {
-    console.log("new track wave model", newModel, prevModel);
-    initWave(this);
     if (prevModel) {
       prevModel.destroyWave();
     }
+    initWave(this);
   });
 };
 

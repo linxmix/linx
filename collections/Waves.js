@@ -101,6 +101,7 @@ WaveModel = Graviton.Model.extend({
       cursorWidth: 2,
       renderer: 'Canvas',
     });
+    wavesurfer.initRegions();
 
     if (template.enableDragSelection) {
       wavesurfer.enableDragSelection({
@@ -156,41 +157,30 @@ WaveModel = Graviton.Model.extend({
     });
 
     // region stuff
-    wavesurfer.on('region-created', wave._updateRegion.bind(wave));
-    wavesurfer.on('region-updated-end', wave._updateRegion.bind(wave));
-    wavesurfer.on('region-removed', wave._updateRegion.bind(wave));
+    // wavesurfer.on('region-created', wave._updateRegion.bind(wave));
+    // wavesurfer.on('region-updated-end', wave._updateRegion.bind(wave));
+    // wavesurfer.on('region-removed', wave._updateRegion.bind(wave));
 
-    // template.autorun(this.drawLinks.bind(this));
+    template.autorun(this.drawRegions.bind(this));
   },
 
+  newId: 0,
+
   setRegions: function(regions) {
-    this.regions = this.regions || new ReactiveVar();
     this.regions.set(regions);
   },
 
-  setRegion: function(region) {
-    if (region && region.id) {
-      var regions = this.getRegions();
-      regions[region.id] = region;
-      this.setRegions(regions);
-    }
-  },
-
   getRegions: function() {
-    this.regions = this.regions || new ReactiveVar();
-    return this.regions && this.regions.get();
+    this.regions = this.regions || new ReactiveVar([]);
+    return (this.regions && this.regions.get()) || [];
   },
 
-  getRegion: function(regionId) {
-    return this.getRegions()[regionId];
-  },
+  clearRegions: function() {
+    // clear regions
+    this.regions = new ReactiveVar([]);
 
-  _updateRegion: function(region) {
-    var regions = this.setRegion(region);
-    if (region && region.id) {
-      regions[region.id] = region;
-      this.setRegions(regions);
-    }
+    // clear wave
+    this.getWaveSurfer().Regions.clear();
   },
 
   getBufferLength: function() {
@@ -206,15 +196,15 @@ WaveModel = Graviton.Model.extend({
     return factor * bufferLength;
   },
 
-
-  drawLinks: function() {
+  drawRegions: function() {
     var wavesurfer = this.getWaveSurfer();
     var track = this.track();
-    var links = (track && track.getAllLinks()) || [];
+    var regions = this.getRegions();
 
-    console.log("drawing links", track.get('title'), links.length);
+    console.log("drawing regions", track && track.get('title'), regions.length);
+    // TODO: remove old regions
 
-    links.forEach(function(link, i) {
+    regions.forEach(function(params, i) {
       var color;
       switch (i) {
         case 0: color = 'rgba(255, 0, 0, 1)'; break;
@@ -222,18 +212,11 @@ WaveModel = Graviton.Model.extend({
         case 2: color = 'rgba(0, 0, 255, 1)'; break;
         default: color = 'rgba(255, 255, 0, 1)'; break;
       }
-      console.log("drawing link", track.get('title'), link, i);
+      console.log("drawing region", track.get('title'), params, i);
 
-      var params = {
-        id: link.get('_id'),
-        start: link.getTime(track.get('_id')),
-        resize: false,
-        loop: false,
-        drag: false,
-        color: color,
-      };
-      var region = wavesurfer.getRegion(link.get('_id'));
+      var region = wavesurfer.regions.list[params._id];
       if (!region) {
+        params.color = color;
         console.log("new region", params);
         region = wavesurfer.regions.add(params);
       } else {
@@ -244,7 +227,6 @@ WaveModel = Graviton.Model.extend({
   },
 
   onUploadFinish: function() {
-    console.log("onFinish");
     this.getWaveSurfer().fireEvent('uploadFinish');
   },
 

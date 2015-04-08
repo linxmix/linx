@@ -33,6 +33,12 @@ MixModel = Graviton.Model.extend({
     return Tracks.findOne(trackIds[index]);
   },
 
+  getTracks: function() {
+    return this.get('trackIds').map(function(trackId) {
+      return Tracks.findOne(trackId);
+    });
+  },
+
   addTrackAt: function(trackId, index) {
     var trackIds = this.get('trackIds');
     trackIds.splice(index, 0, trackId);

@@ -35,8 +35,7 @@ TrackModel = Graviton.Model.extend({
     }
 
     // create wave, setup relationships
-    var wave = Waves.create();
-    wave.set('trackId', this.get('_id'));
+    var wave = Waves.create({ trackId: this.get('_id') });
     wave.save();
     this.setWave(wave);
     wave.init(template);
