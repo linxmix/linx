@@ -35,7 +35,7 @@ LinkModel = Graviton.Model.extend({
     } else if (trackId === this.get('toTrackId')) {
       return this.get('startTo');
     } else {
-      throw Error("Error: could not get start for MixPoint with track: " + trackId);
+      throw Error("Error: could not get start for Link with track: " + trackId);
     }
   },
 

@@ -154,6 +154,94 @@ WaveModel = Graviton.Model.extend({
       wave.set('loaded', false);
       window.alert("Wave Error: " + (errorMessage || 'unknown error'));
     });
+
+    // region stuff
+    wavesurfer.on('region-created', wave._updateRegion.bind(wave));
+    wavesurfer.on('region-updated-end', wave._updateRegion.bind(wave));
+    wavesurfer.on('region-removed', wave._updateRegion.bind(wave));
+
+    // template.autorun(this.drawLinks.bind(this));
+  },
+
+  setRegions: function(regions) {
+    this.regions = this.regions || new ReactiveVar();
+    this.regions.set(regions);
+  },
+
+  setRegion: function(region) {
+    if (region && region.id) {
+      var regions = this.getRegions();
+      regions[region.id] = region;
+      this.setRegions(regions);
+    }
+  },
+
+  getRegions: function() {
+    this.regions = this.regions || new ReactiveVar();
+    return this.regions && this.regions.get();
+  },
+
+  getRegion: function(regionId) {
+    return this.getRegions()[regionId];
+  },
+
+  _updateRegion: function(region) {
+    var regions = this.setRegion(region);
+    if (region && region.id) {
+      regions[region.id] = region;
+      this.setRegions(regions);
+    }
+  },
+
+  getBufferLength: function() {
+    return Graviton.Model.prototype.get.call(this.getWaveSurfer(), 'backend.buffer.length');
+  },
+
+  // Returns time (ms) required to upload from source server to Echonest
+  getCrossloadTime: function() {
+    var bufferLength = this.getBufferLength();
+    var SC_FACTOR = 1 / 3904; // milliseconds per buffer element
+    var S3_FACTOR = 1 / 1936;
+    var source = this.getSource();
+    var factor = (source === 'soundcloud') ? SC_FACTOR : S3_FACTOR;
+    return factor * bufferLength;
+  },
+
+
+  drawLinks: function() {
+    var wavesurfer = this.getWaveSurfer();
+    var track = this.track();
+    var links = (track && track.getAllLinks()) || [];
+
+    console.log("drawing links", track.get('title'), links.length);
+
+    links.forEach(function(link, i) {
+      var color;
+      switch (i) {
+        case 0: color = 'rgba(255, 0, 0, 1)'; break;
+        case 1: color = 'rgba(0, 255, 0, 1)'; break;
+        case 2: color = 'rgba(0, 0, 255, 1)'; break;
+        default: color = 'rgba(255, 255, 0, 1)'; break;
+      }
+      console.log("drawing link", track.get('title'), link, i);
+
+      var params = {
+        id: link.get('_id'),
+        start: link.getTime(track.get('_id')),
+        resize: false,
+        loop: false,
+        drag: false,
+        color: color,
+      };
+      var region = wavesurfer.getRegion(link.get('_id'));
+      if (!region) {
+        console.log("new region", params);
+        region = wavesurfer.regions.add(params);
+      } else {
+        console.log("update region", params);
+        region.update(params);
+      }
+    });
   },
 
   onUploadFinish: function() {
@@ -162,6 +250,10 @@ WaveModel = Graviton.Model.extend({
 
   onLoading: function(options) {
     this.getWaveSurfer().fireEvent('loading', options.percent, options.xhr, options.type);
+  },
+
+  onError: function(xhr) {
+    this.getWaveSurfer().fireEvent('error', 'echonest analysis error: ' + xhr.responseText);
   },
 
   createWaveSurfer: function() {

@@ -2,6 +2,7 @@ Template.MixPage.created = function() {
   Utils.initTemplateModel.call(this, 'mix');
 
   this.addModalTrackIndex = new ReactiveVar(-1);
+  this.activeLinkPos = new ReactiveVar(-1);
 };
 
 function getMix(template) {
@@ -38,7 +39,17 @@ Template.MixPage.helpers({
   tracksAccordion: function() {
     var template = Template.instance();
     var addModalTrackIndex = template.addModalTrackIndex;
+    var activeLinkPos = template.activeLinkPos;
     var mix = getMix(template);
+
+    function onViewLink(position) {
+      if (activeLinkPos.get() === position) {
+        activeLinkPos.set(-1);
+      } else {
+        activeLinkPos.set(position);
+      }
+    }
+
     return mix.get('trackIds').map(function(trackId, i) {
       var track = Tracks.findOne(trackId);
       var pos = i + 1;
@@ -47,6 +58,8 @@ Template.MixPage.helpers({
         addModalTrackIndex: addModalTrackIndex,
         track: track,
         mix: mix,
+        activeLinkPos: activeLinkPos,
+        onViewLink: onViewLink,
       };
     });
   },

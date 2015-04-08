@@ -3,15 +3,24 @@ Template.Track_Accordion.created = function() {
   Utils.initTemplateModel.call(this, 'mix');
 
   Utils.requireTemplateData.call(this, 'addModalTrackIndex');
+  Utils.requireTemplateData.call(this, 'activeLinkPos');
+
   Utils.requireTemplateData.call(this, 'position');
+  Utils.requireTemplateData.call(this, 'onViewLink');
 
   this.isActive = new ReactiveVar(false);
 };
 
+function templateIsActive(template) {
+  var data = template.data;
+  var pos = data.position;
+  var active = data.activeLinkPos.get();
+  return template.isActive.get() || active === pos || active + 1 === pos;
+}
+
 Template.Track_Accordion.helpers({
   activeClass: function() {
-    var isActive = Template.instance().isActive;
-    return isActive.get() ? 'active' : '';
+    return templateIsActive(Template.instance()) ? 'active' : '';
   },
 
   showLinkButton: function() {
@@ -19,6 +28,11 @@ Template.Track_Accordion.helpers({
     var pos = data.position;
     var mix = data.mix;
     return pos < mix.get('trackIds.length');
+  },
+
+  linkButtonClass: function() {
+    var data = Template.currentData();
+    return data.activeLinkPos.get() === data.position ? 'active' : '';
   }
 });
 
@@ -45,12 +59,14 @@ Template.Track_Accordion.events({
   },
 
   'click .view-link': function(e, template) {
-    var trackA = template.data.track;
-    var mix = template.data.mix;
-    var trackB = mix.getTrackAt(template.data.position);
-    Router.go('tracks.links', {
-      _idA: trackA.get('_id'),
-      _idB: trackB.get('_id'),
-    });
+    template.data.onViewLink(template.data.position);
+
+    // var trackA = template.data.track;
+    // var mix = template.data.mix;
+    // var trackB = mix.getTrackAt(template.data.position);
+    // Router.go('tracks.links', {
+    //   _idA: trackA.get('_id'),
+    //   _idB: trackB.get('_id'),
+    // });
   },
 });

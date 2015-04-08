@@ -36,11 +36,15 @@ TrackModel = Graviton.Model.extend({
 
     // create wave, setup relationships
     var wave = Waves.create();
+    wave.set('trackId', this.get('_id'));
+    wave.save();
     this.setWave(wave);
     wave.init(template);
     this.loadWave();
   },
 
+  // TODO: standardize this getting/setting of non-saved reactive vars (should be non saved? global store?)
+  // createReactiveProp
   setWave: function(wave) {
     this.wave = this.wave || new ReactiveVar();
     this.wave.set(wave);
@@ -49,6 +53,16 @@ TrackModel = Graviton.Model.extend({
   getWave: function() {
     this.wave = this.wave || new ReactiveVar();
     return this.wave && this.wave.get();
+  },
+
+  setEchonestAnalysis: function(response) {
+    this.echonestAnalysis = this.echonestAnalysis || new ReactiveVar();
+    this.echonestAnalysis.set(response);
+  },
+
+  getEchonestAnalysis: function() {
+    this.echonestAnalysis = this.echonestAnalysis || new ReactiveVar();
+    return this.echonestAnalysis && this.echonestAnalysis.get();
   },
 
   loadWave: function() {
@@ -215,6 +229,149 @@ TrackModel = Graviton.Model.extend({
       track.set({ s3FileName: s3FileName });
       cb && cb(error, result);
     });
+  },
+
+  setLoadingInterval: function(options) {
+    var percent = 0;
+    var wave = this.getWave();
+    var loadingInterval = Meteor.setInterval(function() {
+      wave.onLoading({
+        percent: percent,
+        type: options.type,
+      });
+      if (percent === 100) {
+        Meteor.clearInterval(loadingInterval);
+      }
+      percent += 1;
+    }, options.time / 100);
+    // wave.loadingIntervals.push(loadingInterval);
+    return loadingInterval;
+  },
+
+  fetchEchonestAnalysis: function(cb) {
+
+    // If already have analysis, short circuit
+    if (this.getEchonestAnalysis()) {
+      console.log("Track already has echonest analysis, skipping", this.get('title'));
+      cb && cb();
+    } else {
+      var track = this;
+      var wave = this.getWave();
+
+      // fetch profile before analyzing
+      track.fetchEchonestProfile(function() {
+        var loadingInterval;
+
+        function onSuccess(response) {
+          Meteor.clearInterval(loadingInterval);
+          wave.onUploadFinish();
+          track.setEchonestAnalysis(response);
+          cb && cb();
+        }
+
+        // attempt 5 times with 3 seconds between each.
+        var count = 0;
+        function attempt() {
+          loadingInterval = track.setLoadingInterval({
+            type: 'analyze',
+            time: 3000
+          });
+          console.log("fetching echonest analysis: ", "attempt: " + count, track);
+
+          $.ajax({
+            type: "GET",
+            url: track.get('echonest.audio_summary.analysis_url'),
+            success: onSuccess,
+            error: function(xhr) {
+              Meteor.clearInterval(loadingInterval);
+              // retry on error
+              if (count++ <= 5) {
+                Meteor.setTimeout(attempt, 3000);
+              } else {
+                wave.onError(xhr);
+              }
+            },
+          });
+        }
+
+        attempt();
+      });
+    }
+  },
+
+  fetchEchonestProfile: function(cb) {
+    var wave = this.getWave();
+    var track = this;
+    // first get echonestId of track
+    this.fetchEchonestId(function(echonestId) {
+      console.log("fetching echonest profile", track.get('title'));
+      var loadingInterval = track.setLoadingInterval({
+        type: 'profile',
+        time: 1000
+      });
+
+      function onSuccess(response) {
+        Meteor.clearInterval(loadingInterval);
+        wave.onUploadFinish();
+        track.setEchonest(response);
+        track.save();
+        cb && cb();
+      }
+
+      // send profile request
+      $.ajax({
+        type: "GET",
+        url: 'http://developer.echonest.com/api/v4/track/profile',
+        cache: false, // do not cache so we get a fresh analysis_url
+        data: {
+          api_key: Config.apiKey_Echonest,
+          bucket: 'audio_summary',
+          format: 'json',
+          id: echonestId,
+        },
+        success: onSuccess,
+        error: wave.onError,
+      });      
+    });
+  },
+
+  fetchEchonestId: function(cb) {
+
+    // short-circuit if we already have the id
+    var track = this;
+    if (track.get('echonest')) {
+      console.log("track already has echonest id, skipping", track);
+      cb && cb(track.get('echonest.id'));
+    } else {
+      console.log("getting echonestId of track", track);
+      var wave = track.getWave();
+      var streamUrl = track.getStreamUrl();
+      var loadingInterval = track.setLoadingInterval({
+        type: 'profile',
+        time: track.getCrossloadTime()
+      });
+
+      function onSuccess(response) {
+        Meteor.clearInterval(loadingInterval);
+        wave.fireEvent('uploadFinish');
+        cb && cb(response.response.track.id);
+      }
+
+      // start upload
+      $.ajax({
+        type: "POST",
+        url: 'http://developer.echonest.com/api/v4/track/upload',
+        data: {
+          api_key: Config.apiKey_Echonest,
+          url: streamUrl
+        },
+        success: onSuccess,
+        error: function(xhr) {
+          Meteor.clearInterval(loadingInterval);
+          wave.fireEvent('error', 'echonest upload error: ' + xhr.responseText);
+        },
+      });
+    }
   },
 
 });
