@@ -3,6 +3,12 @@ Template.MixPage.created = function() {
 
   this.addModalTrackIndex = new ReactiveVar(-1);
   this.activeLinkPos = new ReactiveVar(-1);
+
+  // auto compare waves
+  this.autorun(function() {
+    var instance = Template.instance();
+    var active = instance.activeLinkPos.get();
+  }.bind(this));
 };
 
 function getMix(template) {

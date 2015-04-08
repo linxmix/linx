@@ -271,7 +271,7 @@ WaveModel = Graviton.Model.extend({
   },
 
   getWaveSurfer: function() {
-    console.log("getWaveSurfers", this, this.get('_id'), WaveSurfers)
+    // console.log("getWaveSurfers", this, this.get('_id'), WaveSurfers)
     return WaveSurfers.get(this.get('_id'));
   },
 

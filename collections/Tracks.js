@@ -314,7 +314,6 @@ TrackModel = Graviton.Model.extend({
         Meteor.clearInterval(loadingInterval);
         wave.onUploadFinish();
         track.setEchonest(Graviton.getProperty(response, 'response.track'));
-        track.save();
         cb && cb();
       }
 
