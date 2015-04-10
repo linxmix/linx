@@ -5,46 +5,63 @@ MixModel = Graviton.Model.extend({
       field: 'createdBy'
     },
   },
-  belongsToMany: {
-    tracks: {
-      collectionName: 'tracks',
-      field: 'trackIds',
+  hasMany: {
+    elements: {
+      collectionName: 'mixelements',
+      foreignKey: 'mixId',
     },
-    links: {
-      collectionName: 'links',
-      field: 'linkIds',
-    }
   },
   defaults: {
     playCount: 0,
     title: 'New Mix',
     isLocal: false,
-    trackIds: [],
-    linkIds: [],
+    elementIds: [],
   }
 }, {
-
-  appendTrack: function(trackId) {
-    return this.addTrackAt(trackId, this.get('trackIds').length);
+  getElementAt: function(index) {
+    var existing = this.elements.find({ index: index });
+    if (existing) {
+      return existing;
+    } else {
+      return this.elements.add({ index: index });
+    }
   },
 
   getTrackAt: function(index) {
-    var trackIds = this.get('trackIds');
-    return Tracks.findOne(trackIds[index]);
+    var element = this.getElementAt(index);
+    return element && element.track();
+  },
+
+  getLinkAt: function(index) {
+    var element = this.getElementAt(index);
+    return element && element.link();
   },
 
   getTracks: function() {
-    return this.get('trackIds').map(function(trackId) {
-      return Tracks.findOne(trackId);
-    });
+    var elements = this.getElements();
+    return (elements || []).map(function(element) {
+      return element.track();
+    }) ;
+  },
+
+  getLinks: function() {
+    var elements = this.getElements();
+    return (elements || []).map(function(element) {
+      return element.link();
+    }) ;
   },
 
   addTrackAt: function(trackId, index) {
-    var trackIds = this.get('trackIds');
-    trackIds.splice(index, 0, trackId);
-    return this.set({
-      trackIds: trackIds,
-    });
+    var element = getElementAt(index);
+    if (element && element.get('trackId') === trackId) {
+      var trackIds = this.get('trackIds');
+      trackIds.splice(index, 0, trackId);
+      return this.set({
+        trackIds: trackIds,
+      });
+    } else {
+
+    }
   },
 
   replaceTrackAt: function(trackId, index) {
@@ -62,6 +79,10 @@ MixModel = Graviton.Model.extend({
     return this.set({
       trackIds: trackIds
     });
+  },
+
+  appendTrack: function(trackId) {
+    return this.addTrackAt(trackId, this.get('trackIds').length);
   },
 
   removeTrack: function(trackId) {

@@ -4,20 +4,16 @@ Template.Track_Accordion.created = function() {
   });
   Utils.initTemplateModel.call(this, 'mix');
 
-  Utils.requireTemplateData.call(this, 'addModalTrackIndex');
-  Utils.requireTemplateData.call(this, 'activeLinkPos');
+  Utils.requireTemplateData.call(this, 'trackModalIndex');
+  Utils.requireTemplateData.call(this, 'linkModalIndex');
 
   Utils.requireTemplateData.call(this, 'position');
-  Utils.requireTemplateData.call(this, 'onViewLink');
 
   this.isActive = new ReactiveVar(false);
 };
 
 function templateIsActive(template) {
-  var data = template.data;
-  var pos = data.position;
-  var active = data.activeLinkPos.get();
-  return template.isActive.get() || active === pos || active + 1 === pos;
+  return template.isActive.get();
 }
 
 Template.Track_Accordion.helpers({
@@ -32,9 +28,14 @@ Template.Track_Accordion.helpers({
     return pos < mix.get('trackIds.length');
   },
 
-  linkButtonClass: function() {
+  linkActiveClass: function() {
     var data = Template.currentData();
-    return data.activeLinkPos.get() === data.position ? 'active' : '';
+    return data.linkModalIndex.get() === data.position ? 'active' : '';
+  },
+
+  trackActiveClass: function() {
+    var data = Template.currentData();
+    return data.trackModalIndex.get() === data.position ? 'active' : '';
   }
 });
 
@@ -57,18 +58,15 @@ Template.Track_Accordion.events({
     e.stopPropagation();
     var data = template.data;
     // open add modal with this index
-    data.addModalTrackIndex.set(data.position);
+    data.trackModalIndex.set(data.position);
   },
 
-  'click .view-link': function(e, template) {
-    template.data.onViewLink(template.data.position);
-
-    // var trackA = template.data.track;
-    // var mix = template.data.mix;
-    // var trackB = mix.getTrackAt(template.data.position);
-    // Router.go('tracks.links', {
-    //   _idA: trackA.get('_id'),
-    //   _idB: trackB.get('_id'),
-    // });
+  'click .add-link': function(e, template) {
+    e.preventDefault();
+    e.stopPropagation();
+    var data = template.data;
+    // open add modal with this index
+    data.linkModalIndex.set(data.position);
+    console.log("add link", data.linkModalIndex.get());
   },
 });

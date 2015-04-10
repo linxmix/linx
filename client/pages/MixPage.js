@@ -1,20 +1,20 @@
 Template.MixPage.created = function() {
   Utils.initTemplateModel.call(this, 'mix');
 
-  this.addModalTrackIndex = new ReactiveVar(-1);
-  this.activeLinkPos = new ReactiveVar(-1);
+  this.trackModalIndex = new ReactiveVar(-1);
+  this.linkModalIndex = new ReactiveVar(-1);
 
   // auto compare waves
   this.autorun(function() {
     var template = Template.instance();
     var tracks = template.tracks;
-    var active = template.activeLinkPos.get();
+    var active = template.linkModalIndex.get();
     console.log("template tracks", tracks);
 
     if (tracks) {
       var fromTrack = tracks[active - 1];
       var toTrack = tracks[active];
-      
+
       if ((fromTrack && fromTrack.getEchonestAnalysis()) &&
         (toTrack && toTrack.getEchonestAnalysis())) {
         compareTracks(fromTrack, toTrack);
@@ -57,17 +57,9 @@ Template.MixPage.helpers({
 
   tracksAccordion: function() {
     var template = Template.instance();
-    var addModalTrackIndex = template.addModalTrackIndex;
-    var activeLinkPos = template.activeLinkPos;
+    var trackModalIndex = template.trackModalIndex;
+    var linkModalIndex = template.linkModalIndex;
     var mix = getMix(template);
-
-    function onViewLink(position) {
-      if (activeLinkPos.get() === position) {
-        activeLinkPos.set(-1);
-      } else {
-        activeLinkPos.set(position);
-      }
-    }
 
     var tracks = template.tracks = mix.getTracks();
 
@@ -75,25 +67,24 @@ Template.MixPage.helpers({
       var pos = i + 1;
       return {
         position: pos,
-        addModalTrackIndex: addModalTrackIndex,
+        trackModalIndex: trackModalIndex,
+        linkModalIndex: linkModalIndex,
         track: track,
         mix: mix,
-        activeLinkPos: activeLinkPos,
-        onViewLink: onViewLink,
       };
     });
   },
 
   prevTrack: function() {
     var template = Template.instance();
-    var index = template.addModalTrackIndex.get();
+    var index = template.trackModalIndex.get();
     var mix = getMix(template);
     return mix.getTrackAt(index - 1);
   },
 
   nextTrack: function() {
     var template = Template.instance();
-    var index = template.addModalTrackIndex.get();
+    var index = template.trackModalIndex.get();
     var mix = getMix(template);
     return mix.getTrackAt(index);
   },
@@ -101,23 +92,46 @@ Template.MixPage.helpers({
   addTrack: function() {
     var template = Template.instance();
     return function(track) {
-      var index = template.addModalTrackIndex.get();
+      var index = template.trackModalIndex.get();
       var mix = template.data.mix;
       mix.addTrackAt(track.get('_id'), index);
-      template.addModalTrackIndex.set(-1);
+      template.trackModalIndex.set(-1);
     }.bind(this);
   },
 
-  resetAddModal: function() {
+  addLink: function() {
+    var template = Template.instance();
+    return function(link) {
+      var index = template.linkModalIndex.get();
+      var mix = template.data.mix;
+      mix.addLinkAt(link.get('_id'), index);
+      template.linkModalIndex.set(-1);
+    }.bind(this);
+  },
+
+  resetTrackModal: function() {
     var template = Template.instance();
     return function() {
-      template.addModalTrackIndex.set(-1);
+      template.trackModalIndex.set(-1);
     };
   },
 
-  isAddModalOpen: function() {
+  resetLinkModal: function() {
     var template = Template.instance();
-    var index = template.addModalTrackIndex.get();
+    return function() {
+      template.linkModalIndex.set(-1);
+    };
+  },
+
+  isTrackModalOpen: function() {
+    var template = Template.instance();
+    var index = template.trackModalIndex.get();
+    return index > -1;
+  },
+
+  isLinkModalOpen: function() {
+    var template = Template.instance();
+    var index = template.linkModalIndex.get();
     return index > -1;
   }
 });

@@ -1,0 +1,62 @@
+<template name="Add_Link_Modal">
+  <div class="fullscreen basic ui Add_Link_Modal modal">
+    {{> Add_Link_Modal_Inner}}
+  </div>
+</template>
+
+<template name="Add_Link_Modal_Inner">
+  <div class="center-aligned header">
+    Add Track
+  </div>
+
+  <div class="content">
+    {{#Track_Wave track=track}}
+      <div class="ui menu initial-background">
+        {{> Play_Button track=track}}
+        <div class="ui right menu initial-background">
+          {{> Reset_Button track=track}}
+          {{> Save_Button track=track}}
+        </div>
+      </div>
+    {{/Track_Wave}}
+
+    <div class="inverted ui section divider"></div>
+
+    <div class="ui suggestions grid">
+      {{#if prevTrack.getFromLinkIds}}
+        <div class="eight wide {{columnClass}} column">
+          <h4 class="inverted center aligned ui header">
+            <div class="content">
+              Links To
+            </div>
+          </h4>
+          {{> Track_Links_List track=prevTrack linkIds=prevTrack.getFromLinkIds onClick=selectTrack hideHeader=true}}
+        </div>
+      {{/if}}
+
+      {{#if nextTrack.getToLinkIds}}
+        <div class="eight wide {{columnClass}} column">
+          <h4 class="inverted center aligned ui header">
+            <div class="content">
+              Links From
+            </div>
+          </h4>
+          {{> Track_Links_List track=nextTrack linkIds=nextTrack.getToLinkIds onClick=selectTrack hideHeader=true}}
+        </div>
+      {{/if}}
+    </div>
+  </div>
+
+  <div class="actions">
+    <div class="two fluid inverted ui buttons">
+      <div class="inverted basic red ui icon button deny">
+        <i class="cancel icon"></i>
+        Cancel
+      </div>
+      <div class="inverted green ui button approve {{addButtonClass}}">
+        <i class="add icon"></i>
+        Add Track
+      </div>
+    </div>
+  </div>
+</template>

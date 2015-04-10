@@ -27,8 +27,13 @@
     </div>
 
     <!-- Add Track Modal -->
-    {{#if isAddModalOpen}}
-      {{> Add_Track_Modal onSubmit=addTrack onCancel=resetAddModal prevTrack=prevTrack nextTrack=nextTrack}}
+    {{#if isTrackModalOpen}}
+      {{> Add_Track_Modal onSubmit=addTrack onCancel=resetTrackModal prevTrack=prevTrack nextTrack=nextTrack}}
+    {{/if}}
+
+    <!-- Add Link Modal -->
+    {{#if isLinkModalOpen}}
+      {{> Add_Link_Modal onSubmit=addLink onCancel=resetLinkModal prevTrack=prevTrack nextTrack=nextTrack}}
     {{/if}}
   </div>
 </template>
