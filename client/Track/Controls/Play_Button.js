@@ -1,13 +1,13 @@
 Template.Play_Button.created = function() {
-  Utils.initTemplateModel.call(this, 'track');
+  Utils.initTemplateModel.call(this, 'wave');
 };
 
 function getTrack(template) {
-  return template.data.track;
+  return template.data.wave.getTrack();
 }
 
 function getWave(template) {
-  return getTrack(template).getWave();
+  return template.data.wave;
 }
 
 Template.Play_Button.helpers({

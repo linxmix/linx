@@ -18,16 +18,6 @@ Meteor.startup(function() {
 
 // Graviton Model to wrap WaveSurfer
 WaveModel = Graviton.Model.extend({
-  belongsTo: {
-    user: {
-      collectionName: 'users',
-      field: 'createdBy'
-    },
-    // track: {
-    //   collectionName: 'tracks',
-    //   field: 'trackId',
-    // },
-  },
   defaults: {
     playing: false,
 
@@ -123,7 +113,6 @@ WaveModel = Graviton.Model.extend({
 
   setTrack: function(track) {
     this.track = this.track || new ReactiveVar();
-    console.log("track", this.track)
     this.track.set(track);
   },
 
@@ -164,6 +153,10 @@ WaveModel = Graviton.Model.extend({
     var file = files[0];
     var wavesurfer = this.getWaveSurfer();
     wavesurfer.loadBlob(file);
+
+    // load mp3 tags into track
+    var track = this.getTrack();
+    track.loadMp3Tags(file);
   },
 
   // TODO: optionally load from this.get('files')?
@@ -224,6 +217,16 @@ WaveModel = Graviton.Model.extend({
         console.log("update region", params);
         region.update(params);
       }
+    });
+  },
+
+  reset: function() {
+    this.getWaveSurfer().empty();
+    this.setTrack(undefined);
+    this.set({
+      'loaded': false,
+      'loading': false,
+      'streamUrl': undefined
     });
   },
 

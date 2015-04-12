@@ -1,19 +1,19 @@
 Template.Analyze_Button.created = function() {
-  Utils.initTemplateModel.call(this, 'track');
+  Utils.initTemplateModel.call(this, 'wave');
 };
 
 function getTrack(template) {
-  return template.data.track;
+  return getWave(template).getTrack();
 }
 
 function getWave(template) {
-  return getTrack(template).getWave();
+  return template.data.wave;
 }
 
 Template.Analyze_Button.helpers({
   isAnalyzed: function() {
     var track = getTrack(Template.instance());
-    return track.getEchonestAnalysis();
+    return track && track.getEchonestAnalysis();
   },
 
   loadingClass: function() {
@@ -24,6 +24,7 @@ Template.Analyze_Button.helpers({
 
 Template.Analyze_Button.events({
   'click .analyze': function(e, template) {
-    getTrack(template).fetchEchonestAnalysis();
+    var track = getTrack(template);
+    track && track.fetchEchonestAnalysis();
   },
 });

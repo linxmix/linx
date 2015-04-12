@@ -5,4 +5,13 @@
     left: -10000px;
     width: 100%;
   }
+
+  .initial-background {
+    background: initial;
+  }
+
+  .ui.menu {
+    // give room for menu button rollover
+    margin-bottom: 1rem;
+  }
 }

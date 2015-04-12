@@ -1,19 +1,19 @@
 Template.Save_Button.created = function() {
-  Utils.initTemplateModel.call(this, 'track');
+  Utils.initTemplateModel.call(this, 'wave');
 };
 
 function getTrack(template) {
-  return template.data.track;
+  return getWave(template).getTrack();
 }
 
 function getWave(template) {
-  return getTrack(template).getWave();
+  return template.data.wave;
 }
 
 Template.Save_Button.helpers({
   isDirty: function() {
     var track = getTrack(Template.instance());
-    return track.isDirty();
+    return track && track.isDirty();
   },
   
   isLoading: function() {
@@ -25,6 +25,6 @@ Template.Save_Button.helpers({
 Template.Save_Button.events({
   'click .save': function(e, template) {
     var track = getTrack(template);
-    track.saveToBackend();
+    track && track.saveToBackend();
   },
 });

@@ -10,14 +10,7 @@
   </div>
 
   <div class="content">
-    {{#Track_Wave track=track}}
-      <div class="ui menu initial-background">
-        {{> Play_Button track=track}}
-        <div class="ui right menu initial-background">
-          {{> Reset_Button track=track}}
-          {{> Save_Button track=track}}
-        </div>
-      </div>
+    {{#Track_Wave track=track hideAnalyzeButton=true}}
     {{else}}
       <div class="inverted ui section divider"></div>
     {{/Track_Wave}}

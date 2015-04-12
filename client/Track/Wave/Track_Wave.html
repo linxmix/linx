@@ -5,6 +5,7 @@
     {{> ProgressBar}}
 
     {{#if isLoaded}}
+      <!-- Header -->
       {{#unless hideHeader}}
         <div class="inverted ui header">
           <div class="content">
@@ -13,8 +14,27 @@
           </div>
         </div>
       {{/unless}}
-      {{> UI.contentBlock}}
+
+      <!-- Controls -->
+      <div class="ui menu initial-background">
+        {{#unless hidePlayButton}}
+          {{> Play_Button wave=wave}}
+        {{/unless}}
+        <div class="ui right menu initial-background">
+          {{#unless hideResetButton}}
+            {{> Reset_Button wave=wave}}
+          {{/unless}}
+          {{#unless hideSaveButton}}
+            {{> Save_Button wave=wave}}
+          {{/unless}}
+          {{#unless hideAnalyzeButton}}
+            {{> Analyze_Button wave=wave}}
+          {{/unless}}
+        </div>
+      </div>
     {{else}}
+
+      <!-- Load Options -->
       {{#unless isLoading}}
         {{#unless hideLoadOptions}}
           <div class="ui grid">

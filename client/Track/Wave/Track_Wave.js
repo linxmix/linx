@@ -15,16 +15,18 @@ Template.Track_Wave.destroyed = function() {
 };
 
 Template.Track_Wave.rendered = function() {
-  // init wave
   this.wave.init(this);
 };
 
-// TODO: how to better default wave before template is rendered?
 function getWave() {
   return Template.instance().wave;
 }
 
 Template.Track_Wave.helpers({
+  wave: function() {
+    return Template.instance().wave;
+  },
+
   hiddenClass: function() {
     var wave = getWave.call(this);
     return wave.get('loaded') ? '' : 'hidden';
@@ -43,7 +45,7 @@ Template.Track_Wave.helpers({
   onSubmitSoundcloud: function() {
     var template = Template.instance();
     var wave = template.wave;
-    var track = template.data.wave;
+    var track = wave.getTrack();
     // load response into track, then load wave
     return function(response) {
       track.setSoundcloud(response);
@@ -54,12 +56,12 @@ Template.Track_Wave.helpers({
   onSelectLinx: function() {
     var template = Template.instance();
     var wave = template.wave;
-    var track = template.data.wave;
+    var track = wave.getTrack();
     // clone selected, then load wave
     return function(selectedTrack) {
       track.cloneFrom(selectedTrack);
       wave.loadTrack();
-    }.bind(Template.instance());
+    };
   },
 
   onDropTrack: function() {
@@ -68,6 +70,6 @@ Template.Track_Wave.helpers({
     // load files into wave
     return function(files) {
       wave.loadFiles(files);
-    }.bind(Template.instance());
+    };
   }
 });
