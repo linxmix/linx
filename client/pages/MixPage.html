@@ -18,11 +18,16 @@
     <h3 class="inverted left aligned ui header">{{trackCountText}}</h3>
 
     <!-- Track Accordions -->
-    <div class="inverted attached ui segment">
-      <div class="inverted ui fluid accordion">
-        {{#each tracksAccordion}}
+    <div class="inverted center-aligned attached ui segment">
+      {{#each tracksAccordion}}
+        <div class="inverted ui fluid accordion">
           {{> Track_Accordion}}
-        {{/each}}
+        </div>
+      {{/each}}
+
+      <div class="append-track large inverted basic green ui icon button">
+        <i class="add icon"></i>
+        Add Track
       </div>
     </div>
 
@@ -32,8 +37,8 @@
     {{/if}}
 
     <!-- Add Link Modal -->
-    {{#if isLinkModalOpen}}
-      {{> Add_Link_Modal onSubmit=addLink onCancel=resetLinkModal prevTrack=prevTrack nextTrack=nextTrack}}
-    {{/if}}
+    <!-- {{#if isLinkModalOpen}} -->
+      <!-- {{> Add_Link_Modal onSubmit=addLink onCancel=resetLinkModal prevTrack=prevTrack nextTrack=nextTrack}} -->
+    <!-- {{/if}} -->
   </div>
 </template>

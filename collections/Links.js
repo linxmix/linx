@@ -14,9 +14,9 @@ LinkModel = Graviton.Model.extend({
     },
   },
   hasMany: {
-    mixes: {
-      collectionName: 'mixes',
-      foreignKey: 'linkIds',
+    mixelements: {
+      collectionName: 'mixelements',
+      foreignKey: 'linkId',
     }
   },
   defaults: {

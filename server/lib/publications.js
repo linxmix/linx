@@ -10,8 +10,6 @@ Meteor.publish("Mixes", function () {
   return Mixes.find();
 });
 
-Meteor.startup(function() {
-  if (!Mixes.findOne('queue')) {
-    Mixes.insert({_id: 'queue', name: 'Queue'});
-  }
+Meteor.publish("MixElements", function () {
+  return MixElements.find();
 });

@@ -18,9 +18,9 @@
           {{> Save_Button track=track}}
         </div>
       </div>
+    {{else}}
+      <div class="inverted ui section divider"></div>
     {{/Track_Wave}}
-
-    <div class="inverted ui section divider"></div>
 
     <div class="ui suggestions grid">
       {{#if prevTrack.getFromLinkIds}}

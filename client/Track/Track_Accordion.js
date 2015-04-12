@@ -7,7 +7,7 @@ Template.Track_Accordion.created = function() {
   Utils.requireTemplateData.call(this, 'trackModalIndex');
   Utils.requireTemplateData.call(this, 'linkModalIndex');
 
-  Utils.requireTemplateData.call(this, 'position');
+  Utils.requireTemplateData.call(this, 'index');
 
   this.isActive = new ReactiveVar(false);
 };
@@ -17,26 +17,18 @@ function templateIsActive(template) {
 }
 
 Template.Track_Accordion.helpers({
+  position: function() {
+    return Template.currentData().index + 1;
+  },
+
   activeClass: function() {
     return templateIsActive(Template.instance()) ? 'active' : '';
   },
 
-  showLinkButton: function() {
+  isLastTrack: function() {
     var data = Template.currentData();
-    var pos = data.position;
-    var mix = data.mix;
-    return pos < mix.get('trackIds.length');
+    return data.index >= data.mix.getLength() - 1;
   },
-
-  linkActiveClass: function() {
-    var data = Template.currentData();
-    return data.linkModalIndex.get() === data.position ? 'active' : '';
-  },
-
-  trackActiveClass: function() {
-    var data = Template.currentData();
-    return data.trackModalIndex.get() === data.position ? 'active' : '';
-  }
 });
 
 Template.Track_Accordion.events({
@@ -49,8 +41,8 @@ Template.Track_Accordion.events({
     e.preventDefault();
     e.stopPropagation();
     var mix = template.data.mix;
-    var track = template.data.track;
-    mix.removeTrack(track.get('_id'));
+    var index = template.data.index;
+    mix.removeTrackAt(index);
   },
 
   'click .add-track': function(e, template) {
@@ -58,7 +50,7 @@ Template.Track_Accordion.events({
     e.stopPropagation();
     var data = template.data;
     // open add modal with this index
-    data.trackModalIndex.set(data.position);
+    data.trackModalIndex.set(data.index + 1);
   },
 
   'click .add-link': function(e, template) {
@@ -66,7 +58,6 @@ Template.Track_Accordion.events({
     e.stopPropagation();
     var data = template.data;
     // open add modal with this index
-    data.linkModalIndex.set(data.position);
-    console.log("add link", data.linkModalIndex.get());
+    data.linkModalIndex.set(data.index + 1);
   },
 });

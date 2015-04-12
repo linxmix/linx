@@ -14,93 +14,81 @@ MixModel = Graviton.Model.extend({
   defaults: {
     playCount: 0,
     title: 'New Mix',
-    isLocal: false,
-    elementIds: [],
+    artist: 'No Artist',
   }
 }, {
+  getElements: function() {
+    if (!this.get('_id')) {
+      return [];
+    } else {
+      return _.sortBy(this.elements.all(), 'index');
+    }
+  },
+
   getElementAt: function(index) {
-    var existing = this.elements.find({ index: index });
+    var existing = this.elements.find({ index: index }).fetch()[0];
     if (existing) {
       return existing;
     } else {
-      return this.elements.add({ index: index });
+      return this.elements.add({
+        '_id': this.get('_id') + index,
+        'index': index,
+      });
     }
   },
 
   getTrackAt: function(index) {
-    var element = this.getElementAt(index);
-    return element && element.track();
+    if (!(_.isNumber(index) && index > -1)) { return; }
+    return this.getElementAt(index).track();
   },
 
   getLinkAt: function(index) {
-    var element = this.getElementAt(index);
-    return element && element.link();
+    if (!(_.isNumber(index) && index > -1)) { return; }
+    return this.getElementAt(index).link();
+  },
+
+  getLength: function() {
+    return this.getTracks().length;
   },
 
   getTracks: function() {
-    var elements = this.getElements();
-    return (elements || []).map(function(element) {
+    var tracks = this.getElements().map(function(element) {
       return element.track();
-    }) ;
+    });
+    console.log("get tracks", tracks, this.get('_id'));
+    return _.without(tracks, undefined);
   },
 
   getLinks: function() {
-    var elements = this.getElements();
-    return (elements || []).map(function(element) {
+    return this.getElements().map(function(element) {
       return element.link();
-    }) ;
-  },
-
-  addTrackAt: function(trackId, index) {
-    var element = getElementAt(index);
-    if (element && element.get('trackId') === trackId) {
-      var trackIds = this.get('trackIds');
-      trackIds.splice(index, 0, trackId);
-      return this.set({
-        trackIds: trackIds,
-      });
-    } else {
-
-    }
-  },
-
-  replaceTrackAt: function(trackId, index) {
-    var trackIds = this.get('trackIds');
-    trackIds.splice(index, 1, trackId);
-    return this.set({
-      trackIds: trackIds,
     });
+  },
+
+  addTrackAt: function(track, index) {
+    if (!(_.isNumber(index) && index > -1)) { return; }
+    var element = this.getElementAt(index);
+    console.log("add track at", track, index);
+    element.track(track);
+  },
+
+  addLinkAt: function(linkId, index) {
+    if (!(_.isNumber(index) && index > -1)) { return; }
+    var element = this.getElementAt(index);
+    console.log("add link at", link, index);
+    element.link(link);
   },
 
   removeTrackAt: function(index) {
+    // TODO: remove links too?
     if (!(_.isNumber(index) && index > -1)) { return; }
-    var trackIds = this.get('trackIds');
-    trackIds.splice(index, 1);
-    return this.set({
-      trackIds: trackIds
-    });
+    this.getElementAt(index).set('trackId', undefined);
   },
 
-  appendTrack: function(trackId) {
-    return this.addTrackAt(trackId, this.get('trackIds').length);
+  removeLinkAt: function(index) {
+    if (!(_.isNumber(index) && index > -1)) { return; }
+    this.getElementAt(index).set('linkId', undefined);
   },
-
-  removeTrack: function(trackId) {
-    return this.removeTrackAt(this.get('trackIds').indexOf(trackId));
-  },
-
-  // TODO: convert these to graviton
-  getSongs: function() {
-    var tracks = this.tracks;
-    return tracks.reduce(function(acc, trackId) {
-      var song = Songs.findOne(trackId);
-      song && acc.push(song);
-      return acc;
-    }, []);
-  },
-
-  // /TODO
-
 });
 
 Mixes = Graviton.define("mixes", {

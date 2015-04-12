@@ -30,16 +30,16 @@
       {{/if}}
     </div>
 
-    <div class="inverted horizontal ui divider">
-      {{#if showLinkButton}}
-        <div class="add-link {{linkActiveClass}} mini circular inverted basic orange ui icon button">
+    {{#unless isLastTrack}}
+      <div class="inverted horizontal ui divider">
+        <div class="add-link mini circular inverted basic orange ui icon button">
           <i class="linkify icon"></i>
         </div>
-      {{/if}}
-      <div class="add-track {{trackActiveClass}} mini circular inverted basic green ui icon button">
-        <i class="add icon"></i>
+        <div class="add-track mini circular inverted basic green ui icon button">
+          <i class="add icon"></i>
+        </div>
       </div>
-    </div>
+    {{/unless}}
 
   </div>
 </template>

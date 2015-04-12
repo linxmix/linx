@@ -6,9 +6,9 @@ TrackModel = Graviton.Model.extend({
     },
   },
   hasMany: {
-    mixes: {
-      collectionName: 'mixes',
-      foreignKey: 'trackIds',
+    mixelements: {
+      collectionName: 'mixelements',
+      foreignKey: 'trackId',
     },
     toLinks: {
       collectionName: 'links',
@@ -21,7 +21,7 @@ TrackModel = Graviton.Model.extend({
   },
   defaults: {
     flags: [],
-    title: 'No Title',
+    title: 'New Track',
     artist: 'No Artist',
     type: 'song', // one of 'song', 'transition' or 'mix'
     playCount: 0,
