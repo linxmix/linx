@@ -63,6 +63,13 @@ Template.MixPage.helpers({
 
     var tracks = template.tracks = mix.getTracks();
 
+    
+          // links=links
+          // linkFrom=linkFrom
+          // linkTo=linkTo
+          // onWaveEnd=onWaveEnd
+          // hideLoadOptions=true
+
     return tracks.map(function(track, i) {
       return {
         index: i,
@@ -189,8 +196,8 @@ function compareTracks(fromTrack, toTrack) {
       start: match.seg2,
     }, params));
   }
-  fromWave.setRegions(fromRegions);
-  toWave.setRegions(toRegions);
+  fromWave.set('regions', fromRegions);
+  toWave.set('regions', toRegions);
 
   // set active mixPoint
   // Utils.setMixPoint(mixPoints[0], fromWave, toWave);

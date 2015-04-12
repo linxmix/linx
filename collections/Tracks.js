@@ -27,33 +27,9 @@ TrackModel = Graviton.Model.extend({
     playCount: 0,
   },
 }, {
-  initWave: function(template) {
-    if (this.getWave()) {
-      // TODO: will a track ever have more than one wave? what happens if so?
-      console.log(this.getWave());
-      throw new Error("Track already has a wave " + this.get('title'));
-    }
-
-    // create wave, setup relationships
-    var wave = Waves.create({ trackId: this.get('_id') });
-    wave.save();
-    this.setWave(wave);
-    wave.init(template);
-    this.loadWave();
-  },
-
   // TODO: standardize this getting/setting of non-saved reactive vars (should be non saved? global store?)
   // createReactiveProp
-  setWave: function(wave) {
-    this.wave = this.wave || new ReactiveVar();
-    this.wave.set(wave);
-  },
-
-  getWave: function() {
-    this.wave = this.wave || new ReactiveVar();
-    return this.wave && this.wave.get();
-  },
-
+  // maybe have global store of echonest analyses?
   setEchonestAnalysis: function(response) {
     this.echonestAnalysis = this.echonestAnalysis || new ReactiveVar();
     this.echonestAnalysis.set(response);
@@ -62,12 +38,6 @@ TrackModel = Graviton.Model.extend({
   getEchonestAnalysis: function() {
     this.echonestAnalysis = this.echonestAnalysis || new ReactiveVar();
     return this.echonestAnalysis && this.echonestAnalysis.get();
-  },
-
-  loadWave: function() {
-    var streamUrl = this.getStreamUrl();
-    var wave = this.getWave();
-    wave && streamUrl && wave.loadUrl(streamUrl);
   },
 
   destroy: function() {

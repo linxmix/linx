@@ -19,7 +19,14 @@
 
     <div class="content {{activeClass}}">
       {{#if activeClass}}
-        {{#Track_Wave track=track hideLoadOptions=true}}
+        {{#Track_Wave
+          track=track
+          links=links
+          linkFrom=linkFrom
+          linkTo=linkTo
+          onWaveEnd=onWaveEnd
+          hideLoadOptions=true
+        }}
           <div class="inverted ui menu">
           {{> Play_Button track=track}}
             <div class="inverted ui right menu">

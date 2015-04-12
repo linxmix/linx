@@ -23,18 +23,10 @@ WaveModel = Graviton.Model.extend({
       collectionName: 'users',
       field: 'createdBy'
     },
-    track: {
-      collectionName: 'tracks',
-      field: 'trackId',
-    },
-    linkFrom: {
-      collectionName: 'links',
-      field: 'linkFromId',
-    },
-    linkTo: {
-      collectionName: 'links',
-      field: 'linkToId',
-    }
+    // track: {
+    //   collectionName: 'tracks',
+    //   field: 'trackId',
+    // },
   },
   defaults: {
     playing: false,
@@ -46,42 +38,6 @@ WaveModel = Graviton.Model.extend({
     loadingIntervals: [],
   },
 }, {
-  play: function() {
-    var wavesurfer = this.getWaveSurfer();
-    if (wavesurfer) {
-      this.set('playing', true);
-      wavesurfer.play();
-    }
-  },
-
-  pause: function() {
-    var wavesurfer = this.getWaveSurfer();
-    if (wavesurfer) {
-      this.set('playing', false);
-      wavesurfer.pause();
-    }
-  },
-
-  playpause: function() {
-    if (this.get('playing')) {
-      this.pause();
-    } else {
-      this.play();
-    }
-  },
-
-  loadUrl: function(url) {
-    this.getWaveSurfer().load(url);
-  },
-
-  loadFiles: function(files) {
-    // store reference to pass to uploading to s3
-    this.set('files', files);
-    // load file into wavesurfer
-    var file = files[0];
-    var wavesurfer = this.getWaveSurfer();
-    wavesurfer.loadBlob(file);
-  },
 
   init: function(template) {
     var wavesurfer = this.createWaveSurfer();
@@ -162,25 +118,63 @@ WaveModel = Graviton.Model.extend({
     // wavesurfer.on('region-removed', wave._updateRegion.bind(wave));
 
     template.autorun(this.drawRegions.bind(this));
+    template.autorun(this.loadTrack.bind(this));
   },
 
-  newId: 0,
-
-  setRegions: function(regions) {
-    this.regions.set(regions);
+  setTrack: function(track) {
+    this.track = this.track || new ReactiveVar();
+    console.log("track", this.track)
+    this.track.set(track);
   },
 
-  getRegions: function() {
-    this.regions = this.regions || new ReactiveVar([]);
-    return (this.regions && this.regions.get()) || [];
+  getTrack: function() {
+    this.track = this.track || new ReactiveVar();
+    return this.track.get();
   },
 
-  clearRegions: function() {
-    // clear regions
-    this.regions = new ReactiveVar([]);
+  play: function() {
+    var wavesurfer = this.getWaveSurfer();
+    if (wavesurfer) {
+      this.set('playing', true);
+      wavesurfer.play();
+    }
+  },
 
-    // clear wave
-    this.getWaveSurfer().Regions.clear();
+  pause: function() {
+    var wavesurfer = this.getWaveSurfer();
+    if (wavesurfer) {
+      this.set('playing', false);
+      wavesurfer.pause();
+    }
+  },
+
+  playpause: function() {
+    if (this.get('playing')) {
+      this.pause();
+    } else {
+      this.play();
+    }
+  },
+
+  // TODO: will this break loadTrack when switching tracks?
+  loadFiles: function(files) {
+    // store reference to pass to uploading to s3
+    this.set('files', files);
+    // load file into wavesurfer
+    var file = files[0];
+    var wavesurfer = this.getWaveSurfer();
+    wavesurfer.loadBlob(file);
+  },
+
+  // TODO: optionally load from this.get('files')?
+  loadTrack: function() {
+    var wavesurfer = this.getWaveSurfer();
+    var track = this.getTrack();
+    var streamUrl = track && track.getStreamUrl();
+    if (wavesurfer && streamUrl && (streamUrl !== this.get('streamUrl'))) {
+      this.set('streamUrl', streamUrl);
+      wavesurfer.load(streamUrl);
+    }
   },
 
   getBufferLength: function() {
@@ -197,14 +191,21 @@ WaveModel = Graviton.Model.extend({
   },
 
   drawRegions: function() {
+    var data = Template.currentData();
+    var links = data.links || [];
+    var linkFrom = data.linkFrom;
+    var linkTo = data.linkTo;
+    var onWaveEnd = onWaveEnd;
     var wavesurfer = this.getWaveSurfer();
-    var track = this.track();
-    var regions = this.getRegions();
 
-    console.log("drawing regions", track && track.get('title'), regions.length);
-    // TODO: remove old regions
+    var track = this.getTrack();
 
-    regions.forEach(function(params, i) {
+    console.log("drawing links", track && track.get('title'), links.length);
+    // TODO: remove old links
+    // TODO: figure out linkFrom and linkTo
+
+    links.forEach(function(link, i) {
+      var params = link.regionParams || {};
       var color;
       switch (i) {
         case 0: color = 'rgba(255, 0, 0, 1)'; break;
@@ -212,13 +213,13 @@ WaveModel = Graviton.Model.extend({
         case 2: color = 'rgba(0, 0, 255, 1)'; break;
         default: color = 'rgba(255, 255, 0, 1)'; break;
       }
+      params.color = color;
       console.log("drawing region", track.get('title'), params, i);
 
-      var region = wavesurfer.regions.list[params._id];
+      var region = wavesurfer.links.list[params._id];
       if (!region) {
-        params.color = color;
         console.log("new region", params);
-        region = wavesurfer.regions.add(params);
+        region = wavesurfer.links.add(params);
       } else {
         console.log("update region", params);
         region.update(params);

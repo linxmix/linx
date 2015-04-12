@@ -45,8 +45,8 @@ Template.Add_Track_Modal_Inner.helpers({
 
   selectTrack: function() {
     var template = Template.instance();
-    return function(track) {
-      template.track.set(track);
+    return function(selectedTrack) {
+      template.track.set(selectedTrack);
     };
   }
 });

@@ -1,25 +1,27 @@
 Template.Track_Wave.created = function() {
+  this.wave = Waves.create();
+
   Utils.initTemplateModel.call(this, 'track', function(newModel, prevModel) {
     if (prevModel) {
-      prevModel.destroyWave();
+      console.log("track wave model changed", newModel.get('title'), prevModel.get('title'));
+      // prevModel.destroyWave();
     }
-    initWave(this);
+    this.wave.setTrack(newModel);
   });
 };
 
 Template.Track_Wave.destroyed = function() {
-  Template.currentData().track.destroyWave();
+  Template.instance().wave.destroy();
 };
 
 Template.Track_Wave.rendered = function() {
-  this.isRendered = true;
-  initWave(this);
+  // init wave
+  this.wave.init(this);
 };
 
 // TODO: how to better default wave before template is rendered?
 function getWave() {
-  var track = Template.currentData().track;
-  return track.getWave() || Waves.build();
+  return Template.instance().wave;
 }
 
 Template.Track_Wave.helpers({
@@ -39,38 +41,33 @@ Template.Track_Wave.helpers({
   },
 
   onSubmitSoundcloud: function() {
-    var track = Template.currentData().track;
+    var template = Template.instance();
+    var wave = template.wave;
+    var track = template.data.wave;
     // load response into track, then load wave
     return function(response) {
       track.setSoundcloud(response);
-      track.loadWave();
-    }.bind(Template.instance());
+      wave.loadTrack();
+    };
   },
 
   onSelectLinx: function() {
-    var track = Template.currentData().track;
+    var template = Template.instance();
+    var wave = template.wave;
+    var track = template.data.wave;
     // clone selected, then load wave
     return function(selectedTrack) {
       track.cloneFrom(selectedTrack);
-      track.loadWave();
+      wave.loadTrack();
     }.bind(Template.instance());
   },
 
   onDropTrack: function() {
-    var track = Template.currentData().track;
-    // load files into track
+    var template = Template.instance();
+    var wave = template.wave;
+    // load files into wave
     return function(files) {
-      track.loadFiles(files);
+      wave.loadFiles(files);
     }.bind(Template.instance());
   }
 });
-
-function initWave(template) {
-  if (!template.isRendered) {
-    return;
-  }
-
-  // Initialize wave
-  var track = Template.currentData().track;
-  track.initWave(template);
-}

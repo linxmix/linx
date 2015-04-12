@@ -35,7 +35,6 @@ MixModel = Graviton.Model.extend({
 
   getElementAt: function(index) {
     var existing = this.elements.find({ index: index }).fetch()[0];
-    console.log("get element at", index, existing);
     if (existing) {
       return existing;
     } else {
@@ -61,9 +60,9 @@ MixModel = Graviton.Model.extend({
 
   getTracks: function() {
     var tracks = this.getElements().map(function(element) {
-      return element.track();
+      return Tracks.findOne(element.get('trackId'));
     });
-    console.log("get tracks", tracks, this.get('_id'));
+    // console.log("get tracks", tracks, this.get('_id'));
     return _.without(tracks, undefined);
   },
 
@@ -88,19 +87,21 @@ MixModel = Graviton.Model.extend({
     element.set('linkId', link.get('_id'));
   },
 
-  removeTrackAt: function(index) {
-    // TODO: remove links too?
+  removeElementAt: function(index) {
     if (!(_.isNumber(index) && index > -1)) { return; }
-    var element = this.getElementAt(index);
-    element.set('trackId', undefined);
-    element.save();
+    this.getElementAt(index).remove();
+  },
+
+  removeTrackAt: function(index) {
+    // TODO: remove linkTo too?
+    this.removeElementAt(index);
   },
 
   removeLinkAt: function(index) {
     if (!(_.isNumber(index) && index > -1)) { return; }
-    var element = this.getElementAt(index);
-    element.set('linkId', undefined);
-    element.save();
+    var track = this.getTrackAt(index);
+    this.removeElementAt(index);
+    this.addTrackAt(track, index);
   },
 });
 
