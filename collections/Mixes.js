@@ -17,21 +17,29 @@ MixModel = Graviton.Model.extend({
     artist: 'No Artist',
   }
 }, {
+  clearElements: function() {
+    this.elements.all().forEach(function(element) {
+      element.remove();
+    });
+  },
+
   getElements: function() {
     if (!this.get('_id')) {
-      return [];
+      return []; // TODO
     } else {
-      return _.sortBy(this.elements.all(), 'index');
+      return _.sortBy(this.elements.all(), function(e) {
+        return e.get('index');
+      });
     }
   },
 
   getElementAt: function(index) {
     var existing = this.elements.find({ index: index }).fetch()[0];
+    console.log("get element at", index, existing);
     if (existing) {
       return existing;
     } else {
       return this.elements.add({
-        '_id': this.get('_id') + index,
         'index': index,
       });
     }
@@ -69,25 +77,30 @@ MixModel = Graviton.Model.extend({
     if (!(_.isNumber(index) && index > -1)) { return; }
     var element = this.getElementAt(index);
     console.log("add track at", track, index);
-    element.track(track);
+    element.set('trackId', track.get('_id'));
+    element.save();
   },
 
-  addLinkAt: function(linkId, index) {
+  addLinkAt: function(link, index) {
     if (!(_.isNumber(index) && index > -1)) { return; }
     var element = this.getElementAt(index);
     console.log("add link at", link, index);
-    element.link(link);
+    element.set('linkId', link.get('_id'));
   },
 
   removeTrackAt: function(index) {
     // TODO: remove links too?
     if (!(_.isNumber(index) && index > -1)) { return; }
-    this.getElementAt(index).set('trackId', undefined);
+    var element = this.getElementAt(index);
+    element.set('trackId', undefined);
+    element.save();
   },
 
   removeLinkAt: function(index) {
     if (!(_.isNumber(index) && index > -1)) { return; }
-    this.getElementAt(index).set('linkId', undefined);
+    var element = this.getElementAt(index);
+    element.set('linkId', undefined);
+    element.save();
   },
 });
 

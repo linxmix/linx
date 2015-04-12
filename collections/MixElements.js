@@ -4,19 +4,17 @@ MixElementModel = Graviton.Model.extend({
       collectionName: 'users',
       field: 'createdBy'
     },
-  },
-  hasOne: {
     track: {
       collectionName: 'tracks',
-      foreignKey: 'trackId',
+      field: 'trackId',
     },
     link: {
       collectionName: 'links',
-      foreignKey: 'linkId',
+      field: 'linkId',
     },
     mix: {
       collectionName: 'mixes',
-      foreignKey: 'mixId',
+      field: 'mixId',
     },
   }
 }, {

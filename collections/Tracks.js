@@ -10,11 +10,11 @@ TrackModel = Graviton.Model.extend({
       collectionName: 'mixelements',
       foreignKey: 'trackId',
     },
-    toLinks: {
+    linksTo: {
       collectionName: 'links',
       foreignKey: 'toTrackId',
     },
-    fromLinks: {
+    linksFrom: {
       collectionName: 'links',
       foreignKey: 'fromTrackId',
     }
@@ -121,15 +121,15 @@ TrackModel = Graviton.Model.extend({
   },
 
   getAllLinks: function() {
-    return this.toLinks.all().concat(this.fromLinks.all());
+    return this.linksTo.all().concat(this.linksFrom.all());
   },
 
-  getToLinkIds: function() {
-    return _.pluck(this.toLinks.all(), '_id');
+  getLinkToIds: function() {
+    return this.linksTo.all().map(function(l) { return l.get('_id'); });
   },
 
-  getFromLinkIds: function() {
-    return _.pluck(this.fromLinks.all(), '_id');
+  getLinkFromIds: function() {
+    return this.linksFrom.all().map(function(l) { return l.get('_id'); });
   },
 
   getSoundcloudUrl: function() {

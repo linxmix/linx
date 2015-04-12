@@ -25,7 +25,7 @@ LinkModel = Graviton.Model.extend({
     fromTime: 0, // end time of fromTrack
     fromVol: 1, // volume of fromTrack
     toTime: 0, // start time of toTrack
-    toVol:  1, // volume of toTrack
+    toVol: 1, // volume of toTrack
   }
 }, {
 

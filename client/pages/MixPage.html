@@ -18,13 +18,15 @@
     <h3 class="inverted left aligned ui header">{{trackCountText}}</h3>
 
     <!-- Track Accordions -->
-    <div class="inverted center-aligned attached ui segment">
-      {{#each tracksAccordion}}
-        <div class="inverted ui fluid accordion">
+    <div class="inverted attached ui segment">
+      <div class="inverted ui fluid accordion">
+        {{#each tracksAccordion}}
           {{> Track_Accordion}}
-        </div>
-      {{/each}}
+        {{/each}}
+      </div>
+    </div>
 
+    <div class="inverted center-aligned attached ui segment">
       <div class="append-track large inverted basic green ui icon button">
         <i class="add icon"></i>
         Add Track
