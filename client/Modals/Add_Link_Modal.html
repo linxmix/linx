@@ -6,45 +6,7 @@
 
 <template name="Add_Link_Modal_Inner">
   <div class="center-aligned header">
-    Add Track
-  </div>
-
-  <div class="content">
-    {{#Track_Wave track=track}}
-      <div class="ui menu initial-background">
-        {{> Play_Button track=track}}
-        <div class="ui right menu initial-background">
-          {{> Reset_Button track=track}}
-          {{> Save_Button track=track}}
-        </div>
-      </div>
-    {{/Track_Wave}}
-
-    <div class="inverted ui section divider"></div>
-
-    <div class="ui suggestions grid">
-      {{#if prevTrack.getLinkFromIds}}
-        <div class="eight wide {{columnClass}} column">
-          <h4 class="inverted center aligned ui header">
-            <div class="content">
-              Links To
-            </div>
-          </h4>
-          {{> Track_Links_List track=prevTrack linkIds=prevTrack.getLinkFromIds onClick=selectTrack hideHeader=true}}
-        </div>
-      {{/if}}
-
-      {{#if nextTrack.getLinkToIds}}
-        <div class="eight wide {{columnClass}} column">
-          <h4 class="inverted center aligned ui header">
-            <div class="content">
-              Links From
-            </div>
-          </h4>
-          {{> Track_Links_List track=nextTrack linkIds=nextTrack.getLinkToIds onClick=selectTrack hideHeader=true}}
-        </div>
-      {{/if}}
-    </div>
+    Add Link
   </div>
 
   <div class="actions">
@@ -53,10 +15,17 @@
         <i class="cancel icon"></i>
         Cancel
       </div>
-      <div class="inverted green ui button approve {{addButtonClass}}">
-        <i class="add icon"></i>
-        Add Track
-      </div>
+      {{#if isValidSelection}}
+        <div class="inverted green ui button approve">
+          <i class="add icon"></i>
+          Add Link
+        </div>
+      {{else}}
+        <div class="inverted green ui button approve basic disabled">
+          <i class="add icon"></i>
+          Add Link
+        </div>
+      {{/if}}
     </div>
   </div>
 </template>

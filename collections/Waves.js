@@ -18,6 +18,20 @@ Meteor.startup(function() {
 
 // Graviton Model to wrap WaveSurfer
 WaveModel = Graviton.Model.extend({
+  belongsTo: {
+    prevWave: {
+      collectionName: 'waves',
+      field: 'prevWaveId'
+    },
+    nextWave: {
+      collectionName: 'waves',
+      field: 'nextWaveId'
+    },
+    linkFrom: {
+      collectionName: 'links',
+      field: 'linkFromId',
+    }
+  },
   defaults: {
     playing: false,
 
@@ -102,6 +116,10 @@ WaveModel = Graviton.Model.extend({
       window.alert("Wave Error: " + (errorMessage || 'unknown error'));
     });
 
+    wavesurfer.on('finish', function() {
+      wave.onWaveEnd();
+    });
+
     // region stuff
     // wavesurfer.on('region-created', wave._updateRegion.bind(wave));
     // wavesurfer.on('region-updated-end', wave._updateRegion.bind(wave));
@@ -121,11 +139,11 @@ WaveModel = Graviton.Model.extend({
     return this.track.get();
   },
 
-  play: function() {
+  play: function(time) {
     var wavesurfer = this.getWaveSurfer();
     if (wavesurfer) {
       this.set('playing', true);
-      wavesurfer.play();
+      wavesurfer.play(time);
     }
   },
 
@@ -240,6 +258,16 @@ WaveModel = Graviton.Model.extend({
 
   onError: function(xhr) {
     this.getWaveSurfer().fireEvent('error', 'echonest analysis error: ' + xhr.responseText);
+  },
+
+  onWaveEnd: function() {
+    var nextWave = this.nextWave();
+    var linkFrom = this.linkFrom();
+
+    this.pause();
+    if (nextWave) {
+      nextWave.play(linkFrom && linkFrom.get('toTime'));
+    }
   },
 
   createWaveSurfer: function() {

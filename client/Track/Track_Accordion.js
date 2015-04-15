@@ -63,7 +63,7 @@ Template.Track_Accordion.events({
     var data = template.data;
     Router.go('mix.add-link', {
       _id: data.mix.get('_id'),
-      index: data.index + 1,
+      index: data.index,
     });
   },
 });

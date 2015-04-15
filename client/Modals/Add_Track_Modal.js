@@ -1,5 +1,4 @@
-// TODO: do this var cleaner
-var track;
+var track; // share between inner and outer
 
 Template.Add_Track_Modal.created = function() {
   Utils.requireTemplateData.call(this, 'onSubmit');

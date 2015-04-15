@@ -8,6 +8,10 @@ MixElementModel = Graviton.Model.extend({
       collectionName: 'tracks',
       field: 'trackId',
     },
+    wave: {
+      collectionName: 'waves',
+      field: 'waveId',
+    },
     link: {
       collectionName: 'links',
       field: 'linkId',
@@ -26,6 +30,16 @@ MixElementModel = Graviton.Model.extend({
   saveLink: function(link) {
     this.set('linkId', link.get('_id'));
     this.save();
+  },
+
+  getWave: function() {
+    var wave = this.wave();
+    if (wave) { return wave; }
+
+    wave = Waves.create();
+    this.set('waveId', wave.get('_id'));
+    this.save();
+    return wave;
   }
 });
 

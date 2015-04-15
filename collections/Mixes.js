@@ -95,6 +95,44 @@ MixModel = Graviton.Model.extend({
     this.removeElementAt(index);
     this.insertTrackAt(track, index);
   },
+
+  getWaveAt: function(index) {
+    return this.getWaves()[index];
+  },
+
+  getLinkData: function(index) {
+    console.log("get link data", index);
+    return {
+      mix: this,
+      fromWave: this.getWaveAt(index),
+      fromTrack: this.getTrackAt(index),
+      selectedLink: this.getLinkAt(index),
+      toWave: this.getWaveAt(index + 1),
+      toTrack: this.getTrackAt(index + 1),
+    };
+  },
+
+  getWaves: function() {
+    var waves = [];
+    this.getElements().reduce(function(prevWave, element) {
+      var wave = element.getWave();
+      var link = element.link();
+
+      // setup double linkage
+      if (prevWave) {
+        wave.set('prevWaveId', prevWave.get('_id'));
+        prevWave.set('nextWaveId', wave.get('_id'));
+      }
+
+      if (link) {
+        wave.set('linkFromId', link.get('_id'));
+      }
+
+      waves.push(wave);
+      return wave;
+    });
+    return waves;
+  }
 });
 
 Mixes = Graviton.define("mixes", {

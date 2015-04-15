@@ -1,9 +1,14 @@
-// TODO: do this var cleaner
-var track;
+var selectedLink; // share between inner and outer
+var links; // share between inner and outer
 
 Template.Add_Link_Modal.created = function() {
-  Utils.requireTemplateData.call(this, 'onSubmit');
-  Utils.requireTemplateData.call(this, 'onCancel');
+  // Utils.requireTemplateData.call(this, 'onSubmit');
+  // Utils.requireTemplateData.call(this, 'onCancel');
+
+  // Utils.initTemplateModel.call(this, 'fromTrack');
+  // Utils.initTemplateModel.call(this, 'fromWave');
+  // Utils.initTemplateModel.call(this, 'toTrack');
+  // Utils.initTemplateModel.call(this, 'toWave');
 };
 
 Template.Add_Link_Modal.rendered = function() {
@@ -18,45 +23,38 @@ Template.Add_Link_Modal.rendered = function() {
     },
     onApprove: function() {
       // TODO: this will break if data changes
-      template.data.onSubmit(track.get());
+      template.data.onSubmit(selectedLink.get());
     }
   }).modal('show');
 };
 
 Template.Add_Link_Modal_Inner.created = function() {
-  track = this.track = new ReactiveVar(Tracks.build());
+  selectedLink = this.selectedLink = new ReactiveVar(this.data.link);
+  links = this.links = new ReactiveVar(_.without([this.data.link], undefined));
 };
 
 Template.Add_Link_Modal_Inner.helpers({
-  track: function() {
-    return Template.instance().track.get();
+  selectedLink: function() {
+    return Template.instance().selectedLink.get();
   },
 
-  addButtonClass: function() {
-    var track = Template.instance().track.get();
-    return track.isDirty() ? 'basic disabled' : '';
+  links: function() {
+    return Template.instance().links.get();
   },
 
-  // center column if only one
-  columnClass: function() {
-    var data = Template.currentData();
-    return data.prevTrack && data.nextTrack ? '' : 'centered';
+  isValidSelection: function() {
+    return !!Template.instance().selectedLink.get();
   },
 
-  selectTrack: function() {
+  selectLink: function() {
     var template = Template.instance();
-    return function(track) {
-      template.track.set(track);
+    return function(link) {
+      template.link.set(link);
     };
   }
 });
 
 Template.Add_Link_Modal_Inner.events({
-  'click .reset': function(e, template) {
-    console.log("reset");
-    template.track.set(Tracks.build());
-  },
-
   'keyup': function (e, template) {
     // TODO
     // console.log("keyup", e);
