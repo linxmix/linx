@@ -63,7 +63,7 @@ Template.MixPage.helpers({
 
     var tracks = template.tracks = mix.getTracks();
 
-    
+    // TODO: make waves
           // links=links
           // linkFrom=linkFrom
           // linkTo=linkTo
@@ -80,66 +80,6 @@ Template.MixPage.helpers({
       };
     });
   },
-
-  prevTrack: function() {
-    var template = Template.instance();
-    var index = template.trackModalIndex.get();
-    var mix = getMix(template);
-    return mix.getTrackAt(index - 1);
-  },
-
-  nextTrack: function() {
-    var template = Template.instance();
-    var index = template.trackModalIndex.get();
-    var mix = getMix(template);
-    return mix.getTrackAt(index);
-  },
-
-  addTrack: function() {
-    var template = Template.instance();
-    return function(track) {
-      var index = template.trackModalIndex.get();
-      var mix = template.data.mix;
-      mix.addTrackAt(track, index);
-      template.trackModalIndex.set(-1);
-    }.bind(this);
-  },
-
-  addLink: function() {
-    var template = Template.instance();
-    return function(link) {
-      var index = template.linkModalIndex.get();
-      var mix = template.data.mix;
-      mix.addLinkAt(link, index);
-      template.linkModalIndex.set(-1);
-    }.bind(this);
-  },
-
-  resetTrackModal: function() {
-    var template = Template.instance();
-    return function() {
-      template.trackModalIndex.set(-1);
-    };
-  },
-
-  resetLinkModal: function() {
-    var template = Template.instance();
-    return function() {
-      template.linkModalIndex.set(-1);
-    };
-  },
-
-  isTrackModalOpen: function() {
-    var template = Template.instance();
-    var index = template.trackModalIndex.get();
-    return index > -1;
-  },
-
-  isLinkModalOpen: function() {
-    var template = Template.instance();
-    var index = template.linkModalIndex.get();
-    return index > -1;
-  }
 });
 
 Template.MixPage.events({
@@ -158,7 +98,10 @@ Template.MixPage.events({
 
   'click .append-track': function(e, template) {
     var mix = getMix(template);
-    template.trackModalIndex.set(mix.getLength());
+    Router.go('mix.add-track', {
+      _id: mix.get('_id'),
+      index: mix.getLength(),
+    });
   }
 });
 

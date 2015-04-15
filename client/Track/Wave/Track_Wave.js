@@ -1,5 +1,5 @@
 Template.Track_Wave.created = function() {
-  this.wave = Waves.create();
+  this.wave = this.data.wave || Waves.create();
 
   Utils.initTemplateModel.call(this, 'track', function(newModel, prevModel) {
     if (prevModel) {
@@ -11,7 +11,7 @@ Template.Track_Wave.created = function() {
 };
 
 Template.Track_Wave.destroyed = function() {
-  Template.instance().wave.destroy();
+  Template.instance().wave.destroyWaveSurfer();
 };
 
 Template.Track_Wave.rendered = function() {

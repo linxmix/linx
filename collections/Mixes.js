@@ -5,53 +5,53 @@ MixModel = Graviton.Model.extend({
       field: 'createdBy'
     },
   },
-  hasMany: {
-    elements: {
-      collectionName: 'mixelements',
-      foreignKey: 'mixId',
-    },
-  },
   defaults: {
     playCount: 0,
     title: 'New Mix',
     artist: 'No Artist',
+    elementIds: [],
   }
 }, {
-  clearElements: function() {
-    this.elements.all().forEach(function(element) {
-      element.remove();
-    });
+  insertElementAt: function(index) {
+    if (!(_.isNumber(index) && index > -1)) { console.log("invalid index", index); return; }
+    var elementIds = this.get('elementIds');
+    var element = MixElements.create();
+    elementIds.splice(index, 0, element.get('_id'));
+    this.set('elementIds', elementIds);
+    this.save();
+    return element;
+  },
+
+  removeElementAt: function(index) {
+    if (!(_.isNumber(index) && index > -1)) { console.log("invalid index", index); return; }
+    var element = this.getElementAt(index);
+    var elementIds = this.get('elementIds');
+    elementIds.splice(index, 1);
+    this.set('elementIds', elementIds);
+    element.remove();
+    this.save();
   },
 
   getElements: function() {
-    if (!this.get('_id')) {
-      return []; // TODO
-    } else {
-      return _.sortBy(this.elements.all(), function(e) {
-        return e.get('index');
-      });
-    }
+    return this.get('elementIds').map(function(_id) {
+      return MixElements.findOne(_id);
+    });
   },
 
   getElementAt: function(index) {
-    var existing = this.elements.find({ index: index }).fetch()[0];
-    if (existing) {
-      return existing;
-    } else {
-      return this.elements.add({
-        'index': index,
-      });
-    }
+    return this.getElements()[index];
   },
 
   getTrackAt: function(index) {
-    if (!(_.isNumber(index) && index > -1)) { return; }
-    return this.getElementAt(index).track();
+    if (!(_.isNumber(index) && index > -1)) { console.log("invalid index", index); return; }
+    var element = this.getElementAt(index);
+    return element && element.track();
   },
 
   getLinkAt: function(index) {
-    if (!(_.isNumber(index) && index > -1)) { return; }
-    return this.getElementAt(index).link();
+    if (!(_.isNumber(index) && index > -1)) { console.log("invalid index", index); return; }
+    var element = this.getElementAt(index);
+    return element && element.link();
   },
 
   getLength: function() {
@@ -72,24 +72,16 @@ MixModel = Graviton.Model.extend({
     });
   },
 
-  addTrackAt: function(track, index) {
-    if (!(_.isNumber(index) && index > -1)) { return; }
-    var element = this.getElementAt(index);
-    console.log("add track at", track, index);
-    element.set('trackId', track.get('_id'));
-    element.save();
+  insertTrackAt: function(track, index) {
+    if (!(_.isNumber(index) && index > -1)) { console.log("invalid index", index); return; }
+    console.log("insert track at", track, index);
+    this.insertElementAt(index).saveTrack(track);
   },
 
-  addLinkAt: function(link, index) {
-    if (!(_.isNumber(index) && index > -1)) { return; }
-    var element = this.getElementAt(index);
-    console.log("add link at", link, index);
-    element.set('linkId', link.get('_id'));
-  },
-
-  removeElementAt: function(index) {
-    if (!(_.isNumber(index) && index > -1)) { return; }
-    this.getElementAt(index).remove();
+  saveLinkAt: function(link, index) {
+    if (!(_.isNumber(index) && index > -1)) { console.log("invalid index", index); return; }
+    console.log("save link at", link, index);
+    this.getElementAt(index).saveLink(link);
   },
 
   removeTrackAt: function(index) {
@@ -98,10 +90,10 @@ MixModel = Graviton.Model.extend({
   },
 
   removeLinkAt: function(index) {
-    if (!(_.isNumber(index) && index > -1)) { return; }
+    if (!(_.isNumber(index) && index > -1)) { console.log("invalid index", index); return; }
     var track = this.getTrackAt(index);
     this.removeElementAt(index);
-    this.addTrackAt(track, index);
+    this.insertTrackAt(track, index);
   },
 });
 

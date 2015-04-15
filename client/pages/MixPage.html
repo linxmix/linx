@@ -33,14 +33,6 @@
       </div>
     </div>
 
-    <!-- Add Track Modal -->
-    {{#if isTrackModalOpen}}
-      {{> Add_Track_Modal onSubmit=addTrack onCancel=resetTrackModal prevTrack=prevTrack nextTrack=nextTrack}}
-    {{/if}}
-
-    <!-- Add Link Modal -->
-    <!-- {{#if isLinkModalOpen}} -->
-      <!-- {{> Add_Link_Modal onSubmit=addLink onCancel=resetLinkModal prevTrack=prevTrack nextTrack=nextTrack}} -->
-    <!-- {{/if}} -->
+    {{> yield region="modal"}}
   </div>
 </template>

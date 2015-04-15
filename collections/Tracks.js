@@ -40,15 +40,6 @@ TrackModel = Graviton.Model.extend({
     return this.echonestAnalysis && this.echonestAnalysis.get();
   },
 
-  destroy: function() {
-    this.destroyWave();
-  },
-
-  destroyWave: function() {
-    this.getWave().destroy();
-    this.setWave(undefined);
-  },
-
   setEchonest: function(attrs) {
     console.log("set echonest", attrs);
     this.set({

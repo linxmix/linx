@@ -48,16 +48,22 @@ Template.Track_Accordion.events({
   'click .add-track': function(e, template) {
     e.preventDefault();
     e.stopPropagation();
+
     var data = template.data;
-    // open add modal with this index
-    data.trackModalIndex.set(data.index + 1);
+    Router.go('mix.add-track', {
+      _id: data.mix.get('_id'),
+      index: data.index + 1,
+    });
   },
 
   'click .add-link': function(e, template) {
     e.preventDefault();
     e.stopPropagation();
+
     var data = template.data;
-    // open add modal with this index
-    data.linkModalIndex.set(data.index + 1);
+    Router.go('mix.add-link', {
+      _id: data.mix.get('_id'),
+      index: data.index + 1,
+    });
   },
 });

@@ -18,7 +18,15 @@ MixElementModel = Graviton.Model.extend({
     },
   }
 }, {
+  saveTrack: function(track) {
+    this.set('trackId', track.get('_id'));
+    this.save();
+  },
 
+  saveLink: function(link) {
+    this.set('linkId', link.get('_id'));
+    this.save();
+  }
 });
 
 MixElements = Graviton.define("mixelements", {
