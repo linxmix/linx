@@ -46,6 +46,7 @@ minifiers@1.1.5
 minimongo@1.0.8
 mobile-status-bar@1.0.3
 mongo@1.1.0
+mrt:nprogress@0.1.0
 npm-bcrypt@0.7.8_2
 observe-sequence@1.0.6
 ordered-dict@1.0.3
@@ -94,6 +95,7 @@ semantic:ui-table@1.11.6
 semantic:ui-transition@1.11.6
 service-configuration@1.0.4
 session@1.1.0
+settinghead:auto-nprogress@1.0.0
 sha@1.0.3
 spacebars@1.0.6
 spacebars-compiler@1.0.6
