@@ -32,15 +32,28 @@ WaveModel = Graviton.Model.extend({
       collectionName: 'waves',
       field: 'nextWaveId'
     },
-    linkFrom: {
-      collectionName: 'links',
-      field: 'linkFromId',
+    toRegion: {
+      collectionName: 'regions',
+      field: 'fromRegionId',
+    },
+    fromRegion: {
+      collectionName: 'regions',
+      field: 'toRegionId',
+    },
+    track: {
+      collectionName: 'tracks',
+      field: 'trackId',
+    }
+  },
+  hasMany: {
+    regions: {
+      collectionName: 'regions',
+      foreignKey: 'waveId',
     }
   },
   defaults: {
     playing: false,
 
-    regions: {},
     analyzed: false,
     loaded: false,
     loading: false,
@@ -125,23 +138,19 @@ WaveModel = Graviton.Model.extend({
       wave.onWaveEnd();
     });
 
-    // region stuff
-    // wavesurfer.on('region-created', wave._updateRegion.bind(wave));
-    // wavesurfer.on('region-updated-end', wave._updateRegion.bind(wave));
-    // wavesurfer.on('region-removed', wave._updateRegion.bind(wave));
-
-    template.autorun(this.drawRegions.bind(this));
     template.autorun(this.loadTrack.bind(this));
   },
 
   setTrack: function(track) {
-    this.track = this.track || new ReactiveVar();
-    this.track.set(track);
+    this.saveAttrs('trackId', track.get('_id'));
+    // this.track = this.track || new ReactiveVar();
+    // this.track.set(track);
   },
 
   getTrack: function() {
-    this.track = this.track || new ReactiveVar();
-    return this.track.get();
+    return this.track();
+    // this.track = this.track || new ReactiveVar();
+    // return this.track.get();
   },
 
   play: function(time) {
@@ -207,38 +216,22 @@ WaveModel = Graviton.Model.extend({
   },
 
   drawRegions: function() {
-    var data = Template.currentData();
-    var links = data.links || [];
-    var linkFrom = data.linkFrom;
-    var linkTo = data.linkTo;
-    var onWaveEnd = onWaveEnd;
     var wavesurfer = this.getWaveSurfer();
 
-    var track = this.getTrack();
+    var regions = this.regions.all();
+    console.log("drawing regions", this.get('_id'), regions);
 
-    console.log("drawing links", track && track.get('title'), links.length);
-    // TODO: remove old links
-    // TODO: figure out linkFrom and linkTo
+    // TODO: remove old regions
+    regions.forEach(function(regionModel) {
+      var params = regionModel.getParams();
 
-    links.forEach(function(link, i) {
-      var params = link.regionParams || {};
-      var color;
-      switch (i) {
-        case 0: color = 'rgba(255, 0, 0, 1)'; break;
-        case 1: color = 'rgba(0, 255, 0, 1)'; break;
-        case 2: color = 'rgba(0, 0, 255, 1)'; break;
-        default: color = 'rgba(255, 255, 0, 1)'; break;
-      }
-      params.color = color;
-      console.log("drawing region", track.get('title'), params, i);
-
-      var region = wavesurfer.links.list[params._id];
-      if (!region) {
-        console.log("new region", params);
-        region = wavesurfer.links.add(params);
+      var regionWaveSurfer = wavesurfer.regions.list[params._id];
+      if (!regionWaveSurfer) {
+        console.log("new regionWaveSurfer", params);
+        regionWaveSurfer = wavesurfer.regions.add(params);
       } else {
-        console.log("update region", params);
-        region.update(params);
+        console.log("update regionWaveSurfer", params);
+        regionWaveSurfer.update(params);
       }
     });
   },
@@ -378,6 +371,24 @@ WaveModel = Graviton.Model.extend({
   getAnalysis: function() {
     var track = this.getTrack();
     return track && track.getAnalysis();
+  },
+
+  compareTo: function(toWave) {
+    var fromWave = this;
+    var fromAnalysis = fromWave.getAnalysis();
+    var toAnalysis = toWave.getAnalysis();
+    console.log('compare waves', fromWave, toWave);
+
+    if (!(fromWave && fromAnalysis && toWave && toAnalysis)) {
+      console.log("fromWave", fromWave, "fromAnalysis", fromAnalysis, "toWave", toWave, "toAnalysis", toAnalysis);
+      throw new Error("Cannot compare without waves and analyses");
+    }
+
+    var matches = compareSegs(getSegs(fromAnalysis), getSegs(toAnalysis));
+    var bestMatches = _.sortBy(matches, 'dist');
+    console.log("best matches", bestMatches);
+
+    return bestMatches;
   }
 });
 
@@ -386,3 +397,53 @@ Waves = Graviton.define("waves", {
   persist: false,
   timestamps: true,
 });
+
+// region params
+// id: region.get('_id'),
+// start: region.getTime(track.get('_id')),
+// color: color,
+
+function getSegs(analysis) {
+  var segments = analysis.segments;
+  // var selectedRegion = wave.getRegion('selected');
+  return _.filter(segments, function (seg) {
+    var THRESH = 0.5;
+    var isWithinConfidence = (seg.confidence >= THRESH);
+    // var isWithinRegion = (seg.start >= selectedRegion.start) &&
+      // (seg.start <= selectedRegion.end);
+    // return isWithinRegion && isWithinConfidence;
+    return isWithinConfidence;
+  });
+}
+
+function compareSegs(segs1, segs2) {
+  var matches = [];
+  segs1.forEach(function (seg1) {
+    segs2.forEach(function (seg2) {
+      // compute distance between segs
+      matches.push({
+        'seg1': seg1.start,
+        'seg2': seg2.start,
+        'dist': euclidean_distance(seg1.timbre, seg2.timbre),
+      });
+    });
+  });
+  return matches;
+}
+
+// expects v1 and v2 to be the same length and composition
+function euclidean_distance(v1, v2) {
+  //debug("computing distance", v1, v2);
+  var sum = 0;
+  for (var i = 0; i < v1.length; i++) {
+    // recursive for nested arrays
+    //if (v1[i] instanceof Array) {
+    //  sum += euclidean_distance(v1[i], v2[i]);
+    //} else {
+      var delta = v2[i] - v1[i];
+      sum += delta * delta;
+    //}
+    //debug("running total", sum);
+  }
+  return Math.sqrt(sum);
+}

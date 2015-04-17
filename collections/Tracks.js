@@ -49,7 +49,7 @@ TrackModel = Graviton.Model.extend({
 }, {
   setEchonest: function(attrs) {
     console.log("set echonest", attrs);
-    this.set({
+    this.saveAttrs({
       echonest: attrs,      
       title: attrs.title,
       artist: attrs.artist,

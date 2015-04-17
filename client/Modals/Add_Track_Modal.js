@@ -23,7 +23,7 @@ Template.Add_Track_Modal.rendered = function() {
 };
 
 Template.Add_Track_Modal_Inner.created = function() {
-  track = this.track = new ReactiveVar(Tracks.build());
+  track = this.track = new ReactiveVar(Tracks.create());
   console.log("add track modal created", this.data)
 };
 

@@ -1,5 +1,4 @@
 var selectedLink; // share between inner and outer
-var links; // share between inner and outer
 
 Template.Add_Link_Modal.created = function() {
   Utils.requireTemplateData.call(this, 'onSubmit');
@@ -30,21 +29,11 @@ Template.Add_Link_Modal.rendered = function() {
 
 Template.Add_Link_Modal_Inner.created = function() {
   selectedLink = this.selectedLink = new ReactiveVar(this.data.link);
-  links = this.links = new ReactiveVar(_.without([this.data.link], undefined));
 };
 
 Template.Add_Link_Modal_Inner.rendered = function() {
   // auto compare waves
   // this.autorun(function() {
-  //   var template = Template.instance();
-  //   var fromWave = template.data.fromWave;
-  //   var toWave = template.data.toWave;
-
-  //   if (fromWave.getAnalysis() && toWave.getAnalysis()) {
-  //     fromWave.compare(toWave);
-  //   }
-
-  // }.bind(this));
 };
 
 Template.Add_Link_Modal_Inner.helpers({
@@ -75,6 +64,50 @@ Template.Add_Link_Modal_Inner.events({
     // if (e.which === 27) { template.$('.deny').click(); } // escape
     // if (e.which === 13) { template.$('.approve').click(); } // enter
   },
+
+  'click .compare': function(e, template) {
+    var fromWave = template.data.fromWave;
+    var toWave = template.data.toWave;
+
+    console.log("compare waves", fromWave.getAnalysis(), toWave.getAnalysis());
+    if (!(fromWave.getAnalysis() && toWave.getAnalysis())) {
+      // TODO: make this better
+      fromWave.analyze();
+      toWave.analyze();
+      return;
+    } else {
+      // compare waves, then add regions
+      var matches = fromWave.compareTo(toWave);
+
+      // TODO: move this all into wave?
+      for (var i = 0; i < 4; i++) {
+        var match = matches[i];
+
+        // TODO: need to clean up old links
+        var link = Links.create();
+
+        var color;
+        switch (i) {
+          case 0: color = 'rgba(255, 0, 0, 1)'; break;
+          case 1: color = 'rgba(0, 255, 0, 1)'; break;
+          case 2: color = 'rgba(0, 0, 255, 1)'; break;
+          default: color = 'rgba(255, 255, 0, 1)'; break;
+        }
+        var params = {
+          linkId: link.get('_id'),
+          color: color
+        };
+
+        fromWave.regions.add(_.defaults({
+          start: match.seg1,
+        }, params));
+
+        toWave.regions.add(_.defaults({
+          start: match.seg2,
+        }, params));
+      }
+    }
+  }
 });
 
 // region params

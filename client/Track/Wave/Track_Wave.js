@@ -2,10 +2,9 @@ Template.Track_Wave.created = function() {
   this.wave = this.data.wave || Waves.create();
 
   Utils.initTemplateModel.call(this, 'track', function(newModel, prevModel) {
-    if (prevModel) {
-      console.log("track wave model changed", newModel.get('title'), prevModel.get('title'));
-      // prevModel.destroyWave();
-    }
+    // if (prevModel) {
+      // console.log("track wave model changed", newModel.get('title'), prevModel.get('title'));
+    // }
     this.wave.setTrack(newModel);
   });
 };
@@ -16,6 +15,7 @@ Template.Track_Wave.destroyed = function() {
 
 Template.Track_Wave.rendered = function() {
   this.wave.init(this);
+  this.autorun(this.wave.drawRegions.bind(this.wave));
 };
 
 function getWave() {
