@@ -75,7 +75,7 @@ WaveModel = Graviton.Model.extend({
     var lastPercent;
     wavesurfer.on('loading', function(percent, xhr, type) {
       if (!wave.get('loading')) {
-        wave.set('loading', true);
+        wave.saveAttrs('loading', true);
       }
       template.$('.progress-bar').show();
 
@@ -98,12 +98,12 @@ WaveModel = Graviton.Model.extend({
 
     wavesurfer.on('uploadFinish', function() {
       template.$('.progress-bar').hide();
-      wave.set('loading', false);
+      wave.saveAttrs('loading', false);
     });
 
     wavesurfer.on('ready', function() {
       template.$('.progress-bar').hide();
-      wave.set({ 'loaded': true, 'loading': false });
+      wave.saveAttrs({ 'loaded': true, 'loading': false });
     });
 
     wavesurfer.on('reset', function() {
@@ -112,7 +112,7 @@ WaveModel = Graviton.Model.extend({
 
     wavesurfer.on('error', function(errorMessage) {
       template.$('.progress-bar').hide();
-      wave.set('loaded', false);
+      wave.saveAttrs('loaded', false);
       window.alert("Wave Error: " + (errorMessage || 'unknown error'));
     });
 
@@ -142,7 +142,7 @@ WaveModel = Graviton.Model.extend({
   play: function(time) {
     var wavesurfer = this.getWaveSurfer();
     if (wavesurfer) {
-      this.set('playing', true);
+      this.saveAttrs('playing', true);
       wavesurfer.play(time);
     }
   },
@@ -150,7 +150,7 @@ WaveModel = Graviton.Model.extend({
   pause: function() {
     var wavesurfer = this.getWaveSurfer();
     if (wavesurfer) {
-      this.set('playing', false);
+      this.saveAttrs('playing', false);
       wavesurfer.pause();
     }
   },
@@ -166,7 +166,7 @@ WaveModel = Graviton.Model.extend({
   // TODO: will this break loadTrack when switching tracks?
   loadFiles: function(files) {
     // store reference to pass to uploading to s3
-    this.set('files', files);
+    this.saveAttrs('files', files);
     // load file into wavesurfer
     var file = files[0];
     var wavesurfer = this.getWaveSurfer();
@@ -183,7 +183,7 @@ WaveModel = Graviton.Model.extend({
     var track = this.getTrack();
     var streamUrl = track && track.getStreamUrl();
     if (wavesurfer && streamUrl && (streamUrl !== this.get('streamUrl'))) {
-      this.set('streamUrl', streamUrl);
+      this.saveAttrs('streamUrl', streamUrl);
       wavesurfer.load(streamUrl);
     }
   },
@@ -241,7 +241,7 @@ WaveModel = Graviton.Model.extend({
   reset: function() {
     this.getWaveSurfer().empty();
     this.setTrack(undefined);
-    this.set({
+    this.saveAttrs({
       'loaded': false,
       'loading': false,
       'streamUrl': undefined
@@ -296,6 +296,7 @@ WaveModel = Graviton.Model.extend({
 
   destroyWaveSurfer: function() {
     WaveSurfers.destroy(this.get('_id'));
+    this.saveAttrs('loaded', false);
   },
 
 });

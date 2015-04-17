@@ -4,9 +4,6 @@ Template.Track_Accordion.created = function() {
   });
   Utils.initTemplateModel.call(this, 'mix');
 
-  Utils.requireTemplateData.call(this, 'trackModalIndex');
-  Utils.requireTemplateData.call(this, 'linkModalIndex');
-
   Utils.requireTemplateData.call(this, 'index');
 
   this.isActive = new ReactiveVar(false);

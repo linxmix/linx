@@ -24,6 +24,7 @@ Template.Add_Track_Modal.rendered = function() {
 
 Template.Add_Track_Modal_Inner.created = function() {
   track = this.track = new ReactiveVar(Tracks.build());
+  console.log("add track modal created", this.data)
 };
 
 Template.Add_Track_Modal_Inner.helpers({
@@ -39,7 +40,7 @@ Template.Add_Track_Modal_Inner.helpers({
   // center column if only one
   columnClass: function() {
     var data = Template.currentData();
-    return data.prevTrack && data.nextTrack ? '' : 'centered';
+    return data.fromTrack && data.toTrack ? '' : 'centered';
   },
 
   selectTrack: function() {

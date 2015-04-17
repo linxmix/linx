@@ -16,6 +16,13 @@ Graviton.Model.prototype.cloneFrom = function(model) {
   this._pendingMods = [];
 };
 
+Graviton.Model.prototype.saveAttrs = function() {
+  var updatedAt = this.getUpdatedAt();
+  updatedAt.set(new Date());
+  this.set.apply(this, arguments);
+  return this.save();
+};
+
 Graviton.Model.prototype.getUpdatedAt = function() {
   var updatedAt = this._updatedAt;
   if (!updatedAt) {

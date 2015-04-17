@@ -17,8 +17,7 @@ MixModel = Graviton.Model.extend({
     var elementIds = this.get('elementIds');
     var element = MixElements.create();
     elementIds.splice(index, 0, element.get('_id'));
-    this.set('elementIds', elementIds);
-    this.save();
+    this.saveAttrs('elementIds', elementIds);
     return element;
   },
 
@@ -27,9 +26,8 @@ MixModel = Graviton.Model.extend({
     var element = this.getElementAt(index);
     var elementIds = this.get('elementIds');
     elementIds.splice(index, 1);
-    this.set('elementIds', elementIds);
     element.remove();
-    this.save();
+    this.saveAttrs('elementIds', elementIds);
   },
 
   getElements: function() {
@@ -78,9 +76,9 @@ MixModel = Graviton.Model.extend({
     this.insertElementAt(index).saveTrack(track);
   },
 
-  saveLinkAt: function(link, index) {
+  insertLinkAt: function(link, index) {
     if (!(_.isNumber(index) && index > -1)) { console.log("invalid index", index); return; }
-    console.log("save link at", link, index);
+    console.log("insert link at", link, index);
     this.getElementAt(index).saveLink(link);
   },
 
@@ -97,11 +95,20 @@ MixModel = Graviton.Model.extend({
   },
 
   getWaveAt: function(index) {
-    return this.getWaves()[index];
+    if (!(_.isNumber(index) && index > -1)) { console.log("invalid index", index); return; }
+    var element = this.getElementAt(index);
+    return element && element.getWave();
   },
 
   getLinkData: function(index) {
-    console.log("get link data", index);
+    console.log("get link data", {
+      mix: this,
+      fromWave: this.getWaveAt(index),
+      fromTrack: this.getTrackAt(index),
+      selectedLink: this.getLinkAt(index),
+      toWave: this.getWaveAt(index + 1),
+      toTrack: this.getTrackAt(index + 1),
+    });
     return {
       mix: this,
       fromWave: this.getWaveAt(index),
@@ -120,12 +127,12 @@ MixModel = Graviton.Model.extend({
 
       // setup double linkage
       if (prevWave) {
-        wave.set('prevWaveId', prevWave.get('_id'));
-        prevWave.set('nextWaveId', wave.get('_id'));
+        wave.saveAttrs('prevWaveId', prevWave.get('_id'));
+        prevWave.saveAttrs('nextWaveId', wave.get('_id'));
       }
 
       if (link) {
-        wave.set('linkFromId', link.get('_id'));
+        wave.saveAttrs('linkFromId', link.get('_id'));
       }
 
       waves.push(wave);

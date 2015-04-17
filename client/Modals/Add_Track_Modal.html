@@ -16,25 +16,25 @@
     {{/Track_Wave}}
 
     <div class="ui suggestions grid">
-      {{#if prevTrack.getLinkFromIds}}
+      {{#if fromTrack.getLinkFromIds}}
         <div class="eight wide {{columnClass}} column">
           <h4 class="inverted center aligned ui header">
             <div class="content">
               Links To
             </div>
           </h4>
-          {{> Track_Links_List track=prevTrack linkIds=prevTrack.getLinkFromIds onClick=selectTrack hideHeader=true}}
+          {{> Track_Links_List track=fromTrack linkIds=fromTrack.getLinkFromIds onClick=selectTrack hideHeader=true}}
         </div>
       {{/if}}
 
-      {{#if nextTrack.getLinkToIds}}
+      {{#if toTrack.getLinkToIds}}
         <div class="eight wide {{columnClass}} column">
           <h4 class="inverted center aligned ui header">
             <div class="content">
               Links From
             </div>
           </h4>
-          {{> Track_Links_List track=nextTrack linkIds=nextTrack.getLinkToIds onClick=selectTrack hideHeader=true}}
+          {{> Track_Links_List track=toTrack linkIds=toTrack.getLinkToIds onClick=selectTrack hideHeader=true}}
         </div>
       {{/if}}
     </div>

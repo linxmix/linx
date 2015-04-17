@@ -9,6 +9,38 @@
     Add Link
   </div>
 
+  <div class="content">
+      
+    <div class="tracks">
+      <div class="fromTrack">
+        <div class="inverted ui header">
+          From Track
+        </div>
+        {{> Track_Wave
+          wave=fromWave
+          track=fromTrack
+          hideLoadOptions=true
+          hideSaveButton=true
+          hideResetButton=true
+        }}
+      </div>
+
+      <div class="toTrack">
+        <div class="inverted ui header">
+          To Track
+        </div>
+        {{> Track_Wave
+          wave=toWave
+          track=toTrack
+          hideLoadOptions=true
+          hideSaveButton=true
+          hideResetButton=true
+        }}
+      </div>
+    </div>
+
+  </div>
+
   <div class="actions">
     <div class="two fluid inverted ui buttons">
       <div class="inverted basic red ui icon button deny">

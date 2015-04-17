@@ -23,13 +23,11 @@ MixElementModel = Graviton.Model.extend({
   }
 }, {
   saveTrack: function(track) {
-    this.set('trackId', track.get('_id'));
-    this.save();
+    this.saveAttrs('trackId', track.get('_id'));
   },
 
   saveLink: function(link) {
-    this.set('linkId', link.get('_id'));
-    this.save();
+    this.saveAttrs('linkId', link.get('_id'));
   },
 
   getWave: function() {
@@ -37,8 +35,7 @@ MixElementModel = Graviton.Model.extend({
     if (wave) { return wave; }
 
     wave = Waves.create();
-    this.set('waveId', wave.get('_id'));
-    this.save();
+    this.saveAttrs('waveId', wave.get('_id'));
     return wave;
   }
 });
