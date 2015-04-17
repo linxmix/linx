@@ -13,7 +13,7 @@ function getWave(template) {
 Template.Analyze_Button.helpers({
   isAnalyzed: function() {
     var track = getTrack(Template.instance());
-    return track && track.getEchonestAnalysis();
+    return track && track.getAnalysis();
   },
 
   loadingClass: function() {
@@ -24,7 +24,6 @@ Template.Analyze_Button.helpers({
 
 Template.Analyze_Button.events({
   'click .analyze': function(e, template) {
-    var track = getTrack(template);
-    track && track.fetchEchonestAnalysis();
+    getWave(template).analyze();
   },
 });

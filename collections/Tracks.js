@@ -1,3 +1,23 @@
+Meteor.startup(function() {
+  if (Meteor.isClient) {
+    Analyses = {
+      set: function(_id, analysis) {
+        if (this[_id]) {
+          this.destroy(_id);
+        }
+        this[_id] = new ReactiveVar(analysis);
+      },
+      get: function(_id) {
+        var analysis = this[_id];
+        return analysis && analysis.get();
+      },
+      destroy: function(_id) {
+        delete this[_id];
+      }
+    };
+  }
+});
+
 TrackModel = Graviton.Model.extend({
   belongsTo: {
     user: {
@@ -27,19 +47,6 @@ TrackModel = Graviton.Model.extend({
     playCount: 0,
   },
 }, {
-  // TODO: standardize this getting/setting of non-saved reactive vars (should be non saved? global store?)
-  // createReactiveProp
-  // maybe have global store of echonest analyses?
-  setEchonestAnalysis: function(response) {
-    this.echonestAnalysis = this.echonestAnalysis || new ReactiveVar();
-    this.echonestAnalysis.set(response);
-  },
-
-  getEchonestAnalysis: function() {
-    this.echonestAnalysis = this.echonestAnalysis || new ReactiveVar();
-    return this.echonestAnalysis && this.echonestAnalysis.get();
-  },
-
   setEchonest: function(attrs) {
     console.log("set echonest", attrs);
     this.set({
@@ -134,107 +141,41 @@ TrackModel = Graviton.Model.extend({
     return this.get('type') + 's';
   },
 
-  saveToBackend: function(cb) {
-    var wave = this.getWave();
-    var files = wave && wave.get('files');
-    if (!(wave && files)) {
-      throw new Error('Cannot upload a track without a wave and files: ' + this.get('title'));
-    }
-    console.log("uploading track", this.get('title'));
+  getAnalysis: function() {
+    return Analyses.get(this.get('_id'));
+  },
 
-    // on completion, persist track and fire finish event
+  setAnalysis: function(analysis) {
+    return Analyses.set(this.get('_id'), analysis);
+  },
+
+  fetchEchonestAnalysis: function(wave, cb) {
     var track = this;
-    function next() {
-      wave.onUploadFinish();
-      track.save();
-      cb && cb();
+
+    if (!(track && wave)) {
+      throw new Error('Cannot fetch track analysis without wave' + this.get('title'));
     }
-
-    // upload to appropriate backend
-    switch (track.getSource()) {
-      case 's3': this._uploadToS3(next); break;
-      case 'soundcloud': next(); break; // already exists on SC
-      default: throw "Error: unknown track source: " + track.getSource();
-    }
-  },
-
-  _uploadToS3: function(cb) {
-    var track = this;
-    var wave = this.getWave();
-
-    // track progress
-    var uploadFinished = false;
-    Tracker.autorun(function(computation) {
-      var uploads = S3.collection.find().fetch();
-      var upload = uploads[0];
-      if (upload) {
-        var percent = upload.percent_uploaded;
-        !uploadFinished && wave.onLoading({
-          type: 'upload',
-          percent: percent
-        });
-        if (percent === 100) {
-          computation.stop();
-        }
-      }
-    });
-
-    S3.upload({
-      files: wave.get('files'),
-      path: track.getS3Prefix(),
-    }, function(error, result) {
-      uploadFinished = true;
-      if (error) { throw error; }
-      // update track with new s3FileName
-      var urlParts = result.relative_url.split('/');
-      var s3FileName = urlParts[urlParts.length - 1];
-      track.set({ s3FileName: s3FileName });
-      cb && cb(error, result);
-    });
-  },
-
-  setLoadingInterval: function(options) {
-    var percent = 0;
-    var wave = this.getWave();
-    var loadingInterval = Meteor.setInterval(function() {
-      wave.onLoading.call(wave, {
-        percent: percent,
-        type: options.type,
-      });
-      if (percent === 100) {
-        Meteor.clearInterval(loadingInterval);
-      }
-      percent += 1;
-    }, options.time / 100);
-    // wave.loadingIntervals.push(loadingInterval);
-    return loadingInterval;
-  },
-
-  fetchEchonestAnalysis: function(cb) {
-
     // If already have analysis, short circuit
-    if (this.getEchonestAnalysis()) {
+    if (this.getAnalysis()) {
       console.log("Track already has echonest analysis, skipping", this.get('title'));
       cb && cb();
     } else {
-      var track = this;
-      var wave = this.getWave();
 
       // fetch profile before analyzing
-      track.fetchEchonestProfile(function() {
+      track.fetchEchonestProfile(wave, function() {
         var loadingInterval;
 
         function onSuccess(response) {
           Meteor.clearInterval(loadingInterval);
           wave.onUploadFinish.call(wave);
-          track.setEchonestAnalysis(response);
+          track.setAnalysis(response);
           cb && cb();
         }
 
         // attempt 5 times with 3 seconds between each.
         var count = 0;
         function attempt() {
-          loadingInterval = track.setLoadingInterval({
+          loadingInterval = wave.setLoadingInterval({
             type: 'analyze',
             time: 3000
           });
@@ -261,13 +202,12 @@ TrackModel = Graviton.Model.extend({
     }
   },
 
-  fetchEchonestProfile: function(cb) {
-    var wave = this.getWave();
+  fetchEchonestProfile: function(wave, cb) {
     var track = this;
     // first get echonestId of track
-    this.fetchEchonestId(function(echonestId) {
+    this.fetchEchonestId(wave, function(echonestId) {
       console.log("fetching echonest profile", track.get('title'));
-      var loadingInterval = track.setLoadingInterval({
+      var loadingInterval = wave.setLoadingInterval({
         type: 'profile',
         time: 1000
       });
@@ -298,7 +238,7 @@ TrackModel = Graviton.Model.extend({
     });
   },
 
-  fetchEchonestId: function(cb) {
+  fetchEchonestId: function(wave, cb) {
 
     // short-circuit if we already have the id
     var track = this;
@@ -307,9 +247,8 @@ TrackModel = Graviton.Model.extend({
       cb && cb(track.get('echonest.id'));
     } else {
       console.log("getting echonestId of track", track);
-      var wave = track.getWave();
       var streamUrl = track.getStreamUrl();
-      var loadingInterval = track.setLoadingInterval({
+      var loadingInterval = wave.setLoadingInterval({
         type: 'profile',
         time: wave.getCrossloadTime(track.getSource())
       });
@@ -317,7 +256,7 @@ TrackModel = Graviton.Model.extend({
       function onSuccess(response) {
         Meteor.clearInterval(loadingInterval);
         wave.onUploadFinish();
-        cb && cb(response.response.track.id);
+        cb && cb(Graviton.getProperty(response, 'response.track.id'));
       }
 
       // start upload
@@ -336,7 +275,6 @@ TrackModel = Graviton.Model.extend({
       });
     }
   },
-
 });
 
 Tracks = Graviton.define("tracks", {

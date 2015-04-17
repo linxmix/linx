@@ -1,11 +1,16 @@
 Meteor.startup(function() {
   if (Meteor.isClient) {
     WaveSurfers = {
-      add: function(_id, wavesurfer) {
+      set: function(_id, wavesurfer) {
         this[_id] = wavesurfer;
       },
       get: function(_id) {
-        return this[_id];
+        var wavesurfer = this[_id];
+        if (!wavesurfer) {
+          wavesurfer = Object.create(WaveSurfer);
+          this.set(_id, wavesurfer);
+        }
+        return wavesurfer;
       },
       destroy: function(_id) {
         var wavesurfer = this[_id];
@@ -44,7 +49,7 @@ WaveModel = Graviton.Model.extend({
 }, {
 
   init: function(template) {
-    var wavesurfer = this.createWaveSurfer();
+    var wavesurfer = this.getWaveSurfer();
 
     // Initialize wavesurfer
     var wave = this;
@@ -270,20 +275,6 @@ WaveModel = Graviton.Model.extend({
     }
   },
 
-  createWaveSurfer: function() {
-    var wavesurfer = Object.create(WaveSurfer);
-
-    // destroy prev
-    if (this.getWaveSurfer()) {
-      this.destroyWaveSurfer();
-    }
-
-    // add to WaveSurfers hash
-    WaveSurfers.add(this.get('_id'), wavesurfer);
-
-    return wavesurfer;
-  },
-
   getWaveSurfer: function() {
     // console.log("getWaveSurfers", this, this.get('_id'), WaveSurfers)
     return WaveSurfers.get(this.get('_id'));
@@ -299,6 +290,95 @@ WaveModel = Graviton.Model.extend({
     this.saveAttrs('loaded', false);
   },
 
+  saveToBackend: function(cb) {
+    var track = this.getTrack();
+    var wave = this;
+    var files = wave && wave.get('files');
+    if (!(track && wave && files)) {
+      throw new Error('Cannot upload without track, wave and files: ' + this.get('_id'));
+    }
+    console.log("saving to backend", track.get('title'));
+
+    // on completion, persist track and fire finish event
+    function next() {
+      wave.onUploadFinish();
+      track.save();
+      cb && cb();
+    }
+
+    // upload to appropriate backend
+    switch (track.getSource()) {
+      case 's3': this._uploadToS3(next); break;
+      case 'soundcloud': next(); break; // already exists on SC
+      default: throw "Error: unknown track source: " + track.getSource();
+    }
+  },
+
+  _uploadToS3: function(cb) {
+    var track = this.getTrack();
+    var wave = this;
+
+    // autorun progress bar
+    var uploadFinished = false;
+    Tracker.autorun(function(computation) {
+      var uploads = S3.collection.find().fetch();
+      var upload = uploads[0];
+      if (upload) {
+        var percent = upload.percent_uploaded;
+        !uploadFinished && wave.onLoading({
+          type: 'upload',
+          percent: percent
+        });
+        if (percent === 100) {
+          computation.stop();
+        }
+      }
+    });
+
+    S3.upload({
+      files: wave.get('files'),
+      path: track.getS3Prefix(),
+    }, function(error, result) {
+      uploadFinished = true;
+      if (error) { throw error; }
+      // update track with new s3FileName
+      var urlParts = result.relative_url.split('/');
+      var s3FileName = urlParts[urlParts.length - 1];
+      track.set({ s3FileName: s3FileName });
+      cb && cb(error, result);
+    });
+  },
+
+  setLoadingInterval: function(options) {
+    var percent = 0;
+    var wave = this;
+    var loadingInterval = Meteor.setInterval(function() {
+      wave.onLoading.call(wave, {
+        percent: percent,
+        type: options.type,
+      });
+      if (percent === 100) {
+        Meteor.clearInterval(loadingInterval);
+      }
+      percent += 1;
+    }, options.time / 100);
+    // wave.loadingIntervals.push(loadingInterval);
+    return loadingInterval;
+  },
+
+  analyze: function() {
+    var track = this.getTrack();
+    if (!track) {
+      throw new Error("Cannot analyze wave without a track: " + this.get('_id'));
+    } else {
+      track.fetchEchonestAnalysis(this);
+    }
+  },
+
+  getAnalysis: function() {
+    var track = this.getTrack();
+    return track && track.getAnalysis();
+  }
 });
 
 Waves = Graviton.define("waves", {

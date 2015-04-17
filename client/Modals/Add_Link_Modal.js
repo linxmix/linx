@@ -40,7 +40,7 @@ Template.Add_Link_Modal_Inner.rendered = function() {
   //   var fromWave = template.data.fromWave;
   //   var toWave = template.data.toWave;
 
-  //   if (fromWave.getEchonestAnalysis() && toWave.getEchonestAnalysis()) {
+  //   if (fromWave.getAnalysis() && toWave.getAnalysis()) {
   //     fromWave.compare(toWave);
   //   }
 
@@ -85,7 +85,7 @@ Template.Add_Link_Modal_Inner.events({
 function compareTracks(fromTrack, toTrack) {
   console.log('compareTracks', fromTrack, toTrack);
 
-  var matches = compareSegs(getSegs(fromTrack.getEchonestAnalysis()), getSegs(toTrack.getEchonestAnalysis()));
+  var matches = compareSegs(getSegs(fromTrack.getAnalysis()), getSegs(toTrack.getAnalysis()));
   var bestMatches = _.sortBy(matches, 'dist');
   console.log("best matches", bestMatches);
 
