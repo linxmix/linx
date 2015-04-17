@@ -7,7 +7,7 @@ RegionModel = Graviton.Model.extend({
     link: {
       collectionName: 'links',
       field: 'linkId'
-    }
+    },
   },
   defaults: {
     resize: false,
@@ -38,8 +38,3 @@ Regions = Graviton.define("regions", {
   persist: false,
   timestamps: true,
 });
-
-// region params
-// id: region.get('_id'),
-// start: region.getTime(track.get('_id')),
-// color: color,

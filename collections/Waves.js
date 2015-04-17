@@ -32,13 +32,13 @@ WaveModel = Graviton.Model.extend({
       collectionName: 'waves',
       field: 'nextWaveId'
     },
-    toRegion: {
-      collectionName: 'regions',
-      field: 'fromRegionId',
+    linkFrom: {
+      collectionName: 'links',
+      field: 'linkFromId',
     },
-    fromRegion: {
-      collectionName: 'regions',
-      field: 'toRegionId',
+    linkTo: {
+      collectionName: 'links',
+      field: 'linkToId',
     },
     track: {
       collectionName: 'tracks',
@@ -138,34 +138,52 @@ WaveModel = Graviton.Model.extend({
       wave.onWaveEnd();
     });
 
+    wavesurfer.on('region-click', function(regionWaveSurfer) {
+      var regionModel = Regions.findOne(regionWaveSurfer.id);
+      console.log("region click", regionWaveSurfer, regionModel);
+      var onClick = template.data.onRegionClick;
+      onClick && onClick(regionModel);
+    });
+
+    wavesurfer.on('region-in', function(regionWaveSurfer) {
+      var regionModel = Regions.findOne(regionWaveSurfer.id);
+
+      // if region is wave's fromRegion, trigger switch
+      wave.refresh();
+      var linkFrom = wave.linkFrom();
+      console.log("region in", regionModel, wave, linkFrom);
+      if (linkFrom && linkFrom.get('_id') === regionModel.get('linkId')) {
+        console.log("trigger transition", linkFrom, wave, wave.nextWave());
+        wave.pause();
+        var nextWave = wave.nextWave();
+        nextWave && nextWave.play(linkFrom.get('toTime'));
+      }
+    });
+
     template.autorun(this.loadTrack.bind(this));
   },
 
   setTrack: function(track) {
-    this.saveAttrs('trackId', track.get('_id'));
-    // this.track = this.track || new ReactiveVar();
-    // this.track.set(track);
+    this.saveAttrs('trackId', track && track.get('_id'));
   },
 
   getTrack: function() {
     return this.track();
-    // this.track = this.track || new ReactiveVar();
-    // return this.track.get();
   },
 
   play: function(time) {
     var wavesurfer = this.getWaveSurfer();
     if (wavesurfer) {
-      this.saveAttrs('playing', true);
       wavesurfer.play(time);
+      this.saveAttrs('playing', true);
     }
   },
 
   pause: function() {
     var wavesurfer = this.getWaveSurfer();
     if (wavesurfer) {
-      this.saveAttrs('playing', false);
       wavesurfer.pause();
+      this.saveAttrs('playing', false);
     }
   },
 
@@ -219,30 +237,41 @@ WaveModel = Graviton.Model.extend({
     var wavesurfer = this.getWaveSurfer();
 
     var regions = this.regions.all();
-    console.log("drawing regions", this.get('_id'), regions);
+    // console.log("drawing regions", this.get('_id'), regions);
 
     // TODO: remove old regions
     regions.forEach(function(regionModel) {
       var params = regionModel.getParams();
 
-      var regionWaveSurfer = wavesurfer.regions.list[params._id];
+      var regionWaveSurfer = wavesurfer.regions.list[params.id];
       if (!regionWaveSurfer) {
-        console.log("new regionWaveSurfer", params);
+        // console.log("new regionWaveSurfer", params);
         regionWaveSurfer = wavesurfer.regions.add(params);
       } else {
-        console.log("update regionWaveSurfer", params);
+        // console.log("update regionWaveSurfer", params);
         regionWaveSurfer.update(params);
       }
     });
   },
 
+  clearRegions: function() {
+    this.regions.all().forEach(function(region) {
+      region.remove();
+    });
+    var wavesurfer = this.getWaveSurfer();
+    wavesurfer && wavesurfer.clearRegions();
+  },
+
   reset: function() {
     this.getWaveSurfer().empty();
     this.setTrack(undefined);
+    this.clearRegions();
     this.saveAttrs({
       'loaded': false,
       'loading': false,
-      'streamUrl': undefined
+      'streamUrl': undefined,
+      'linkFromId': undefined,
+      'linkToId': undefined,
     });
   },
 

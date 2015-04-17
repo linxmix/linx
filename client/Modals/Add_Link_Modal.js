@@ -28,15 +28,43 @@ Template.Add_Link_Modal.rendered = function() {
 };
 
 Template.Add_Link_Modal_Inner.created = function() {
-  selectedLink = this.selectedLink = new ReactiveVar(this.data.link);
+  selectedLink = this.selectedLink = new ReactiveVar();
+
+  // setup initial selection
+  if (this.data.link) {
+    selectLink(this, this.data.link);
+  }
 };
 
 Template.Add_Link_Modal_Inner.rendered = function() {
-  // auto compare waves
-  // this.autorun(function() {
+  // TODO: make this not conflict with wave loading
+  this.data.fromWave.analyze();
+  this.data.toWave.analyze();
+
+  // TODO: don't do this here
+  this.data.fromWave.saveAttrs('nextWaveId', this.data.toWave.get('_id'));
+  this.data.toWave.saveAttrs('prevWaveId', this.data.fromWave.get('_id'));
+
 };
 
+function selectLink(template, link) {
+  console.log("select link", link.get('_id'));
+  template.selectedLink.set(link);
+  var fromWave = template.data.fromWave;
+  var toWave = template.data.toWave;
+  fromWave.saveAttrs('linkFromId', link.get('_id'));
+  toWave.saveAttrs('linkToId', link.get('_id'));
+}
+
 Template.Add_Link_Modal_Inner.helpers({
+  onRegionClick: function() {
+    var template = Template.instance();
+    return function(region) {
+      console.log("add link modal region click", region);
+      selectLink(template, region.link());
+    };
+  },
+
   selectedLink: function() {
     return Template.instance().selectedLink.get();
   },
@@ -84,7 +112,10 @@ Template.Add_Link_Modal_Inner.events({
         var match = matches[i];
 
         // TODO: need to clean up old links
-        var link = Links.create();
+        var link = Links.create({
+          fromTime: match.seg1,
+          toTime: match.seg2,
+        });
 
         var color;
         switch (i) {
@@ -98,6 +129,7 @@ Template.Add_Link_Modal_Inner.events({
           color: color
         };
 
+        // TODO: turn this into function addRegion(link) method on wave
         fromWave.regions.add(_.defaults({
           start: match.seg1,
         }, params));
