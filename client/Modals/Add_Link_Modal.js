@@ -44,21 +44,12 @@ Template.Add_Link_Modal.rendered = function() {
 };
 
 Template.Add_Link_Modal_Inner.created = function() {
-  selectedLink = this.selectedLink = new ReactiveVar();
-
-  // setup initial selection
-  if (this.data.link) {
-    selectLink(this, this.data.link);
-  }
+  selectedLink = this.selectedLink = new ReactiveVar(this.data.selectedLink);
 };
 
 Template.Add_Link_Modal_Inner.rendered = function() {
   this.data.fromWave.analyze();
   this.data.toWave.analyze();
-
-  // TODO: don't do this here
-  this.data.fromWave.saveAttrs('nextWaveId', this.data.toWave.get('_id'));
-  this.data.toWave.saveAttrs('prevWaveId', this.data.fromWave.get('_id'));
 };
 
 function selectLink(template, link) {
@@ -75,7 +66,7 @@ Template.Add_Link_Modal_Inner.helpers({
   onRegionClick: function() {
     var template = Template.instance();
     return function(region) {
-      console.log("add link modal region click", region);
+      // console.log("add link modal region click", region);
       selectLink(template, region.link());
     };
   },
@@ -83,18 +74,10 @@ Template.Add_Link_Modal_Inner.helpers({
   onRegionDblClick: function() {
     var template = Template.instance();
     return function(region) {
-      console.log("add link modal region dbl click", region);
+      // console.log("add link modal region dbl click", region);
       selectLink(template, region.link());
       template.data.fromWave.playLinkFrom();
     };
-  },
-
-  selectedLink: function() {
-    return Template.instance().selectedLink.get();
-  },
-
-  links: function() {
-    return Template.instance().links.get();
   },
 
   addButtonClass: function() {

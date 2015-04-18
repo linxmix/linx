@@ -42,7 +42,6 @@ RegionModel = Graviton.Model.extend({
   },
 
   destroy: function() {
-    // TODO: undraw from wavesurfer
     var regionWaveSurfer = this.getWaveSurferRegion();
     regionWaveSurfer.remove();
     this.remove();
@@ -64,7 +63,6 @@ RegionModel = Graviton.Model.extend({
       // console.log("new regionWaveSurfer", params);
       regionWaveSurfer = wavesurfer.regions.add(params);
     } else {
-      // console.log("update regionWaveSurfer", params);
       regionWaveSurfer.update(params);
     }
   },

@@ -10,7 +10,7 @@ Template.Track_Wave.created = function() {
 };
 
 Template.Track_Wave.destroyed = function() {
-  Template.instance().wave.destroyWaveSurfer();
+  // Template.instance().wave.destroyWaveSurfer();
 };
 
 Template.Track_Wave.rendered = function() {

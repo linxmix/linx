@@ -100,9 +100,6 @@ WaveSurfer.Region = {
         if (null != params.start) {
             this.start = Number(params.start);
         }
-        if (null != params.end) {
-            this.end = Number(params.end);
-        }
         if (null != params.loop) {
             this.color = Boolean(params.loop);
         }
@@ -112,6 +109,13 @@ WaveSurfer.Region = {
         if (null != params.data) {
             this.data = params.data;
         }
+
+        // DKANE FIX: update null on update
+        this.end = params.end == null ?
+            // small marker-like region
+            this.start + (4 / this.wrapper.scrollWidth) * this.wavesurfer.getDuration() :
+            Number(params.end)
+
         this.updateRender();
         this.fireEvent('update');
         this.wavesurfer.fireEvent('region-updated', this);

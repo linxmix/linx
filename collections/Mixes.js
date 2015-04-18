@@ -119,26 +119,44 @@ MixModel = Graviton.Model.extend({
     };
   },
 
-  getWaves: function() {
-    var waves = [];
-    this.getElements().reduce(function(prevWave, element) {
+  getElementData: function() {
+    var data = [];
+    var mix = this;
+
+    this.getElements().reduce(function(prev, element, i) {
+      var track = element.track();
       var wave = element.getWave();
       var link = element.link();
 
+      var prevWave = prev.wave;
+      var prevLink = prev.link;
+
       // setup double linkage
       if (prevWave) {
-        wave.saveAttrs('prevWaveId', prevWave.get('_id'));
-        prevWave.saveAttrs('nextWaveId', wave.get('_id'));
+        wave.setPrevWave(prevWave);
+        prevWave.setNextWave(wave);
       }
-
+      if (prevLink) {
+        wave.setLinkTo(prevLink);
+      }
       if (link) {
-        wave.saveAttrs('linkFromId', link.get('_id'));
+        wave.setLinkFrom(link);
       }
 
-      waves.push(wave);
-      return wave;
-    });
-    return waves;
+      data.push({
+        index: i,
+        track: track,
+        mix: mix,
+        link: link,
+        wave: wave,
+      });
+
+      return {
+        wave: wave,
+        link: link,
+      };
+    }, {});
+    return data;
   }
 });
 

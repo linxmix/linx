@@ -37,15 +37,7 @@ Template.MixPage.helpers({
     var template = Template.instance();
     var mix = getMix(template);
 
-    return mix.getTracks().map(function(track, i) {
-      return {
-        index: i,
-        track: track,
-        mix: mix,
-        link: mix.getLinkAt(i),
-        wave: mix.getWaveAt(i)
-      };
-    });
+    return mix.getElementData();
   },
 });
 

@@ -193,7 +193,9 @@ WaveModel = Graviton.Model.extend({
   },
 
   setTrack: function(track) {
-    this.saveAttrs('trackId', track && track.get('_id'));
+    if (track && track.get('_id') !== this.get('trackId')) {
+      this.saveAttrs('trackId', track && track.get('_id'));
+    }
   },
 
   getTrack: function() {
@@ -287,33 +289,45 @@ WaveModel = Graviton.Model.extend({
     }
   },
 
+  setNextWave: function(wave) {
+    if (wave && wave.get('_id') !== this.get('nextWaveId')) {
+      this.saveAttrs('nextWaveId', wave.get('_id'));
+    }
+  },
+
+  setPrevWave: function(wave) {
+    if (wave && wave.get('_id') !== this.get('prevWaveId')) {
+      this.saveAttrs('prevWaveId', wave.get('_id'));
+    }
+  },
+
   setLinkFrom: function(link) {
-    if (this.get('linkFromId') === link.get('_id')) { return; }
+    if (link && this.get('linkFromId') !== link.get('_id')) {
 
-    // make sure we have link in regions
-    this.assertRegion(link, {
-      linkId: link.get('_id'),
-      start: link.get('fromTime'),
-    });
+      // make sure we have link in regions
+      this.assertRegion(link, {
+        linkId: link.get('_id'),
+        start: link.get('fromTime'),
+      });
 
-    this.saveAttrs('linkFromId', link.get('_id'));
+      this.saveAttrs('linkFromId', link.get('_id'));
+    }
   },
 
   setLinkTo: function(link) {
-    if (this.get('linkToId') === link.get('_id')) { return; }
+    if (link && this.get('linkToId') !== link.get('_id')) {
+      // make sure we have link in regions
+      this.assertRegion(link, {
+        linkId: link.get('_id'),
+        start: link.get('toTime'),
+      });
 
-    // make sure we have link in regions
-    this.assertRegion(link, {
-      linkId: link.get('_id'),
-      start: link.get('toTime'),
-    });
-
-    this.saveAttrs('linkToId', link.get('_id'));
+      this.saveAttrs('linkToId', link.get('_id'));
+    }
   },
 
   drawRegions: function() {
     var regions = this.regions.all() || [];
-    // console.log("drawing regions", this.get('_id'), regions);
 
     regions.forEach(function(regionModel) {
       regionModel.draw();
@@ -353,9 +367,9 @@ WaveModel = Graviton.Model.extend({
   },
 
   onEnd: function() {
-    // console.log("wave end", linkFrom, this, this.nextWave());
     var nextWave = this.nextWave();
     var linkFrom = this.linkFrom();
+    // console.log("wave end", linkFrom, this, this.nextWave());
 
     this.pause();
     if (nextWave) {
