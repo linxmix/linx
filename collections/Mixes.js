@@ -65,9 +65,9 @@ MixModel = Graviton.Model.extend({
   },
 
   getLinks: function() {
-    return this.getElements().map(function(element) {
+    return _.without(this.getElements().map(function(element) {
       return element.link();
-    });
+    }), undefined);
   },
 
   insertTrackAt: function(track, index) {

@@ -28,6 +28,17 @@ Template.MixPage.helpers({
     }
   },
 
+  linkCountText: function() {
+    var linkCount = getMix(Template.instance()).getLinks().length;
+    if (!linkCount) {
+      return "0 Links";
+    } else if (linkCount === 1) {
+      return "1 Link";
+    } else {
+      return linkCount + " Links";
+    }
+  },
+
   saveButtonClass: function() {
     var mix = getMix(Template.instance());
     return mix.isDirty() ? '' : 'disabled';
