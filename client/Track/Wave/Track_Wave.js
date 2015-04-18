@@ -10,6 +10,7 @@ Template.Track_Wave.created = function() {
 };
 
 Template.Track_Wave.destroyed = function() {
+  // TODO: figure this out
   // Template.instance().wave.destroyWaveSurfer();
 };
 

@@ -183,7 +183,9 @@ WaveModel = Graviton.Model.extend({
       var regionModel = Regions.findOne(regionWaveSurfer.id);
 
       // if region is wave's fromRegion, trigger finish
+
       wave.refresh();
+      console.log("region in", wave.getTrack().get('title'), wave.linkFrom(), wave.get('linkFromId'));
       if (regionModel.hasLink(wave.linkFrom())) {
         wavesurfer.fireEvent('finish');
       }
@@ -371,9 +373,12 @@ WaveModel = Graviton.Model.extend({
     var linkFrom = this.linkFrom();
     // console.log("wave end", linkFrom, this, this.nextWave());
 
-    this.pause();
-    if (nextWave) {
-      nextWave.play(linkFrom && linkFrom.get('toTime'));
+    if (this.get('playing')) {
+      this.pause();
+      console.log("on end", this.getTrack().get('title'), nextWave);
+      if (nextWave) {
+        nextWave.play(linkFrom && linkFrom.get('toTime'));
+      }
     }
   },
 

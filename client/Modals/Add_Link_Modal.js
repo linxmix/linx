@@ -73,9 +73,8 @@ Template.Add_Link_Modal_Inner.helpers({
 
   onRegionDblClick: function() {
     var template = Template.instance();
-    return function(region) {
+    return function() {
       // console.log("add link modal region dbl click", region);
-      selectLink(template, region.link());
       template.data.fromWave.playLinkFrom();
     };
   },
