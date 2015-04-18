@@ -1,5 +1,11 @@
 var selectedLink; // share between inner and outer
 
+function keyHandler(e) {
+  console.log("keyup", e);
+  if (e.which === 27) { $('.Add_Track_Modal .deny').click(); } // escape
+  if (e.which === 13) { $('.Add_Track_Modal .approve').click(); } // enter
+}
+
 Template.Add_Link_Modal.created = function() {
   Utils.requireTemplateData.call(this, 'onSubmit');
   Utils.requireTemplateData.call(this, 'onCancel');
@@ -8,6 +14,8 @@ Template.Add_Link_Modal.created = function() {
   Utils.initTemplateModel.call(this, 'fromWave');
   Utils.initTemplateModel.call(this, 'toTrack');
   Utils.initTemplateModel.call(this, 'toWave');
+
+  $(window).on('keyup', keyHandler);
 };
 
 Template.Add_Link_Modal.rendered = function() {
