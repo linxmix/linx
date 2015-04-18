@@ -1,5 +1,9 @@
 var track; // share between inner and outer
 
+function isValidSelection() {
+  return track.get() && !(track.get().isDirty());
+}
+
 function keyHandler(e) {
   if (e.which === 27) { $('.Add_Track_Modal .deny').click(); } // escape
   if (e.which === 13) { $('.Add_Track_Modal .approve').click(); } // enter
@@ -19,15 +23,17 @@ Template.Add_Track_Modal.rendered = function() {
     closable: false,
     transition: 'scale',
     onDeny: function() {
-      // TODO: this will break if data changes
       $(window).off('keyup', keyHandler);
       template.data.onCancel();
     },
     onApprove: function() {
-      // TODO: this will break if data changes
-      // TODO: validate selection
-      $(window).off('keyup', keyHandler);
-      template.data.onSubmit(track.get());
+      if (isValidSelection()) {
+        $(window).off('keyup', keyHandler);
+        template.data.onSubmit(track.get());
+        return true;
+      } else {
+        return false;
+      }
     }
   }).modal('show');
 };
@@ -43,8 +49,7 @@ Template.Add_Track_Modal_Inner.helpers({
   },
 
   addButtonClass: function() {
-    var track = Template.instance().track.get();
-    return track.isDirty() ? 'basic disabled' : '';
+    return isValidSelection() ? '' : 'basic disabled';
   },
 
   // center column if only one

@@ -281,16 +281,21 @@ WaveModel = Graviton.Model.extend({
     });
   },
 
+  assertRegion: function(link, params) {
+    if (!this.findRegionLink(link)) {
+      this.regions.add(params);
+    }
+  },
+
   setLinkFrom: function(link) {
     if (this.get('linkFromId') === link.get('_id')) { return; }
 
     // make sure we have link in regions
-    if (!this.findRegionLink(link)) {
-      this.regions.add({
-        linkId: link.get('_id'),
-        start: link.get('fromTime'),
-      });
-    }
+    this.assertRegion(link, {
+      linkId: link.get('_id'),
+      start: link.get('fromTime'),
+    });
+
     this.saveAttrs('linkFromId', link.get('_id'));
   },
 
@@ -298,12 +303,11 @@ WaveModel = Graviton.Model.extend({
     if (this.get('linkToId') === link.get('_id')) { return; }
 
     // make sure we have link in regions
-    if (!this.findRegionLink(link)) {
-      this.regions.add({
-        linkId: link.get('_id'),
-        start: link.get('toTime'),
-      });
-    }
+    this.assertRegion(link, {
+      linkId: link.get('_id'),
+      start: link.get('toTime'),
+    });
+
     this.saveAttrs('linkToId', link.get('_id'));
   },
 
@@ -311,7 +315,6 @@ WaveModel = Graviton.Model.extend({
     var regions = this.regions.all() || [];
     // console.log("drawing regions", this.get('_id'), regions);
 
-    // TODO: remove old regions
     regions.forEach(function(regionModel) {
       regionModel.draw();
     });
@@ -350,7 +353,7 @@ WaveModel = Graviton.Model.extend({
   },
 
   onEnd: function() {
-    console.log("wave end", linkFrom, this, this.nextWave());
+    // console.log("wave end", linkFrom, this, this.nextWave());
     var nextWave = this.nextWave();
     var linkFrom = this.linkFrom();
 

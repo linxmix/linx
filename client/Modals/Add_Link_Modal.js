@@ -1,5 +1,9 @@
 var selectedLink; // share between inner and outer
 
+function isValidSelection() {
+  return !!selectedLink.get();
+}
+
 function keyHandler(e) {
   if (e.which === 27) { $('.Add_Link_Modal .deny').click(); } // escape
   if (e.which === 13) { $('.Add_Link_Modal .approve').click(); } // enter
@@ -24,13 +28,17 @@ Template.Add_Link_Modal.rendered = function() {
     closable: false,
     transition: 'scale',
     onDeny: function() {
-      // TODO: this will break if data changes
+      $(window).off('keyup', keyHandler);
       template.data.onCancel();
     },
     onApprove: function() {
-      console.log("on approve");
-      // TODO: this will break if data changes
-      template.data.onSubmit(selectedLink.get());
+      if (isValidSelection()) {
+        $(window).off('keyup', keyHandler);
+        template.data.onSubmit(selectedLink.get());
+        return true;
+      } else {
+        return false;
+      }
     }
   }).modal('show');
 };
@@ -89,8 +97,8 @@ Template.Add_Link_Modal_Inner.helpers({
     return Template.instance().links.get();
   },
 
-  isValidSelection: function() {
-    return !!Template.instance().selectedLink.get();
+  addButtonClass: function() {
+    return isValidSelection() ? '' : 'basic disabled';
   },
 
   selectLink: function() {
@@ -107,6 +115,12 @@ Template.Add_Link_Modal_Inner.events({
     var toWave = template.data.toWave;
 
     if (fromWave.getAnalysis() && toWave.getAnalysis()) {
+      
+      // clear prev regions
+      (this.prevRegions || []).forEach(function(region) {
+        region.destroy();
+      });
+
       // compare waves, then add regions
       var matches = fromWave.compareTo(toWave);
       var fromTrack = template.data.fromTrack;
@@ -116,6 +130,7 @@ Template.Add_Link_Modal_Inner.events({
       var colors = Utils.generateColors(LENGTH);
 
       // TODO: move this all into wave?
+      var regions = [];
       for (var i = 0; i < LENGTH; i++) {
         var match = matches[i];
 
@@ -132,14 +147,15 @@ Template.Add_Link_Modal_Inner.events({
           color: colors[i]
         };
 
-        fromWave.regions.add(_.defaults({
+        regions.push(fromWave.regions.add(_.defaults({
           start: match.seg1,
-        }, params));
+        }, params)));
 
-        toWave.regions.add(_.defaults({
+        regions.push(toWave.regions.add(_.defaults({
           start: match.seg2,
-        }, params));
+        }, params)));
       }
+      this.prevRegions = regions;
     }
   }
 });

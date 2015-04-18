@@ -48,7 +48,7 @@ TrackModel = Graviton.Model.extend({
   },
 }, {
   setEchonest: function(attrs) {
-    console.log("set echonest", attrs);
+    // console.log("set echonest", attrs);
     this.saveAttrs({
       echonest: attrs,      
       title: attrs.title,
@@ -155,7 +155,7 @@ TrackModel = Graviton.Model.extend({
     }
     // If already have analysis, short circuit
     if (this.getAnalysis()) {
-      console.log("Track already has echonest analysis, skipping", this.get('title'));
+      // console.log("Track already has echonest analysis, skipping", this.get('title'));
       cb && cb();
     } else {
 
@@ -177,7 +177,7 @@ TrackModel = Graviton.Model.extend({
             type: 'analyze',
             time: 3000
           });
-          console.log("fetching echonest analysis: ", "attempt: " + count, track);
+          // console.log("fetching echonest analysis: ", "attempt: " + count, track);
 
           $.ajax({
             type: "GET",
@@ -204,7 +204,7 @@ TrackModel = Graviton.Model.extend({
     var track = this;
     // first get echonestId of track
     this.fetchEchonestId(wave, function(echonestId) {
-      console.log("fetching echonest profile", track.get('title'));
+      // console.log("fetching echonest profile", track.get('title'));
       var loadingInterval = wave.setLoadingInterval({
         type: 'profile',
         time: 1000
@@ -241,10 +241,10 @@ TrackModel = Graviton.Model.extend({
     // short-circuit if we already have the id
     var track = this;
     if (track.get('echonest')) {
-      console.log("track already has echonest id, skipping", track);
+      // console.log("track already has echonest id, skipping", track);
       cb && cb(track.get('echonest.id'));
     } else {
-      console.log("getting echonestId of track", track);
+      // console.log("getting echonestId of track", track);
       var streamUrl = track.getStreamUrl();
       var loadingInterval = wave.setLoadingInterval({
         type: 'profile',
