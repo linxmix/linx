@@ -55,17 +55,10 @@
         <i class="cancel icon"></i>
         Cancel
       </div>
-      {{#if isValidSelection}}
-        <div class="inverted green ui button approve">
-          <i class="add icon"></i>
-          Add Link
-        </div>
-      {{else}}
-        <div class="inverted green ui button approve basic disabled">
-          <i class="add icon"></i>
-          Add Link
-        </div>
-      {{/if}}
+      <div class="inverted green ui button approve {{addButtonClass}}">
+        <i class="add icon"></i>
+        Add Link
+      </div>
     </div>
   </div>
 </template>

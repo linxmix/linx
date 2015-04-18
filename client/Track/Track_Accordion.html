@@ -21,6 +21,7 @@
       {{#if activeClass}}
         {{#Track_Wave
           track=track
+          wave=wave
           hideLoadOptions=true
           hideSaveButton=true
           hideResetButton=true
@@ -37,9 +38,15 @@
 
     {{#unless isLastTrack}}
       <div class="inverted horizontal ui divider">
-        <div class="add-link mini circular inverted basic orange ui icon button">
-          <i class="linkify icon"></i>
-        </div>
+        {{#if link}}
+          <div class="add-link mini circular inverted basic green ui icon button">
+            <i class="linkify icon"></i>
+          </div>
+        {{else}}
+          <div class="add-link mini circular inverted basic orange ui icon button">
+            <i class="unlink icon"></i>
+          </div>
+        {{/if}}
         <div class="add-track mini circular inverted basic green ui icon button">
           <i class="add icon"></i>
         </div>

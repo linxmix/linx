@@ -35,8 +35,6 @@ Template.MixPage.helpers({
 
   tracksAccordion: function() {
     var template = Template.instance();
-    var trackModalIndex = template.trackModalIndex;
-    var linkModalIndex = template.linkModalIndex;
     var mix = getMix(template);
 
     var tracks = template.tracks = mix.getTracks();
@@ -46,10 +44,10 @@ Template.MixPage.helpers({
     return tracks.map(function(track, i) {
       return {
         index: i,
-        trackModalIndex: trackModalIndex,
-        linkModalIndex: linkModalIndex,
         track: track,
         mix: mix,
+        link: mix.getLinkAt(i),
+        wave: mix.getWaveAt(i)
       };
     });
   },

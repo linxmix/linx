@@ -284,7 +284,7 @@ WaveModel = Graviton.Model.extend({
   },
 
   clearRegions: function() {
-    this.regions.all().forEach(function(region) {
+    (this.regions.all() || []).forEach(function(region) {
       region.remove();
     });
     var wavesurfer = this.getWaveSurfer();
@@ -436,7 +436,6 @@ WaveModel = Graviton.Model.extend({
     var fromWave = this;
     var fromAnalysis = fromWave.getAnalysis();
     var toAnalysis = toWave.getAnalysis();
-    console.log('compare waves', fromWave, toWave);
 
     if (!(fromWave && fromAnalysis && toWave && toAnalysis)) {
       console.log("fromWave", fromWave, "fromAnalysis", fromAnalysis, "toWave", toWave, "toAnalysis", toAnalysis);
