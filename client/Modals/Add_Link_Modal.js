@@ -1,9 +1,8 @@
 var selectedLink; // share between inner and outer
 
 function keyHandler(e) {
-  console.log("keyup", e);
-  if (e.which === 27) { $('.Add_Track_Modal .deny').click(); } // escape
-  if (e.which === 13) { $('.Add_Track_Modal .approve').click(); } // enter
+  if (e.which === 27) { $('.Add_Link_Modal .deny').click(); } // escape
+  if (e.which === 13) { $('.Add_Link_Modal .approve').click(); } // enter
 }
 
 Template.Add_Link_Modal.created = function() {
@@ -57,7 +56,10 @@ Template.Add_Link_Modal_Inner.rendered = function() {
 
 function selectLink(template, link) {
   console.log("select link", link.get('_id'));
+
   template.selectedLink.set(link);
+
+  // update waves
   var fromWave = template.data.fromWave;
   var toWave = template.data.toWave;
   fromWave.saveAttrs('linkFromId', link.get('_id'));
@@ -70,6 +72,15 @@ Template.Add_Link_Modal_Inner.helpers({
     return function(region) {
       console.log("add link modal region click", region);
       selectLink(template, region.link());
+    };
+  },
+
+  onRegionDblClick: function() {
+    var template = Template.instance();
+    return function(region) {
+      console.log("add link modal region dbl click", region);
+      selectLink(template, region.link());
+      template.data.fromWave.playLinkFrom();
     };
   },
 
@@ -94,13 +105,6 @@ Template.Add_Link_Modal_Inner.helpers({
 });
 
 Template.Add_Link_Modal_Inner.events({
-  'keyup': function (e, template) {
-    // TODO
-    // console.log("keyup", e);
-    // if (e.which === 27) { template.$('.deny').click(); } // escape
-    // if (e.which === 13) { template.$('.approve').click(); } // enter
-  },
-
   'click .compare': function(e, template) {
     var fromWave = template.data.fromWave;
     var toWave = template.data.toWave;

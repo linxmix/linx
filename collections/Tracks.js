@@ -93,12 +93,10 @@ TrackModel = Graviton.Model.extend({
   },
 
   getLinkToIds: function() {
-    console.log('getlinktoids', this.linksTo.all().map(function(l) { return l.get('_id'); }))
     return this.linksTo.all().map(function(l) { return l.get('_id'); });
   },
 
   getLinkFromIds: function() {
-    console.log('getlinkfromids', this.linksFrom.all().map(function(l) { return l.get('_id'); }))
     return this.linksFrom.all().map(function(l) { return l.get('_id'); });
   },
 

@@ -100,15 +100,15 @@ MixModel = Graviton.Model.extend({
     return element && element.getWave();
   },
 
-  getLinkData: function(index) {
-    console.log("get link data", {
+  getTrackData: function(index) {
+    return {
       mix: this,
-      fromWave: this.getWaveAt(index),
-      fromTrack: this.getTrackAt(index),
-      selectedLink: this.getLinkAt(index),
-      toWave: this.getWaveAt(index + 1),
-      toTrack: this.getTrackAt(index + 1),
-    });
+      prevTrack: this.getTrackAt(index - 1),
+      nextTrack: this.getTrackAt(index),
+    };
+  },
+
+  getLinkData: function(index) {
     return {
       mix: this,
       fromWave: this.getWaveAt(index),

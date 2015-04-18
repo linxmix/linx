@@ -1,7 +1,6 @@
 var track; // share between inner and outer
 
 function keyHandler(e) {
-  console.log("keyup", e);
   if (e.which === 27) { $('.Add_Track_Modal .deny').click(); } // escape
   if (e.which === 13) { $('.Add_Track_Modal .approve').click(); } // enter
 }
@@ -51,7 +50,7 @@ Template.Add_Track_Modal_Inner.helpers({
   // center column if only one
   columnClass: function() {
     var data = Template.currentData();
-    return data.fromTrack && data.toTrack ? '' : 'centered';
+    return data.prevTrack && data.nextTrack ? '' : 'centered';
   },
 
   selectTrack: function() {
@@ -66,12 +65,5 @@ Template.Add_Track_Modal_Inner.events({
   'click .reset': function(e, template) {
     console.log("reset");
     template.track.set(Tracks.create({ isNew: true }));
-  },
-
-  'keyup': function (e, template) {
-    // TODO
-    console.log("keyup", e);
-    if (e.which === 27) { template.$('.deny').click(); } // escape
-    if (e.which === 13) { template.$('.approve').click(); } // enter
   },
 });

@@ -14,4 +14,13 @@
     // give room for menu button rollover
     margin-bottom: 1rem;
   }
+
+  // region styles
+  .wavesurfer-region {
+    cursor: pointer !important;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 1) !important;
+    }
+  }
 }

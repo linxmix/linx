@@ -135,28 +135,35 @@ WaveModel = Graviton.Model.extend({
     });
 
     wavesurfer.on('finish', function() {
-      wave.onWaveEnd();
+      wave.onEnd();
     });
 
-    wavesurfer.on('region-click', function(regionWaveSurfer) {
+    wavesurfer.on('region-click', function(regionWaveSurfer, e) {
+      e.preventDefault();
+      e.stopPropagation();
+
       var regionModel = Regions.findOne(regionWaveSurfer.id);
-      console.log("region click", regionWaveSurfer, regionModel);
       var onClick = template.data.onRegionClick;
       onClick && onClick(regionModel);
+    });
+
+    wavesurfer.on('region-dblclick', function(regionWaveSurfer, e) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      var regionModel = Regions.findOne(regionWaveSurfer.id);
+      var onDblClick = template.data.onRegionDblClick;
+      onDblClick && onDblClick(regionModel);
     });
 
     wavesurfer.on('region-in', function(regionWaveSurfer) {
       var regionModel = Regions.findOne(regionWaveSurfer.id);
 
-      // if region is wave's fromRegion, trigger switch
+      // if region is wave's fromRegion, trigger finish
       wave.refresh();
       var linkFrom = wave.linkFrom();
-      console.log("region in", regionModel, wave, linkFrom);
-      if (linkFrom && linkFrom.get('_id') === regionModel.get('linkId')) {
-        console.log("trigger transition", linkFrom, wave, wave.nextWave());
-        wave.pause();
-        var nextWave = wave.nextWave();
-        nextWave && nextWave.play(linkFrom.get('toTime'));
+      if (linkFrom && (linkFrom.get('_id') === regionModel.get('linkId'))) {
+        wavesurfer.fireEvent('finish');
       }
     });
 
@@ -171,9 +178,22 @@ WaveModel = Graviton.Model.extend({
     return this.track();
   },
 
+  playLinkFrom: function() {
+    var linkFrom = this.linkFrom();
+    if (linkFrom) {
+      this.play(linkFrom.get('fromTime') - 5);
+    }
+  },
+
   play: function(time) {
     var wavesurfer = this.getWaveSurfer();
     if (wavesurfer) {
+      var prev = Waves.findOne(Session.get('playingWave'));
+      if (prev) {
+        prev.pause();
+      }
+
+      Session.set('playingWave', this.get('_id'));
       wavesurfer.play(time);
       this.saveAttrs('playing', true);
     }
@@ -239,9 +259,18 @@ WaveModel = Graviton.Model.extend({
     var regions = this.regions.all();
     // console.log("drawing regions", this.get('_id'), regions);
 
+    var linkToId = this.get('linkToId');
+    var linkFromId = this.get('linkFromId');
+
     // TODO: remove old regions
     regions.forEach(function(regionModel) {
       var params = regionModel.getParams();
+
+      // special color for selected links
+      if ((regionModel.get('linkId') === linkToId) ||
+        (regionModel.get('linkId') === linkFromId)) {
+        params.color = 'rgba(255, 255, 255, 1)';
+      }
 
       var regionWaveSurfer = wavesurfer.regions.list[params.id];
       if (!regionWaveSurfer) {
@@ -287,7 +316,8 @@ WaveModel = Graviton.Model.extend({
     this.getWaveSurfer().fireEvent('error', 'echonest analysis error: ' + xhr.responseText);
   },
 
-  onWaveEnd: function() {
+  onEnd: function() {
+    console.log("wave end", linkFrom, this, this.nextWave());
     var nextWave = this.nextWave();
     var linkFrom = this.linkFrom();
 
