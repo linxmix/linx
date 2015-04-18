@@ -18,7 +18,7 @@ Template.Save_Button.helpers({
   
   isLoading: function() {
     var wave = getWave(Template.instance());
-    return wave.get('loading');
+    return wave.get('uploading');
   },
 });
 

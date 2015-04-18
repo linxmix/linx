@@ -37,11 +37,7 @@ Template.MixPage.helpers({
     var template = Template.instance();
     var mix = getMix(template);
 
-    var tracks = template.tracks = mix.getTracks();
-
-    // TODO: get waves too
-
-    return tracks.map(function(track, i) {
+    return mix.getTracks().map(function(track, i) {
       return {
         index: i,
         track: track,

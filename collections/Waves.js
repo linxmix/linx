@@ -90,16 +90,39 @@ WaveModel = Graviton.Model.extend({
     }
 
     // Setup Handlers
-    var lastPercent;
+    var lastPercentLoading;
     wavesurfer.on('loading', function(percent, xhr, type) {
       if (!wave.get('loading')) {
         wave.saveAttrs('loading', true);
       }
-      template.$('.progress-bar').show();
+      if (wave.get('loaded')) {
+        wave.saveAttrs('loaded', false);
+      }
+      template.$('.progress-bar.loading').show();
 
       // update progress bar
-      if (percent !== lastPercent) {
-        lastPercent = percent;
+      if (percent !== lastPercentLoading) {
+        lastPercentLoading = percent;
+        template.$('.progress-bar.loading').progress({
+          percent: percent,
+          text: {
+            active: "Loading...",
+            success: "Decoding..."
+          },
+        });
+      }
+    });
+
+    var lastPercentUploading;
+    wavesurfer.on('uploading', function(percent, xhr, type) {
+      if (!wave.get('uploading')) {
+        wave.saveAttrs('uploading', true);
+      }
+      template.$('.progress-bar.uploading').show();
+
+      // update progress bar
+      if (percent !== lastPercentUploading) {
+        lastPercentUploading = percent;
         var text = {};
         switch (type) {
           case 'upload': text = { active: "Uploading...", success: "Uploaded!" }; break;
@@ -107,7 +130,7 @@ WaveModel = Graviton.Model.extend({
           case 'analyze': text = { active: "Analyzing...", success: "Analyzed!" }; break;
           default: text = { active: "Loading...", success: "Decoding..." };
         }
-        template.$('.progress-bar').progress({
+        template.$('.progress-bar.uploading').progress({
           percent: percent,
           text: text,
         });
@@ -115,12 +138,12 @@ WaveModel = Graviton.Model.extend({
     });
 
     wavesurfer.on('uploadFinish', function() {
-      template.$('.progress-bar').hide();
-      wave.saveAttrs('loading', false);
+      template.$('.progress-bar.uploading').hide();
+      wave.saveAttrs('uploading', false);
     });
 
     wavesurfer.on('ready', function() {
-      template.$('.progress-bar').hide();
+      template.$('.progress-bar.loading').hide();
       wave.saveAttrs({ 'loaded': true, 'loading': false });
     });
 
@@ -161,8 +184,7 @@ WaveModel = Graviton.Model.extend({
 
       // if region is wave's fromRegion, trigger finish
       wave.refresh();
-      var linkFrom = wave.linkFrom();
-      if (linkFrom && (linkFrom.get('_id') === regionModel.get('linkId'))) {
+      if (regionModel.hasLink(wave.linkFrom())) {
         wavesurfer.fireEvent('finish');
       }
     });
@@ -253,51 +275,62 @@ WaveModel = Graviton.Model.extend({
     return factor * bufferLength;
   },
 
-  drawRegions: function() {
-    var wavesurfer = this.getWaveSurfer();
-
-    var regions = this.regions.all();
-    // console.log("drawing regions", this.get('_id'), regions);
-
-    var linkToId = this.get('linkToId');
-    var linkFromId = this.get('linkFromId');
-
-    // TODO: remove old regions
-    regions.forEach(function(regionModel) {
-      var params = regionModel.getParams();
-
-      // special color for selected links
-      if ((regionModel.get('linkId') === linkToId) ||
-        (regionModel.get('linkId') === linkFromId)) {
-        params.color = 'rgba(255, 255, 255, 1)';
-      }
-
-      var regionWaveSurfer = wavesurfer.regions.list[params.id];
-      if (!regionWaveSurfer) {
-        // console.log("new regionWaveSurfer", params);
-        regionWaveSurfer = wavesurfer.regions.add(params);
-      } else {
-        // console.log("update regionWaveSurfer", params);
-        regionWaveSurfer.update(params);
-      }
+  findRegionLink: function(link) {
+    return _.find(this.regions.all(), function(region) {
+      return region.hasLink(link);
     });
   },
 
-  clearRegions: function() {
-    (this.regions.all() || []).forEach(function(region) {
-      region.remove();
+  setLinkFrom: function(link) {
+    if (this.get('linkFromId') === link.get('_id')) { return; }
+
+    // make sure we have link in regions
+    if (!this.findRegionLink(link)) {
+      this.regions.add({
+        linkId: link.get('_id'),
+        start: link.get('fromTime'),
+      });
+    }
+    this.saveAttrs('linkFromId', link.get('_id'));
+  },
+
+  setLinkTo: function(link) {
+    if (this.get('linkToId') === link.get('_id')) { return; }
+
+    // make sure we have link in regions
+    if (!this.findRegionLink(link)) {
+      this.regions.add({
+        linkId: link.get('_id'),
+        start: link.get('toTime'),
+      });
+    }
+    this.saveAttrs('linkToId', link.get('_id'));
+  },
+
+  drawRegions: function() {
+    var regions = this.regions.all() || [];
+    // console.log("drawing regions", this.get('_id'), regions);
+
+    // TODO: remove old regions
+    regions.forEach(function(regionModel) {
+      regionModel.draw();
     });
-    var wavesurfer = this.getWaveSurfer();
-    wavesurfer && wavesurfer.clearRegions();
+  },
+
+  destroyRegions: function() {
+    (this.regions.all() || []).forEach(function(region) {
+      region.destoy();
+    });
   },
 
   reset: function() {
     this.getWaveSurfer().empty();
     this.setTrack(undefined);
-    this.clearRegions();
+    this.destroyRegions();
     this.saveAttrs({
       'loaded': false,
       'loading': false,
+      'uploading': false,
       'streamUrl': undefined,
       'linkFromId': undefined,
       'linkToId': undefined,
@@ -308,8 +341,8 @@ WaveModel = Graviton.Model.extend({
     this.getWaveSurfer().fireEvent('uploadFinish');
   },
 
-  onLoading: function(options) {
-    this.getWaveSurfer().fireEvent('loading', options.percent, options.xhr, options.type);
+  onUploading: function(options) {
+    this.getWaveSurfer().fireEvent('uploading', options.percent, options.xhr, options.type);
   },
 
   onError: function(xhr) {
@@ -333,6 +366,7 @@ WaveModel = Graviton.Model.extend({
   },
 
   destroy: function() {
+    this.destroyRegions();
     this.destroyWaveSurfer();
     this.remove();
   },
@@ -377,7 +411,7 @@ WaveModel = Graviton.Model.extend({
       var upload = uploads[0];
       if (upload) {
         var percent = upload.percent_uploaded;
-        !uploadFinished && wave.onLoading({
+        !uploadFinished && wave.onUploading({
           type: 'upload',
           percent: percent
         });
@@ -405,7 +439,7 @@ WaveModel = Graviton.Model.extend({
     var percent = 0;
     var wave = this;
     var loadingInterval = Meteor.setInterval(function() {
-      wave.onLoading.call(wave, {
+      wave.onUploading.call(wave, {
         percent: percent,
         type: options.type,
       });

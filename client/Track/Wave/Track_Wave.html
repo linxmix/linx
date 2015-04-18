@@ -2,7 +2,8 @@
   <div class="Track_Wave">
     <div class="wave {{hiddenClass}}">
     </div>
-    {{> ProgressBar}}
+    {{> ProgressBar class="loading"}}
+    {{> ProgressBar class="uploading"}}
 
     {{#if isLoaded}}
       <!-- Header -->
@@ -56,7 +57,7 @@
 </template>
 
 <template name="ProgressBar">
-  <div class="ui active inverted blue progress progress-bar">
+  <div class="ui active inverted blue progress progress-bar {{class}}">
     <div class="bar">
       <div class="progress"></div>
     </div>

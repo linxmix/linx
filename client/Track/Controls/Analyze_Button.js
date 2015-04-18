@@ -18,7 +18,7 @@ Template.Analyze_Button.helpers({
 
   loadingClass: function() {
     var wave = getWave(Template.instance());
-    return wave.get('loading') ? 'loading' : '';
+    return wave.get('uploading') ? 'loading' : '';
   },
 });
 

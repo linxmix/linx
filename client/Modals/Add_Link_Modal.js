@@ -45,14 +45,12 @@ Template.Add_Link_Modal_Inner.created = function() {
 };
 
 Template.Add_Link_Modal_Inner.rendered = function() {
-  // TODO: make this not conflict with wave loading
-  // this.data.fromWave.analyze();
-  // this.data.toWave.analyze();
+  this.data.fromWave.analyze();
+  this.data.toWave.analyze();
 
   // TODO: don't do this here
   this.data.fromWave.saveAttrs('nextWaveId', this.data.toWave.get('_id'));
   this.data.toWave.saveAttrs('prevWaveId', this.data.fromWave.get('_id'));
-
 };
 
 function selectLink(template, link) {
@@ -61,10 +59,8 @@ function selectLink(template, link) {
   template.selectedLink.set(link);
 
   // update waves
-  var fromWave = template.data.fromWave;
-  var toWave = template.data.toWave;
-  fromWave.saveAttrs('linkFromId', link.get('_id'));
-  toWave.saveAttrs('linkToId', link.get('_id'));
+  template.data.fromWave.setLinkFrom(link);
+  template.data.toWave.setLinkTo(link);
 }
 
 Template.Add_Link_Modal_Inner.helpers({
@@ -110,13 +106,7 @@ Template.Add_Link_Modal_Inner.events({
     var fromWave = template.data.fromWave;
     var toWave = template.data.toWave;
 
-    console.log("compare waves", fromWave.getAnalysis(), toWave.getAnalysis());
-    if (!(fromWave.getAnalysis() && toWave.getAnalysis())) {
-      // TODO: make this better
-      fromWave.analyze();
-      toWave.analyze();
-      return;
-    } else {
+    if (fromWave.getAnalysis() && toWave.getAnalysis()) {
       // compare waves, then add regions
       var matches = fromWave.compareTo(toWave);
       var fromTrack = template.data.fromTrack;
