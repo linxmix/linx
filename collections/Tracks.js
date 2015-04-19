@@ -111,7 +111,7 @@ TrackModel = Graviton.Model.extend({
   },
 
   getS3Url: function() {
-    if (this.get('isNew')) { return; }
+    if (this.isNew()) { return; }
     var part = 'http://s3-us-west-2.amazonaws.com/linx-music/';
     // TODO: make this work for non-mp3
     var fileName = this.get('s3FileName') || this.get('_id') + '.mp3';

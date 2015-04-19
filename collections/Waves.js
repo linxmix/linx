@@ -292,19 +292,19 @@ WaveModel = Graviton.Model.extend({
   },
 
   setNextWave: function(wave) {
-    if (wave && wave.get('_id') !== this.get('nextWaveId')) {
+    // if (wave && wave.get('_id') !== this.get('nextWaveId')) {
       this.saveAttrs('nextWaveId', wave.get('_id'));
-    }
+    // }
   },
 
   setPrevWave: function(wave) {
-    if (wave && wave.get('_id') !== this.get('prevWaveId')) {
+    // if (wave && wave.get('_id') !== this.get('prevWaveId')) {
       this.saveAttrs('prevWaveId', wave.get('_id'));
-    }
+    // }
   },
 
   setLinkFrom: function(link) {
-    if (link && this.get('linkFromId') !== link.get('_id')) {
+    // if (link && this.get('linkFromId') !== link.get('_id')) {
 
       // make sure we have link in regions
       this.assertRegion(link, {
@@ -313,11 +313,11 @@ WaveModel = Graviton.Model.extend({
       });
 
       this.saveAttrs('linkFromId', link.get('_id'));
-    }
+    // }
   },
 
   setLinkTo: function(link) {
-    if (link && this.get('linkToId') !== link.get('_id')) {
+    // if (link && this.get('linkToId') !== link.get('_id')) {
       // make sure we have link in regions
       this.assertRegion(link, {
         linkId: link.get('_id'),
@@ -325,7 +325,7 @@ WaveModel = Graviton.Model.extend({
       });
 
       this.saveAttrs('linkToId', link.get('_id'));
-    }
+    // }
   },
 
   drawRegions: function() {
@@ -410,7 +410,7 @@ WaveModel = Graviton.Model.extend({
     // on completion, persist track and fire finish event
     function next() {
       wave.onUploadFinish();
-      track.save();
+      track.store();
       cb && cb();
     }
 

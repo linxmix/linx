@@ -39,7 +39,7 @@ Template.Add_Track_Modal.rendered = function() {
 };
 
 Template.Add_Track_Modal_Inner.created = function() {
-  track = this.track = new ReactiveVar(Tracks.create({ isNew: true }));
+  track = this.track = new ReactiveVar(Tracks.create());
   console.log("add track modal created", this.data);
 };
 
@@ -69,6 +69,6 @@ Template.Add_Track_Modal_Inner.helpers({
 Template.Add_Track_Modal_Inner.events({
   'click .reset': function(e, template) {
     console.log("reset");
-    template.track.set(Tracks.create({ isNew: true }));
+    template.track.set(Tracks.create());
   },
 });

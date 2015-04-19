@@ -31,7 +31,7 @@ MixElementModel = Graviton.Model.extend({
   },
 
   getWave: function() {
-    var wave = this.wave();
+    var wave = Waves.findOne(this.get('waveId'));
     if (!wave) {
       wave = Waves.create();
       this.saveAttrs('waveId', wave.get('_id'));
