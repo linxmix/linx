@@ -10,8 +10,22 @@
   </div>
 
   <div class="content">
-    {{#Track_Wave track=track hideAnalyzeButton=true}}
-    {{else}}
+
+    <div class="ui grid">
+      <div class="four wide column">
+        {{> SearchLinx onSelect=onSelectTrack}}
+      </div>
+      <div class="eight wide column">
+        {{> Drop onDrop=onDrop}}
+      </div>
+      <div class="four wide column">
+        {{> SoundcloudInput onSubmit=onSubmitSoundcloud}}
+      </div>
+    </div>
+
+    <div class="inverted ui section divider"></div>
+
+    {{#Track_Wave track=track hideAnalyzeButton=true hideLoadOptions=true hideResetButton=true}}
       <div class="inverted ui section divider"></div>
     {{/Track_Wave}}
 
@@ -23,7 +37,7 @@
               Links To
             </div>
           </h4>
-          {{> Track_Links_List track=prevTrack linkIds=prevTrack.getLinkFromIds onClick=selectTrack hideHeader=true}}
+          {{> Track_Links_List track=prevTrack linkIds=prevTrack.getLinkFromIds onClick=onSelectTrack hideHeader=true}}
         </div>
       {{/if}}
 
@@ -34,7 +48,7 @@
               Links From
             </div>
           </h4>
-          {{> Track_Links_List track=nextTrack linkIds=nextTrack.getLinkToIds onClick=selectTrack hideHeader=true}}
+          {{> Track_Links_List track=nextTrack linkIds=nextTrack.getLinkToIds onClick=onSelectTrack hideHeader=true}}
         </div>
       {{/if}}
     </div>

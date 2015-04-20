@@ -15,6 +15,22 @@ Meteor.startup(function() {
         delete this[_id];
       }
     };
+
+    AudioFiles = {
+      set: function(_id, file) {
+        if (this[_id]) {
+          this.destroy(_id);
+        }
+        this[_id] = new ReactiveVar(file);
+      },
+      get: function(_id) {
+        var file = this[_id];
+        return file && file.get();
+      },
+      destroy: function(_id) {
+        delete this[_id];
+      }
+    };
   }
 });
 
@@ -82,12 +98,6 @@ TrackModel = Graviton.Model.extend({
     }.bind(this));
   },
 
-  loadFiles: function(files) {
-    var file = files[0];
-    this.getWave().loadFiles(files);
-    this.loadMp3Tags(file);
-  },
-
   getAllLinks: function() {
     return this.linksTo.all().concat(this.linksFrom.all());
   },
@@ -145,6 +155,20 @@ TrackModel = Graviton.Model.extend({
 
   setAnalysis: function(analysis) {
     return Analyses.set(this.get('_id'), analysis);
+  },
+
+  getAudioFile: function() {
+    var files = AudioFiles.get(this.get('_id'));
+    return files && files[0];
+  },
+
+  getAudioFiles: function() {
+    return AudioFiles.get(this.get('_id'));
+  },
+
+  setAudioFiles: function(files) {
+    AudioFiles.set(this.get('_id'), files);
+    this.loadMp3Tags(this.getAudioFile());
   },
 
   fetchEchonestAnalysis: function(wave, cb) {

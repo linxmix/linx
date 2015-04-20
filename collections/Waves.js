@@ -190,8 +190,6 @@ WaveModel = Graviton.Model.extend({
         wavesurfer.fireEvent('finish');
       }
     });
-
-    template.autorun(this.loadTrack.bind(this));
   },
 
   setTrack: function(track) {
@@ -241,28 +239,32 @@ WaveModel = Graviton.Model.extend({
     }
   },
 
-  // TODO: will this break loadTrack when switching tracks?
-  loadFiles: function(files) {
-    // store reference to pass to uploading to s3
-    this.saveAttrs('files', files);
-    // load file into wavesurfer
-    var file = files[0];
-    var wavesurfer = this.getWaveSurfer();
-    wavesurfer.loadBlob(file);
-
-    // load mp3 tags into track
-    var track = this.getTrack();
-    track.loadMp3Tags(file);
-  },
-
-  // TODO: optionally load from this.get('files')?
-  loadTrack: function() {
+  loadAudio: function() {
     var wavesurfer = this.getWaveSurfer();
     var track = this.getTrack();
-    var streamUrl = track && track.getStreamUrl();
-    if (wavesurfer && streamUrl && (streamUrl !== this.get('streamUrl'))) {
-      this.saveAttrs('streamUrl', streamUrl);
-      wavesurfer.load(streamUrl);
+
+    if (track && wavesurfer) {
+
+      // try first to load from file
+      var audioFile = track.getAudioFile();
+      if (audioFile) {
+        var fileName = audioFile.name;
+        console.log("loadAudio", fileName, this.get('fileName'));
+        if (fileName && (fileName !== this.get('fileName'))) {
+          this.saveAttrs('fileName', fileName);
+          wavesurfer.loadBlob(audioFile);
+        }
+      }
+
+      // else, load from url
+      else {
+        var streamUrl = track.getStreamUrl();
+        if (streamUrl && (streamUrl !== this.get('streamUrl'))) {
+          this.saveAttrs('streamUrl', streamUrl);
+          wavesurfer.load(streamUrl);
+        }
+      }
+
     }
   },
 
@@ -401,7 +403,7 @@ WaveModel = Graviton.Model.extend({
   saveToBackend: function(cb) {
     var track = this.getTrack();
     var wave = this;
-    var files = wave && wave.get('files');
+    var files = track && track.getAudioFile();
     if (!(track && wave && files)) {
       throw new Error('Cannot upload without track, wave and files: ' + this.get('_id'));
     }
@@ -444,7 +446,7 @@ WaveModel = Graviton.Model.extend({
     });
 
     S3.upload({
-      files: wave.get('files'),
+      files: track.getAudioFiles(),
       path: track.getS3Prefix(),
     }, function(error, result) {
       uploadFinished = true;

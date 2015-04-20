@@ -40,8 +40,12 @@ Template.Add_Track_Modal.rendered = function() {
 
 Template.Add_Track_Modal_Inner.created = function() {
   track = this.track = new ReactiveVar(Tracks.create());
-  console.log("add track modal created", this.data);
+  console.log("add track modal created", this.data, this.data.prevTrack && this.data.prevTrack.getLinkFromIds());
 };
+
+function selectTrack(selectedTrack) {
+  this.track.set(selectedTrack);
+}
 
 Template.Add_Track_Modal_Inner.helpers({
   track: function() {
@@ -58,17 +62,23 @@ Template.Add_Track_Modal_Inner.helpers({
     return data.prevTrack && data.nextTrack ? '' : 'centered';
   },
 
-  selectTrack: function() {
-    var template = Template.instance();
-    return function(selectedTrack) {
-      template.track.set(selectedTrack);
-    };
-  }
-});
-
-Template.Add_Track_Modal_Inner.events({
-  'click .reset': function(e, template) {
-    console.log("reset");
-    template.track.set(Tracks.create());
+  onSelectTrack: function() {
+    return selectTrack.bind(Template.instance());
   },
+
+  onSubmitSoundcloud: function() {
+    return function(response) {
+      var track = Tracks.create();
+      track.setSoundcloud(response);
+      selectTrack.call(this, track);
+    }.bind(Template.instance());
+  },
+
+  onDrop: function() {
+    return function(files) {
+      var track = Tracks.create();
+      track.setAudioFiles(files);
+      selectTrack.call(this, track);
+    }.bind(Template.instance());
+  }
 });

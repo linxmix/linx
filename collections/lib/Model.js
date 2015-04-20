@@ -25,6 +25,30 @@ Graviton.Model.prototype.saveAttrs = function() {
   return this.save();
 };
 
+// set and save
+// DKANE FIX: only push mods if didChange
+Graviton.Model.prototype.set = function(thing, value) {
+  if (_.isObject(thing)) {
+    var didChange = false;
+    for (var k in thing) {
+      if (thing.hasOwnProperty(k)) {
+        didChange = didChange || this._setProperty(k, thing[k]);
+      }
+    }
+    if (didChange) {
+      this._pendingMods.push({$set: thing});
+    }
+  } else {
+    if (this._setProperty(thing, value)) {
+      var obj = {};
+      obj[thing] = value;
+      this._pendingMods.push({$set: obj});
+    }
+  }
+  this.save();
+  return this;
+};
+
 // make get reactive
 var prevGetFn = Graviton.Model.prototype.get;
 Graviton.Model.prototype.get = function() {
@@ -36,9 +60,11 @@ Graviton.Model.prototype.get = function() {
 var prevSetPropertyFn = Graviton.Model.prototype._setProperty;
 Graviton.Model.prototype._setProperty = function(key, val) {
   // do not update if no change
-  if (Graviton.getProperty(this.attributes, key) === val) {
-    return val;
+  if ((Graviton.getProperty(this.attributes, key) === val) && (typeof val !== 'object')) {
+    console.log("redundant setProperty", key, val);
+    return false;
   } else {
-    return prevSetPropertyFn.apply(this, arguments);
+    prevSetPropertyFn.apply(this, arguments);
+    return true;
   }
 };

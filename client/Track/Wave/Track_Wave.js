@@ -17,6 +17,7 @@ Template.Track_Wave.destroyed = function() {
 Template.Track_Wave.rendered = function() {
   this.wave.init(this);
   this.autorun(this.wave.drawRegions.bind(this.wave));
+  this.autorun(this.wave.loadAudio.bind(this.wave));
 };
 
 function getWave() {
@@ -42,35 +43,4 @@ Template.Track_Wave.helpers({
     var wave = getWave.call(this);
     return wave.get('loading');
   },
-
-  onSubmitSoundcloud: function() {
-    var template = Template.instance();
-    var wave = template.wave;
-    var track = wave.getTrack();
-    // load response into track, then load wave
-    return function(response) {
-      track.setSoundcloud(response);
-      wave.loadTrack();
-    };
-  },
-
-  onSelectLinx: function() {
-    var template = Template.instance();
-    var wave = template.wave;
-    var track = wave.getTrack();
-    // clone selected, then load wave
-    return function(selectedTrack) {
-      track.cloneFrom(selectedTrack);
-      wave.loadTrack();
-    };
-  },
-
-  onDropTrack: function() {
-    var template = Template.instance();
-    var wave = template.wave;
-    // load files into wave
-    return function(files) {
-      wave.loadFiles(files);
-    };
-  }
 });
