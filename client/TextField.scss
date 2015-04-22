@@ -1,0 +1,12 @@
+@import "lib/common";
+
+.TextField {
+  min-height: 30px;
+  min-width: 200px;
+
+  input {
+    // beat out semantic
+    border: 1px solid $semantic-grey !important;
+    padding: 5px !important;
+  }
+}

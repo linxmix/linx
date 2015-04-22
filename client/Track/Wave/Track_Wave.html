@@ -10,8 +10,8 @@
       {{#unless hideHeader}}
         <div class="inverted ui header">
           <div class="content">
-            {{track.attributes.title}}
-            <div class="sub header">{{track.attributes.artist}}</div>
+            {{> TextField model=track property="title" inputClass="huge"}}
+            <div class="sub header">{{> TextField model=track property="artist" inputClass="large"}}</div>
           </div>
         </div>
       {{/unless}}

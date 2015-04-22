@@ -1,0 +1,11 @@
+<template name="TextField">
+  <div class="TextField {{class}} {{editClass}}">
+    {{#if isEditing}}
+      <div class="inverted transparent ui input {{inputClass}}">
+        <input type="text" value={{value}} autofocus>
+      </div>
+    {{else}}
+      {{value}}
+    {{/if}}
+  </div>
+</template>

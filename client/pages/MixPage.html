@@ -4,9 +4,9 @@
     <!-- Header -->
     <h1 class="inverted ui center aligned header">
       <div class="content">
-        {{title}}
+        {{> TextField model=mix property="title" inputClass="massive"}}
         <div class="sub header">
-          {{createdBy}}
+          {{> TextField model=mix property="artist" inputClass="huge"}}
         </div>
       </div>
     </h1>

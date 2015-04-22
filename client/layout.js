@@ -2,7 +2,7 @@ Template.layout.created = function() {
   $(window).on('keydown', function(e) {
 
     // space bar
-    if (e.which === 32) {
+    if (e.which === 32 && e.target.nodeName !== "INPUT") {
       e.preventDefault();
       e.stopPropagation();
 

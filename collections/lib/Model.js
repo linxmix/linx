@@ -61,7 +61,7 @@ var prevSetPropertyFn = Graviton.Model.prototype._setProperty;
 Graviton.Model.prototype._setProperty = function(key, val) {
   // do not update if no change
   if ((Graviton.getProperty(this.attributes, key) === val) && (typeof val !== 'object')) {
-    console.log("redundant setProperty", key, val);
+    // console.log("redundant setProperty", key, val);
     return false;
   } else {
     prevSetPropertyFn.apply(this, arguments);

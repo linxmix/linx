@@ -8,15 +8,6 @@ function getMix(template) {
 }
 
 Template.MixPage.helpers({
-  title: function() {
-    return getMix(Template.instance()).get('title');
-  },
-
-  createdBy: function() {
-    var user = Meteor.user();
-    return user && user.username;
-  },
-
   trackCountText: function() {
     var trackCount = getMix(Template.instance()).getLength();
     if (!trackCount) {
