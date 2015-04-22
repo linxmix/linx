@@ -1,3 +1,11 @@
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+// Deprecated in favor of above
 .center-aligned {
   text-align: center;
 }

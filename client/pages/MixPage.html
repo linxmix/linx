@@ -11,11 +11,23 @@
       </div>
     </h1>
 
-    <!-- Menu -->
-    <div class="inverted bottom-attached right floated basic ui track-menu icon buttons">
-      <div class="orange ui save-mix button {{saveButtonClass}}"><i class="cloud upload icon"></i> Save</div>
+    <!-- Statistics -->
+    <div class="tiny inverted purple ui statistic">
+      <div class="value">
+        {{mix.getLength}}
+      </div>
+      <div class="label">
+        Tracks
+      </div>
     </div>
-    <h3 class="inverted left aligned ui header">{{trackCountText}}&nbsp;&nbsp;|&nbsp;&nbsp;{{linkCountText}}</h3>
+    <div class="tiny inverted orange ui statistic">
+      <div class="value">
+        {{mix.getLinks.length}}
+      </div>
+      <div class="label">
+        Links
+      </div>
+    </div>
 
     <!-- Track Accordions -->
     {{#if tracksAccordion}}
@@ -28,8 +40,8 @@
       </div>
     {{/if}}
 
-    <!-- Add Track -->
-    <div class="inverted center-aligned attached ui segment">
+    <!-- Bottom Menu -->
+    <div class="bottom-menu flex-center">
       <div class="append-track large inverted basic green ui icon button">
         <i class="add icon"></i>
         Add Track

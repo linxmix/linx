@@ -8,28 +8,6 @@ function getMix(template) {
 }
 
 Template.MixPage.helpers({
-  trackCountText: function() {
-    var trackCount = getMix(Template.instance()).getLength();
-    if (!trackCount) {
-      return "0 Tracks";
-    } else if (trackCount === 1) {
-      return "1 Track";
-    } else {
-      return trackCount + " Tracks";
-    }
-  },
-
-  linkCountText: function() {
-    var linkCount = getMix(Template.instance()).getLinks().length;
-    if (!linkCount) {
-      return "0 Links";
-    } else if (linkCount === 1) {
-      return "1 Link";
-    } else {
-      return linkCount + " Links";
-    }
-  },
-
   saveButtonClass: function() {
     var mix = getMix(Template.instance());
     return mix.isDirty() ? '' : 'disabled';
