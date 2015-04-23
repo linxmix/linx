@@ -63,6 +63,14 @@ function selectLink(template, link) {
 }
 
 Template.Add_Link_Modal_Inner.helpers({
+  compareButtonClass: function() {
+    var data = Template.currentData();
+    var fromWave = data.fromWave;
+    var toWave = data.toWave;
+
+    return (fromWave.getAnalysis() && toWave.getAnalysis()) ? '' : 'disabled';
+  },
+
   onRegionClick: function() {
     var template = Template.instance();
     return function(region) {
@@ -96,48 +104,45 @@ Template.Add_Link_Modal_Inner.events({
     var fromWave = template.data.fromWave;
     var toWave = template.data.toWave;
 
-    if (fromWave.getAnalysis() && toWave.getAnalysis()) {
-      
-      // clear prev regions
-      (this.prevRegions || []).forEach(function(region) {
-        region.destroy();
+    // clear prev regions
+    (this.prevRegions || []).forEach(function(region) {
+      region.destroy();
+    });
+
+    // compare waves, then add regions
+    var matches = fromWave.compareTo(toWave);
+    var fromTrack = template.data.fromTrack;
+    var toTrack = template.data.toTrack;
+
+    var LENGTH = 4;
+    var colors = Utils.generateColors(LENGTH);
+
+    // TODO: move this all into wave?
+    var regions = [];
+    for (var i = 0; i < LENGTH; i++) {
+      var match = matches[i];
+
+      // TODO: need to clean up old links
+      var link = Links.create({
+        fromTime: match.seg1,
+        toTime: match.seg2,
+        fromTrackId: fromTrack.get('_id'),
+        toTrackId: toTrack.get('_id')
       });
 
-      // compare waves, then add regions
-      var matches = fromWave.compareTo(toWave);
-      var fromTrack = template.data.fromTrack;
-      var toTrack = template.data.toTrack;
+      var params = {
+        linkId: link.get('_id'),
+        color: colors[i]
+      };
 
-      var LENGTH = 4;
-      var colors = Utils.generateColors(LENGTH);
+      regions.push(fromWave.regions.add(_.defaults({
+        start: match.seg1,
+      }, params)));
 
-      // TODO: move this all into wave?
-      var regions = [];
-      for (var i = 0; i < LENGTH; i++) {
-        var match = matches[i];
-
-        // TODO: need to clean up old links
-        var link = Links.create({
-          fromTime: match.seg1,
-          toTime: match.seg2,
-          fromTrackId: fromTrack.get('_id'),
-          toTrackId: toTrack.get('_id')
-        });
-
-        var params = {
-          linkId: link.get('_id'),
-          color: colors[i]
-        };
-
-        regions.push(fromWave.regions.add(_.defaults({
-          start: match.seg1,
-        }, params)));
-
-        regions.push(toWave.regions.add(_.defaults({
-          start: match.seg2,
-        }, params)));
-      }
-      this.prevRegions = regions;
+      regions.push(toWave.regions.add(_.defaults({
+        start: match.seg2,
+      }, params)));
     }
+    this.prevRegions = regions;
   }
 });

@@ -44,3 +44,10 @@ Template.Track_Wave.helpers({
     return wave.get('loading');
   },
 });
+
+Template.Track_Wave.events({
+  'dblclick .wave': function(e, template) {
+    var wave = getWave.call(this);
+    wave.playpause();
+  }
+});

@@ -147,7 +147,8 @@ WaveSurfer.Region = {
     /* Render a region as a DOM element. */
     render: function () {
         var regionEl = document.createElement('region');
-        regionEl.className = 'wavesurfer-region';
+        // DKANE FIX: add class to region
+        regionEl.className = 'wavesurfer-region ' + this.data.className;
         regionEl.title = this.formatTime(this.start, this.end);
 
         var width = this.wrapper.scrollWidth;

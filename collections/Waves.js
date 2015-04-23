@@ -81,9 +81,9 @@ WaveModel = Graviton.Model.extend({
     });
     wavesurfer.initRegions();
 
-    if (template.enableDragSelection) {
+    if (template.data.enableDragSelection) {
       wavesurfer.enableDragSelection({
-        id: 'selected',
+        id: 'drag-selection',
         color: 'rgba(255, 255, 255, 0.4)',
         loop: false,
       });
@@ -285,6 +285,10 @@ WaveModel = Graviton.Model.extend({
     return _.find(this.regions.all(), function(region) {
       return region.hasLink(link);
     });
+  },
+
+  getDragSelection: function() {
+    return this.getWaveSurfer().regions.list['drag-selection'];
   },
 
   assertRegion: function(link, params) {
@@ -500,7 +504,7 @@ WaveModel = Graviton.Model.extend({
       throw new Error("Cannot compare without waves and analyses");
     }
 
-    var matches = compareSegs(getSegs(fromAnalysis), getSegs(toAnalysis));
+    var matches = compareSegs(getSegs(fromWave, fromAnalysis), getSegs(toWave, toAnalysis));
     var bestMatches = _.sortBy(matches, 'dist');
     console.log("best matches", bestMatches);
 
@@ -514,21 +518,15 @@ Waves = Graviton.define("waves", {
   timestamps: true,
 });
 
-// region params
-// id: region.get('_id'),
-// start: region.getTime(track.get('_id')),
-// color: color,
-
-function getSegs(analysis) {
+function getSegs(wave, analysis) {
   var segments = analysis.segments;
-  // var selectedRegion = wave.getRegion('selected');
+  var selectedRegion = wave.getDragSelection();
   return _.filter(segments, function (seg) {
     var THRESH = 0.5;
     var isWithinConfidence = (seg.confidence >= THRESH);
-    // var isWithinRegion = (seg.start >= selectedRegion.start) &&
-      // (seg.start <= selectedRegion.end);
-    // return isWithinRegion && isWithinConfidence;
-    return isWithinConfidence;
+    var isWithinRegion = !selectedRegion || (seg.start >= selectedRegion.start) &&
+      (seg.start <= selectedRegion.end);
+    return isWithinRegion && isWithinConfidence;
   });
 }
 

@@ -10,7 +10,7 @@
   </div>
 
   <div class="content">
-    <div class="large basic inverted ui icon button bottom-attached compare">
+    <div class="large basic inverted ui icon button bottom-attached compare {{compareButtonClass}}">
       <i class="exchange icon"></i>
       Compare Waves
     </div>
@@ -25,6 +25,7 @@
           track=fromTrack
           onRegionClick=onRegionClick
           onRegionDblClick=onRegionDblClick
+          enableDragSelection=true
           hideLoadOptions=true
           hideSaveButton=true
           hideResetButton=true
@@ -40,6 +41,7 @@
           track=toTrack
           onRegionClick=onRegionClick
           onRegionDblClick=onRegionDblClick
+          enableDragSelection=true
           hideLoadOptions=true
           hideSaveButton=true
           hideResetButton=true

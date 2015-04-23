@@ -17,6 +17,7 @@ RegionModel = Graviton.Model.extend({
     start: 0,
     end: null,
     data: null,
+    className: 'linx-region',
   },
 }, {
   getParams: function() {
@@ -28,7 +29,9 @@ RegionModel = Graviton.Model.extend({
       drag: this.get('resize'),
       loop: this.get('resize'),
       color: this.getColor(),
-      data: this.get('data'),
+      data: _.extend({
+        className: this.get('className'),
+      }, this.get('data')),
     };
   },
 
