@@ -5,11 +5,16 @@
 </template>
 
 <template name="Add_Link_Modal_Inner">
+  <div class="ui active dimmer Add_Link_Modal_Loader">
+    <div class="ui large indeterminate text loader">Comparing...</div>
+  </div>
+
   <div class="center-aligned header">
     Add Link
   </div>
 
   <div class="content">
+
     <div class="large basic inverted ui icon button bottom-attached compare {{compareButtonClass}}">
       <i class="exchange icon"></i>
       Compare Waves

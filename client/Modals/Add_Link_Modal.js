@@ -45,11 +45,15 @@ Template.Add_Link_Modal.rendered = function() {
 
 Template.Add_Link_Modal_Inner.created = function() {
   selectedLink = this.selectedLink = new ReactiveVar(this.data.selectedLink);
+
+  this.isComparing = new ReactiveVar(false);
 };
 
 Template.Add_Link_Modal_Inner.rendered = function() {
   this.data.fromWave.analyze();
   this.data.toWave.analyze();
+
+  this.$('.Add_Link_Modal_Loader').hide();
 };
 
 function selectLink(template, link) {
@@ -63,6 +67,10 @@ function selectLink(template, link) {
 }
 
 Template.Add_Link_Modal_Inner.helpers({
+  isComparing: function() {
+    return Template.instance().isComparing.get();
+  },
+
   compareButtonClass: function() {
     var data = Template.currentData();
     var fromWave = data.fromWave;
@@ -104,45 +112,56 @@ Template.Add_Link_Modal_Inner.events({
     var fromWave = template.data.fromWave;
     var toWave = template.data.toWave;
 
-    // clear prev regions
-    (this.prevRegions || []).forEach(function(region) {
-      region.destroy();
+    // display spinner before executing
+    template.$('.Add_Link_Modal_Loader').show(function() {
+
+      _.defer(function() {
+
+        // clear prev regions
+        (this.prevRegions || []).forEach(function(region) {
+          region.destroy();
+        });
+
+        // compare waves, then add regions
+        var matches = fromWave.compareTo(toWave);
+        var fromTrack = template.data.fromTrack;
+        var toTrack = template.data.toTrack;
+
+        var LENGTH = 4;
+        var colors = Utils.generateColors(LENGTH);
+
+        // TODO: move this all into wave?
+        var regions = [];
+        for (var i = 0; i < LENGTH; i++) {
+          var match = matches[i];
+
+          // TODO: need to clean up old links
+          var link = Links.create({
+            fromTime: match.seg1,
+            toTime: match.seg2,
+            fromTrackId: fromTrack.get('_id'),
+            toTrackId: toTrack.get('_id')
+          });
+
+          var params = {
+            linkId: link.get('_id'),
+            color: colors[i]
+          };
+
+          regions.push(fromWave.regions.add(_.defaults({
+            start: match.seg1,
+          }, params)));
+
+          regions.push(toWave.regions.add(_.defaults({
+            start: match.seg2,
+          }, params)));
+        }
+        this.prevRegions = regions;
+
+        // done, so remove spinner
+        template.$('.Add_Link_Modal_Loader').hide();
+      });
     });
 
-    // compare waves, then add regions
-    var matches = fromWave.compareTo(toWave);
-    var fromTrack = template.data.fromTrack;
-    var toTrack = template.data.toTrack;
-
-    var LENGTH = 4;
-    var colors = Utils.generateColors(LENGTH);
-
-    // TODO: move this all into wave?
-    var regions = [];
-    for (var i = 0; i < LENGTH; i++) {
-      var match = matches[i];
-
-      // TODO: need to clean up old links
-      var link = Links.create({
-        fromTime: match.seg1,
-        toTime: match.seg2,
-        fromTrackId: fromTrack.get('_id'),
-        toTrackId: toTrack.get('_id')
-      });
-
-      var params = {
-        linkId: link.get('_id'),
-        color: colors[i]
-      };
-
-      regions.push(fromWave.regions.add(_.defaults({
-        start: match.seg1,
-      }, params)));
-
-      regions.push(toWave.regions.add(_.defaults({
-        start: match.seg2,
-      }, params)));
-    }
-    this.prevRegions = regions;
   }
 });
