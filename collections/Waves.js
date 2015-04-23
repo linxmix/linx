@@ -54,7 +54,6 @@ WaveModel = Graviton.Model.extend({
   defaults: {
     playing: false,
 
-    analyzed: false,
     loaded: false,
     loading: false,
     loadingIntervals: [],
