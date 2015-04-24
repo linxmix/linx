@@ -1,7 +1,6 @@
 Template.Track_Accordion.created = function() {
-  Utils.initTemplateModel.call(this, 'track', function(newModel, prevModel) {
-    // console.log("new accordion model", newModel);
-  });
+  Utils.initTemplateModel.call(this, 'track');
+  Utils.initTemplateModel.call(this, 'wave');
   Utils.initTemplateModel.call(this, 'mix');
 
   Utils.requireTemplateData.call(this, 'index');

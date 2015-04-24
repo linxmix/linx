@@ -1,16 +1,12 @@
 Meteor.startup(function() {
   if (Meteor.isClient) {
     WaveSurfers = {
-      set: function(_id, wavesurfer) {
-        this[_id] = wavesurfer;
+      create: function(_id) {
+        this[_id] = Object.create(WaveSurfer);
+        return this.get(_id);
       },
       get: function(_id) {
-        var wavesurfer = this[_id];
-        if (!wavesurfer) {
-          wavesurfer = Object.create(WaveSurfer);
-          this.set(_id, wavesurfer);
-        }
-        return wavesurfer;
+        return this[_id];
       },
       destroy: function(_id) {
         var wavesurfer = this[_id];
@@ -59,9 +55,13 @@ WaveModel = Graviton.Model.extend({
     loadingIntervals: [],
   },
 }, {
+  createWaveSurfer: function() {
+    return WaveSurfers.create(this.get('_id'));
+  },
 
   init: function(template) {
-    var wavesurfer = this.getWaveSurfer();
+    console.log("wave init");
+    var wavesurfer = this.createWaveSurfer();
 
     // Initialize wavesurfer
     var wave = this;
@@ -297,40 +297,29 @@ WaveModel = Graviton.Model.extend({
   },
 
   setNextWave: function(wave) {
-    // if (wave && wave.get('_id') !== this.get('nextWaveId')) {
-      this.saveAttrs('nextWaveId', wave.get('_id'));
-    // }
+    this.saveAttrs('nextWaveId', wave.get('_id'));
   },
 
   setPrevWave: function(wave) {
-    // if (wave && wave.get('_id') !== this.get('prevWaveId')) {
-      this.saveAttrs('prevWaveId', wave.get('_id'));
-    // }
+    this.saveAttrs('prevWaveId', wave.get('_id'));
   },
 
   setLinkFrom: function(link) {
-    // if (link && this.get('linkFromId') !== link.get('_id')) {
+    this.assertRegion(link, {
+      linkId: link.get('_id'),
+      start: link.get('fromTime'),
+    });
 
-      // make sure we have link in regions
-      this.assertRegion(link, {
-        linkId: link.get('_id'),
-        start: link.get('fromTime'),
-      });
-
-      this.saveAttrs('linkFromId', link.get('_id'));
-    // }
+    this.saveAttrs('linkFromId', link.get('_id'));
   },
 
   setLinkTo: function(link) {
-    // if (link && this.get('linkToId') !== link.get('_id')) {
-      // make sure we have link in regions
-      this.assertRegion(link, {
-        linkId: link.get('_id'),
-        start: link.get('toTime'),
-      });
+    this.assertRegion(link, {
+      linkId: link.get('_id'),
+      start: link.get('toTime'),
+    });
 
-      this.saveAttrs('linkToId', link.get('_id'));
-    // }
+    this.saveAttrs('linkToId', link.get('_id'));
   },
 
   drawRegions: function() {
@@ -350,12 +339,12 @@ WaveModel = Graviton.Model.extend({
   reset: function() {
     this.getWaveSurfer().empty();
     this.setTrack(undefined);
-    this.destroyRegions();
     this.saveAttrs({
       'loaded': false,
       'loading': false,
       'uploading': false,
       'streamUrl': undefined,
+      'fileName': undefined,
       'linkFromId': undefined,
       'linkToId': undefined,
     });
@@ -399,8 +388,8 @@ WaveModel = Graviton.Model.extend({
   },
 
   destroyWaveSurfer: function() {
+    this.reset();
     WaveSurfers.destroy(this.get('_id'));
-    this.saveAttrs('loaded', false);
   },
 
   saveToBackend: function(cb) {

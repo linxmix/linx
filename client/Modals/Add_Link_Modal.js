@@ -14,9 +14,7 @@ Template.Add_Link_Modal.created = function() {
   Utils.requireTemplateData.call(this, 'onCancel');
 
   Utils.initTemplateModel.call(this, 'fromTrack');
-  Utils.initTemplateModel.call(this, 'fromWave');
   Utils.initTemplateModel.call(this, 'toTrack');
-  Utils.initTemplateModel.call(this, 'toWave');
 
   $(window).on('keyup', keyHandler);
 };
@@ -44,14 +42,21 @@ Template.Add_Link_Modal.rendered = function() {
 };
 
 Template.Add_Link_Modal_Inner.created = function() {
-  selectedLink = this.selectedLink = new ReactiveVar(this.data.selectedLink);
+  this.fromWave = Waves.create();
+  this.toWave = Waves.create();
+  this.fromWave.setNextWave(this.toWave);
+  this.toWave.setPrevWave(this.fromWave);
+
+  selectedLink = this.selectedLink = new ReactiveVar();
+  var initialSelection = this.data.selectedLink;
+  initialSelection && selectLink(this, initialSelection);
 
   this.isComparing = new ReactiveVar(false);
 };
 
 Template.Add_Link_Modal_Inner.rendered = function() {
-  this.data.fromWave.analyze();
-  this.data.toWave.analyze();
+  this.fromWave.analyze();
+  this.toWave.analyze();
 
   this.$('.Add_Link_Modal_Loader').hide();
 };
@@ -62,19 +67,27 @@ function selectLink(template, link) {
   template.selectedLink.set(link);
 
   // update waves
-  template.data.fromWave.setLinkFrom(link);
-  template.data.toWave.setLinkTo(link);
+  template.fromWave.setLinkFrom(link);
+  template.toWave.setLinkTo(link);
 }
 
 Template.Add_Link_Modal_Inner.helpers({
+  fromWave: function() {
+    return Template.instance().fromWave;
+  },
+
+  toWave: function() {
+    return Template.instance().toWave;
+  },
+
   isComparing: function() {
     return Template.instance().isComparing.get();
   },
 
   compareButtonClass: function() {
-    var data = Template.currentData();
-    var fromWave = data.fromWave;
-    var toWave = data.toWave;
+    var template = Template.instance();
+    var fromWave = template.fromWave;
+    var toWave = template.toWave;
 
     return (fromWave.getAnalysis() && toWave.getAnalysis()) ? '' : 'disabled';
   },
@@ -91,7 +104,7 @@ Template.Add_Link_Modal_Inner.helpers({
     var template = Template.instance();
     return function() {
       // console.log("add link modal region dbl click", region);
-      template.data.fromWave.playLinkFrom();
+      template.fromWave.playLinkFrom();
     };
   },
 
@@ -109,8 +122,8 @@ Template.Add_Link_Modal_Inner.helpers({
 
 Template.Add_Link_Modal_Inner.events({
   'click .compare': function(e, template) {
-    var fromWave = template.data.fromWave;
-    var toWave = template.data.toWave;
+    var fromWave = template.fromWave;
+    var toWave = template.toWave;
 
     // display spinner before executing
     template.$('.Add_Link_Modal_Loader').show(function() {

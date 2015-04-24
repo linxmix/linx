@@ -10,8 +10,11 @@ Template.Track_Wave.created = function() {
 };
 
 Template.Track_Wave.destroyed = function() {
+  var wave = Template.instance().wave;
   // TODO: figure this out
-  // Template.instance().wave.destroyWaveSurfer();
+  console.log("destroy")
+  wave.destroyWaveSurfer();
+  console.log("after destroy", wave.getWaveSurfer())
 };
 
 Template.Track_Wave.rendered = function() {
@@ -31,7 +34,8 @@ Template.Track_Wave.helpers({
 
   hiddenClass: function() {
     var wave = getWave.call(this);
-    return wave.get('loaded') ? '' : 'hidden';
+    var isHidden = Template.currentData().isHidden;
+    return !wave.get('loaded') || isHidden ? 'hidden' : '';
   },
 
   isLoaded: function() {
