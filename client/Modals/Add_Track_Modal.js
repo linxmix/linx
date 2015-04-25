@@ -75,6 +75,15 @@ Template.Add_Track_Modal_Inner.helpers({
 
   onDrop: function() {
     return function(files) {
+
+      // don't allow wav files
+      // TODO: this doesn't belong here
+      var fileType = files[0].type;
+      if (fileType && fileType.match('wav')) {
+        window.alert("Please convert your file from .wav format - .wav is too large.");
+        return;
+      }
+
       var track = Tracks.create({ isNew: true });
       track.setAudioFiles(files);
       selectTrack.call(this, track);
