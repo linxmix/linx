@@ -172,7 +172,7 @@ WaveModel = Graviton.Model.extend({
 
       var regionModel = Regions.findOne(regionWaveSurfer.id);
       var onClick = template.data.onRegionClick;
-      onClick && onClick(regionModel);
+      regionModel && onClick && onClick(regionModel);
     });
 
     wavesurfer.on('region-dblclick', function(regionWaveSurfer, e) {
@@ -181,14 +181,14 @@ WaveModel = Graviton.Model.extend({
 
       var regionModel = Regions.findOne(regionWaveSurfer.id);
       var onDblClick = template.data.onRegionDblClick;
-      onDblClick && onDblClick(regionModel);
+      regionModel && onDblClick && onDblClick(regionModel);
     });
 
     wavesurfer.on('region-in', function(regionWaveSurfer) {
       var regionModel = Regions.findOne(regionWaveSurfer.id);
 
       // if region is wave's fromRegion, trigger finish
-      if (regionModel.hasLink(wave.linkFrom())) {
+      if (regionModel && regionModel.hasLink(wave.linkFrom())) {
         wavesurfer.fireEvent('finish');
       }
     });
