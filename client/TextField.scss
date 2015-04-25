@@ -9,4 +9,9 @@
     border: 1px solid $semantic-grey !important;
     padding: 5px !important;
   }
+
+  .label {
+    margin-right: 10px;
+    text-transform: capitalize;
+  }
 }

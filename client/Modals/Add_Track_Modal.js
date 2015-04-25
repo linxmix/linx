@@ -39,8 +39,7 @@ Template.Add_Track_Modal.rendered = function() {
 };
 
 Template.Add_Track_Modal_Inner.created = function() {
-  track = this.track = new ReactiveVar(Tracks.create());
-  console.log("add track modal created", this.data, this.data.prevTrack && this.data.prevTrack.getLinkFromIds());
+  track = this.track = new ReactiveVar(Tracks.create({ isNew: true }));
 };
 
 function selectTrack(selectedTrack) {
@@ -68,7 +67,7 @@ Template.Add_Track_Modal_Inner.helpers({
 
   onSubmitSoundcloud: function() {
     return function(response) {
-      var track = Tracks.create();
+      var track = Tracks.create({ isNew: true });
       track.setSoundcloud(response);
       selectTrack.call(this, track);
     }.bind(Template.instance());
@@ -76,7 +75,7 @@ Template.Add_Track_Modal_Inner.helpers({
 
   onDrop: function() {
     return function(files) {
-      var track = Tracks.create();
+      var track = Tracks.create({ isNew: true });
       track.setAudioFiles(files);
       selectTrack.call(this, track);
     }.bind(Template.instance());

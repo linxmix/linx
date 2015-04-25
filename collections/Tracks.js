@@ -98,7 +98,7 @@ TrackModel = Graviton.Model.extend({
         newAttrs.title = file.name;
       } else {
         newAttrs.title = tags.title || file.name;
-        newAttrs.artist = tags.artist;
+        newAttrs.artist = tags.artist || this.get('artist');
         newAttrs.album = tags.album;
         newAttrs.id3Tags = tags;
       }
@@ -312,15 +312,8 @@ Tracks = Graviton.define("tracks", {
   timestamps: true,
 });
 
-// TODO: either fill these out or move them into Meteor.methods
 Tracks.allow({
-  insert: function (userId, doc) {
-    return true;
-  },
-  update: function (userId, docs, fields, modifier) {
-    return true;
-  },
-  remove: function (userId, docs) {
-    return true;
-  }
+  insert: Utils.isCreatingOwnDocument,
+  update: Utils.ownsDocument,
+  remove: Utils.ownsDocument
 });

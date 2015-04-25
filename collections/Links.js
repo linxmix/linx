@@ -52,15 +52,8 @@ Links = Graviton.define("links", {
   timestamps: true,
 });
 
-// TODO: either fill these out or move them into Meteor.methods
 Links.allow({
-  insert: function (userId, doc) {
-    return true;
-  },
-  update: function (userId, docs, fields, modifier) {
-    return true;
-  },
-  remove: function (userId, docs) {
-    return true;
-  }
+  insert: Utils.isCreatingOwnDocument,
+  update: Utils.ownsDocument,
+  remove: Utils.ownsDocument
 });

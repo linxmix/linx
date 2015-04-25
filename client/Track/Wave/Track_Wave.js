@@ -2,19 +2,14 @@ Template.Track_Wave.created = function() {
   this.wave = this.data.wave || Waves.create();
 
   Utils.initTemplateModel.call(this, 'track', function(newModel, prevModel) {
-    // if (prevModel) {
-      // console.log("track wave model changed", newModel.get('title'), prevModel.get('title'));
-    // }
+    // console.log("track wave model changed", newModel && newModel.get('title'), prevModel && prevModel.get('title'));
     this.wave.setTrack(newModel);
   });
 };
 
 Template.Track_Wave.destroyed = function() {
   var wave = Template.instance().wave;
-  // TODO: figure this out
-  console.log("destroy")
   wave.destroyWaveSurfer();
-  console.log("after destroy", wave.getWaveSurfer())
 };
 
 Template.Track_Wave.rendered = function() {

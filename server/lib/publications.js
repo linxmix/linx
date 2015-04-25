@@ -1,19 +1,23 @@
+var defaultParams = {
+  // isNew: false,
+};
+
 Meteor.publish("Tracks", function () {
-  return Tracks.find();
+  return this.userId ? Tracks.find(defaultParams) : this.ready();
 });
 
 Meteor.publish("Links", function () {
-  return Links.find();
+  return this.userId ? Links.find(defaultParams) : this.ready();
 });
 
 Meteor.publish("Mixes", function () {
-  return Mixes.find();
+  return this.userId ? Mixes.find(defaultParams) : this.ready();
 });
 
 Meteor.publish("MixElements", function () {
-  return MixElements.find();
+  return this.userId ? MixElements.find(defaultParams) : this.ready();
 });
 
 Meteor.publish("Plays", function () {
-  return Plays.find();
+  return this.userId ? Plays.find(defaultParams) : this.ready();
 });

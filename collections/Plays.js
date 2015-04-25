@@ -31,15 +31,8 @@ Plays = Graviton.define("plays", {
   timestamps: true,
 });
 
-// TODO
 Plays.allow({
-  insert: function (userId, doc) {
-    return true;
-  },
-  update: function (userId, docs, fields, modifier) {
-    return true;
-  },
-  remove: function (userId, docs) {
-    return true;
-  }
+  insert: Utils.isCreatingOwnDocument,
+  update: Utils.ownsDocument,
+  remove: Utils.ownsDocument
 });

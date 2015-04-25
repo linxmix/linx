@@ -174,26 +174,7 @@ Mixes = Graviton.define("mixes", {
 });
 
 Mixes.allow({
+  insert: Utils.isCreatingOwnDocument,
   update: Utils.ownsDocument,
   remove: Utils.ownsDocument
-});
-
-Mixes.deny({
-  update: function(userId, doc, fieldNames) {
-    // may only edit the following two fields:
-    return (_.without(fieldNames, 'title', 'artist').length > 0);
-  }
-});
-
-// TODO
-Mixes.allow({
-  insert: function (userId, doc) {
-    return true;
-  },
-  update: function (userId, docs, fields, modifier) {
-    return true;
-  },
-  remove: function (userId, docs) {
-    return true;
-  }
 });

@@ -148,8 +148,8 @@ Template.Add_Link_Modal_Inner.events({
         for (var i = 0; i < LENGTH; i++) {
           var match = matches[i];
 
-          // TODO: need to clean up old links
           var link = Links.create({
+            isNew: true,
             fromTime: match.seg1,
             toTime: match.seg2,
             fromTrackId: fromTrack.get('_id'),

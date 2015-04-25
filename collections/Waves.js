@@ -186,9 +186,6 @@ WaveModel = Graviton.Model.extend({
       var regionModel = Regions.findOne(regionWaveSurfer.id);
 
       // if region is wave's fromRegion, trigger finish
-
-      wave.refresh();
-      console.log("region in", wave.getTrack().get('title'), wave.linkFrom(), wave.get('linkFromId'));
       if (regionModel.hasLink(wave.linkFrom())) {
         wavesurfer.fireEvent('finish');
       }
