@@ -1,3 +1,7 @@
+/* global Waves: true */
+/* global WaveModel: true */
+/* global WaveSurfers: true */
+
 Meteor.startup(function() {
   if (Meteor.isClient) {
     WaveSurfers = {

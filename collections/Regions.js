@@ -1,3 +1,6 @@
+/* global Regions: true */
+/* global RegionModel: true */
+
 RegionModel = Graviton.Model.extend({
   belongsTo: {
     wave: {

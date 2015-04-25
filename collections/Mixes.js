@@ -1,8 +1,11 @@
+/* global Mixes: true */
+/* global MixModel: true */
+
 MixModel = Graviton.Model.extend({
   belongsTo: {
     user: {
       collectionName: 'users',
-      field: 'createdBy'
+      field: 'userId'
     },
   },
   defaults: {
@@ -163,6 +166,18 @@ MixModel = Graviton.Model.extend({
 Mixes = Graviton.define("mixes", {
   modelCls: MixModel,
   timestamps: true,
+});
+
+Mixes.allow({
+  update: Utils.ownsDocument,
+  remove: Utils.ownsDocument
+});
+
+Mixes.deny({
+  update: function(userId, doc, fieldNames) {
+    // may only edit the following two fields:
+    return (_.without(fieldNames, 'title', 'artist').length > 0);
+  }
 });
 
 // TODO

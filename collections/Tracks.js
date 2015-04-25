@@ -1,3 +1,8 @@
+/* global Tracks: true */
+/* global TrackModel: true */
+/* global Analyses: true */
+/* global AudioFiles: true */
+
 Meteor.startup(function() {
   if (Meteor.isClient) {
     Analyses = {
@@ -38,7 +43,7 @@ TrackModel = Graviton.Model.extend({
   belongsTo: {
     user: {
       collectionName: 'users',
-      field: 'createdBy'
+      field: 'userId'
     },
   },
   hasMany: {

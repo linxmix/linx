@@ -1,0 +1,25 @@
+// Login Styling
+#login-buttons {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+
+  .login-link-and-dropdown-list {
+    height: 100%;
+    width: 100%;
+  }
+
+  .login-link-text {
+    display: block;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+  }
+}
+
+#login-dropdown-list {
+  top: 45px;
+  left: 13px;
+}

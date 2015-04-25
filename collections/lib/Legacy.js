@@ -1,3 +1,6 @@
+/* global Songs: true */
+/* global Transitions: true */
+
 Songs = new Meteor.Collection("Songs");
 Transitions = new Meteor.Collection("Transitions");
 

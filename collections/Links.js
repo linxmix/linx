@@ -1,8 +1,11 @@
+/* global Links: true */
+/* global LinkModel: true */
+
 LinkModel = Graviton.Model.extend({
   belongsTo: {
     user: {
       collectionName: 'users',
-      field: 'createdBy'
+      field: 'userId'
     },
     fromTrack: {
       collectionName: 'tracks',

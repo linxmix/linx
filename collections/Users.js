@@ -1,3 +1,6 @@
+/* global Users: true */
+/* global Accounts */
+
 // Backed by Meteor.users collection
 Users = Meteor.users;
 
@@ -9,11 +12,10 @@ Graviton.define('users', {
 Meteor.startup(function() {
   if (Meteor.isClient) {
     Accounts.ui.config({
-      passwordSignupFields: 'USERNAME_ONLY',
+      passwordSignupFields: 'USERNAME_AND_EMAIL',
     });
   }
   Accounts.config({
-    forbidClientAccountCreation: true,
-    sendVerificationEmail: true,
+    sendVerificationEmail: false,
   });
 });

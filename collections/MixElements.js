@@ -1,8 +1,11 @@
+/* global MixElements: true */
+/* global MixElementModel: true */
+
 MixElementModel = Graviton.Model.extend({
   belongsTo: {
     user: {
       collectionName: 'users',
-      field: 'createdBy'
+      field: 'userId'
     },
     track: {
       collectionName: 'tracks',
