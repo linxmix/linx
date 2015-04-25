@@ -8,8 +8,13 @@ MixModel = Graviton.Model.extend({
       field: 'userId'
     },
   },
+  hasMany: {
+    plays: {
+      collectionName: 'plays',
+      foreignKey: 'mixId',
+    },
+  },
   defaults: {
-    playCount: 0,
     title: 'New Mix',
     artist: 'No Artist',
     elementIds: [],

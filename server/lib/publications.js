@@ -13,3 +13,7 @@ Meteor.publish("Mixes", function () {
 Meteor.publish("MixElements", function () {
   return MixElements.find();
 });
+
+Meteor.publish("Plays", function () {
+  return Plays.find();
+});

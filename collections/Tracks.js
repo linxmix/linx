@@ -47,6 +47,10 @@ TrackModel = Graviton.Model.extend({
     },
   },
   hasMany: {
+    plays: {
+      collectionName: 'plays',
+      foreignKey: 'trackId',
+    },
     mixelements: {
       collectionName: 'mixelements',
       foreignKey: 'trackId',
@@ -65,7 +69,6 @@ TrackModel = Graviton.Model.extend({
     title: 'New Track',
     artist: 'No Artist',
     type: 'song', // one of 'song', 'transition' or 'mix'
-    playCount: 0,
   },
 }, {
   setEchonest: function(attrs) {

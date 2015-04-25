@@ -20,11 +20,14 @@ LinkModel = Graviton.Model.extend({
     mixelements: {
       collectionName: 'mixelements',
       foreignKey: 'linkId',
+    },
+    plays: {
+      collectionName: 'plays',
+      foreignKey: 'linkId',
     }
   },
   defaults: {
     flags: [],
-    playCount: 0,
     fromTime: 0, // end time of fromTrack
     fromVol: 1, // volume of fromTrack
     toTime: 0, // start time of toTrack
