@@ -69,15 +69,18 @@ TrackModel = Graviton.Model.extend({
     title: 'New Track',
     artist: 'No Artist',
     type: 'song', // one of 'song', 'transition' or 'mix'
+    volume: 1,
   },
 }, {
   setEchonest: function(attrs) {
-    // console.log("set echonest", attrs);
+    var normalizedVolume = normalizeVolume(Graviton.getProperty(attrs, 'audio_summary.loudness'));
     this.saveAttrs({
       echonest: attrs,      
       title: attrs.title,
       artist: attrs.artist,
+      volume: normalizedVolume ? normalizedVolume : this.get('volume')
     });
+    console.log("set echonest", attrs, normalizedVolume);
   },
 
   setSoundcloud: function(attrs) {
@@ -306,6 +309,17 @@ TrackModel = Graviton.Model.extend({
     }
   },
 });
+
+function normalizeVolume(loudness) {
+  if (!_.isNumber(loudness)) { return 0; }
+
+  // expected loudness
+  var LOUDNESS = -10;
+
+  var gain = LOUDNESS - loudness;
+
+  return Math.pow(10, gain / 20);
+}
 
 Tracks = Graviton.define("tracks", {
   modelCls: TrackModel,

@@ -16,6 +16,7 @@ Template.Track_Wave.rendered = function() {
   this.wave.init(this);
   this.autorun(this.wave.drawRegions.bind(this.wave));
   this.autorun(this.wave.loadAudio.bind(this.wave));
+  this.autorun(this.wave.assertVolume.bind(this.wave));
 };
 
 function getWave() {

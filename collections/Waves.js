@@ -54,6 +54,7 @@ WaveModel = Graviton.Model.extend({
   defaults: {
     playing: false,
 
+    volume: 1,
     loaded: false,
     loading: false,
     loadingIntervals: [],
@@ -77,6 +78,7 @@ WaveModel = Graviton.Model.extend({
       progressColor: 'purple',
       cursorColor: 'white',
       minPxPerSec: 10,
+      normalize: true,
       height: 150,
       fillParent: true,
       cursorWidth: 2,
@@ -200,6 +202,20 @@ WaveModel = Graviton.Model.extend({
 
   getTrack: function() {
     return this.track();
+  },
+
+  assertVolume: function() {
+    var wavesurfer = this.getWaveSurfer();
+    if (wavesurfer) {
+      var track = this.getTrack();
+      var trackVolume = track && track.get('volume');
+
+      // multiple by track volume, if exists
+      var volume = this.get('volume');
+      if (trackVolume) { volume *= trackVolume; }
+
+      wavesurfer.setVolume(volume);
+    }
   },
 
   playLinkFrom: function() {
