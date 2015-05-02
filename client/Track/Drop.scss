@@ -1,12 +1,8 @@
-$semantic-blue: #3b83c0;
+@import "../lib/common";
 
 .Drop {
   width: 100%;
   height: 100%;
   text-align: center;
-  border: 2px dashed white !important; // override semantic
-
-  &.drag-over {
-    border: 2px dashed $semantic-blue !important; // override semantic
-  }
+  // border: 2px dashed white !important; // override semantic
 }

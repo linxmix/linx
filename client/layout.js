@@ -1,4 +1,6 @@
 Template.layout.created = function() {
+
+  // Setup global key presses
   $(window).on('keydown', function(e) {
 
     // space bar
@@ -13,6 +15,7 @@ Template.layout.created = function() {
       return false;
     }
   });
+
 };
 
 Template.layout.helpers({

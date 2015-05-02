@@ -72,18 +72,28 @@ WaveModel = Graviton.Model.extend({
     var wave = this;
     template.$('.progress-bar').hide();
 
-    wavesurfer.init({
+    var params = {
       container: template.$('.wave')[0],
       waveColor: 'violet',
       progressColor: 'purple',
       cursorColor: 'white',
-      minPxPerSec: 10,
+      minPxPerSec: 20,
       normalize: true,
-      height: 150,
+      height: 128,
       fillParent: true,
+      scrollParent: false,
       cursorWidth: 2,
       renderer: 'Canvas',
-    });
+    };
+
+    switch (template.data.size) {
+      case 'mini':
+        params.height = params.height / 4;
+        params.fillParent = true;
+        break;
+    }
+
+    wavesurfer.init(params);
     wavesurfer.initRegions();
 
     if (template.data.enableDragSelection) {
@@ -364,6 +374,7 @@ WaveModel = Graviton.Model.extend({
       'fileName': undefined,
       'linkFromId': undefined,
       'linkToId': undefined,
+      'playing': false,
     });
   },
 
@@ -514,6 +525,36 @@ WaveModel = Graviton.Model.extend({
     console.log("best matches", bestMatches);
 
     return bestMatches;
+  },
+
+  getSampleRegion: function(start, end, sampleSize) {
+    var wavesurfer = this.getWaveSurfer();
+    var wave = this;
+    sampleSize = sampleSize || 50;
+
+    // first compute start and end samples
+    var startSample = start || 0, endSample = end || wave.getBufferLength();
+    console.log("get sample region", startSample, endSample);
+
+    var buffer = Graviton.getProperty(wavesurfer, 'backend.buffer');
+    var chan = buffer.getChannelData(0);
+    var length = Math.floor((endSample - startSample) / sampleSize);
+    var samples = new Float32Array(length);
+
+    // compute new samples in region
+    for (var i = 0; i < length; i++) {
+      var start = startSample + ~~(i * sampleSize);
+      var end = start + sampleSize;
+      var avg = 0;
+      // compute average in current sample
+      for (var j = start; j < end; j++) {
+        var value = chan[j];
+        avg += Math.abs(value);
+      }
+      avg /= sampleSize;
+      samples[i] = avg;
+    }
+    return samples;
   }
 });
 

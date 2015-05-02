@@ -1,12 +1,12 @@
-<template name="Add_Track_Modal">
-  <div class="fullscreen basic ui Add_Track_Modal modal">
-    {{> Add_Track_Modal_Inner}}
+<template name="Add_Tracks_Modal">
+  <div class="fullscreen basic ui Add_Tracks_Modal modal">
+    {{> Add_Tracks_Modal_Inner}}
   </div>
 </template>
 
-<template name="Add_Track_Modal_Inner">
+<template name="Add_Tracks_Modal_Inner">
   <div class="center-aligned header">
-    Add Track
+    Add Tracks
   </div>
 
   <div class="content">
@@ -24,10 +24,6 @@
     </div>
 
     <div class="inverted ui section divider"></div>
-
-    {{#Track_Wave track=track hideAnalyzeButton=true hideLoadOptions=true hideResetButton=true}}
-      <div class="inverted ui section divider"></div>
-    {{/Track_Wave}}
 
     <div class="ui suggestions grid">
       {{#if prevTrack.getLinkFromIds}}
@@ -52,6 +48,14 @@
         </div>
       {{/if}}
     </div>
+
+    {{#each tracksInfo}}
+      <div class="inverted ui section divider"></div>
+      {{#Track_Wave size="mini" track=track hideAnalyzeButton=true hideLoadOptions=true hideResetButton=true}}
+        {{> Remove_Button track=track onRemoveTrack=onRemoveTrack}}
+      {{/Track_Wave}}
+    {{/each}}
+
   </div>
 
   <div class="actions">
@@ -62,7 +66,7 @@
       </div>
       <div class="inverted green ui button approve {{addButtonClass}}">
         <i class="add icon"></i>
-        Add Track
+        {{addButtonText}}
       </div>
     </div>
   </div>

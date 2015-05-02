@@ -170,7 +170,8 @@ TrackModel = Graviton.Model.extend({
 
   getAudioFile: function() {
     var files = AudioFiles.get(this.get('_id'));
-    return files && files[0];
+    // return files && files[0];
+    return files;
   },
 
   getAudioFiles: function() {
