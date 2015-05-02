@@ -54,6 +54,8 @@ WaveModel = Graviton.Model.extend({
   defaults: {
     playing: false,
 
+    pitchSemitones: 0,
+    tempoChange: 0,
     volume: 1,
     loaded: false,
     loading: false,
@@ -132,6 +134,10 @@ WaveModel = Graviton.Model.extend({
     wavesurfer.on('ready', function() {
       template.$('.progress-bar.loading').hide();
       wave.saveAttrs({ 'loaded': true, 'loading': false });
+
+      // wave.setPitch(2);
+      wave.initSoundTouch();
+      wave.play();
     });
 
     wavesurfer.on('reset', function() {
@@ -174,6 +180,101 @@ WaveModel = Graviton.Model.extend({
         wavesurfer.fireEvent('finish');
       }
     });
+  },
+
+  // add script processing node to manipulate audio on play
+  initSoundTouch: function() {
+    var wave = this;
+    var wavesurfer = wave.getWaveSurfer();
+
+    if (!Graviton.getProperty(wavesurfer, 'backend.ac')) {
+      throw new Error('Cannot initSoundTouch for wave with no backend');
+    }
+
+    var BUFFER_SIZE = 16384;
+    var NUM_CHANNELS = 1;
+    var scriptNode = Graviton.getProperty(wavesurfer, 'backend.ac').createScriptProcessor(BUFFER_SIZE, NUM_CHANNELS, NUM_CHANNELS);
+
+    var soundTouch = new SoundTouch();
+
+    var waveBufferLength = wave.getBufferLength();
+    scriptNode.onaudioprocess = function(audioEvent) {
+      var inputBuffer = audioEvent.inputBuffer;
+      var outputBuffer = audioEvent.outputBuffer;
+
+      soundTouch.pitchSemitones = wave.get('pitchSemitones');
+      soundTouch.tempoChange = wave.get('tempoChange');
+      if (wave.get('skipST')) {
+        for (var i = 0; i < inputBuffer.length; i++) {
+          outputBuffer[i] = inputBuffer[i];
+        }
+      }
+      // wavesurfer.setPlaybackRate(soundTouch.rate);
+      // soundTouch.tdStretch.inputBuffer = soundTouch.inputBuffer;
+      // soundTouch.tdStretch.outputBuffer = soundTouch.outputBuffer;
+
+      // TODO: turn off when not playing (maybe connect with wavesurfer.scriptnode)
+      // TODO: make work for L/R
+      // TODO: turn key into number select on track
+      // TODO: this will ignore other filters in the chain
+
+      // Loop through the output channels
+
+      var wavePercent = wavesurfer.backend.getPlayedPercents();
+      var waveBufferIndex = ~~(waveBufferLength * wavePercent);
+      // console.log("wave buffer", wavePercent, waveBufferIndex);
+
+      // soundTouch.clearBuffers();
+      for (var channel = 0; channel < outputBuffer.numberOfChannels; channel++) {
+        var inputData = inputBuffer.getChannelData(channel);
+        var outputData = outputBuffer.getChannelData(channel);
+
+        // make sure inputData is correct length
+        // TODO: what if this spills over end of wave?
+        // var sampleReq = soundTouch.getSampleReq();
+        // var inputData = wavesurfer.backend.buffer.getChannelData(channel).subarray(waveBufferIndex, waveBufferIndex + sampleReq * 4);
+
+        // put into SoundTouch, process, then extract
+        soundTouch.inputBuffer.putSamples(inputData);
+        soundTouch.process();
+
+        // console.log("counts", soundTouch.inputBuffer.vector.length, soundTouch._intermediateBuffer.vector.length, soundTouch.outputBuffer.vector.length);
+        // soundTouch.outputBuffer.extract(outputData, 0, (BUFFER_SIZE / 2));
+        soundTouch.outputBuffer.receiveSamples(outputData, BUFFER_SIZE / 2);
+
+        // console.log("output", soundTouch.outputBuffer, outputData);
+        // console.log("input", soundTouch.inputBuffer, inputData);
+      }
+    };
+
+    // wavesurfer.backend.setFilter(scriptNode);
+  },
+
+  
+  setPitch: function(semitones) {
+    var wavesurfer = this.getWaveSurfer();
+    var buffer = Graviton.getProperty(wavesurfer, 'backend.buffer');
+
+    if (!buffer) {
+      throw new Error('Cannot setPitch for wave with no buffer');
+    }
+
+    var soundTouch = new SoundTouch();
+    soundTouch.pitchSemitones = semitones;
+
+    // for each channel, copy to SoundTouch, shift, then update buffer
+    for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
+      var bufferData = buffer.getChannelData(channel);
+      soundTouch.clearBuffers();
+      soundTouch.inputBuffer.putSamples(bufferData);
+      soundTouch.process();
+
+      var outputData = soundTouch.outputBuffer.vector;
+
+      for (var sample = 0; sample < outputData.length; sample++) {
+        bufferData[sample] = outputData[sample];
+      }
+    }
   },
 
   setTrack: function(track) {
