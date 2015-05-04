@@ -23,6 +23,19 @@ function removeTrack(index) {
   tracks.set(currTracks);
 }
 
+function getUnsavedTracks() {
+  return _.filter(tracks.get(), function(track) {
+    return track.isNew();
+  });
+}
+
+function tracksAreLoading() {
+  // return !!_.some(tracks.get(), function(track) {
+    // return track.get('isLoading');
+  // });
+  return false;
+}
+
 function keyHandler(e) {
   if (e.which === 27) { $('.Add_Tracks_Modal .deny').click(); } // escape
   // if (e.which === 13) { $('.Add_Tracks_Modal .approve').click(); } // enter
@@ -36,22 +49,11 @@ Template.Add_Tracks_Modal.created = function() {
 
   // Setup full page drop zone
   Utils.initFullPageDrop(function(files) {
-
-    // // don't allow wav files
-    // // TODO: this doesn't belong here
-    // var fileType = files[0].type;
-    // if (fileType && fileType.match('wav')) {
-    //   window.alert("Please convert your file from .wav format - .wav is too large.");
-    //   return;
-    // }
-
     _.each(files, function(file) {
       var track = createTrack();
-      track.setAudioFiles(file);
+      track.setAudioFile(file);
       addTrack(track);
     });
-
-    console.log("add track modal drop", files);
   });
 };
 
@@ -99,15 +101,40 @@ Template.Add_Tracks_Modal_Inner.helpers({
     });
   },
 
-  addButtonClass: function() {
-    return isValidSelection() ? '' : 'basic disabled';
+  approveButtonClass: function() {
+    if (tracksAreLoading()) {
+      return 'orange loading';
+    }
+
+    var unsavedTracks = getUnsavedTracks();
+    var text = isValidSelection() ? '' : 'basic disabled';
+    if (unsavedTracks.length) {
+      text = 'orange save-all';
+    } else if (!isValidSelection()) {
+      text = 'basic disabled add';
+    } else {
+      text = 'green approve';
+    }
+    return text;
   },
 
-  addButtonText: function() {
-    var tracksLength = Template.instance().tracks.get().length;
-    var text = "Add Track";
-    if (tracksLength > 1) { text += "s"; }
-    return text + " (" + tracksLength + ")";
+  approveIconClass: function() {
+    return getUnsavedTracks().length ? 'cloud upload' : 'add';
+  },
+
+  approveButtonText: function() {
+    var tracks = getUnsavedTracks();
+    var text;
+
+    if (tracks.length) {
+      text = "Save Track";
+    } else {
+      tracks = Template.instance().tracks.get();
+      text = "Add Track";
+    }
+
+    if (tracks.length > 1) { text += "s"; }
+    return text + " (" + tracks.length + ")";
   },
 
   // center column if only one
@@ -133,4 +160,10 @@ Template.Add_Tracks_Modal_Inner.helpers({
     return function() {};
   },
 
+});
+
+Template.Add_Tracks_Modal_Inner.events({
+  'click .save-all': function(e, template) {
+    template.$('.save.button').click();
+  }
 });

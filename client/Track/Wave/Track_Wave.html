@@ -5,7 +5,6 @@
     {{> ProgressBar class="loading"}}
     {{> ProgressBar class="uploading"}}
 
-    {{#if isLoaded}}
       <!-- Header -->
       {{#unless hideHeader}}
         <div class="inverted ui header">
@@ -16,6 +15,7 @@
         </div>
       {{/unless}}
 
+    {{#if isLoaded}}
       <!-- Controls -->
       <div class="ui menu initial-background">
         {{#unless hidePlayButton}}

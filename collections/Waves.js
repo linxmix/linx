@@ -168,7 +168,10 @@ WaveModel = Graviton.Model.extend({
 
     wavesurfer.on('error', function(errorMessage) {
       template.$('.progress-bar').hide();
-      wave.saveAttrs('loaded', false);
+      wave.set({
+        'loading': false,
+        'uploading': false,
+      });
       window.alert("Wave Error: " + (errorMessage || 'unknown error'));
     });
 
@@ -270,27 +273,11 @@ WaveModel = Graviton.Model.extend({
     var track = this.getTrack();
 
     if (track && wavesurfer) {
-
-      // try first to load from file
-      var audioFile = track.getAudioFile();
-      if (audioFile) {
-        var fileName = audioFile.name;
-        console.log("loadAudio", fileName, this.get('fileName'));
-        if (fileName && (fileName !== this.get('fileName'))) {
-          this.saveAttrs('fileName', fileName);
-          wavesurfer.loadBlob(audioFile);
-        }
+      var streamUrl = track.getStreamUrl();
+      if (streamUrl && (streamUrl !== this.get('streamUrl'))) {
+        this.saveAttrs('streamUrl', streamUrl);
+        wavesurfer.load(streamUrl);
       }
-
-      // else, load from url
-      else {
-        var streamUrl = track.getStreamUrl();
-        if (streamUrl && (streamUrl !== this.get('streamUrl'))) {
-          this.saveAttrs('streamUrl', streamUrl);
-          wavesurfer.load(streamUrl);
-        }
-      }
-
     }
   },
 
@@ -371,7 +358,6 @@ WaveModel = Graviton.Model.extend({
       'loading': false,
       'uploading': false,
       'streamUrl': undefined,
-      'fileName': undefined,
       'linkFromId': undefined,
       'linkToId': undefined,
       'playing': false,
@@ -386,8 +372,8 @@ WaveModel = Graviton.Model.extend({
     this.getWaveSurfer().fireEvent('uploading', options.percent, options.xhr, options.type);
   },
 
-  onError: function(xhr) {
-    this.getWaveSurfer().fireEvent('error', 'echonest analysis error: ' + xhr.responseText);
+  onError: function(error) {
+    this.getWaveSurfer().fireEvent('error', error);
   },
 
   onEnd: function() {
@@ -423,9 +409,8 @@ WaveModel = Graviton.Model.extend({
   saveToBackend: function(cb) {
     var track = this.getTrack();
     var wave = this;
-    var files = track && track.getAudioFile();
-    if (!(track && wave && files)) {
-      throw new Error('Cannot upload without track, wave and files: ' + this.get('_id'));
+    if (!(track && wave)) {
+      throw new Error('Cannot upload wave without track: ' + this.get('_id'));
     }
     console.log("saving to backend", track.get('title'));
 
@@ -448,35 +433,23 @@ WaveModel = Graviton.Model.extend({
     var track = this.getTrack();
     var wave = this;
 
-    // autorun progress bar
-    var uploadFinished = false;
-    Tracker.autorun(function(computation) {
-      var uploads = S3.collection.find().fetch();
-      var upload = uploads[0];
-      if (upload) {
-        var percent = upload.percent_uploaded;
-        !uploadFinished && wave.onUploading({
+    track.uploadAudioFile({
+      onLoading: function(percent) {
+        wave.onUploading({
           type: 'upload',
           percent: percent
         });
-        if (percent === 100) {
-          computation.stop();
-        }
+      },
+      onSuccess: function(downloadUrl) {
+        track.set({ s3Url: downloadUrl });
+        wave.onUploadFinish();
+        cb && cb();
+      },
+      onError: function(error) {
+        wave.onError(error);
       }
     });
 
-    S3.upload({
-      files: track.getAudioFiles(),
-      path: track.getS3Prefix(),
-    }, function(error, result) {
-      uploadFinished = true;
-      if (error) { throw error; }
-      // update track with new s3FileName
-      var urlParts = result.relative_url.split('/');
-      var s3FileName = urlParts[urlParts.length - 1];
-      track.set({ s3FileName: s3FileName });
-      cb && cb(error, result);
-    });
   },
 
   setLoadingInterval: function(options) {

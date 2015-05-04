@@ -1,14 +1,28 @@
-S3.config = {
-  key: 'AKIAJXXTJVFNQUYJRS7Q',
-  secret: Assets.getText('s3key.txt'),
+/* global Slingshot: false */
+
+Slingshot.createDirective("s3FileUpload", Slingshot.S3Storage, {
+  bucket: "linx-music",
   region: 'us-west-2', // NOTE: this must be changed when the bucket goes US-Standard!
-  bucket: 'linx-music',
-};
+  AWSAccessKeyId: 'AKIAJXXTJVFNQUYJRS7Q',
+  AWSSecretAccessKey: Assets.getText('s3key.txt'),
+  acl: "public-read",
+
+  allowedFileTypes: ["audio/mp3", "audio/mpeg", "audio/wav", "audio/ogg"],
+  maxSize: null, // infinite for now
+
+  // Can add user restrictions here
+  authorize: function () {
+    return true;
+  },
+
+  key: function (file) {
+    return Date.now() + " - " + file.name;
+  }
+});
 
 Meteor.startup(function () {
   Future = Npm.require('fibers/future');
 });
-
 
 Meteor.methods({
 

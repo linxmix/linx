@@ -9,7 +9,6 @@ iron:router
 
 zimme:iron-router-active
 fourseven:scss
-lepozepo:s3
 emmerge:graviton
 accounts-ui
 accounts-base
@@ -52,3 +51,4 @@ semantic:ui-tab
 semantic:ui-table
 semantic:ui-transition
 settinghead:auto-nprogress
+edgee:slingshot

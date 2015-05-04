@@ -121,11 +121,9 @@ TrackModel = Graviton.Model.extend({
   },
 
   getS3Url: function() {
-    if (this.isNew()) { return; }
-    var part = 'http://s3-us-west-2.amazonaws.com/linx-music/';
-    // TODO: make this work for non-mp3
-    var fileName = this.get('s3FileName') || this.get('_id') + '.mp3';
-    return part + this.getS3Prefix() + '/' + fileName;
+    // source from audioFile first
+    var audioFile = this.audioFile();
+    return (audioFile && audioFile.get('dataUrl')) || this.get('s3Url');
   },
 
   getStreamUrl: function(source) {
@@ -157,18 +155,20 @@ TrackModel = Graviton.Model.extend({
     return Analyses.set(this.get('_id'), analysis);
   },
 
-  getAudioFile: function() {
-    var file = this.audioFile();
-    if (!file) {
-      file = AudioFiles.create({ trackId: this.get('_id') });
-    }
-    return file.getFile();
+  hasAudioFile: function() {
+    var fileModel = this.audioFile();
+    return ;
   },
 
   setAudioFile: function(file) {
-    var fileModel = this.getAudioFile();
+    var fileModel = this.audioFile() || AudioFiles.create({ trackId: this.get('_id') });
     fileModel.setFile(file);
     this.loadMp3Tags(file);
+  },
+
+  uploadAudioFile: function(options) {
+    var fileModel = this.audioFile();
+    fileModel.upload(options);
   },
 
   fetchEchonestAnalysis: function(wave, cb) {
