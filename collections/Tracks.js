@@ -1,7 +1,6 @@
 /* global Tracks: true */
 /* global TrackModel: true */
 /* global Analyses: true */
-/* global AudioFiles: true */
 
 Meteor.startup(function() {
   if (Meteor.isClient) {
@@ -20,22 +19,6 @@ Meteor.startup(function() {
         delete this[_id];
       }
     };
-
-    AudioFiles = {
-      set: function(_id, file) {
-        if (this[_id]) {
-          this.destroy(_id);
-        }
-        this[_id] = new ReactiveVar(file);
-      },
-      get: function(_id) {
-        var file = this[_id];
-        return file && file.get();
-      },
-      destroy: function(_id) {
-        delete this[_id];
-      }
-    };
   }
 });
 
@@ -45,6 +28,12 @@ TrackModel = Graviton.Model.extend({
       collectionName: 'users',
       field: 'userId'
     },
+  },
+  hasOne: {
+    audioFile: {
+      collectionName: 'audiofiles',
+      foreignKey: 'trackId',
+    }
   },
   hasMany: {
     plays: {
@@ -169,18 +158,17 @@ TrackModel = Graviton.Model.extend({
   },
 
   getAudioFile: function() {
-    var files = AudioFiles.get(this.get('_id'));
-    // return files && files[0];
-    return files;
+    var file = this.audioFile();
+    if (!file) {
+      file = AudioFiles.create({ trackId: this.get('_id') });
+    }
+    return file.getFile();
   },
 
-  getAudioFiles: function() {
-    return AudioFiles.get(this.get('_id'));
-  },
-
-  setAudioFiles: function(files) {
-    AudioFiles.set(this.get('_id'), files);
-    this.loadMp3Tags(this.getAudioFile());
+  setAudioFile: function(file) {
+    var fileModel = this.getAudioFile();
+    fileModel.setFile(file);
+    this.loadMp3Tags(file);
   },
 
   fetchEchonestAnalysis: function(wave, cb) {
