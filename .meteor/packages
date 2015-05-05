@@ -52,3 +52,5 @@ semantic:ui-table
 semantic:ui-transition
 settinghead:auto-nprogress
 edgee:slingshot
+cfs:power-queue
+cfs:reactive-list
