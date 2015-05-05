@@ -79,6 +79,7 @@ TrackModel = Graviton.Model.extend({
     console.log("set soundcloud", attrs);
     this.set({
       soundcloud: attrs,
+      soundcloudId: attrs.id,
       title: attrs.title,
       artist: attrs.user && attrs.user.username,
     });

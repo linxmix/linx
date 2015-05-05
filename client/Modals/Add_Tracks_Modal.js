@@ -130,7 +130,16 @@ Template.Add_Tracks_Modal_Inner.helpers({
 
   onSubmitSoundcloud: function() {
     return function(response) {
-      var track = createTrack();
+      // first see if we already have a track with this
+      var existingTracks = Tracks.find({
+        soundcloudId: response.id,
+      }).fetch();
+      var track;
+      if (existingTracks.length) {
+        track = existingTracks[0];
+      } else {
+        track = createTrack();
+      }
       track.setSoundcloud(response);
       addTrack(track);
     };
