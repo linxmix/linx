@@ -54,21 +54,37 @@ AudioFileModel = Graviton.Model.extend({
   },
 
   setFile: function(file, options) {
+    options = options || {};
     AUDIO_FILES.set(this.get('_id'), file);
 
-    var onLoading = options.onLoading;
+    // chain onSuccess
+    var fileModel = this;
+    options.onSuccess = _.compose(options.onSuccess, function(dataUrl) {
+      console.log("setting dataUrl", dataUrl);
+      fileModel.set('dataUrl', dataUrl);
+      return dataUrl;
+    });
+
+    this.readFile(options);
+  },
+
+  readFile: function(options) {
+    var file = this.getFile();
+    if (!file) {
+      throw new Error("AudioFile cannot read with no file");
+    }
+
+    var onProgress = options.onProgress;
     var onSuccess = options.onSuccess;
     var onError = options.onError;
 
-    // read file into dataUrl
-    var fileModel = this;
+    // read file
     var reader = new FileReader();
     reader.addEventListener('load', function (e) {
-      fileModel.set('dataUrl', e.target.result);
-      onSuccess && onSuccess();
+      onSuccess && onSuccess(e.target.result);
     });
 
-    if (onLoading) {
+    if (onProgress) {
       reader.addEventListener('progress', function (e) {
         var percentComplete;
         if (e.lengthComputable) {
@@ -79,7 +95,7 @@ AudioFileModel = Graviton.Model.extend({
           percentComplete = e.loaded / (e.loaded + 1000000);
         }
 
-        onLoading(Math.round(percentComplete * 100));;
+        onProgress(Math.round(percentComplete * 100));;
       });
     }
 
@@ -88,7 +104,23 @@ AudioFileModel = Graviton.Model.extend({
       alert('Error reading file: ' + file.name, e);
       onError && onError();
     });
-    reader.readAsDataURL(file);
+
+    if (options.readAsArrayBuffer) {
+      reader.readAsArrayBuffer(file);
+    } else {
+      reader.readAsDataURL(file);
+    }
+  },
+
+  calcMD5: function(options) {
+    options = options || {};
+    options.readAsArrayBuffer = true;
+
+    options.onSuccess = _.compose(options.onSuccess, function(arrayBuffer) {
+      return faultylabs.MD5(arrayBuffer);
+    });
+
+    this.readFile(options);
   },
 
   getUploader: function() {
@@ -110,10 +142,10 @@ AudioFileModel = Graviton.Model.extend({
     var uploader = this.getUploader();
 
     // autorun progress
-    if (options.onLoading) {
+    if (options.onProgress) {
       Tracker.autorun(function(computation) {
         var percent = Math.round(uploader.progress() * 100);
-        options.onLoading(percent);
+        options.onProgress(percent);
         if (percent === 100) {
           computation.stop();
         }

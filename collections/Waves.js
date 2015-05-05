@@ -57,7 +57,8 @@ WaveModel = Graviton.Model.extend({
     volume: 1,
     loaded: false,
     loading: false,
-    loadingIntervals: [],
+
+    streamUrl: undefined,
   },
 }, {
   createWaveSurfer: function() {

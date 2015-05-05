@@ -69,7 +69,8 @@ TrackModel = Graviton.Model.extend({
       echonest: attrs,      
       title: attrs.title,
       artist: attrs.artist,
-      volume: normalizedVolume ? normalizedVolume : this.get('volume')
+      volume: normalizedVolume ? normalizedVolume : this.get('volume'),
+      md5: attrs.md5
     });
     console.log("set echonest", attrs, normalizedVolume);
   },
@@ -83,7 +84,7 @@ TrackModel = Graviton.Model.extend({
     });
   },
 
-  loadMp3Tags: function(file) {
+  loadMp3Tags: function(file, cb) {
     id3(file, function(err, tags) {
       console.log("load tags", tags, file.name);
       var newAttrs = {};
@@ -97,6 +98,7 @@ TrackModel = Graviton.Model.extend({
         newAttrs.id3Tags = tags;
       }
       this.set(newAttrs);
+      cb && cb(tags);
     }.bind(this));
   },
 
@@ -122,27 +124,38 @@ TrackModel = Graviton.Model.extend({
     }
   },
 
-  getS3Url: function() {
-    // source from audioFile first
+  getAudioFileUrl: function() {
     var audioFile = this.audioFile();
-    return (audioFile && audioFile.get('dataUrl')) || this.get('s3Url');
+    return audioFile && audioFile.get('dataUrl');
   },
 
+  getS3Url: function() {
+    return this.get('s3Url');
+  },
+
+  // returns streamable url
   getStreamUrl: function(source) {
     source = source || this.getSource();
     switch (source) {
+      case 'file': return this.getAudioFileUrl();
       case 'soundcloud': return this.getSoundcloudUrl();
       case 's3': return this.getS3Url();
-      default: throw 'Uknown source given to getStreamUrl: ' + source;
     }
   },
 
-  getSource: function() {
-    if (this.get('soundcloud')) {
+  getSource: function(needsBackend) {
+    if (!needsBackend && this.getAudioFileUrl()) {
+      return 'file';
+    } else if (this.get('soundcloud')) {
       return 'soundcloud';
-    } else {
+    } else if (this.get('s3Url')) {
       return 's3';
     }
+  },
+
+  // gets source of actual backend, not file
+  getBackendSource: function() {
+    return this.getSource(true);
   },
 
   getS3Prefix: function() {
@@ -154,7 +167,7 @@ TrackModel = Graviton.Model.extend({
     var fileModel = track.audioFile() || AudioFiles.create({ trackId: track.get('_id') });
 
     fileModel.setFile(file, {
-      onLoading: function(percent) {
+      onProgress: function(percent) {
         track.set('loading', {
           type: 'load',
           percent: percent,
@@ -168,7 +181,24 @@ TrackModel = Graviton.Model.extend({
       }
     });
 
-    track.loadMp3Tags(file);
+    // try to get track info from file
+    // TODO: let user choose these
+    track.loadMp3Tags(file, function() {
+      fileModel.calcMD5({
+        onSuccess: track.identifyMD5.bind(track)
+      });
+    });
+  },
+
+  identifyMD5: function(md5) {
+    md5 = md5.toLowerCase();
+    var matchingTracks = Tracks.find({
+      md5: md5,
+    }).fetch();
+    if (matchingTracks.length) {
+      console.log("successful match", matchingTracks[0]);
+      this.cloneFrom(matchingTracks[0]);
+    }
   },
 
   isLoading: function() {
@@ -177,11 +207,6 @@ TrackModel = Graviton.Model.extend({
 
   saveToBackend: function(cb) {
     var track = this;
-    var fileModel = track.audioFile();
-
-    if (!(track && fileModel && fileModel.getFile())) {
-      throw new Error('Cannot upload track without file: ' + track.get('title'));
-    }
     console.log("saving to backend", track.get('title'));
 
     // on completion, persist track and fire finish event
@@ -191,18 +216,24 @@ TrackModel = Graviton.Model.extend({
     }
 
     // upload to appropriate backend
-    switch (track.getSource()) {
-      case 's3': track._uploadToS3(next); break;
+    var source = track.getSource();
+    switch (source) {
+      case 'file': track._uploadToS3(next); break;
       case 'soundcloud': next(); break; // already exists on SC
-      default: throw "Error: unknown track source: " + track.getSource();
+      default: throw new Error("cannot upload track with source: " + source);
     }
   },
 
   _uploadToS3: function(cb) {
     var track = this;
+    var fileModel = track.audioFile();
 
-    track.audioFile().upload({
-      onLoading: function(percent) {
+    if (!(track && fileModel && fileModel.getFile())) {
+      throw new Error('Cannot upload track to s3 without file: ' + track.get('title'));
+    }
+
+    fileModel.upload({
+      onProgress: function(percent) {
         track.set('loading', {
           type: 'upload',
           percent: percent
@@ -338,7 +369,7 @@ TrackModel = Graviton.Model.extend({
       cb && cb(track.get('echonest.id'));
     } else {
       // console.log("getting echonestId of track", track);
-      var streamUrl = track.getStreamUrl();
+      var streamUrl = track.getStreamUrl(track.getBackendSource());
       var loadingInterval = track.setLoadingInterval({
         type: 'profile',
         // time: wave.getCrossloadTime(track.getSource())
