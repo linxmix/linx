@@ -17,6 +17,42 @@ Template.Track_Wave.rendered = function() {
   this.autorun(this.wave.drawRegions.bind(this.wave));
   this.autorun(this.wave.loadAudio.bind(this.wave));
   this.autorun(this.wave.assertVolume.bind(this.wave));
+
+  // autorun track loading
+  this.autorun(function() {
+    var template = Template.instance();
+    var track = template.data.track;
+    var $progressBar = template.$('.progress-bar.trackLoading');
+    if (!track) { return; }
+
+    // not loading
+    var loading = track.get('loading');
+    if (!loading) { 
+      $progressBar.progress({ percent: 0 });
+      $progressBar.hide();
+      return;
+
+    // actually loading
+    } else {
+      var text = {};
+      var options = loading;
+      switch (options.type) {
+        case 'upload': text = { active: "Uploading...", success: "Uploaded!" }; break;
+        case 'profile': text = { active: "Getting Profile...", success: "Got Profile!" }; break;
+        case 'analyze': text = { active: "Analyzing...", success: "Analyzed!" }; break;
+        case 'load': default: text = { active: "Loading...", success: "Decoding..." };
+      }
+
+      // update progress bar
+      $progressBar.show();
+      if (_.isNumber(options.percent)) {
+        $progressBar.progress({
+          percent: options.percent,
+          text: text,
+        });
+      }
+    }
+  }.bind(this));
 };
 
 function getWave() {

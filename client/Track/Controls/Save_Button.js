@@ -17,13 +17,13 @@ Template.Save_Button.helpers({
   },
   
   isLoading: function() {
-    var wave = getWave(Template.instance());
-    return wave.get('uploading');
+    var track = getTrack(Template.instance());
+    return track.get('loading');
   },
 });
 
 Template.Save_Button.events({
   'click .save': function(e, template) {
-    getWave(template).saveToBackend();
+    getTrack(template).saveToBackend();
   },
 });

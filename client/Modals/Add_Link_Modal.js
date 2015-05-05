@@ -55,8 +55,8 @@ Template.Add_Link_Modal_Inner.created = function() {
 };
 
 Template.Add_Link_Modal_Inner.rendered = function() {
-  this.fromWave.analyze();
-  this.toWave.analyze();
+  this.data.fromTrack.fetchEchonestAnalysis();
+  this.data.toTrack.fetchEchonestAnalysis();
 
   this.$('.Add_Link_Modal_Loader').hide();
 };

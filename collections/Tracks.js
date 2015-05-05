@@ -59,6 +59,8 @@ TrackModel = Graviton.Model.extend({
     artist: 'No Artist',
     type: 'song', // one of 'song', 'transition' or 'mix'
     volume: 1,
+
+    loading: false,
   },
 }, {
   setEchonest: function(attrs) {
@@ -147,6 +149,93 @@ TrackModel = Graviton.Model.extend({
     return this.get('type') + 's';
   },
 
+  setAudioFile: function(file) {
+    var track = this;
+    var fileModel = track.audioFile() || AudioFiles.create({ trackId: track.get('_id') });
+
+    fileModel.setFile(file, {
+      onLoading: function(percent) {
+        track.set('loading', {
+          type: 'load',
+          percent: percent,
+        });
+      },
+      onSuccess: function() {
+        track.set('loading', false);
+      },
+      onError: function() {
+        track.set('loading', false);
+      }
+    });
+
+    track.loadMp3Tags(file);
+  },
+
+  isLoading: function() {
+    return !!this.get('loading');
+  },
+
+  saveToBackend: function(cb) {
+    var track = this;
+    var fileModel = track.audioFile();
+
+    if (!(track && fileModel && fileModel.getFile())) {
+      throw new Error('Cannot upload track without file: ' + track.get('title'));
+    }
+    console.log("saving to backend", track.get('title'));
+
+    // on completion, persist track and fire finish event
+    function next() {
+      track.store();
+      cb && cb();
+    }
+
+    // upload to appropriate backend
+    switch (track.getSource()) {
+      case 's3': track._uploadToS3(next); break;
+      case 'soundcloud': next(); break; // already exists on SC
+      default: throw "Error: unknown track source: " + track.getSource();
+    }
+  },
+
+  _uploadToS3: function(cb) {
+    var track = this;
+
+    track.audioFile().upload({
+      onLoading: function(percent) {
+        track.set('loading', {
+          type: 'upload',
+          percent: percent
+        });
+      },
+      onSuccess: function(downloadUrl) {
+        track.set('loading', false);
+        track.set({ s3Url: downloadUrl });
+        cb && cb();
+      },
+      onError: function(error) {
+        track.set('loading', false);
+      }
+    });
+  },
+
+  // given options.time and options.type, set an interval
+  setLoadingInterval: function(options) {
+    var percent = 0;
+    var track = this;
+    var loadingInterval = Meteor.setInterval(function() {
+      track.set('loading', {
+        percent: percent,
+        type: options.type,
+      });
+      if (percent === 100) {
+        Meteor.clearInterval(loadingInterval);
+      }
+      percent += 1;
+    }, options.time / 100);
+    return loadingInterval;
+  },
+
   getAnalysis: function() {
     return Analyses.get(this.get('_id'));
   },
@@ -155,28 +244,9 @@ TrackModel = Graviton.Model.extend({
     return Analyses.set(this.get('_id'), analysis);
   },
 
-  hasAudioFile: function() {
-    var fileModel = this.audioFile();
-    return ;
-  },
-
-  setAudioFile: function(file) {
-    var fileModel = this.audioFile() || AudioFiles.create({ trackId: this.get('_id') });
-    fileModel.setFile(file);
-    this.loadMp3Tags(file);
-  },
-
-  uploadAudioFile: function(options) {
-    var fileModel = this.audioFile();
-    fileModel.upload(options);
-  },
-
-  fetchEchonestAnalysis: function(wave, cb) {
+  fetchEchonestAnalysis: function(cb) {
     var track = this;
 
-    if (!(track && wave)) {
-      throw new Error('Cannot fetch track analysis without wave' + this.get('title'));
-    }
     // If already have analysis, short circuit
     if (this.getAnalysis()) {
       // console.log("Track already has echonest analysis, skipping", this.get('title'));
@@ -184,36 +254,35 @@ TrackModel = Graviton.Model.extend({
     } else {
 
       // fetch profile before analyzing
-      track.fetchEchonestProfile(wave, function() {
-        var loadingInterval;
-
-        function onSuccess(response) {
-          Meteor.clearInterval(loadingInterval);
-          wave.onUploadFinish.call(wave);
-          track.setAnalysis(response);
-          cb && cb();
-        }
+      track.fetchEchonestProfile(function() {
+        var loadingInterval = track.setLoadingInterval({
+          type: 'analyze',
+          time: 10000,
+        });
 
         // attempt 5 times with 3 seconds between each.
         var count = 0;
         function attempt() {
-          loadingInterval = wave.setLoadingInterval({
-            type: 'analyze',
-            time: 3000
-          });
           // console.log("fetching echonest analysis: ", "attempt: " + count, track);
 
           $.ajax({
             type: "GET",
             url: track.get('echonest.audio_summary.analysis_url'),
-            success: onSuccess,
-            error: function(xhr) {
+            success: function(response) {
               Meteor.clearInterval(loadingInterval);
+              track.set('loading', false);
+              track.setAnalysis(response);
+              cb && cb();
+            },
+            error: function(xhr) {
               // retry on error
               if (count++ <= 5) {
                 Meteor.setTimeout(attempt, 3000);
               } else {
-                wave.onError(xhr);
+                Meteor.clearInterval(loadingInterval);
+                track.set('loading', false);
+                console.error(xhr);
+                throw new Error('Failed to get echonest analysis for track: ' + track.get('title'));
               }
             },
           });
@@ -224,22 +293,15 @@ TrackModel = Graviton.Model.extend({
     }
   },
 
-  fetchEchonestProfile: function(wave, cb) {
+  fetchEchonestProfile: function(cb) {
     var track = this;
     // first get echonestId of track
-    this.fetchEchonestId(wave, function(echonestId) {
+    this.fetchEchonestId(function(echonestId) {
       // console.log("fetching echonest profile", track.get('title'));
-      var loadingInterval = wave.setLoadingInterval({
+      var loadingInterval = track.setLoadingInterval({
         type: 'profile',
         time: 1000
       });
-
-      function onSuccess(response) {
-        Meteor.clearInterval(loadingInterval);
-        wave.onUploadFinish();
-        track.setEchonest(Graviton.getProperty(response, 'response.track'));
-        cb && cb();
-      }
 
       // send profile request
       $.ajax({
@@ -252,34 +314,36 @@ TrackModel = Graviton.Model.extend({
           format: 'json',
           id: echonestId,
         },
-        success: onSuccess,
+        success: function(response) {
+          Meteor.clearInterval(loadingInterval);
+          track.set('loading', false);
+          track.setEchonest(Graviton.getProperty(response, 'response.track'));
+          cb && cb();
+        },
         error: function() {
-          wave.onError.apply(wave, arguments);
+          Meteor.clearInterval(loadingInterval);
+          track.set('loading', false);
+          throw new Error('Failed to get echonest profile for track: ' + track.get('title'));
         }
       });      
     });
   },
 
-  fetchEchonestId: function(wave, cb) {
+  fetchEchonestId: function(cb) {
+    var track = this;
 
     // short-circuit if we already have the id
-    var track = this;
-    if (track.get('echonest')) {
+    if (track.get('echonest.id')) {
       // console.log("track already has echonest id, skipping", track);
       cb && cb(track.get('echonest.id'));
     } else {
       // console.log("getting echonestId of track", track);
       var streamUrl = track.getStreamUrl();
-      var loadingInterval = wave.setLoadingInterval({
+      var loadingInterval = track.setLoadingInterval({
         type: 'profile',
-        time: wave.getCrossloadTime(track.getSource())
+        // time: wave.getCrossloadTime(track.getSource())
+        time: 10000, // TODO: get crossload time
       });
-
-      function onSuccess(response) {
-        Meteor.clearInterval(loadingInterval);
-        wave.onUploadFinish();
-        cb && cb(Graviton.getProperty(response, 'response.track.id'));
-      }
 
       // start upload
       $.ajax({
@@ -289,10 +353,16 @@ TrackModel = Graviton.Model.extend({
           api_key: Config.apiKey_Echonest,
           url: streamUrl
         },
-        success: onSuccess,
+        success: function(response) {
+          Meteor.clearInterval(loadingInterval);
+          track.set('loading', false);
+          cb && cb(Graviton.getProperty(response, 'response.track.id'));
+        },
         error: function(xhr) {
           Meteor.clearInterval(loadingInterval);
-          wave.fireEvent('error', 'echonest upload error: ' + xhr.responseText);
+          track.set('loading', false);
+          console.error(xhr);
+          throw new Error('Failed upload track to echonest: ' + track.get('title'));
         },
       });
     }

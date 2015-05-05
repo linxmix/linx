@@ -53,20 +53,40 @@ AudioFileModel = Graviton.Model.extend({
     return file;
   },
 
-  setFile: function(file) {
+  setFile: function(file, options) {
     AUDIO_FILES.set(this.get('_id'), file);
+
+    var onLoading = options.onLoading;
+    var onSuccess = options.onSuccess;
+    var onError = options.onError;
 
     // read file into dataUrl
     var fileModel = this;
     var reader = new FileReader();
     reader.addEventListener('load', function (e) {
-      console.log("on file loaded", e, e.target.result);
       fileModel.set('dataUrl', e.target.result);
+      onSuccess && onSuccess();
     });
+
+    if (onLoading) {
+      reader.addEventListener('progress', function (e) {
+        var percentComplete;
+        if (e.lengthComputable) {
+          percentComplete = e.loaded / e.total;
+        } else {
+          // Approximate progress with an asymptotic
+          // function, and assume downloads in the 1-3 MB range.
+          percentComplete = e.loaded / (e.loaded + 1000000);
+        }
+
+        onLoading(Math.round(percentComplete * 100));;
+      });
+    }
 
     reader.addEventListener('error', function (e) {
       console.error('Error reading file: ' + file.name, e);
       alert('Error reading file: ' + file.name, e);
+      onError && onError();
     });
     reader.readAsDataURL(file);
   },
@@ -110,8 +130,6 @@ AudioFileModel = Graviton.Model.extend({
         options.onSuccess && options.onSuccess(downloadUrl);
       }
     });
-
-
   }
 });
 

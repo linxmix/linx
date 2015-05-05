@@ -128,35 +128,6 @@ WaveModel = Graviton.Model.extend({
       }
     });
 
-    var lastPercentUploading;
-    wavesurfer.on('uploading', function(percent, xhr, type) {
-      if (!wave.get('uploading')) {
-        wave.saveAttrs('uploading', true);
-      }
-      template.$('.progress-bar.uploading').show();
-
-      // update progress bar
-      if (percent !== lastPercentUploading) {
-        lastPercentUploading = percent;
-        var text = {};
-        switch (type) {
-          case 'upload': text = { active: "Uploading...", success: "Uploaded!" }; break;
-          case 'profile': text = { active: "Getting Profile...", success: "Got Profile!" }; break;
-          case 'analyze': text = { active: "Analyzing...", success: "Analyzed!" }; break;
-          default: text = { active: "Loading...", success: "Decoding..." };
-        }
-        template.$('.progress-bar.uploading').progress({
-          percent: percent,
-          text: text,
-        });
-      }
-    });
-
-    wavesurfer.on('uploadFinish', function() {
-      template.$('.progress-bar.uploading').hide();
-      wave.saveAttrs('uploading', false);
-    });
-
     wavesurfer.on('ready', function() {
       template.$('.progress-bar.loading').hide();
       wave.saveAttrs({ 'loaded': true, 'loading': false });
@@ -168,10 +139,7 @@ WaveModel = Graviton.Model.extend({
 
     wavesurfer.on('error', function(errorMessage) {
       template.$('.progress-bar').hide();
-      wave.set({
-        'loading': false,
-        'uploading': false,
-      });
+      wave.set('loading', false);
       window.alert("Wave Error: " + (errorMessage || 'unknown error'));
     });
 
@@ -356,20 +324,11 @@ WaveModel = Graviton.Model.extend({
     this.saveAttrs({
       'loaded': false,
       'loading': false,
-      'uploading': false,
       'streamUrl': undefined,
       'linkFromId': undefined,
       'linkToId': undefined,
       'playing': false,
     });
-  },
-
-  onUploadFinish: function() {
-    this.getWaveSurfer().fireEvent('uploadFinish');
-  },
-
-  onUploading: function(options) {
-    this.getWaveSurfer().fireEvent('uploading', options.percent, options.xhr, options.type);
   },
 
   onError: function(error) {
@@ -404,78 +363,6 @@ WaveModel = Graviton.Model.extend({
   destroyWaveSurfer: function() {
     this.reset();
     WaveSurfers.destroy(this.get('_id'));
-  },
-
-  saveToBackend: function(cb) {
-    var track = this.getTrack();
-    var wave = this;
-    if (!(track && wave)) {
-      throw new Error('Cannot upload wave without track: ' + this.get('_id'));
-    }
-    console.log("saving to backend", track.get('title'));
-
-    // on completion, persist track and fire finish event
-    function next() {
-      wave.onUploadFinish();
-      track.store();
-      cb && cb();
-    }
-
-    // upload to appropriate backend
-    switch (track.getSource()) {
-      case 's3': this._uploadToS3(next); break;
-      case 'soundcloud': next(); break; // already exists on SC
-      default: throw "Error: unknown track source: " + track.getSource();
-    }
-  },
-
-  _uploadToS3: function(cb) {
-    var track = this.getTrack();
-    var wave = this;
-
-    track.uploadAudioFile({
-      onLoading: function(percent) {
-        wave.onUploading({
-          type: 'upload',
-          percent: percent
-        });
-      },
-      onSuccess: function(downloadUrl) {
-        track.set({ s3Url: downloadUrl });
-        wave.onUploadFinish();
-        cb && cb();
-      },
-      onError: function(error) {
-        wave.onError(error);
-      }
-    });
-
-  },
-
-  setLoadingInterval: function(options) {
-    var percent = 0;
-    var wave = this;
-    var loadingInterval = Meteor.setInterval(function() {
-      wave.onUploading.call(wave, {
-        percent: percent,
-        type: options.type,
-      });
-      if (percent === 100) {
-        Meteor.clearInterval(loadingInterval);
-      }
-      percent += 1;
-    }, options.time / 100);
-    // wave.loadingIntervals.push(loadingInterval);
-    return loadingInterval;
-  },
-
-  analyze: function() {
-    var track = this.getTrack();
-    if (!track) {
-      throw new Error("Cannot analyze wave without a track: " + this.get('_id'));
-    } else {
-      track.fetchEchonestAnalysis(this);
-    }
   },
 
   getAnalysis: function() {

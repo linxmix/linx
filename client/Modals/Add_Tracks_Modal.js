@@ -1,10 +1,7 @@
 var tracks; // share between inner and outer
 
 function isValidSelection() {
-  return tracks.get() && tracks.get().length &&
-    !(_.some(tracks.get(), function(track) {
-      return track.isDirty();
-    }));
+  return tracks.get() && tracks.get().length;
 }
 
 function createTrack() {
@@ -102,20 +99,11 @@ Template.Add_Tracks_Modal_Inner.helpers({
   },
 
   approveButtonClass: function() {
-    if (tracksAreLoading()) {
-      return 'orange loading';
-    }
-
-    var unsavedTracks = getUnsavedTracks();
-    var text = isValidSelection() ? '' : 'basic disabled';
-    if (unsavedTracks.length) {
-      text = 'orange save-all';
-    } else if (!isValidSelection()) {
-      text = 'basic disabled add';
+    if (!isValidSelection()) {
+      return 'basic disabled';
     } else {
-      text = 'green approve';
+      return 'green approve';
     }
-    return text;
   },
 
   approveIconClass: function() {
@@ -123,15 +111,8 @@ Template.Add_Tracks_Modal_Inner.helpers({
   },
 
   approveButtonText: function() {
-    var tracks = getUnsavedTracks();
-    var text;
-
-    if (tracks.length) {
-      text = "Save Track";
-    } else {
-      tracks = Template.instance().tracks.get();
-      text = "Add Track";
-    }
+    var tracks = Template.instance().tracks.get();
+    var text = "Add Track";
 
     if (tracks.length > 1) { text += "s"; }
     return text + " (" + tracks.length + ")";
