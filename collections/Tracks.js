@@ -185,19 +185,33 @@ TrackModel = Graviton.Model.extend({
     // TODO: let user choose these
     track.loadMp3Tags(file, function() {
       fileModel.calcMD5({
-        onSuccess: track.identifyMD5.bind(track)
+        onSuccess: track.setMD5.bind(track)
       });
     });
   },
 
-  identifyMD5: function(md5) {
+  setMD5: function(md5) {
+    var track = this;
     md5 = md5.toLowerCase();
+
+    // check if we already have track with track md5
     var matchingTracks = Tracks.find({
       md5: md5,
+      isNew: false,
     }).fetch();
     if (matchingTracks.length) {
-      console.log("successful match", matchingTracks[0]);
-      this.cloneFrom(matchingTracks[0]);
+      console.log("successful md5 matches", matchingTracks);
+      track.cloneFrom(matchingTracks[0]);
+
+    // then check if echonest has track md5
+    } else {
+      track.set('md5', md5);
+      Echonest.identifyTrackMD5(md5, {
+        onSuccess: function(echonest) {
+          console.log("identify success", echonest);
+          this.setEchonest(echonest);
+        },
+      });
     }
   },
 
@@ -273,130 +287,6 @@ TrackModel = Graviton.Model.extend({
 
   setAnalysis: function(analysis) {
     return Analyses.set(this.get('_id'), analysis);
-  },
-
-  fetchEchonestAnalysis: function(cb) {
-    var track = this;
-
-    // If already have analysis, short circuit
-    if (this.getAnalysis()) {
-      // console.log("Track already has echonest analysis, skipping", this.get('title'));
-      cb && cb();
-    } else {
-
-      // fetch profile before analyzing
-      track.fetchEchonestProfile(function() {
-        var loadingInterval = track.setLoadingInterval({
-          type: 'analyze',
-          time: 10000,
-        });
-
-        // attempt 5 times with 3 seconds between each.
-        var count = 0;
-        function attempt() {
-          // console.log("fetching echonest analysis: ", "attempt: " + count, track);
-
-          $.ajax({
-            type: "GET",
-            url: track.get('echonest.audio_summary.analysis_url'),
-            success: function(response) {
-              Meteor.clearInterval(loadingInterval);
-              track.set('loading', false);
-              track.setAnalysis(response);
-              cb && cb();
-            },
-            error: function(xhr) {
-              // retry on error
-              if (count++ <= 5) {
-                Meteor.setTimeout(attempt, 3000);
-              } else {
-                Meteor.clearInterval(loadingInterval);
-                track.set('loading', false);
-                console.error(xhr);
-                throw new Error('Failed to get echonest analysis for track: ' + track.get('title'));
-              }
-            },
-          });
-        }
-
-        attempt();
-      });
-    }
-  },
-
-  fetchEchonestProfile: function(cb) {
-    var track = this;
-    // first get echonestId of track
-    this.fetchEchonestId(function(echonestId) {
-      // console.log("fetching echonest profile", track.get('title'));
-      var loadingInterval = track.setLoadingInterval({
-        type: 'profile',
-        time: 1000
-      });
-
-      // send profile request
-      $.ajax({
-        type: "GET",
-        url: 'http://developer.echonest.com/api/v4/track/profile',
-        cache: false, // do not cache so we get a fresh analysis_url
-        data: {
-          api_key: Config.apiKey_Echonest,
-          bucket: 'audio_summary',
-          format: 'json',
-          id: echonestId,
-        },
-        success: function(response) {
-          Meteor.clearInterval(loadingInterval);
-          track.set('loading', false);
-          track.setEchonest(Graviton.getProperty(response, 'response.track'));
-          cb && cb();
-        },
-        error: function() {
-          Meteor.clearInterval(loadingInterval);
-          track.set('loading', false);
-          throw new Error('Failed to get echonest profile for track: ' + track.get('title'));
-        }
-      });      
-    });
-  },
-
-  fetchEchonestId: function(cb) {
-    var track = this;
-
-    // short-circuit if we already have the id
-    if (track.get('echonest.id')) {
-      // console.log("track already has echonest id, skipping", track);
-      cb && cb(track.get('echonest.id'));
-    } else {
-      // console.log("getting echonestId of track", track);
-      var streamUrl = track.getStreamUrl(track.getBackendSource());
-      var loadingInterval = track.setLoadingInterval({
-        type: 'profile',
-        // time: wave.getCrossloadTime(track.getSource())
-        time: 10000, // TODO: get crossload time
-      });
-
-      // start upload
-      $.ajax({
-        type: "POST",
-        url: 'http://developer.echonest.com/api/v4/track/upload',
-        data: {
-          api_key: Config.apiKey_Echonest,
-          url: streamUrl
-        },
-        success: function(response) {
-          Meteor.clearInterval(loadingInterval);
-          track.set('loading', false);
-          cb && cb(Graviton.getProperty(response, 'response.track.id'));
-        },
-        error: function(xhr) {
-          Meteor.clearInterval(loadingInterval);
-          track.set('loading', false);
-          console.error(xhr);
-          throw new Error('Failed upload track to echonest: ' + track.get('title'));
-        },
-      });
-    }
   },
 });
 
