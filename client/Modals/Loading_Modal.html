@@ -1,0 +1,15 @@
+<template name="Loading_Modal">
+  <div class="basic ui Loading_Modal modal">
+    {{> Loading_Modal_Inner}}
+  </div>
+</template>
+
+<template name="Loading_Modal_Inner">
+  <div class="center-aligned header">
+    Loading {{numberText}}
+  </div>
+
+  <div class="content">
+    {{> ProgressBar}}
+  </div>
+</template>

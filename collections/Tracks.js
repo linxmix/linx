@@ -194,25 +194,40 @@ TrackModel = Graviton.Model.extend({
   setMD5: function(md5) {
     var track = this;
     md5 = md5.toLowerCase();
+    track.set('md5', md5);
+    track.checkForExisting({
+      onSuccess: function(match) {
+        if (Graviton.isModel(match)) {
+          track.cloneFrom(match);
+        } else {
+          track.setEchonest(match);
+        }
+      },
+    });
+  },
 
-    // check if we already have track with track md5
+  // TODO: add soundcloud stuff too?
+  checkForExisting: function(options) {
+    var track = this;
+    var md5 = track.get('md5');
+
+    if (!md5) {
+      console.error(track);
+      throw new Error("No MD5 for track: " + track.get('title'));
+    }
+
+    // check if we already have track with this md5
     var matchingTracks = Tracks.find({
       md5: md5,
       isNew: false,
     }).fetch();
     if (matchingTracks.length) {
       console.log("successful md5 matches", matchingTracks);
-      track.cloneFrom(matchingTracks[0]);
+      options.onSuccess(matchingTracks[0]);
 
-    // then check if echonest has track md5
+    // then check if echonest has this md5
     } else {
-      track.set('md5', md5);
-      Echonest.identifyTrackMD5(md5, {
-        onSuccess: function(echonest) {
-          console.log("identify success", echonest);
-          this.setEchonest(echonest);
-        },
-      });
+      Echonest.identifyTrackMD5(md5, options);
     }
   },
 
@@ -220,26 +235,34 @@ TrackModel = Graviton.Model.extend({
     return !!this.get('loading');
   },
 
-  saveToBackend: function(cb) {
+  saveToBackend: function(options) {
     var track = this;
     console.log("saving to backend", track.get('title'));
 
-    // on completion, persist track and fire finish event
-    function next() {
-      track.store();
-      cb && cb();
-    }
+    // make sure we don't already have this track
+    // if we do, call onSuccess with existingTrack
+    // if we don't, save this track
 
-    // upload to appropriate backend
-    var source = track.getSource();
-    switch (source) {
-      case 'file': track._uploadToS3(next); break;
-      case 'soundcloud': next(); break; // already exists on SC
-      default: throw new Error("cannot upload track with source: " + source);
-    }
+    options = options || {};
+    options.onFail = function() {
+      var source = track.getSource();
+
+      options.onSuccess = Utils.chain(function() {
+        console.log("3 storing track", arguments);
+        track.store();
+      }, options.onSuccess);
+      
+      switch (source) {
+        case 'file': track._uploadToS3(options); break;
+        case 'soundcloud': options.onSuccess(); break; // already exists on SC
+        default: throw new Error("cannot upload track with source: " + source);
+      }
+    };
+
+    track.checkForExisting(options);
   },
 
-  _uploadToS3: function(cb) {
+  _uploadToS3: function(options) {
     var track = this;
     var fileModel = track.audioFile();
 
@@ -247,22 +270,13 @@ TrackModel = Graviton.Model.extend({
       throw new Error('Cannot upload track to s3 without file: ' + track.get('title'));
     }
 
-    fileModel.upload({
-      onProgress: function(percent) {
-        track.set('loading', {
-          type: 'upload',
-          percent: percent
-        });
-      },
-      onSuccess: function(downloadUrl) {
-        track.set('loading', false);
-        track.set({ s3Url: downloadUrl });
-        cb && cb();
-      },
-      onError: function(error) {
-        track.set('loading', false);
-      }
+    options = options || {};
+    options.onSuccess = Utils.chain(options.onSuccess, function(downloadUrl) {
+      console.log("2 track finish upload", arguments);
+      track.set({ s3Url: downloadUrl });
+      return track;
     });
+    fileModel.upload(options);
   },
 
   // given options.time and options.type, set an interval

@@ -159,6 +159,7 @@ AudioFileModel = Graviton.Model.extend({
         console.error('Error uploading', error);
         alert(error);
       } else {
+        console.log("1 file upload finished", downloadUrl);
         options.onSuccess && options.onSuccess(downloadUrl);
       }
     });
