@@ -60,6 +60,12 @@ MixModel = Graviton.Model.extend({
     return element && element.link();
   },
 
+  getRouteData: function() {
+    return {
+      _id: this.get('_id')
+    }
+  },
+
   getLength: function() {
     return this.getTracks().length;
   },

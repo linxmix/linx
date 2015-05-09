@@ -1,0 +1,16 @@
+<template name="Mix_List">
+  <div class="Mix_List">
+    <h3 class="inverted center aligned ui header">{{header}}</h3>
+    <div class="ui inverted selection list">
+      {{#each mixes}}
+        {{#linkTo route='mix' data=this.getRouteData class="item"}}
+          <div class="content">
+            <div class="header">{{this.attributes.title}} - {{this.attributes.artist}} - {{this.user.username}}</div>
+            <div class="description">{{this.getTracks.length}} Tracks</div>
+            <div class="description">{{this.getLinks.length}} Links</div>
+          </div>
+        {{/linkTo}}
+      {{/each}}
+    </div>
+  </div>
+</template>

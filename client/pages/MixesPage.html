@@ -1,0 +1,35 @@
+<template name="MixesPage">
+  <div class="MixesPage">
+
+    <!-- Header -->
+    <h1 class="inverted ui center aligned header">
+      <div class="content">
+      </div>
+    </h1>
+  
+    <!-- My Mixes -->
+    <div class="ui grid">
+      <div class="eight wide centered column">
+        <div class="inverted attached ui segment">
+          {{> Mix_List mixes=myMixes header=myMixesHeader}}
+
+          <div class="bottom-menu flex-center">
+            <div class="create-mix large inverted green ui icon button">
+              <i class="add icon"></i>
+              Create Mix
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Other Mixes -->
+      <div class="eight wide centered column">
+        <div class="inverted attached ui segment">
+          {{> Mix_List mixes=otherMixes header=otherMixesHeader}}
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</template>

@@ -29,7 +29,11 @@
       </div>
     </div>
 
-    <div class="auto-link large inverted basic green ui icon button right floated">
+    <div class="delete-mix large inverted basic red ui icon button right floated {{disabledClass}}">
+      <i class="remove icon"></i>
+      Delete Mix
+    </div>
+    <div class="auto-link large inverted basic orange ui icon button right floated {{disabledClass}}">
       <i class="linkify icon"></i>
       Auto Link
     </div>
@@ -47,7 +51,7 @@
 
     <!-- Bottom Menu -->
     <div class="bottom-menu flex-center">
-      <div class="append-track large inverted basic green ui icon button">
+      <div class="append-track large inverted green ui icon button {{disabledClass}}">
         <i class="add icon"></i>
         Add Track
       </div>

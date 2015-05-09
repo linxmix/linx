@@ -19,7 +19,16 @@ Template.MixPage.helpers({
 
     return mix.getElementData();
   },
+
+  disabledClass: function() {
+    return ownsMix(Template.instance()) ? '' : 'disabled';
+  },
 });
+
+function ownsMix(template) {
+  var mix = getMix(template);
+  return mix.get('userId') === Meteor.userId();
+}
 
 Template.MixPage.events({
   'click .save-mix': function(e, template) {
@@ -41,6 +50,13 @@ Template.MixPage.events({
       _id: mix.get('_id'),
       index: mix.getLength(),
     });
+  },
+
+  'click .delete-mix': function(e, template) {
+    var mix = template.data.mix;
+    if (ownsMix(template) && window.confirm("Are you sure you want to delete " + mix.get('title') + "?")) {
+      mix.remove();
+    }
   },
 
   'click .auto-link': function(e, template) {
