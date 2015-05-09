@@ -54,12 +54,17 @@ LoadingQueueModel = Graviton.Model.extend({
         console.log("calling function", loadingItem);
         loadingItem.onSuccess(function() {
           console.log("4 finish queue", arguments);
-          done()
+          done();
         });
         loadingItem.runCommand();
       });
     });
     this.set('loadingItemIds', loadingItemIds);
+  },
+
+  getProgress: function() {
+    var queue = this.getQueue();
+    return queue.progress();
   },
 
   start: function() {
@@ -69,6 +74,11 @@ LoadingQueueModel = Graviton.Model.extend({
   onSuccess: function(cb) {
     var queue = this.getQueue();
     queue.onEnded = Utils.chain(queue.onEnded, cb);
+  },
+
+  onSuccessFirst: function(cb) {
+    var queue = this.getQueue();
+    queue.onEnded = Utils.chain(cb, queue.onEnded);
   },
 
   getQueue: function() {
@@ -98,23 +108,23 @@ LoadingQueueModel = Graviton.Model.extend({
   },
 
   getCurrentIndex: function() {
-    return this.getNumCompleted();
+    return this.getNumComplete();
   },
 
   getNumProcessing: function() {
     return this.getQueue().processing();
   },
 
-  getNumCompleted: function() {
+  getNumComplete: function() {
     return this.getNumTotal() - this.getNumRemaining();
   },
 
   getNumRemaining: function() {
-    return this.getQueue().total();
+    return this.getQueue().length();
   },
 
   getNumTotal: function() {
-    return this.getQueue().length();
+    return this.getQueue().total();
   },
 });
 

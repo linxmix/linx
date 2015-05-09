@@ -1,12 +1,19 @@
 Template.Loading_Modal.created = function() {
   Utils.requireTemplateData.call(this, 'loadingQueue');
+  this.data.loadingQueue.start();
 };
 
 Template.Loading_Modal.rendered = function() {
   var template = this;
-  template.$('.Loading_Modal').modal({
+  var $modal = template.$('.Loading_Modal');
+
+  $modal.modal({
     closable: false,
   }).modal('show');
+
+  template.data.loadingQueue.onSuccessFirst(function() {
+    $modal.modal('hide');
+  });
 };
 
 Template.Loading_Modal_Inner.rendered = function() {
@@ -17,10 +24,25 @@ Template.Loading_Modal_Inner.rendered = function() {
   this.autorun(function() {
     var template = Template.instance();
     var loadingQueue = template.data.loadingQueue;
-    var itemModels = loadingQueue.getItems();
+
+    console.log("loadingQueue.getNumProcessing()", loadingQueue.getNumProcessing());
+    console.log("loadingQueue.getNumTotal()", loadingQueue.getNumTotal());
+    console.log("loadingQueue.getNumComplete()", loadingQueue.getNumComplete());
+    console.log("loadingQueue.getNumRemaining()", loadingQueue.getNumRemaining());
+
+
+    $progressBar.show();
+    $progressBar.progress({
+      percent: loadingQueue.getProgress(),
+      text: {
+        active: loadingQueue.get('activeText'),
+        success: loadingQueue.get('successText'),
+      }
+    });
 
 
     // TODO: fix. should have a loadingTemplate for each loadingItem
+    // var itemModels = loadingQueue.getItems();
     // if (!itemModels.length) {
     //   $progressBar.hide();
     // } else {
@@ -37,25 +59,13 @@ Template.Loading_Modal_Inner.rendered = function() {
 };
 
 Template.Loading_Modal_Inner.helpers({
-
-
-  numberText: function() {
+  numComplete: function() {
     var template = Template.instance();
-    return template.data.loadingQueue.getNumRemaining();
+    return template.data.loadingQueue.getNumComplete();
+  },
 
-
-    // var $progressBar = template.$('.progress-bar');
-
-    // // update progress bar
-    // $progressBar.show();
-    // if (_.isNumber(options.percent)) {
-    //   $progressBar.progress({
-    //     percent: options.percent,
-    //     text: {
-    //       active: "Uploading...",
-    //       success: "Uploaded!"
-    //     },
-    //   });
-    // }
+  numTotal: function() {
+    var template = Template.instance();
+    return template.data.loadingQueue.getNumTotal();
   },
 });
