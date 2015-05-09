@@ -21,3 +21,7 @@ Meteor.publish("MixElements", function () {
 Meteor.publish("Plays", function () {
   return this.userId ? Plays.find(defaultParams) : this.ready();
 });
+
+Meteor.publish("userData", function () {
+  return this.userId ? Meteor.users.find(defaultParams) : this.ready();
+});
