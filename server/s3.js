@@ -16,7 +16,8 @@ Slingshot.createDirective("s3FileUpload", Slingshot.S3Storage, {
   },
 
   key: function (file) {
-    return Date.now() + " - " + file.name;
+    var fileExt = file.name.split('.').pop();
+    return Date.now() + ' - ' + JSON.stringify(file.name).replace(/\W/g, '') + '.' + fileExt;
   }
 });
 

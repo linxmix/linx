@@ -126,7 +126,7 @@ TrackModel = Graviton.Model.extend({
   },
 
   getAudioFileUrl: function() {
-    var audioFile = this.audioFile();
+    var audioFile = this.getAudioFile();
     return audioFile && audioFile.get('dataUrl');
   },
 
@@ -163,9 +163,13 @@ TrackModel = Graviton.Model.extend({
     return this.get('type') + 's';
   },
 
+  getAudioFile: function() {
+    return _.isFunction(this.audioFile) ? this.audioFile() : this.audioFile.all()[0];
+  },
+
   setAudioFile: function(file) {
     var track = this;
-    var fileModel = track.audioFile() || AudioFiles.create({ trackId: track.get('_id') });
+    var fileModel = track.getAudioFile() || AudioFiles.create({ trackId: track.get('_id') });
 
     fileModel.setFile(file, {
       onProgress: function(percent) {
@@ -242,7 +246,7 @@ TrackModel = Graviton.Model.extend({
     var track = this;
     console.log("saving to backend", track.get('title'));
 
-    track.audioFile().calcMD5({
+    track.getAudioFile().calcMD5({
       onSuccess: function(md5) {
         track.setMD5(md5);
 
@@ -270,7 +274,7 @@ TrackModel = Graviton.Model.extend({
 
   _uploadToS3: function(options) {
     var track = this;
-    var fileModel = track.audioFile();
+    var fileModel = track.getAudioFile();
 
     if (!(track && fileModel && fileModel.getFile())) {
       throw new Error('Cannot upload track to s3 without file: ' + track.get('title'));

@@ -146,7 +146,6 @@ Template.MixPage.events({
 
           function next() {
 
-            console.log("next", fromWave.getTrack(), fromWave.getAnalysis(), toWave.getTrack(), toWave.getAnalysis());
             // compare waves, then add regions
             var matches = fromWave.compareTo(toWave);
 
@@ -158,6 +157,7 @@ Template.MixPage.events({
               toTrackId: toTrack.get('_id')
             });
             link.store();
+            console.log("inserting link", index, fromTrack.get('title'), toTrack.get('title'));
             mix.insertLinkAt(link, index - 1);
 
             options.onSuccess();

@@ -38,6 +38,13 @@ LoadingQueueModel = Graviton.Model.extend({
       maxProcessing: 1,
     }, options));
 
+    var prevErrorHandler = queue.errorHandler;
+    queue.errorHandler = function(data, addTask) {
+      console.log("QUEUE ERROR", data, addTask, prevErrorHandler);
+      prevErrorHandler && prevErrorHandler.call(this, arguments);
+
+    };
+
     POWER_QUEUES.set(this.get('_id'), queue);
     return queue;
   },

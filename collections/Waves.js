@@ -141,7 +141,7 @@ WaveModel = Graviton.Model.extend({
     wavesurfer.on('error', function(errorMessage) {
       template.$('.progress-bar').hide();
       wave.set('loading', false);
-      window.alert("Wave Error: " + (errorMessage || 'unknown error'));
+      console.error("Wave Error: " + (errorMessage || 'unknown error'), errorMessage);
     });
 
     wavesurfer.on('finish', function() {
@@ -209,7 +209,7 @@ WaveModel = Graviton.Model.extend({
 
   play: function(time) {
     var wavesurfer = this.getWaveSurfer();
-    if (wavesurfer) {
+    if (wavesurfer && this.get('loaded')) {
       var prev = Waves.findOne(Session.get('playingWave'));
       if (prev) {
         prev.pause();

@@ -1,19 +1,26 @@
 Template.Loading_Modal.created = function() {
   Utils.requireTemplateData.call(this, 'loadingQueue');
-  this.data.loadingQueue.start();
 };
 
 Template.Loading_Modal.rendered = function() {
   var template = this;
+  var loadingQueue = template.data.loadingQueue;
   var $modal = template.$('.Loading_Modal');
 
   $modal.modal({
     closable: false,
+    onVisible: function() {
+      // start queue when modal is visible
+      Utils.log("visible');")
+      loadingQueue.start();
+    }
   }).modal('show');
 
-  template.data.loadingQueue.onSuccessFirst(function() {
+  loadingQueue.onSuccessFirst(function() {
     $modal.modal('hide');
   });
+
+  
 };
 
 Template.Loading_Modal_Inner.rendered = function() {
@@ -56,6 +63,7 @@ Template.Loading_Modal_Inner.rendered = function() {
     // }
 
   }.bind(this));
+
 };
 
 Template.Loading_Modal_Inner.helpers({

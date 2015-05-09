@@ -3,7 +3,7 @@
     <div class="wave {{hiddenClass}}">
     </div>
     {{> ProgressBar class="loading"}}
-    {{> ProgressBar class="trackLoading"}}
+    {{> ProgressBar class="trackLoading" displayNone=true}}
 
       <!-- Header -->
       {{#unless hideHeader}}
@@ -59,10 +59,19 @@
 </template>
 
 <template name="ProgressBar">
-  <div class="ui active inverted blue progress progress-bar {{class}}">
-    <div class="bar">
-      <div class="progress"></div>
+  {{#unless displayNone}}
+    <div class="ui active inverted blue progress progress-bar {{class}}" style='display:none;'>
+      <div class="bar">
+        <div class="progress"></div>
+      </div>
+      <div class="label"></div>
     </div>
-    <div class="label"></div>
-  </div>
+  {{else}}
+    <div class="ui active inverted blue progress progress-bar {{class}}">
+      <div class="bar">
+        <div class="progress"></div>
+      </div>
+      <div class="label"></div>
+    </div>
+  {{/unless}}
 </template>

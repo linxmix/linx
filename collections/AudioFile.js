@@ -60,7 +60,6 @@ AudioFileModel = Graviton.Model.extend({
     // chain onSuccess
     var fileModel = this;
     options.onSuccess = _.compose(options.onSuccess, function(dataUrl) {
-      console.log("setting dataUrl", dataUrl);
       fileModel.set('dataUrl', dataUrl);
       return dataUrl;
     });
