@@ -136,6 +136,8 @@ MixModel = Graviton.Model.extend({
       var wave = element.getWave();
       var link = element.link();
 
+      wave.setTrack(track);
+
       var prevWave = prev.wave;
       var prevLink = prev.link;
 

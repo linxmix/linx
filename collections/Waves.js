@@ -270,7 +270,8 @@ WaveModel = Graviton.Model.extend({
   },
 
   getDragSelection: function() {
-    return this.getWaveSurfer().regions.list['drag-selection'];
+    var wavesurfer = this.getWaveSurfer();
+    return wavesurfer && wavesurfer.regions.list['drag-selection'];
   },
 
   assertRegion: function(link, params) {
