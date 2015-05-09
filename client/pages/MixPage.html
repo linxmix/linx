@@ -5,9 +5,9 @@
     <h1 class="inverted ui center aligned header">
       <div class="content">
         {{> TextField model=mix property="title" inputClass="massive"}}
-        <div class="sub header">
-          {{> TextField model=mix property="artist" inputClass="huge"}}
-        </div>
+        <!-- <div class="sub header"> -->
+          <!-- {{> TextField model=mix property="artist" inputClass="huge"}} -->
+        <!-- </div> -->
       </div>
     </h1>
 
@@ -29,13 +29,30 @@
       </div>
     </div>
 
-    <div class="delete-mix large inverted basic red ui icon button right floated {{disabledClass}}">
-      <i class="remove icon"></i>
-      Delete Mix
-    </div>
-    <div class="auto-link large inverted basic orange ui icon button right floated {{disabledClass}}">
-      <i class="linkify icon"></i>
-      Auto Link
+    <div class="top-menu inverted ui right floated menu">
+      {{#if mix.getLength}}
+        <div class="toggle-accordions inverted basic purple ui icon button">
+          {{#unless allAccordionsOpen}}
+            <i class="expand icon"></i>
+            Open Tracks
+          {{else}}
+            <i class="compress icon"></i>
+            Close Tracks
+          {{/unless}}
+        </div>
+      {{/if}}
+      <div class="append-track inverted basic green ui icon button {{disabledClass}}">
+        <i class="add icon"></i>
+        Add Track
+      </div>
+      <div class="auto-link inverted basic orange ui icon button {{disabledClass}}">
+        <i class="linkify icon"></i>
+        Auto Link
+      </div>
+      <div class="delete-mix inverted basic red ui icon button {{disabledClass}}">
+        <i class="remove icon"></i>
+        Delete Mix
+      </div>
     </div>
 
     <!-- Track Accordions -->
@@ -48,14 +65,6 @@
         {{/each}}
       </div>
     {{/if}}
-
-    <!-- Bottom Menu -->
-    <div class="bottom-menu flex-center">
-      <div class="append-track large inverted green ui icon button {{disabledClass}}">
-        <i class="add icon"></i>
-        Add Track
-      </div>
-    </div>
 
     {{> yield region="modal"}}
   </div>

@@ -1,10 +1,51 @@
 Template.MixPage.created = function() {
   Utils.initTemplateModel.call(this, 'mix');
+
+  this.openAccordions = new ReactiveVar([]);
 };
 
 function getMix(template) {
   var model = template.data.mix;
   return model;
+}
+
+function toggleAccordion(toggleIndex) {
+  var template = this;
+  var open = template.openAccordions.get();
+  var existingIndex = open.indexOf(toggleIndex);
+
+  if (existingIndex > -1) {
+    open.splice(existingIndex, 1);
+  } else {
+    open.push(toggleIndex);
+  }
+
+  template.openAccordions.set(open);
+}
+
+function getOpenAccordions(template) {
+  return template.openAccordions.get();
+}
+
+function getClosedAccordions(template) {
+  var open = template.openAccordions.get();
+  var mix = template.data.mix;
+  var closed = [];
+
+  for (var i = 0; i < mix.getLength(); i++) {
+    if (open.indexOf(i) === -1) {
+      closed.push(i);
+    }
+  }
+
+  return closed;
+}
+
+function allAccordionsOpen(template) {
+  var open = getOpenAccordions(template);
+  var mix = template.data.mix;
+
+  return open.length === mix.getLength();
 }
 
 Template.MixPage.helpers({
@@ -16,8 +57,17 @@ Template.MixPage.helpers({
   tracksAccordion: function() {
     var template = Template.instance();
     var mix = getMix(template);
+    var openAccordions = template.openAccordions.get();
 
-    return mix.getElementData();
+    return mix.getElementData().map(function(data) {
+      data.isAccordionOpen = (openAccordions.indexOf(data.index) !== -1);
+      data.toggleAccordion = toggleAccordion.bind(template);
+      return data;
+    });
+  },
+
+  allAccordionsOpen: function() {
+    return allAccordionsOpen(Template.instance());
   },
 
   disabledClass: function() {
@@ -41,6 +91,15 @@ Template.MixPage.events({
       Router.go('mix', {
         _id: mix.get('_id')
       });
+    }
+  },
+
+  'click .toggle-accordions': function(e, template) {
+    if (allAccordionsOpen(template)) {
+      template.openAccordions.set([]);
+    } else {
+      var closedIndices = getClosedAccordions(template);
+      template.openAccordions.set(template.openAccordions.get().concat(closedIndices));
     }
   },
 

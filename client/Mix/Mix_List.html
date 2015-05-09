@@ -5,7 +5,7 @@
       {{#each mixes}}
         {{#linkTo route='mix' data=this.getRouteData class="item"}}
           <div class="content">
-            <div class="header">{{this.attributes.title}} - {{this.attributes.artist}} - {{this.user.username}}</div>
+            <div class="header">{{this.attributes.title}} - {{this.user.username}}</div>
             <div class="description">{{this.getTracks.length}} Tracks</div>
             <div class="description">{{this.getLinks.length}} Links</div>
           </div>

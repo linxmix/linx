@@ -4,13 +4,9 @@ Template.Track_Accordion.created = function() {
   Utils.initTemplateModel.call(this, 'mix');
 
   Utils.requireTemplateData.call(this, 'index');
-
-  this.isActive = new ReactiveVar(false);
+  Utils.requireTemplateData.call(this, 'isAccordionOpen');
+  Utils.requireTemplateData.call(this, 'toggleAccordion');
 };
-
-function templateIsActive(template) {
-  return template.isActive.get();
-}
 
 Template.Track_Accordion.helpers({
   position: function() {
@@ -18,7 +14,7 @@ Template.Track_Accordion.helpers({
   },
 
   activeClass: function() {
-    return templateIsActive(Template.instance()) ? 'active' : '';
+    return Template.currentData().isAccordionOpen ? 'active' : '';
   },
 
   isLastTrack: function() {
@@ -29,8 +25,7 @@ Template.Track_Accordion.helpers({
 
 Template.Track_Accordion.events({
   'click .title': function(e, template) {
-    var isActive = template.isActive;
-    isActive.set(!isActive.get());
+    template.data.toggleAccordion(template.data.index);
   },
 
   'click .remove-track': function(e, template) {
