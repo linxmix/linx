@@ -83,8 +83,8 @@ WaveModel = Graviton.Model.extend({
       minPxPerSec: 20,
       normalize: true,
       height: 128,
-      fillParent: true,
-      scrollParent: false,
+      fillParent: false,
+      scrollParent: true,
       cursorWidth: 2,
       renderer: 'Canvas',
     };
@@ -137,7 +137,6 @@ WaveModel = Graviton.Model.extend({
 
       // wave.setPitch(2);
       wave.initSoundTouch();
-      wave.play();
     });
 
     wavesurfer.on('reset', function() {
@@ -204,11 +203,6 @@ WaveModel = Graviton.Model.extend({
 
       soundTouch.pitchSemitones = wave.get('pitchSemitones');
       soundTouch.tempoChange = wave.get('tempoChange');
-      if (wave.get('skipST')) {
-        for (var i = 0; i < inputBuffer.length; i++) {
-          outputBuffer[i] = inputBuffer[i];
-        }
-      }
       // wavesurfer.setPlaybackRate(soundTouch.rate);
       // soundTouch.tdStretch.inputBuffer = soundTouch.inputBuffer;
       // soundTouch.tdStretch.outputBuffer = soundTouch.outputBuffer;
@@ -405,6 +399,40 @@ WaveModel = Graviton.Model.extend({
     });
 
     this.saveAttrs('linkToId', link.get('_id'));
+  },
+
+  drawParams: function(paramsArray) {
+    var wave = this;
+    paramsArray.forEach(function(params) {
+      wave.assertRegion(undefined, params);
+    });
+  },
+
+  drawSections: function() {
+    this.drawParams(this.getAnalysis().sections.map(function(section) {
+      return {
+        color: 'blue',
+        start: section.start,
+      };
+    }));
+  },
+
+  drawBeats: function() {
+    this.drawParams(this.getAnalysis().beats.map(function(section) {
+      return {
+        color: 'red',
+        start: section.start,
+      };
+    }));
+  },
+
+  drawBars: function() {
+    this.drawParams(this.getAnalysis().bars.map(function(section) {
+      return {
+        color: 'green',
+        start: section.start,
+      };
+    }));
   },
 
   drawRegions: function() {

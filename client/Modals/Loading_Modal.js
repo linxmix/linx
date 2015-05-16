@@ -11,7 +11,6 @@ Template.Loading_Modal.rendered = function() {
     closable: false,
     onVisible: function() {
       // start queue when modal is visible
-      Utils.log("visible');")
       loadingQueue.start();
     }
   }).modal('show');
