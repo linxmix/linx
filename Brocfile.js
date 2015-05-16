@@ -21,4 +21,22 @@ var app = new EmberApp({
 // please specify an object with the list of modules as keys
 // along with the exports of each module as its value.
 
-module.exports = app.toTree();
+
+// Hack webworker support
+// http://stackoverflow.com/questions/24175120/ember-cli-project-and-web-workers
+var pickFiles = require('broccoli-static-compiler');
+
+var workers = pickFiles('workers', {
+  srcDir: '/',
+  files: ['*.js'],
+  destDir: '/assets/workers'
+});
+
+if (process.env.EMBER_ENV === 'production') {
+  workers = require('broccoli-uglify-js')(workers, {
+    mangle: true,
+    compress: true
+  });
+}
+
+module.exports = app.toTree(workers);
