@@ -1,6 +1,17 @@
 <h2 id="title">Welcome to Ember.js</h2>
 
-{{outlet}}
+<div class="main-container">
+  {{#arrangement-grid arrangement=arrangement}}
+    {{#each row in arrangement.rows}}
+      {{#arrangement-row row=row}}
+        {{#each clip in row.clips}}
+          {{clip-wave clip=clip}}
+        {{/each}}
+      {{/arrangement-row}}
+    {{/each}}
+  {{/arrangement-grid}}
+</div>
+
 
 {{!-- ember-cli-materialize modal container --}}
 {{md-modal-container}}
