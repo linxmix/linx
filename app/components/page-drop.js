@@ -5,8 +5,12 @@ export default Ember.Component.extend({
   classNameBindings: ['isDraggingOver:drag-over'],
 
   actions: {
-    onDrop: function(files) {
-      this.sendAction('action', files);
+    onDrop: function(fileList) {
+      var fileArray = [];
+      for (var i = 0; i < fileList.length; i++) {
+        fileArray[i] = fileList[i];
+      }
+      this.sendAction('action', fileArray);
     }
   },
 

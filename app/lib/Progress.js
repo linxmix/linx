@@ -1,5 +1,6 @@
 import Ember from 'ember';
 
+// TODO: convert to promise
 export default Ember.Object.extend({
   isLoading: false,
   percent: 0,

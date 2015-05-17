@@ -1,17 +1,21 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
+// Clip that points to a section of an AudioBuffer
 export default DS.Model.extend({
-  start: DS.attr('string'),
-  end: DS.attr('string'),
+  start: DS.attr('number'),
+  end: DS.attr('number'),
+  type: 'audio-clip',
 
-  metronome: DS.belongsTo('metronome'),
+  // TODO: make this be a buffer
+  file: DS.attr(),
 
-  track: DS.belongsTo('track'),
-  buffer: DS.belongsTo('audio-buffer'),
+  length: function() {
+    return this.get('end') - this.get('start');
+  }.property('start', 'end'),
 });
 
-// code to copy section of audiobuffer
+// TODO: code to copy section of audiobuffer
 // var app = {
 //  trimBlob : function(params){
 

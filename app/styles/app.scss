@@ -2,8 +2,11 @@
 @import 'index';
 
 @import 'components/wave_surfer';
+@import 'components/page_drop';
 
-
+@import 'components/arrangement_grid';
+@import 'components/arrangement_row';
+@import 'components/arrangement_clip';
 
 
 /* FIXME: Workaround for https://github.com/Dogfalo/materialize/issues/1079 */

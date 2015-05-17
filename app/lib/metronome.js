@@ -39,7 +39,7 @@ export default Ember.Object.extend({
 
   update: function(beat) {
     // TODO
-    this.set('bar', (beat / 4);
+    this.set('bar', (beat / 4));
     this.set('minutes', minutesFormat);
     this.set('seconds', secondsFormat);
   },
