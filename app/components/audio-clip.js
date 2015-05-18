@@ -1,8 +1,10 @@
 import Ember from 'ember';
+import RequireParams from 'linx/mixins/require-params';
 
-export default Ember.Component.extend({
+RequireParams.reopen({
+  params: ['model'],
+});
+
+export default Ember.Component.extend(RequireParams, {
   classNames: ['audio-clip'],
-
-  // expected params
-  model: null,
 });

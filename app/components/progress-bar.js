@@ -1,6 +1,11 @@
 import Ember from 'ember';
+import RequireParams from 'linx/mixins/require-params';
 
-export default Ember.Component.extend({
+RequireParams.reopen({
+  params: ['progress'],
+});
+
+export default Ember.Component.extend(RequireParams, {
   classNames: ['progress-bar'],
   classNameBindings: ['isLoading::hidden'],
 
@@ -8,7 +13,4 @@ export default Ember.Component.extend({
 
   // params
   isLoading: Ember.computed.alias('progress.isLoading'),
-
-  // expected params
-  progress: null,
 });

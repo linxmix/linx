@@ -1,15 +1,17 @@
 import Ember from 'ember';
 import Wavesurfer from 'npm:wavesurfer.js';
 import Progress from 'linx/lib/progress';
+import RequireParams from 'linx/mixins/require-params';
 
-export default Ember.Component.extend({
+RequireParams.reopen({
+  params: ['clip'],
+});
+
+export default Ember.Component.extend(RequireParams, {
   classNames: ['wave-surfer'],
 
-  // expected params
-  clip: null,
-
   // params
-  wave: null,
+  wave: Ember.computed(function() { return WaveProxy.create(); }),
   progress: Ember.computed.alias('wave.progress'),
   defaultParams: {
     // audioContext: App.audioContext, TODO
@@ -25,10 +27,6 @@ export default Ember.Component.extend({
     renderer: 'Canvas',
   },
 
-  createWave: function() {
-    this.set('wave', WaveProxy.create());
-  }.on('init'),
-
   initWave: function() {
     var wave = this.get('wave');
 
@@ -39,13 +37,18 @@ export default Ember.Component.extend({
     wave.initWavesurfer(Ember.merge(this.get('defaultParams'), params));
   }.on('didInsertElement'),
 
+  destroyWave: function() {
+    var wave = this.get('wave');
+    wave && wave.destroy();
+  }.on('willDestroyElement'),
+
   // TODO: better way to do this?
   updateWaveFile: function() {
     var wave = this.get('wave');
     var file = this.get('clip.file');
 
     wave && wave.set('file', file);
-  }.observes('wave', 'clip.file')
+  }.observes('wave', 'clip.file').on('init'),
 });
 
 // Proxy object that holds Wavesurfer
@@ -59,7 +62,7 @@ export const WaveProxy = Ember.ObjectProxy.extend({
   isLoading: Ember.computed.alias('progress.isLoading'),
   isLoaded: false,
   
-  progress: null,
+  progress: Ember.computed(function() { return Progress.create(); }),
 
   loadFile: function() {
     var file = this.get('file');
@@ -96,10 +99,6 @@ export const WaveProxy = Ember.ObjectProxy.extend({
     var wavesurfer = this.get('wavesurfer');
     wavesurfer && wavesurfer.destroy();
   }.on('destroy'),
-
-  initProgress: function() {
-    this.set('progress', this.get('progress') || Progress.create());
-  }.on('init'),
 
   initWavesurfer: function(params) {
     // console.log('init wavesurfer', params, this.get('file'));
