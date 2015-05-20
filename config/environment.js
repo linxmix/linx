@@ -4,6 +4,7 @@ module.exports = function(environment) {
   var ENV = {
     modulePrefix: 'linx',
     environment: environment,
+    firebase: 'https://torrid-inferno-9824.firebaseio.com/',
     baseURL: '/',
     locationType: 'auto',
     EmberENV: {
@@ -14,8 +15,13 @@ module.exports = function(environment) {
     },
 
     contentSecurityPolicy: {
-      // allow webworks from self origin
+      // allow webworkers
       'default-src': "'self'",
+
+      // allow firebase
+      'connect-src': "'self' wss://*.firebaseio.com",
+      'frame-src': "'self' https://*.firebaseio.com",
+      'script-src': "'self' 'unsafe-inline' https://*.firebaseio.com"
     },
 
     APP: {

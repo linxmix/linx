@@ -42,6 +42,7 @@
     "ember-modal-dialog": "0.3.0",
     "ember-new-computed": "1.0.0",
     "ember-radio-button": "1.0.4",
+    "emberfire": "1.4.4",
     "waaclock": "^0.5.2",
     "wavesurfer.js": "^1.0.27"
   },
