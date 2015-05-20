@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import Migrate from 'linx/lib/migrations/linx-meteor';
 
 export default Ember.Route.extend({
   actions: {
@@ -10,13 +11,17 @@ export default Ember.Route.extend({
       // for each file, add to new row
       var rows = files.map(function(file) {
 
-        // create audio-clip, arrangement-clip, arrangement-row.
-        var audioClip = store.createRecord('audio-clip', { file: file, });
-        var clip = store.createRecord('arrangement-clip');
+        // create audio-clip, arrangement-item, arrangement-row.
+        var clip = store.createRecord('audio-clip', { file: file, type: 'audio-clip' });
+        var item = store.createRecord('arrangement-item');
         var row = store.createRecord('arrangement-row');
 
-        clip.set('audioClip', audioClip);
-        row.addClip(clip);
+        item.set('clip', clip);
+        row.addItem(item);
+
+        clip.save();
+        item.save();
+        row.save();
 
         return row;
       });
@@ -28,6 +33,8 @@ export default Ember.Route.extend({
 
   setupController: function(controller, models) {
     controller.setProperties(models);
+
+    // Migrate(this.get('store'));
   },
 
   model: function() {
@@ -37,6 +44,11 @@ export default Ember.Route.extend({
     // new Worker('assets/workers/file-decoder.js');
 
     return Ember.RSVP.hash({
+      tracks: store.find('track'),
+      items: store.find('arrangement-item'),
+      // item: store.findPolymorphic('arrangement-item', 'clip', '-JpixY_gJcUYPDifgllk'),
+      // item: store.find('arrangement-item', '-JpixY_gJcUYPDifgllk'),
+      // clip: store.find('audio-clip', '-JpixY_dno-W300KB5_J'),
       arrangement: store.createRecord('arrangement', {}),
     });
   }

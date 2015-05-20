@@ -1,13 +1,11 @@
 import Ember from 'ember';
 import Wavesurfer from 'npm:wavesurfer.js';
 import Progress from 'linx/lib/progress';
-import RequireParams from 'linx/mixins/require-params';
+import RequireAttrs from 'linx/lib/require-attributes';
 
-RequireParams.reopen({
-  params: ['clip'],
-});
+export default Ember.Component.extend(
+  RequireAttrs('clip'), {
 
-export default Ember.Component.extend(RequireParams, {
   classNames: ['wave-surfer'],
 
   // params

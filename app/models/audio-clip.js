@@ -1,18 +1,11 @@
 import Ember from 'ember';
 import DS from 'ember-data';
+import AbstractClip from './abstract-clip';
 
 // Clip that points to a section of an AudioBuffer
-export default DS.Model.extend({
-  start: DS.attr('number'),
-  end: DS.attr('number'),
-  type: 'audio-clip',
-
+export default AbstractClip.extend({
   // TODO: make this be a buffer
   file: DS.attr(),
-
-  length: function() {
-    return this.get('end') - this.get('start');
-  }.property('start', 'end'),
 });
 
 // TODO: code to copy section of audiobuffer

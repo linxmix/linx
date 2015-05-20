@@ -1,8 +1,7 @@
 import Ember from 'ember';
-import Clock from 'lib/clock';
 
-export default Ember.Application.initializer({
-  name: 'audioContext',
+export default {
+  name: 'audio-context',
 
   initialize: function(container, application) {
     application.audioContext = this.getAudioContext();
@@ -23,4 +22,4 @@ export default Ember.Application.initializer({
   //     }
   //     return WaveSurfer.WebAudio.offlineAudioContext;
   // },
-});
+};

@@ -5,13 +5,13 @@ export default DS.Model.extend({
   index: DS.attr('number'),
 
   arrangement: DS.belongsTo('arrangement'),
-  clips: DS.hasMany('arrangement-clip'),
+  items: DS.hasMany('arrangement-item'),
 
-  addClip: function(clip) {
-    this.addClips([clip]);
+  addItem: function(item) {
+    return this.addItems([item]);
   },
 
-  addClips: function(clips) {
-    this.get('clips').pushObjects(clips);
+  addItems: function(items) {
+    this.get('items').pushObjects(items);
   },
 });

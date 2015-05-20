@@ -4,7 +4,7 @@ module.exports = function(environment) {
   var ENV = {
     modulePrefix: 'linx',
     environment: environment,
-    firebase: 'https://torrid-inferno-9824.firebaseio.com/',
+    firebase: 'https://linx-2-acceptance.firebaseio.com/',
     baseURL: '/',
     locationType: 'auto',
     EmberENV: {
@@ -51,7 +51,8 @@ module.exports = function(environment) {
   }
 
   if (environment === 'production') {
-
+    // set prod backend
+    ENV.firebase = 'https://linx-2.firebaseio.com/';
   }
 
   return ENV;
