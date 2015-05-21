@@ -3,6 +3,9 @@
 module.exports = function(environment) {
   var ENV = {
     modulePrefix: 'linx',
+    // namespaced directory where resolver will look for resource files
+    podModulePrefix: 'linx/pods',
+
     environment: environment,
     firebase: 'https://linx-2-acceptance.firebaseio.com/',
     baseURL: '/',
@@ -27,7 +30,7 @@ module.exports = function(environment) {
     APP: {
       // Here you can pass flags/options to your application instance
       // when it is created
-    },
+    }
   };
 
   if (environment === 'development') {
