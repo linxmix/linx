@@ -14,7 +14,6 @@ Router.map(function() {
   this.route('mix', { path: 'mixes/:id' });
 
   // TODO - delete fakes
-  this.route('linx');
   this.route('upload');
 
 });

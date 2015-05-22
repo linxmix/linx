@@ -1,0 +1,9 @@
+<div class="mixes-page">
+  {{#each mix in model}}
+    <div class="mix">
+      {{#link-to 'mix' mix}}
+        {{mix.title}}
+      {{/link-to}}
+    </div>
+  {{/each}}
+</div>

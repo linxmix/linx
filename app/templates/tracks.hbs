@@ -1,0 +1,9 @@
+<div class="tracks-page">
+  {{#each track in model}}
+    <div class="track">
+      {{#link-to 'track' track}}
+        {{track.title}}
+      {{/link-to}}
+    </div>
+  {{/each}}
+</div>
