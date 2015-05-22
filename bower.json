@@ -14,7 +14,8 @@
     "qunit": "~1.17.1",
     "materialize": "~0.96.0",
     "pace": "vectart/pace#master",
-    "firebase": "^2.1.0"
+    "firebase": "^2.1.0",
+    "semantic-ui": "~1.12.3"
   },
   "resolutions": {
     "jquery": ">=2.1.1"

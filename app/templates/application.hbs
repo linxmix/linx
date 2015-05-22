@@ -1,29 +1,9 @@
-<h2 id="title">Welcome to Ember.js</h2>
+<div class="application">
+  {{site-nav}}
 
-<div class="main-container">
-  {{item.clip.type}}
-  {{#arrangement-grid arrangement=arrangement}}
-    {{#each row in arrangement.sortedRows}}
-      {{#arrangement-row row=row}}
-        {{#each item in row.items}}
-          {{arrangement-item item=item}}
-        {{/each}}
-      {{/arrangement-row}}
-    {{/each}}
-  {{/arrangement-grid}}
+  <div class="main-container pusher">
+    {{outlet}}
+  </div>
+
+  {{page-drop action="onPageDrop"}}
 </div>
-
-{{#each item in items}}
-  <div>{{item.id}} - {{item.clip.id}} - {{item.clip.file.name}}</div>
-{{/each}}
-
-<hr/>
-
-{{#each track in tracks}}
-  <div>{{track.title}}</div>
-{{/each}}
-
-
-{{page-drop action="onPageDrop"}}
-
-{{outlet}}

@@ -1,12 +1,11 @@
+$site-nav-height: 35px;
+
 @import 'index';
 
+@import 'components/site_nav';
 @import 'components/wave_surfer';
 @import 'components/page_drop';
 
 @import 'components/arrangement_grid';
 @import 'components/arrangement_row';
 @import 'components/arrangement_clip';
-
-body {
-  background-color: blue;
-}

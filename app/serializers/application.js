@@ -15,7 +15,6 @@ export default DS.FirebaseSerializer.extend({
 
     console.log("serializePolymorphicType", snapshot, json, relationship);
 
-
     return this._super.apply(this, arguments);
   },
 

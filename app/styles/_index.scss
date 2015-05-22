@@ -1,5 +1,17 @@
+.application {
+  min-height: 100vh;
+
+  background-color: #121314 !important; // override semantic
+}
+
 .main-container {
+  padding-top: $site-nav-height;
+
   width: 70%;
   margin: 0 auto;
-  border: 1px solid gray;
+
+}
+
+.pusher {
+  // top: -20px;
 }
