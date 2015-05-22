@@ -42,6 +42,7 @@
     "ember-new-computed": "1.0.0",
     "ember-radio-button": "1.0.4",
     "emberfire": "1.4.4",
+    "semantic-ui-ember": "0.0.1-rc.8",
     "waaclock": "^0.5.2",
     "wavesurfer.js": "^1.0.27"
   },

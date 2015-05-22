@@ -24,7 +24,11 @@ module.exports = function(environment) {
       // allow firebase
       'connect-src': "'self' wss://*.firebaseio.com",
       'frame-src': "'self' https://*.firebaseio.com",
-      'script-src': "'self' 'unsafe-inline' https://*.firebaseio.com"
+      'script-src': "'self' 'unsafe-inline' https://*.firebaseio.com",
+
+      // allow semantic-ui fonts and style
+      'font-src': "'self' https://fonts.gstatic.com data:",
+      'style-src': "'self' https://fonts.googleapis.com",
     },
 
     APP: {
