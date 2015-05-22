@@ -1,4 +1,8 @@
 <div class="mixes-page">
+  <div class="inverted green ui icon button" {{action 'createMix'}}>
+    <i class="add icon"></i>
+    New Mix
+  </div>
   {{#each mix in model}}
     <div class="mix">
       {{#link-to 'mix' mix}}

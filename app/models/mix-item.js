@@ -1,8 +1,10 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-import AbstractListMixin from 'linx/lib/models/abstract-list';
 import AbstractListItemMixin from 'linx/lib/models/abstract-list-item';
 
 export default DS.Model.extend(
-  AbstractListItemMixin('arrangement'), AbstractListMixin('arrangement-item'), {
+  AbstractListItemMixin('mix'), {
+
+  track: DS.belongsTo('track'),
+  transition: DS.belongsTo('transition'),
 });

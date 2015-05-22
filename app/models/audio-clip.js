@@ -1,9 +1,9 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-import AbstractClip from './abstract-clip';
+import Clip from './clip';
 
 // Clip that points to a section of an AudioBuffer
-export default AbstractClip.extend({
+export default Clip.extend({
   // TODO: make this be a buffer
   file: DS.attr(),
 });

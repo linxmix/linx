@@ -1,0 +1,17 @@
+<div>{{model.title}}</div>
+<div class="inverted orange ui icon button {{if model.isDirty '' 'basic disabled'}}" {{action 'saveMix'}}>
+  <i class="cloud upload icon"></i>
+  Save Mix
+</div>
+<div class="inverted red ui icon button" {{action 'deleteMix'}}>
+  <i class="remove icon"></i>
+  Delete Mix
+</div>
+
+{{#mix-item-list mix=model}}
+  {{#each mixItem in model.content}}
+    {{mix-item mixItem=mixItem}}
+  {{/each}}
+{{/mix-item-list}}
+
+{{page-drop action="onPageDrop"}}

@@ -6,12 +6,13 @@ var Router = Ember.Router.extend({
 });
 
 Router.map(function() {
-
   this.route('tracks');
   this.route('track', { path: 'tracks/:id' });
 
   this.route('mixes');
-  this.route('mix', { path: 'mixes/:id' });
+  this.route('mix', { path: 'mixes/:id' }, function() {
+    this.route('transition', { path: 'transitions/:index' });
+  });
 
   // TODO - delete fakes
   this.route('upload');

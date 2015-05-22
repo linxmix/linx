@@ -1,0 +1,19 @@
+<div class="content">
+  <div class="header">
+    {{mixItem.id}}
+  </div>
+  <div class="description">
+    {{#link-to 'track' track}}
+      {{track.title}}
+    {{/link-to}}
+  </div>
+  <div class="description">
+    {{#link-to 'mix.transition' mixItem.index}}
+      {{#if transition}}
+        {{transition.id}}
+      {{else}}
+        Create Transition
+      {{/if}}
+    {{/link-to}}
+  </div>
+</div>

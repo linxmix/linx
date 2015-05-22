@@ -4,12 +4,27 @@ import Progress from 'linx/lib/progress';
 import RequireAttrs from 'linx/lib/require-attributes';
 
 export default Ember.Component.extend(
-  RequireAttrs('clip'), {
+  RequireAttrs('file'), {
 
   classNames: ['wave-surfer'],
 
+  // optional params
+  // TODO: create wavesurfer region, update when start/end change
+  start: 0,
+  end: null,
+  isPlaying: false,
+
   // params
-  wave: Ember.computed(function() { return WaveProxy.create(); }),
+  wave: Ember.computed(function() {
+    var component = this;
+    var waveProxy = WaveProxy.create();
+
+    waveProxy.reopen({
+      file: Ember.computed.oneWay('component.file'),
+    });
+
+    return waveProxy;
+  }),
   progress: Ember.computed.alias('wave.progress'),
   defaultParams: {
     // audioContext: App.audioContext, TODO
@@ -39,14 +54,6 @@ export default Ember.Component.extend(
     var wave = this.get('wave');
     wave && wave.destroy();
   }.on('willDestroyElement'),
-
-  // TODO: better way to do this?
-  updateWaveFile: function() {
-    var wave = this.get('wave');
-    var file = this.get('clip.file');
-
-    wave && wave.set('file', file);
-  }.observes('wave', 'clip.file').on('init'),
 });
 
 // Proxy object that holds Wavesurfer

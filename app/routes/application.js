@@ -1,34 +1,34 @@
 import Ember from 'ember';
-import Migrate from 'linx/lib/migrations/linx-meteor';
+// import Migrate from 'linx/lib/migrations/linx-meteor';
 
 export default Ember.Route.extend({
   actions: {
-    onPageDrop: function(files) {
-      console.log("page drop", files);
-      var store = this.get('store');
-      var arrangement = this.get('controller.arrangement');
+    // onPageDrop: function(files) {
+    //   console.log("page drop", files);
+    //   var store = this.get('store');
+    //   var arrangement = this.get('controller.arrangement');
 
-      // for each file, add to new row
-      var rows = files.map(function(file) {
+    //   // for each file, add to new row
+    //   var rows = files.map(function(file) {
 
-        // create audio-clip, arrangement-item, arrangement-row.
-        var clip = store.createRecord('audio-clip', { file: file, type: 'audio-clip' });
-        var item = store.createRecord('arrangement-item');
-        var row = store.createRecord('arrangement-row');
+    //     // create audio-clip, arrangement-item, arrangement-row.
+    //     var clip = store.createRecord('audio-clip', { file: file, type: 'audio-clip' });
+    //     var item = store.createRecord('arrangement-item');
+    //     var row = store.createRecord('arrangement-row');
 
-        item.set('clip', clip);
-        row.addItem(item);
+    //     item.set('clip', clip);
+    //     row.addItem(item);
 
-        clip.save();
-        item.save();
-        row.save();
+    //     clip.save();
+    //     item.save();
+    //     row.save();
 
-        return row;
-      });
+    //     return row;
+    //   });
       
-      // then add to arrangement
-      arrangement.appendRows(rows);
-    }
+    //   // then add to arrangement
+    //   arrangement.appendRows(rows);
+    // }
   },
 
   setupController: function(controller, models) {
