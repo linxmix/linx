@@ -1,11 +1,17 @@
 <div class="track-page">
-  <div>Linx</div>
+  <div>Linx Track</div>
   <div>{{model.title}}</div>
   <div>{{model.artist}}</div>
 
   <hr/>
 
-  <div>Echonest</div>
+  <div>Echonest Track</div>
   <div>{{model.echonestTrack.id}}</div>
   <div>{{model.echonestTrack.artist}}</div>
+
+  <hr/>
+
+  <div>Echonest Analysis</div>
+  <div>Beats {{model.echonestTrack.analysis.beats.length}}</div>
+
 </div>

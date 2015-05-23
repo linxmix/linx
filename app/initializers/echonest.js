@@ -2,7 +2,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 import ENV from 'linx/config/environment';
 import ajax from 'ic-ajax';
-import RetryPromise from 'linx/lib/retry-promise';
+import retryWithBackoff from 'ember-backoff/retry-with-backoff';
 
 export default {
   name: 'Echonest',
@@ -15,7 +15,6 @@ export default {
       store: store,
     });
 
-    console.log("init echonest", app.store);
     app.register("Echonest:main", Echonest);
     app.inject("model:track", "echonest", "Echonest:main");
     app.inject("model:echonest-track", "echonest", "Echonest:main");
@@ -61,16 +60,17 @@ var Echonest = Ember.Object.extend({
 
   // TODO: on fail, retry upload
   fetchAnalysis: function(echonestTrack) {
-    var analysisUrl = echonestTrack && echonestTrack.get('audio_summary.analysis_url');
+    var analysisUrl = echonestTrack && echonestTrack.get('analysisUrl');
 
     Ember.assert('Track must have analysisUrl to get analysis', analysisUrl);
 
     return DS.PromiseObject.create({
-      // attempt 5 times with 3 seconds between each.
-      promise: new RetryPromise(5, 3000, ajax({
-        type: "GET",
-        url: analysisUrl,
-      })),
+      promise: retryWithBackoff(function() {
+        return ajax({
+          type: "GET",
+          url: analysisUrl,
+        });
+      }, 5, 500),
     });
   },
 

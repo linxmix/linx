@@ -10,9 +10,13 @@ export default DS.Model.extend({
   // injected by app
   echonest: null,
 
+  // params
+  analysisUrl: Ember.computed.alias('audio_summary.analysis_url'),
   analysis: function() {
-    return this.get('echonest').fetchAnalysis(this);
-  }.property(),
+    if (this.get('analysisUrl')) {
+      return this.get('echonest').fetchAnalysis(this);
+    }
+  }.property('analysisUrl'),
 
   bucket: [
     'audio_summary',

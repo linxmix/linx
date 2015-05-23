@@ -52,10 +52,13 @@ export default DS.Model.extend({
   }.property('streamUrl', '_data.linkedEchonestTrack'),
 
   fetchEchonestTrack: function() {
-    return this.get('echonest').fetchTrack(this).then((echonestTrack) => {
+    var promiseObject = this.get('echonest').fetchTrack(this);
+
+    promiseObject.then((echonestTrack) => {
       this.set('linkedEchonestTrack', echonestTrack);
       this.save();
-      return echonestTrack;
     });
+
+    return promiseObject;
   }
 });
