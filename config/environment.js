@@ -6,14 +6,6 @@ module.exports = function(environment) {
     // namespaced directory where resolver will look for resource files
     podModulePrefix: 'linx/pods',
 
-    echonest: {
-      api_key: 'CWBME38JDGQNEJPXT',
-    },
-
-    souncloud: {
-      api_key: '977ed530a2104a95eaa87f26fa710941',
-    },
-
     environment: environment,
     firebase: 'https://linx-2-acceptance.firebaseio.com/',
     baseURL: '/',
@@ -51,6 +43,12 @@ module.exports = function(environment) {
     ENV.APP.LOG_TRANSITIONS = true;
     // ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
     // ENV.APP.LOG_VIEW_LOOKUPS = true;
+
+    // Client API Keys
+    ENV.S3_SECRET = process.env.S3_SECRET;
+    ENV.S3_KEY = process.env.S3_KEY;
+    ENV.ECHONEST_KEY = process.env.ECHONEST_KEY;
+    ENV.SC_KEY = process.env.SC_KEY;
   }
 
   if (environment === 'test') {

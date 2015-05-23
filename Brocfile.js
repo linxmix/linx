@@ -4,7 +4,11 @@ var EmberApp = require('ember-cli/lib/broccoli/ember-app');
 
 var app = new EmberApp({
   sassOptions: {
-    includePaths: ['bower_components/materialize/sass']
+    includePaths: []
+  },
+  // ember-cli-dotenv
+  dotEnv: {
+    clientAllowedKeys: ['S3_SECRET', 'S3_KEY', 'ECHONEST_KEY', 'SC_KEY']
   }
 });
 
