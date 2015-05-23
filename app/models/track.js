@@ -4,7 +4,6 @@ import DS from 'ember-data';
 export default DS.Model.extend({
   title: DS.attr('string'),
   artist: DS.attr('string'),
-  url: DS.attr('string'),
   length: DS.attr('number'),
 
   audioClip: DS.hasMany('audio-clip', { async: true }),
@@ -14,5 +13,10 @@ export default DS.Model.extend({
     return "http://s3-us-west-2.amazonaws.com/linx-music/" + this.get('s3Url');
   }.property('s3Url'),
 
-  streamUrl: Ember.computed.any('s3StreamUrl', 'url'),
+  // TODO
+  scStreamUrl: function() {
+    return null;
+  }.property(),
+
+  streamUrl: Ember.computed.any('s3StreamUrl', 'scStreamUrl'),
 });

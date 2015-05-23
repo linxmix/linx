@@ -1,12 +1,13 @@
 import Ember from 'ember';
 import Wavesurfer from 'npm:wavesurfer.js';
 import Progress from 'linx/lib/progress';
-import RequireAttrs from 'linx/lib/require-attributes';
 
-export default Ember.Component.extend(
-  RequireAttrs('file'), {
-
+export default Ember.Component.extend({
   classNames: ['wave-surfer'],
+
+  // expected params
+  file: null,
+  streamUrl: null,
 
   // optional params
   // TODO: create wavesurfer region, update when start/end change
@@ -15,19 +16,14 @@ export default Ember.Component.extend(
   isPlaying: false,
 
   // params
+  audioContext: null, // injected by app
   wave: Ember.computed(function() {
-    var component = this;
-    var waveProxy = WaveProxy.create();
-
-    waveProxy.reopen({
-      file: Ember.computed.oneWay('component.file'),
+    return WaveProxy.create({
+      component: this,
     });
-
-    return waveProxy;
   }),
   progress: Ember.computed.alias('wave.progress'),
   defaultParams: {
-    // audioContext: App.audioContext, TODO
     waveColor: 'violet',
     progressColor: 'purple',
     cursorColor: 'white',
@@ -45,6 +41,7 @@ export default Ember.Component.extend(
 
     var params = {
       container: this.$('.wave')[0],
+      audioContext: this.get('audioContext.context')
     };
 
     wave.initWavesurfer(Ember.merge(this.get('defaultParams'), params));
@@ -60,9 +57,12 @@ export default Ember.Component.extend(
 export const WaveProxy = Ember.ObjectProxy.extend({
 
   // expected params
-  file: null,
+  component: null,
 
   // params
+  content: null,
+  file: Ember.computed.alias('component.file'),
+  streamUrl: Ember.computed.alias('component.streamUrl'),
   wavesurfer: Ember.computed.alias('content'),
   isLoading: Ember.computed.alias('progress.isLoading'),
   isLoaded: false,
@@ -72,12 +72,22 @@ export const WaveProxy = Ember.ObjectProxy.extend({
   loadFile: function() {
     var file = this.get('file');
     var wavesurfer = this.get('wavesurfer');
-    // console.log("load audio file", wavesurfer, file);
+    console.log("load audioFile", wavesurfer, file);
 
     if (file && wavesurfer) {
       wavesurfer.loadBlob(file);
     }
   }.observes('wavesurfer', 'file'),
+
+  loadStream: function() {
+    var streamUrl = this.get('streamUrl');
+    var wavesurfer = this.get('wavesurfer');
+    console.log("load streamUrl", wavesurfer, streamUrl);
+
+    if (streamUrl && wavesurfer) {
+      wavesurfer.load(streamUrl);
+    }
+  }.observes('wavesurfer', 'streamUrl'),
 
   reset: function() {
     this.set('isLoaded', false);

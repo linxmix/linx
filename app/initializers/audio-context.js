@@ -1,25 +1,36 @@
 import Ember from 'ember';
+import WaaClock from 'npm:waaclock';
 
 export default {
-  name: 'audio-context',
+  name: 'AudioContext',
 
-  initialize: function(container, application) {
-    application.audioContext = this.getAudioContext();
-    console.log('init audioContext', application.audioContext);
+  initialize: function(container, app) {
+    var AudioContext = this.getAudioContext();
+
+    app.register("audioContext:main", AudioContext);
+    app.inject("component:wave-surfer", "audioContext", "audioContext:main");
   },
 
-  getAudioContext: function () {
-    var AudioContextConstructor = (window.AudioContext || window.webkitAudioContext);
-    return new AudioContextConstructor();
-  },
+  getAudioContext: function() {
+    var WaaContext = (window.AudioContext || window.webkitAudioContext);
 
-  // TODO
-  // getOfflineAudioContext: function (sampleRate) {
-  //     if (!WaveSurfer.WebAudio.offlineAudioContext) {
-  //         WaveSurfer.WebAudio.offlineAudioContext = new (
-  //             window.OfflineAudioContext || window.webkitOfflineAudioContext
-  //         )(1, 2, sampleRate);
-  //     }
-  //     return WaveSurfer.WebAudio.offlineAudioContext;
-  // },
+    var waaContext = new WaaContext();
+
+    return Ember.Object.extend({
+      clock: Ember.computed(function() { return new WaaClock(waaContext); }),
+      context: waaContext,
+      // offlineContext: 
+    });
+  },
 };
+
+
+// TODO
+// getOfflineAudioContext: function (sampleRate) {
+//     if (!WaveSurfer.WebAudio.offlineAudioContext) {
+//         WaveSurfer.WebAudio.offlineAudioContext = new (
+//             window.OfflineAudioContext || window.webkitOfflineAudioContext
+//         )(1, 2, sampleRate);
+//     }
+//     return WaveSurfer.WebAudio.offlineAudioContext;
+// },
