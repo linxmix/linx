@@ -44,8 +44,8 @@ export default Ember.Route.extend({
     // new Worker('assets/workers/file-decoder.js');
 
     return Ember.RSVP.hash({
-      tracks: store.find('track'),
-      items: store.find('arrangement-item'),
+      // tracks: store.find('track'),
+      // items: store.find('arrangement-item'),
       // item: store.findPolymorphic('arrangement-item', 'clip', '-JpixY_gJcUYPDifgllk'),
       // item: store.find('arrangement-item', '-JpixY_gJcUYPDifgllk'),
       // clip: store.find('audio-clip', '-JpixY_dno-W300KB5_J'),

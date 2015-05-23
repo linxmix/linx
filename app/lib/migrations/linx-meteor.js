@@ -2250,6 +2250,7 @@ export default function(store) {
       title: song.title || song.name,
       artist: song.artist,
       s3Url: 'songs/' + song._id + '.' + song.fileType,
+      md5: song.md5,
     });
 
     track.save();

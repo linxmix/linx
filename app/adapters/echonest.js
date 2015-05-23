@@ -2,7 +2,7 @@
 import DS from 'ember-data';
 import ajax from 'ic-ajax';
 import Ember from 'ember';
-import config from '../config/environment';
+import ENV from 'linx/config/environment';
 
 /**
   @module Adapters
@@ -17,9 +17,9 @@ import config from '../config/environment';
 export default DS.RESTAdapter.extend({
   defaultSerializer: 'echonest',
   ajax: ajax,
-  host: config.echonest && config.echonest.host ||  'http://developer.echonest.com',
-  namespace: config.echonest && config.echonest.namespace || 'api/v4',
-  api_key: config.echonest && config.echonest.api_key || config.ECHONEST_APIKEY,
+  host: ENV.echonest && ENV.echonest.host ||  'http://developer.echonest.com',
+  namespace: ENV.echonest && ENV.echonest.namespace || 'api/v4',
+  api_key: ENV.echonest && config.echonest.api_key || ENV.ECHONEST_KEY,
 
   /**
     Called by 'find' and 'findQuery' and performs an HTTP `GET` request with default params

@@ -22,7 +22,7 @@ module.exports = function(environment) {
       'default-src': "'self'",
 
       // allow firebase
-      'connect-src': "'self' wss://*.firebaseio.com",
+      'connect-src': "'self' wss://*.firebaseio.com http://developer.echonest.com",
       'frame-src': "'self' https://*.firebaseio.com",
       'script-src': "'self' 'unsafe-inline' https://*.firebaseio.com",
 
