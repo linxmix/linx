@@ -6,6 +6,8 @@ import Clip from './clip';
 export default Clip.extend({
   // TODO: make this be a buffer
   file: DS.attr(),
+
+  track: DS.belongsTo('track', { async: true }),
 });
 
 // TODO: code to copy section of audiobuffer

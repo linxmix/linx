@@ -6,6 +6,14 @@ module.exports = function(environment) {
     // namespaced directory where resolver will look for resource files
     podModulePrefix: 'linx/pods',
 
+    echonest: {
+      api_key: 'CWBME38JDGQNEJPXT',
+    },
+
+    souncloud: {
+      api_key: '977ed530a2104a95eaa87f26fa710941',
+    },
+
     environment: environment,
     firebase: 'https://linx-2-acceptance.firebaseio.com/',
     baseURL: '/',
