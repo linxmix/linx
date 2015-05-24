@@ -46,6 +46,7 @@
     "emberfire": "1.4.4",
     "s3": "^4.4.0",
     "semantic-ui-ember": "0.0.1-rc.8",
+    "underscore": "^1.8.3",
     "waaclock": "^0.5.2",
     "wavesurfer.js": "^1.0.27"
   },
