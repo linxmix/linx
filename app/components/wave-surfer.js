@@ -17,6 +17,7 @@ export default Ember.Component.extend({
   end: null,
   isPlaying: false,
   waveParams: null,
+  beats: null, // array of floats (second)
 
   // params
   audioContext: null, // injected by app
@@ -26,6 +27,22 @@ export default Ember.Component.extend({
     });
   }),
   progress: Ember.computed.alias('wave.progress'),
+
+  drawBeats: function() {
+    var beats = this.get('beats');
+    var wave = this.get('wave');
+
+    console.log('draw beats', wave, beats);
+    if (wave && beats) {
+      beats.forEach(function(beat) {
+        wave.createRegion({
+          start: beat,
+          color: 'green',
+          className: 'beat',
+        });
+      });
+    }
+  }.observes('beats.[]', 'wave'),
 
   initWave: function() {
     var wave = this.get('wave');
@@ -61,11 +78,11 @@ export const Wave = Ember.ObjectProxy.extend({
       waveColor: 'violet',
       progressColor: 'purple',
       cursorColor: 'white',
-      minPxPerSec: 1,
+      minPxPerSec: 20,
       normalize: true,
       height: 128,
-      fillParent: true,
-      scrollParent: false,
+      fillParent: false,
+      scrollParent: true,
       cursorWidth: 2,
       renderer: 'Canvas',
     };
@@ -75,9 +92,9 @@ export const Wave = Ember.ObjectProxy.extend({
   progress: Ember.computed(function() { return Progress.create(); }),
 
   createRegion: function(params) {
-    var region = Region.create(Ember.merge(params, {
-      wavesurfer: this.get('wavesurfer'),
-    }));
+    return Region.create(_.defaults({
+      wave: this,
+    }, params));
 
     this.get('regions').pushObject(region);
     return region;
@@ -176,7 +193,7 @@ export const Wave = Ember.ObjectProxy.extend({
 
 // Wraps Wavesurfer regions
 export const Region = Ember.Object.extend(
-  RequireAttributes('wavesurfer'), {
+  RequireAttributes('wave'), {
 
   // optional params
   start: undefined,
@@ -191,6 +208,7 @@ export const Region = Ember.Object.extend(
   // params
   id: Ember.computed(function() { return Ember.uuid(); }),
   region: null,
+  wavesurfer: Ember.computed.alias('wave.wavesurfer'),
 
   draw: function() {
     var wavesurfer = this.get('wavesurfer');

@@ -17,4 +17,12 @@ export default Ember.Component.extend(
       return EXCLUDE_PARAMs.contains(param.key);
     })
   }.property('echonestTrack.audioParams'),
+
+  displayBeats: function() {
+    var beats = this.get('analysis.beats') || [];
+    return beats.reject(function(beat) {
+      // return beat.confidence < 0.5;
+      return false;
+    }).mapBy('start');
+  }.property('analysis.beats.@each.start')
 });
