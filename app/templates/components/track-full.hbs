@@ -1,0 +1,22 @@
+<div>Linx Track</div>
+<div>{{track.title}}</div>
+<div>{{track.artist}}</div>
+
+{{wave-surfer streamUrl=track.streamUrl}}
+
+<hr/>
+
+{{#if displayAudioParams.length}}
+  <div>Analysis</div>
+  {{#each param in displayAudioParams}}
+    <div>{{param.key}}&nbsp;{{param.value}}</div>
+  {{/each}}
+{{else}}
+  <div>Analysis Pending</div>
+{{/if}}
+
+<hr/>
+
+<div>Echonest Track</div>
+<div>{{echonestTrack.title}}</div>
+<div>{{echonestTrack.artist}}</div>

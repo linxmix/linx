@@ -18,6 +18,17 @@ export default DS.Model.extend({
     }
   }.property('analysisUrl'),
 
+  audioParams: function() {
+    var summary = this.get('audio_summary') || {};
+
+    return Object.keys(summary).map((key) => {
+      return {
+        key: key,
+        value: summary[key],
+      }
+    });
+  }.property('audio_summary'),
+
   bucket: [
     'audio_summary',
   ],
