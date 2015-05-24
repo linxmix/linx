@@ -54,7 +54,7 @@ export default Ember.Component.extend({
     handlers.dragleave = this.get('onDragLeave').bind(this);
     handlers.drop = this.get('onDrop').bind(this);
 
-    Object.keys(handlers).forEach(function(key) {
+    Ember.keys(handlers).forEach(function(key) {
       window.addEventListener(key, handlers[key]);
     });
 
@@ -64,7 +64,7 @@ export default Ember.Component.extend({
   removeHandlers: function() {
     var handlers = this.get('_handlers');
 
-    Object.keys(handlers).forEach(function(key) {
+    Ember.keys(handlers).forEach(function(key) {
       window.removeEventListener(key, handlers[key]);
       delete handlers[key];
     });

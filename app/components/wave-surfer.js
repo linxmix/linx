@@ -1,6 +1,8 @@
 import Ember from 'ember';
 import Progress from 'linx/lib/progress';
 import Wavesurfer from 'linx/lib/wavesurfer';
+import RequireAttributes from 'linx/lib/require-attributes';
+import _ from 'npm:underscore';
 
 export default Ember.Component.extend({
   classNames: ['wave-surfer'],
@@ -14,27 +16,16 @@ export default Ember.Component.extend({
   start: 0,
   end: null,
   isPlaying: false,
+  waveParams: null,
 
   // params
   audioContext: null, // injected by app
   wave: Ember.computed(function() {
-    return WaveProxy.create({
+    return Wave.create({
       component: this,
     });
   }),
   progress: Ember.computed.alias('wave.progress'),
-  defaultParams: {
-    waveColor: 'violet',
-    progressColor: 'purple',
-    cursorColor: 'white',
-    minPxPerSec: 1,
-    normalize: true,
-    height: 128,
-    fillParent: true,
-    scrollParent: false,
-    cursorWidth: 2,
-    renderer: 'Canvas',
-  },
 
   initWave: function() {
     var wave = this.get('wave');
@@ -44,7 +35,7 @@ export default Ember.Component.extend({
       audioContext: this.get('audioContext.context')
     };
 
-    wave.initWavesurfer(Ember.merge(this.get('defaultParams'), params));
+    wave.initWavesurfer(params);
   }.on('didInsertElement'),
 
   destroyWave: function() {
@@ -53,21 +44,44 @@ export default Ember.Component.extend({
   }.on('willDestroyElement'),
 });
 
-// Proxy object that holds Wavesurfer
-export const WaveProxy = Ember.ObjectProxy.extend({
+// Wraps Wavesurfer
+export const Wave = Ember.ObjectProxy.extend({
 
   // expected params
   component: null,
 
   // params
-  content: null,
+  wavesurfer: null,
   file: Ember.computed.alias('component.file'),
   streamUrl: Ember.computed.alias('component.streamUrl'),
-  wavesurfer: Ember.computed.alias('content'),
   isLoading: Ember.computed.alias('progress.isLoading'),
   isLoaded: false,
+  defaultParams: Ember.computed(function() {
+    return {
+      waveColor: 'violet',
+      progressColor: 'purple',
+      cursorColor: 'white',
+      minPxPerSec: 1,
+      normalize: true,
+      height: 128,
+      fillParent: true,
+      scrollParent: false,
+      cursorWidth: 2,
+      renderer: 'Canvas',
+    };
+  }),
+  regions: Ember.computed(function() { return []; }),
   
   progress: Ember.computed(function() { return Progress.create(); }),
+
+  createRegion: function(params) {
+    var region = Region.create(Ember.merge(params, {
+      wavesurfer: this.get('wavesurfer'),
+    }));
+
+    this.get('regions').pushObject(region);
+    return region;
+  },
 
   loadFile: function() {
     var file = this.get('file');
@@ -93,6 +107,14 @@ export const WaveProxy = Ember.ObjectProxy.extend({
     this.set('isLoaded', false);
     this.resetProgress();
     this.resetWavesurfer();
+    this.destroyRegions();
+  },
+
+  destroyRegions: function() {
+    this.get('regions').forEach(function(region) {
+      region.destroy();
+    });
+    this.set('regions', []);
   },
 
   resetProgress: function() {
@@ -121,7 +143,7 @@ export const WaveProxy = Ember.ObjectProxy.extend({
     var wavesurfer = Object.create(Wavesurfer);
     var progress = this.get('progress');
 
-    wavesurfer.init(params);
+    wavesurfer.init(_.defaults({}, params, this.get('defaultParams')));
     wavesurfer.initRegions();
 
     // Setup Handlers
@@ -148,6 +170,76 @@ export const WaveProxy = Ember.ObjectProxy.extend({
       wave.onFinish();
     });
 
-    this.set('content', wavesurfer);
+    this.set('wavesurfer', wavesurfer);
   }
+});
+
+// Wraps Wavesurfer regions
+export const Region = Ember.Object.extend(
+  RequireAttributes('wavesurfer'), {
+
+  // optional params
+  start: undefined,
+  end: undefined,
+  resize: undefined,
+  drag: undefined,
+  loop: undefined,
+  color: undefined,
+  className: undefined,
+  data: undefined,
+
+  // params
+  id: Ember.computed(function() { return Ember.uuid(); }),
+  region: null,
+
+  draw: function() {
+    var wavesurfer = this.get('wavesurfer');
+    var params = this.get('params');
+    var region = this.get('region');
+
+    console.log("draw region", params);
+    if (!region) {
+      this.set('region', wavesurfer.addRegion(params));
+    } else {
+      region.update(params);
+    }
+  }.observes('wavesurfer', 'params').on('init'),
+
+  destroy: function() {
+    this.destroyRegion();
+    this._super.apply(this, arguments);
+  },
+
+  destroyRegion: function() {
+    var region = this.get('region');
+    region && region.remove();
+  }.on('destroy'),
+
+  params: function(key, value) {
+    return _.defaults({}, {
+      id: this.get('id'),
+      start: this.get('start'),
+      end: this.get('end'),
+      resize: this.get('resize'),
+      drag: this.get('resize'),
+      loop: this.get('resize'),
+      color: this.get('color'),
+      data: Ember.merge({
+        className: this.get('className'),
+      }, this.get('data')),
+    }, this.get('defaultParams'));
+  }.property('id', 'start', 'end', 'resize', 'drag', 'loop', 'color', 'className', 'data', 'defaultParams'),
+
+  defaultParams: Ember.computed(function() {
+    return {
+      resize: false,
+      drag: false,
+      loop: false,
+      color: 'black',
+      start: 0,
+      end: null,
+      data: null,
+      className: 'linx-region',
+    };
+  }),
 });

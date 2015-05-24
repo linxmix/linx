@@ -21,7 +21,7 @@ export default DS.Model.extend({
   audioParams: function() {
     var summary = this.get('audio_summary') || {};
 
-    return Object.keys(summary).map((key) => {
+    return Ember.keys(summary).map((key) => {
       return {
         key: key,
         value: summary[key],
