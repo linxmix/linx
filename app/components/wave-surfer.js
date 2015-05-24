@@ -1,6 +1,6 @@
 import Ember from 'ember';
-import Wavesurfer from 'npm:wavesurfer.js';
 import Progress from 'linx/lib/progress';
+import Wavesurfer from 'linx/lib/wavesurfer';
 
 export default Ember.Component.extend({
   classNames: ['wave-surfer'],
@@ -122,6 +122,7 @@ export const WaveProxy = Ember.ObjectProxy.extend({
     var progress = this.get('progress');
 
     wavesurfer.init(params);
+    wavesurfer.initRegions();
 
     // Setup Handlers
     wavesurfer.on('loading', function(percent, xhr) {
