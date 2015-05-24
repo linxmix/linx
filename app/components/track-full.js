@@ -24,5 +24,13 @@ export default Ember.Component.extend(
       // return beat.confidence < 0.5;
       return false;
     }).mapBy('start');
-  }.property('analysis.beats.@each.start')
+  }.property('analysis.beats.@each.start'),
+
+  displayBars: function() {
+    var bars = this.get('analysis.bars') || [];
+    return bars.reject(function(beat) {
+      // return beat.confidence < 0.5;
+      return false;
+    }).mapBy('start');
+  }.property('analysis.bars.@each.start')
 });

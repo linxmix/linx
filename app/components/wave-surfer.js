@@ -17,7 +17,8 @@ export default Ember.Component.extend({
   end: null,
   isPlaying: false,
   waveParams: null,
-  beats: null, // array of floats (second)
+  beats: null, // array of floats (seconds)
+  bars: null, // array of floats (seconds)
 
   // params
   audioContext: null, // injected by app
@@ -38,11 +39,27 @@ export default Ember.Component.extend({
         wave.createRegion({
           start: beat,
           color: 'green',
-          className: 'beat',
+          className: 'beat-region',
         });
       });
     }
   }.observes('beats.[]', 'wave'),
+
+  drawBars: function() {
+    var bars = this.get('bars');
+    var wave = this.get('wave');
+
+    console.log('draw bars', wave, bars);
+    if (wave && bars) {
+      bars.forEach(function(beat) {
+        wave.createRegion({
+          start: beat,
+          color: 'red',
+          className: 'bar-region',
+        });
+      });
+    }
+  }.observes('bars.[]', 'wave'),
 
   initWave: function() {
     var wave = this.get('wave');
@@ -215,13 +232,15 @@ export const Region = Ember.Object.extend(
     var params = this.get('params');
     var region = this.get('region');
 
-    console.log("draw region", params);
+    if (!this.get('wave.isLoaded')) { return; }
+
+    // console.log("draw region", params);
     if (!region) {
       this.set('region', wavesurfer.addRegion(params));
     } else {
       region.update(params);
     }
-  }.observes('wavesurfer', 'params').on('init'),
+  }.observes('wave.isLoaded', 'wavesurfer', 'params').on('init'),
 
   destroy: function() {
     this.destroyRegion();
