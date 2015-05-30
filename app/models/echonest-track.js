@@ -11,6 +11,14 @@ export default DS.Model.extend({
   echonest: null,
 
   // params
+  track: Ember.computed(function() {
+    return DS.PromiseObject.create({
+      // TODO: can we do better? not with firebase findQuery
+      promise: this.get('store').find('track').then((records) => {
+        return records.filterBy('_data._echonestTrack', this.get('id')).get('firstObject');
+      }),
+    });
+  }),
   analysisUrl: Ember.computed.alias('audio_summary.analysis_url'),
   analysis: function() {
     if (this.get('analysisUrl')) {

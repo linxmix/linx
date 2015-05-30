@@ -5,6 +5,6 @@ import AbstractListItemMixin from 'linx/lib/models/abstract-list-item';
 export default DS.Model.extend(
   AbstractListItemMixin('mix'), {
 
-  track: DS.belongsTo('track'),
-  transition: DS.belongsTo('transition'),
+  track: DS.belongsTo('track', { async: true }),
+  transition: DS.belongsTo('transition', { async: true }),
 });

@@ -28,7 +28,7 @@ module.exports = function(environment) {
 
       // allow semantic-ui fonts and style
       'font-src': "'self' https://fonts.gstatic.com data:",
-      'style-src': "'self' https://fonts.googleapis.com",
+      'style-src': "'self' 'unsafe-inline' https://fonts.googleapis.com",
     },
 
     APP: {

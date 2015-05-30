@@ -4,9 +4,13 @@ export default {
   name: 'store-patch',
   after: 'store',
 
-  initialize: function(container) {
+  initialize: function(container, app) {
     console.log("initialize store");
     var store = container.lookup('store:main');
+
+
+    // app.inject("model:echonest-track", "store", "store:main");
+
 
     // Patch polymorphism until part of Ember Firebase. https://github.com/firebase/emberfire/issues/245
     store.reopen({

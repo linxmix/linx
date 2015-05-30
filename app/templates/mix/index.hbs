@@ -8,6 +8,8 @@
   Delete Mix
 </div>
 
+{{search-tracks tracks=tracks action="addTrack"}}
+
 {{#mix-item-list mix=model}}
   {{#each mixItem in model.arrangedContent}}
     {{mix-item mixItem=mixItem}}

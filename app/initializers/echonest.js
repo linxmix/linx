@@ -70,7 +70,22 @@ var Echonest = Ember.Object.extend({
           type: "GET",
           url: analysisUrl,
         });
-      }, 5, 500),
+      }, 5, 500).catch((reason) => {
+        console.log("Echonest Analysis failed", reason);
+
+        // retry track fetch
+        var track = echonestTrack.get('track').then((track) => {
+          if (track) {
+            return this.fetchTrack(track).then((echonestTrack) => {
+              echonestTrack.reload().then((echonestTrack) => {
+                return this.fetchAnalysis(echonestTrack);
+              });
+            });
+          } else {
+            throw reason;
+          }
+        });
+      }),
     });
   },
 
