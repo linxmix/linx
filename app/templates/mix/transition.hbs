@@ -1,3 +1,15 @@
 <div>TRANSITION</div>
 <div>{{transition.fromTrack.title}}</div>
 <div>{{transition.toTrack.title}}</div>
+<div class="inverted orange ui icon button {{if transition.isDirty '' 'basic disabled'}}" {{action 'saveTransition'}}>
+  <i class="cloud upload icon"></i>
+  Save Transition
+</div>
+<div class="inverted red ui icon button" {{action 'deleteTransition'}}>
+  <i class="remove icon"></i>
+  Delete Transition
+</div>
+
+<hr/>
+
+{{simple-transition transition=transition}}

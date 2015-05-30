@@ -25,6 +25,7 @@ export default Ember.Component.extend({
     var searchFields = ['title', 'artist'];
 
     // setup semantic search module
+    // TODO: make this use API?
     this.$('.search').search({
       source: source,
       searchFields: searchFields,
@@ -33,7 +34,5 @@ export default Ember.Component.extend({
         this.sendAction('action', trackWrapper.track);
       }
     });
-
-    console.log('init search', source);
   }.on('didInsertElement').observes('tracks.@each'),
 });

@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import DS from 'ember-data';
+import _ from 'npm:underscore';
 
 export default function(itemType) {
   var mixinParams = {
@@ -7,7 +8,6 @@ export default function(itemType) {
 
     sortAscending: true,
     sortProperties: ['index'],  
-    length: Ember.computed.alias('content.length'),
     dirtyContent: Ember.computed.filterBy('content.isDirty'),
 
     isDirty: function() {
@@ -17,20 +17,6 @@ export default function(itemType) {
       return modelIsDirty || itemIsDirty;
     }.property('isDirty', 'dirtyContent.length'),
 
-    pushObject: function(item) {
-      this.pushObjects([item]);
-    },
-
-    pushObjects: function(items) {
-      var index = this.get('content.length');
-
-      items.forEach(function(item) {
-        item.set('index', index++);
-      });
-
-      this.get('content').pushObjects(items);
-    },
-
     save: function() {
       this.get('dirtyContent').forEach(function(item) {
         item.save();
@@ -38,7 +24,37 @@ export default function(itemType) {
 
       return this._super.apply(this, arguments);
     },
+
+    createItem: function(params) {
+      return this.get('store').createRecord(itemType, params)
+    },
+
+    createItemAt: function(index, params) {
+      var item = this.createItem(params);
+      return this.insertAt(index, item);
+    },
+
+    //
+    // Necessary functions to be a mutable, sortable, enumerable array
+    //
+    length: Ember.computed.alias('content.length'),
+
+    nextObject: function(index, previousObject, context) {
+      console.log("next object", arguments);
+      return this.get('content').nextObject.apply(this, arguments);
+    },
+
+    replace: function(index, amount, objects) {
+      console.log("replace", arguments);
+      // TODO
+    },
+
+    objectAt: function(index) {
+      console.log("objectAt", arguments);
+
+      return this.get('content').objectAt(index);
+    },
   };
 
-  return Ember.Mixin.create(Ember.SortableMixin, mixinParams);
+  return Ember.Mixin.create(Ember.SortableMixin, Ember.MutableArray, mixinParams);
 };

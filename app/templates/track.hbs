@@ -1,3 +1,7 @@
 <div class="track-page">
-  {{track-full track=model}}
+  {{#if model}}
+    {{track-full track=model}}
+  {{else}}
+    Track Not Found
+  {{/if}}
 </div>

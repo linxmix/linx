@@ -1,16 +1,11 @@
 <div class="content">
-  <div class="header">
-    {{#link-to 'track' track}}
-      {{track.title}}
-    {{/link-to}}
-  </div>
-  <div class="description">
-    {{#link-to 'mix.transition' mixItem.index}}
-      {{#if transition}}
-        {{transition.id}}
-      {{else}}
-        Create Transition
-      {{/if}}
-    {{/link-to}}
-  </div>
+  {{track-item
+    track=mixItem.track
+  }}
+  {{#unless isLastItem}}
+    {{transition-item
+      transition=mixItem.transition
+      createTransition='createTransition'
+    }}
+  {{/unless}}
 </div>

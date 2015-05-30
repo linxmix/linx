@@ -11,7 +11,7 @@ Router.map(function() {
 
   this.route('mixes');
   this.route('mix', { path: 'mixes/:id' }, function() {
-    this.route('transition', { path: 'transitions/:index' });
+    this.route('transition', { path: 'transitions/:transition_id' });
   });
 
   // TODO - delete fakes

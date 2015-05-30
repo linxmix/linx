@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 export default Ember.Route.extend({
-  actions: {  
+  actions: {
     saveMix: function() {
       var mix = this.get('controller.model');
 
@@ -28,13 +28,14 @@ export default Ember.Route.extend({
           title: file.name,
         });
 
-        this.send('addTrack', track);
+        this.send('appendTrack', track);
       });
     },
 
-    addTrack: function(track) {
-      console.log("addTrack", track);
+    appendTrack: function(track) {
       var mix = this.get('controller.model');
+
+      mix.appendTrack(track);
 
       var mixItem = this.get('store').createRecord('mix-item');
       mixItem.set('track', track);
