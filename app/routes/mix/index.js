@@ -4,7 +4,6 @@ export default Ember.Route.extend({
   actions: {
     saveMix: function() {
       var mix = this.get('controller.model');
-
       mix.save();
     },
 
@@ -34,14 +33,24 @@ export default Ember.Route.extend({
 
     appendTrack: function(track) {
       var mix = this.get('controller.model');
-
       mix.appendTrack(track);
-
-      var mixItem = this.get('store').createRecord('mix-item');
-      mixItem.set('track', track);
-
-      mix.pushObject(mixItem);
     },
+
+    removeTrackAt: function(index) {
+      var mix = this.get('controller.model');
+      mix.removeTrackAt(index);
+    },
+
+    createTransitionAt: function(index) {
+      var mix = this.get('controller.model');
+      var transition = mix.createTransitionAt(index);
+      this.transitionTo('mix.transition', transition);
+    },
+
+    removeTransitionAt: function(index) {
+      var mix = this.get('controller.model');
+      mix.removeTransitionAt(index);
+    }
   },
 
   setupController: function(controller, model) {

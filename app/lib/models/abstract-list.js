@@ -1,60 +1,74 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-import _ from 'npm:underscore';
 
 export default function(itemType) {
   var mixinParams = {
     content: DS.hasMany(itemType, { async: true }),
 
-    sortAscending: true,
-    sortProperties: ['index'],  
-    dirtyContent: Ember.computed.filterBy('content.isDirty'),
+    dirtyContent: Ember.computed.filterBy('content', 'isDirty'),
+    contentIsDirty: Ember.computed.gt('dirtyContent.length', 0),
 
-    isDirty: function() {
-      var modelIsDirty = this._super.apply(this, arguments);
-      var itemIsDirty = this.get('dirtyContent.length') > 0;
-
-      return modelIsDirty || itemIsDirty;
-    }.property('isDirty', 'dirtyContent.length'),
-
-    save: function() {
+    saveContent: function() {
       this.get('dirtyContent').forEach(function(item) {
         item.save();
       });
-
-      return this._super.apply(this, arguments);
     },
 
     createItem: function(params) {
-      return this.get('store').createRecord(itemType, params)
+      return this.get('store').createRecord(itemType, params);
     },
 
     createItemAt: function(index, params) {
       var item = this.createItem(params);
-      return this.insertAt(index, item);
+      this.insertAt(index, item);
+      return item;
+    },
+
+    assertItemAt: function(index) {
+      return this.objectAt(index) || this.createItemAt(index);
     },
 
     //
-    // Necessary functions to be a mutable, sortable, enumerable array
+    // Necessary functions to be Ember.MutableArray
     //
     length: Ember.computed.alias('content.length'),
 
     nextObject: function(index, previousObject, context) {
-      console.log("next object", arguments);
-      return this.get('content').nextObject.apply(this, arguments);
+      var content = this.get('content');
+      return content.nextObject.apply(content, arguments);
     },
 
     replace: function(index, amount, objects) {
-      console.log("replace", arguments);
-      // TODO
+      var content = this.get('content');
+
+      var itemsToRemove = content.slice(index, index + amount);
+      var itemsToSave = objects;
+
+      // replace local content immediately
+      content.replace.apply(content, arguments);
+
+      // destroy items that are removed,
+      var removePromises = itemsToRemove.map((item) => {
+        return item.destroyRecord();
+      });
+
+      // save items that are added,
+      var savePromises = itemsToSave.map((item) => {
+        return item.save();
+      });
+
+      // once saves and removes are done, save list
+      Ember.RSVP.all(removePromises.concat(savePromises)).then((results) => {
+        this.save();
+      });
     },
 
     objectAt: function(index) {
-      console.log("objectAt", arguments);
-
-      return this.get('content').objectAt(index);
+      var content = this.get('content');
+      return content.objectAt.apply(content, arguments);
     },
+
   };
 
-  return Ember.Mixin.create(Ember.SortableMixin, Ember.MutableArray, mixinParams);
+  return Ember.Mixin.create(Ember.MutableArray, mixinParams);
 };

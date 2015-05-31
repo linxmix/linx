@@ -2,8 +2,12 @@ import Ember from 'ember';
 
 export default Ember.Component.extend({
   actions: {
-    createTransition: function() {
-      this.sendAction('createTransition');
+    remove: function() {
+      this.sendAction('remove');
+    },
+
+    create: function() {
+      this.sendAction('create');
     }
   },
 

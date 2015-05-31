@@ -1,0 +1,14 @@
+<div class="content">
+  {{position}}.&nbsp;
+  {{track-item
+    track=item.track
+    remove='removeTrack'
+  }}
+  {{#unless isLastItem}}
+    {{transition-item
+      transition=item.transition
+      remove='removeTransition'
+      create='createTransition'
+    }}
+  {{/unless}}
+</div>

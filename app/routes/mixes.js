@@ -4,9 +4,10 @@ export default Ember.Route.extend({
   actions: {
     createMix: function() {
       var mix = this.get('store').createRecord('mix', {
-        title: 'Mix' + this.get('controller.model.length')
+        title: 'Mix ' + Ember.uuid(),
       });
 
+      mix.save();
       this.transitionTo('mix', mix);
     }
   },

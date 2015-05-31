@@ -1,3 +1,8 @@
-{{#link-to 'track' track}}
-  {{track.title}}
-{{/link-to}}
+{{#if track}}
+  {{#link-to 'track' track}}
+    {{track.title}}
+  {{/link-to}}
+  <div class='tiny inverted basic circular red ui icon button' {{action 'remove'}}>
+    <i class='remove icon'></i>
+  </div>
+{{/if}}

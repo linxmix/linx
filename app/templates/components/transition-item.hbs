@@ -1,9 +1,12 @@
 {{#if transition}}
-  {{#link-to 'mix.transition' index}}
+  {{#link-to 'mix.transition' transition}}
     {{transition.id}}
   {{/link-to}}
+  <div class='tiny inverted basic circular red ui icon button' {{action 'remove'}}>
+    <i class='remove icon'></i>
+  </div>
 {{else}}
-  <div class="basic inverted green ui icon button" {{action 'createTransition'}}>
+  <div class="basic inverted green ui icon button" {{action 'create'}}>
     Create Transition
   </div>
 {{/if}}
