@@ -17,5 +17,18 @@ export default function(listType) {
     return list.get('content').indexOf(this);
   });
 
+  // save only after finishing loading
+  mixinParams.save = function() {
+    if (this.get('isLoaded')) {
+      return this._super.apply(this, arguments);
+    } else {
+      return new Ember.RSVP.Promise((resolve, reject) => {
+        this.one('didLoad', () => {
+          DS.Model.prototype.save.apply(this).then(resolve, reject);
+        });
+      });
+    }
+  };
+
   return Ember.Mixin.create(mixinParams)
 };

@@ -33,7 +33,6 @@ export default Ember.Component.extend({
     var beats = this.get('beats');
     var wave = this.get('wave');
 
-    console.log('draw beats', wave, beats);
     if (wave && beats) {
       beats.forEach(function(beat) {
         wave.createRegion({
@@ -49,7 +48,6 @@ export default Ember.Component.extend({
     var bars = this.get('bars');
     var wave = this.get('wave');
 
-    console.log('draw bars', wave, bars);
     if (wave && bars) {
       bars.forEach(function(beat) {
         wave.createRegion({

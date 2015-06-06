@@ -7,6 +7,7 @@ export default function(itemType) {
 
     dirtyContent: Ember.computed.filterBy('content', 'isDirty'),
     contentIsDirty: Ember.computed.gt('dirtyContent.length', 0),
+    anyDirty: Ember.computed.any('isDirty', 'contentIsDirty'),
 
     saveContent: function() {
       this.get('dirtyContent').forEach(function(item) {
@@ -57,7 +58,7 @@ export default function(itemType) {
         return item.save();
       });
 
-      // once saves and removes are done, save list
+      // then once saves and removes are done, save list
       Ember.RSVP.all(removePromises.concat(savePromises)).then((results) => {
         this.save();
       });

@@ -10,7 +10,6 @@ export default DS.Model.extend(
   // params
   tracks: Ember.computed.mapBy('track'),
   transitions: Ember.computed.mapBy('transitions'), // TODO: remove null/undefined?
-  anyDirty: Ember.computed.any('isDirty', 'contentIsDirty'),
 
   createTransitionAt: function(index) {
     var fromTrack = this.trackAt(index);
@@ -63,9 +62,33 @@ export default DS.Model.extend(
     mixItem.save();
   },
 
+
+  // TODO: mix needs to validate transitions when removing tracks
+  removeTrack: function(track) {
+    var item = this.get('content').find((item) => {
+      return item.get('track.id') === track.get('id');
+    });
+    var index = item && item.get('index');
+
+    if (!Ember.isNone(index)) {
+      return this.removeTrackAt(index);
+    }
+  },
+
   // TODO: mix needs to validate transitions when removing tracks
   removeTrackAt: function(index) {
     this.removeAt(index);
+  },
+
+  removeTransition: function(transition) {
+    var item = this.get('content').find((item) => {
+      return item.get('transition.id') === transition.get('id');
+    });
+    var index = item && item.get('index');
+
+    if (!Ember.isNone(index)) {
+      return this.removeTransitionAt(index);
+    }
   },
 
   removeTransitionAt: function(index) {

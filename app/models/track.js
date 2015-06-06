@@ -20,7 +20,9 @@ export default DS.Model.extend({
   analysis: Ember.computed.alias('echonestTrack.analysis'),
 
   s3StreamUrl: function() {
-    return "http://s3-us-west-2.amazonaws.com/linx-music/" + this.get('s3Url');
+    if (!Ember.isNone(this.get('s3Url'))) {
+      return "http://s3-us-west-2.amazonaws.com/linx-music/" + this.get('s3Url');
+    }
   }.property('s3Url'),
 
   // TODO
@@ -37,15 +39,12 @@ export default DS.Model.extend({
   echonestTrack: function() {
     var echonestTrackId = this.get('_data._echonestTrack');
 
-    // cannot get echonestTrack without a streamUrl
-    if (!this.get('streamUrl')) { return; }
-
-    if (echonestTrackId) {
+    if (!this.get('isLoaded') || echonestTrackId) {
       return this.get('_echonestTrack');
     } else {
       return this.fetchEchonestTrack();
     }
-  }.property('streamUrl'),
+  }.property('isLoaded', '_echonestTrack'),
 
   fetchEchonestTrack: function() {
     var promiseObject = this.get('echonest').fetchTrack(this);
@@ -56,5 +55,5 @@ export default DS.Model.extend({
     });
 
     return promiseObject;
-  }
+  },
 });

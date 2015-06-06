@@ -44,6 +44,7 @@ export default Ember.Route.extend({
     createTransitionAt: function(index) {
       var mix = this.get('controller.model');
       var transition = mix.createTransitionAt(index);
+      transition.save();
       this.transitionTo('mix.transition', transition);
     },
 

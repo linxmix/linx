@@ -1,7 +1,7 @@
 <div>TRANSITION</div>
-<div>{{transition.fromTrack.title}}</div>
-<div>{{transition.toTrack.title}}</div>
-<div class="inverted orange ui icon button {{if transition.isDirty '' 'basic disabled'}}" {{action 'saveTransition'}}>
+<div>{{model.fromTrack.title}}</div>
+<div>{{model.toTrack.title}}</div>
+<div class="inverted orange ui icon button {{if model.isDirty '' 'basic disabled'}}" {{action 'saveTransition'}}>
   <i class="cloud upload icon"></i>
   Save Transition
 </div>
@@ -12,4 +12,8 @@
 
 <hr/>
 
-{{simple-transition transition=transition}}
+{{simple-transition transition=model}}
+
+<hr/>
+{{track-full track=model.fromTrack}}
+{{track-full track=model.toTrack}}

@@ -4,17 +4,24 @@ import PreventDirtyTransitionMixin from 'linx/mixins/routes/prevent-dirty-transi
 export default Ember.Route.extend(PreventDirtyTransitionMixin, {
   actions: {
     saveTransition: function() {
-      var transition = this.get('controller.transition');
-
+      var transition = this.modelFor(this.routeName);
       transition.save();
     },
 
     deleteTransition: function() {
-      var transition = this.get('controller.transition');
+      var transition = this.modelFor(this.routeName);
 
       if (window.confirm("Are you sure you want to delete this transition? It cannot be restored once deleted.")) {
-        transition.destroyRecord();
-        this.transitionTo('mix');
+
+        // clean up relationships on parent very manually 
+        // TODO: fix when issue is resolved
+        // http://stackoverflow.com/questions/24644902/deleterecord-with-multiple-belongsto-relationships-in-ember-cli
+        var mix = this.modelFor('mix');
+        mix.removeTransition(transition);
+
+        transition.destroyRecord().then(() => {
+          this.transitionTo('mix');
+        });
       }
     },
   },
