@@ -5,4 +5,5 @@ import AbstractListItemMixin from 'linx/lib/models/abstract-list-item';
 
 export default DS.Model.extend(
   AbstractListItemMixin('arrangement'), AbstractListMixin('arrangement-item'), {
+
 });

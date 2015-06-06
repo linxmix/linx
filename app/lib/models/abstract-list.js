@@ -4,6 +4,7 @@ import DS from 'ember-data';
 export default function(itemType) {
   var mixinParams = {
     content: DS.hasMany(itemType, { async: true }),
+    items: Ember.computed.alias('content'),
 
     dirtyContent: Ember.computed.filterBy('content', 'isDirty'),
     contentIsDirty: Ember.computed.gt('dirtyContent.length', 0),
@@ -15,12 +16,19 @@ export default function(itemType) {
       });
     },
 
-    createItem: function(params) {
+    // creates and returns a new item, does NOT insert into list
+    _createItem: function(params) {
       return this.get('store').createRecord(itemType, params);
     },
 
+    // creates a new item and appends it to end of list
+    createItem: function(params) {
+      return this.createItemAt(this.get('length'), params);
+    },
+
+    // creates a new item and inserts it at given index
     createItemAt: function(index, params) {
-      var item = this.createItem(params);
+      var item = this._createItem(params);
       this.insertAt(index, item);
       return item;
     },

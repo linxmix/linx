@@ -41,9 +41,11 @@ export default Ember.Route.extend({
       mix.removeTrackAt(index);
     },
 
-    createTransitionAt: function(index) {
+    // TODO: want to be able to make fancier, not just simpleTransition
+    createSimpleTransitionAt: function(index) {
       var mix = this.get('controller.model');
       var transition = mix.createTransitionAt(index);
+      transition.initSimpleArrangement();
       transition.save();
       this.transitionTo('mix.transition', transition);
     },

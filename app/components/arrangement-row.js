@@ -1,13 +1,11 @@
 import Ember from 'ember';
-import RequireParams from 'linx/mixins/require-params';
+import RequireAttributes from 'linx/lib/require-attributes';
 
-RequireParams.reopen({
-  params: ['row'],
-});
+export default Ember.Component.extend(
+  RequireAttributes('model'), {
 
-export default Ember.Component.extend(RequireParams, {
-  classNames: ['arrangement-row'],
+  classNames: ['ArrangementRow'],
 
   // expected params
-  row: null
+  model: null
 });

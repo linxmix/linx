@@ -7,6 +7,7 @@ export default DS.Model.extend(
   AbstractListItemMixin('arrangement-row'), {
 
   start: DS.attr('number'),
-
   clip: DS.belongsTo('clip', { polymorphic: true, async: true }),
+
+  length: Ember.computed.alias('clip.length'),
 });

@@ -5,5 +5,9 @@ import AbstractListMixin from 'linx/lib/models/abstract-list';
 export default DS.Model.extend(
   AbstractListMixin('arrangement-row'), {
 
-  arrangedRows: Ember.computed.alias('arrangedContent'),
+  totalBeats: DS.attr('number'), // total number of beats in this arrangement
+
+  createRow: function(params) {
+    return this.createItem(params);
+  },
 });

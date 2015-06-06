@@ -12,7 +12,7 @@
     {{#each row in arrangement.sortedRows}}
       {{#arrangement-row row=row}}
         {{#each clip in row.clips}}
-          {{arrangement-clip arrangementClip=clip}}
+          {{arrangement-item arrangementClip=clip}}
         {{/each}}
       {{/arrangement-row}}
     {{/each}}

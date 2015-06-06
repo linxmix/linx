@@ -1,6 +1,6 @@
 import Ember from 'ember';
-import RequireAttrs from 'linx/lib/require-attributes';
+import RequireAttributes from 'linx/lib/require-attributes';
 
-export default Ember.Component.extend(RequireAttrs('item'), {
-  classNames: ['arrangement-item'],
+export default Ember.Component.extend(RequireAttributes('model'), {
+  classNames: ['ArrangementItem'],
 });
