@@ -4,8 +4,11 @@ import Clip from './clip';
 
 // Clip that points to a section of an AudioBuffer
 export default Clip.extend({
+  type: Ember.computed(() => { return 'audio-clip' }),
+
+
   // TODO: make this be a buffer
-  file: DS.attr(),
+  file: null,
 
   track: DS.belongsTo('track', { async: true }),
 });

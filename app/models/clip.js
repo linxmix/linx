@@ -11,6 +11,8 @@ export default DS.Model.extend({
   // tempo [ current tempo? ]
   // baseTempo
 
+  type: Ember.computed(() => { return 'clip' }),
+
   arrangementItem: DS.hasMany('arrangement-item', { async: true }),
 
   // length: function() {

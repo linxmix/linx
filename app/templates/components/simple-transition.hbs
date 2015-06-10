@@ -1,7 +1,6 @@
 {{#each row in arrangement.items}}
   {{#arrangement-row model=row}}
     {{#each item in row.content}}
-      ITEM {{item.id}}
       {{arrangement-item model=item}}
     {{/each}}
   {{/arrangement-row}}

@@ -25,7 +25,7 @@ export default DS.Model.extend(
       console.log("createSimpleArrangement", fromTrack.get('title'), toTrack.get('title'), arrangement);
 
       // clear existing arrangement
-      arrangement.clear();
+      arrangement.clear(); // also destroyClips?
       arrangement.set('totalBeats', 64); // TODO: make 64 the default numBeats
 
       // create tracks' clips and rows
@@ -36,6 +36,11 @@ export default DS.Model.extend(
       var toRow = arrangement.createRow();
       var toClip = store.createRecord('audio-clip', { track: toTrack });
       var toItem = toRow.createItem({ start: 0, clip: toClip });
+
+      var clipPromises = [fromClip.save(), toClip.save()];
+      Ember.RSVP.all(clipPromises, (results) => {
+        this.save();
+      });
     });
   }
 });

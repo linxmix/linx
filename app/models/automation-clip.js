@@ -6,5 +6,6 @@ import Clip from './clip';
 export default Clip.extend({
   start: DS.attr('number'),
   end: DS.attr('number'),
-  type: 'automation-clip',
+
+  type: Ember.computed(() => { return 'automation-clip' }),
 });
