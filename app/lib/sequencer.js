@@ -2,7 +2,7 @@ import Ember from 'ember';
 import RequireAttributes from 'linx/lib/require-attributes';
 import Metronome from 'linx/lib/metronome';
 
-// sequences arrangementItems as events against metronome
+// sequences arrangementClips as events against metronome
 // sequencer wraps imperative behaviour to avoid overhead of realtime computed properties
 export default Ember.Object.extend(
   RequireAttributes('player'), {
@@ -13,29 +13,29 @@ export default Ember.Object.extend(
 
   // params
   arrangement: Ember.computed.oneWay('player.arrangement'),
-  items: Ember.computed.oneWay('arrangement.items'),
+  clips: Ember.computed.oneWay('arrangement.clips'),
   metronome: Ember.computed(function() {
     return Metronome.create({ clock: this.get('player.clock') });
   }),
   isPlaying: Ember.computed.alias('metronome.isPlaying'),
   events: function() {
-    console.log("sequencer events", this.get('items'));
+    console.log("sequencer events", this.get('clips'));
 
-    return this.get('items').map((item) => {
+    return this.get('clips').map((clip) => {
       return ClipEvent.create({
-        arrangementItem: item,
+        arrangementClip: clip,
         sequencer: this,
       });
     });
-  }.property('items.@each'),
+  }.property('clips.@each'),
 });
 
 // binds an arrangementClip to the metronome as a ClipEvent
 var ClipEvent = Ember.Object.extend(
-  RequireAttributes('arrangementItem', 'sequencer'), {
+  RequireAttributes('arrangementClip', 'sequencer'), {
 
   // params
-  clip: Ember.computed.alias('arrangementItem.clip'),
+  clip: Ember.computed.alias('arrangementClip.clip'),
   metronome: Ember.computed.alias('sequencer.metronome'),
   isPlaying: Ember.computed.alias('sequencer.isPlaying'),
   startEvent: null,
@@ -44,7 +44,7 @@ var ClipEvent = Ember.Object.extend(
   sequencerStartTime: Ember.computed.alias('sequencer.startTime'),
   clipStartTime: function() {
 
-  }.property('arrangementItem.startBeat'),
+  }.property('arrangementClip.startBeat'),
 
   // setupHandlers: function() {
   //   this.get('clockEvent').onexpired = function(clockEvent) { console.log('oooh :(!') }
@@ -58,8 +58,8 @@ var ClipEvent = Ember.Object.extend(
     }
   }.observes('isPlaying', 'time'),
 
-  // schedule this item to play at start of item
-  // schedule this item to pause at end of item
+  // schedule this clip to play at start of clip
+  // schedule this clip to pause at end of clip
   schedule: function() {
     // TODO
     // schedule content at startTime + start

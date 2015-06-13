@@ -13,7 +13,7 @@ export default DS.Model.extend({
 
   type: Ember.computed(() => { return 'clip' }),
 
-  arrangementItem: DS.hasMany('arrangement-item', { async: true }),
+  arrangementClip: DS.hasMany('arrangement-clip', { async: true }),
 
   // length: function() {
   //   return this.get('end') - this.get('start');

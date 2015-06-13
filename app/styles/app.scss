@@ -2,10 +2,10 @@ $site-nav-height: 35px;
 
 @import 'index';
 
-@import 'components/site_nav';
-@import 'components/wave_surfer';
-@import 'components/page_drop';
+@import 'components/site-nav';
+@import 'components/wave-surfer';
+@import 'components/page-drop';
 
-@import 'components/arrangement_grid';
-@import 'components/arrangement_row';
-@import 'components/arrangement_item';
+@import 'components/arrangement-grid';
+@import 'components/arrangement-row';
+@import 'components/arrangement-clip';

@@ -10,9 +10,9 @@ export default DS.Model.extend(
 
   // params
   rows: Ember.computed.alias('content'),
-  items: function() {
-    return flatten(this.get('rows').mapBy('items'));
-  }.property('rows.@each.items'),
+  clips: function() {
+    return flatten(this.get('rows').mapBy('clips'));
+  }.property('rows.@each.clips'),
 
   createRow: function(params) {
     return this.createItem(params);

@@ -4,7 +4,7 @@ import AbstractListMixin from 'linx/lib/models/abstract-list';
 import AbstractListItemMixin from 'linx/lib/models/abstract-list-item';
 
 export default DS.Model.extend(
-  AbstractListItemMixin('arrangement'), AbstractListMixin('arrangement-item'), {
+  AbstractListItemMixin('arrangement'), AbstractListMixin('arrangement-clip'), {
 
-  items: Ember.computed.alias('content'),
+  clips: Ember.computed.alias('content'),
 });

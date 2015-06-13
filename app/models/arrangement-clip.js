@@ -6,8 +6,10 @@ import AbstractListItemMixin from 'linx/lib/models/abstract-list-item';
 export default DS.Model.extend(
   AbstractListItemMixin('arrangement-row'), {
 
-  startBeat: DS.attr('number'), // starting beat in arrangement
-  clip: DS.belongsTo('clip', { polymorphic: true, async: true }),
+  type: Ember.computed.alias('clip.type'),
 
+  startBeat: DS.attr('number'), // starting beat in arrangement
   length: Ember.computed.alias('clip.length'),
+
+  clip: DS.belongsTo('clip', { polymorphic: true, async: true }),
 });

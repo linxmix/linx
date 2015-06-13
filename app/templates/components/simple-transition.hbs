@@ -2,8 +2,8 @@
 
 {{#each row in arrangement.rows}}
   {{#arrangement-row model=row}}
-    {{#each item in row.items}}
-      {{arrangement-item model=item}}
+    {{#each clip in row.clips}}
+      {{arrangement-clip model=clip}}
     {{/each}}
   {{/arrangement-row}}
 {{/each}}

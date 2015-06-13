@@ -11,16 +11,16 @@ export default Ember.Route.extend({
     //   // for each file, add to new row
     //   var rows = files.map(function(file) {
 
-    //     // create audio-clip, arrangement-item, arrangement-row.
+    //     // create audio-clip, arrangement-clip, arrangement-row.
     //     var clip = store.createRecord('audio-clip', { file: file, type: 'audio-clip' });
-    //     var item = store.createRecord('arrangement-item');
+    //     var arrangementClip = store.createRecord('arrangement-clip');
     //     var row = store.createRecord('arrangement-row');
 
-    //     item.set('clip', clip);
-    //     row.addItem(item);
+    //     arrangementClip.set('clip', clip);
+    //     row.addItem(arrangementClip);
 
     //     clip.save();
-    //     item.save();
+    //     arrangementClip.save();
     //     row.save();
 
     //     return row;
@@ -45,9 +45,9 @@ export default Ember.Route.extend({
 
     return Ember.RSVP.hash({
       // tracks: store.find('track'),
-      // items: store.find('arrangement-item'),
-      // item: store.findPolymorphic('arrangement-item', 'clip', '-JpixY_gJcUYPDifgllk'),
-      // item: store.find('arrangement-item', '-JpixY_gJcUYPDifgllk'),
+      // items: store.find('arrangement-clip'),
+      // item: store.findPolymorphic('arrangement-clip', 'clip', '-JpixY_gJcUYPDifgllk'),
+      // item: store.find('arrangement-clip', '-JpixY_gJcUYPDifgllk'),
       // clip: store.find('audio-clip', '-JpixY_dno-W300KB5_J'),
       arrangement: store.createRecord('arrangement', {}),
     });
