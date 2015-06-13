@@ -142,6 +142,16 @@ export const Wave = Ember.ObjectProxy.extend({
     this.destroyRegions();
   },
 
+  resetProgress: function() {
+    this.destroyProgress();
+    this.initProgress();
+  },
+
+  resetWavesurfer: function() {
+    var wavesurfer = this.get('wavesurfer');
+    wavesurfer && wavesurfer.reset();
+  },
+
   destroyRegions: function() {
     this.get('regions').forEach(function(region) {
       region.destroy();
@@ -149,25 +159,22 @@ export const Wave = Ember.ObjectProxy.extend({
     this.set('regions', []);
   },
 
-  resetProgress: function() {
-    this.destroyProgress();
-    this.initProgress();
-  },
-
   destroyProgress: function() {
     var progress = this.get('progress');
     progress && progress.destroy();
-  }.on('destroy'),
-
-  resetWavesurfer: function() {
-    var wavesurfer = this.get('wavesurfer');
-    wavesurfer && wavesurfer.reset();
   },
 
   destroyWavesurfer: function() {
     var wavesurfer = this.get('wavesurfer');
     wavesurfer && wavesurfer.destroy();
-  }.on('destroy'),
+  },
+
+  destroy: function() {
+    this.destroyProgress();
+    this.destroyRegions();
+    this.destroyWavesurfer();
+    this._super.apply(this, arguments);
+  },
 
   initWavesurfer: function(params) {
     // console.log('init wavesurfer', params, this.get('file'));
@@ -248,7 +255,7 @@ export const Region = Ember.Object.extend(
   destroyRegion: function() {
     var region = this.get('region');
     region && region.remove();
-  }.on('destroy'),
+  },
 
   params: function(key, value) {
     return _.defaults({}, {

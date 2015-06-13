@@ -13,8 +13,6 @@ export default DS.FirebaseSerializer.extend({
       json[key + "Type"] = belongsTo.typeKey;
     }
 
-    console.log("serializePolymorphicType", snapshot, json, relationship);
-
     return this._super.apply(this, arguments);
   },
 

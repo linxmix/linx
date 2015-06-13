@@ -67,6 +67,9 @@ export default function(itemType) {
 
       // then once saves and removes are done, save list
       Ember.RSVP.all(removePromises.concat(savePromises)).then((results) => {
+        // console.log("list save from replace", this.toString(), itemType);
+        // console.log("itemsToRemove", itemsToRemove.get('length'));
+        // console.log("itemsToSave", itemsToSave.get('length'));
         this.save();
       });
     },

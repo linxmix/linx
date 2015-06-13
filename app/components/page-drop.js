@@ -70,6 +70,6 @@ export default Ember.Component.extend({
     });
 
     this.set('_handlers', {});
-  }.on('destroy'),
+  }.on('willDestroyElement'),
 });
 

@@ -28,13 +28,20 @@ export default function() {
     return params;
   }, {});
 
+  params.getPrivateModels = function() {
+    // TODO: return privates models in promise
+  }
+
   // augment save to save the dependent models
-  params.save = function() {
-    var promises = privateKeys.map((privateKey) => {
+  params.save = function(...args) {
+    var promises = privateKeys.map((privateKey, i) => {
       var model = this.get(privateKey + '.content');
       return model && model.save();
     });
-    promises.push(this._super.apply(this, arguments));
+
+    // once dependent models are saved, save this model
+    this._super.apply(this, arguments);
+    console.log('saving transition', promises);
     return Ember.RSVP.all(promises);
   };
 

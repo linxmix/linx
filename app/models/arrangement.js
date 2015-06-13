@@ -17,4 +17,9 @@ export default DS.Model.extend(
   createRow: function(params) {
     return this.createItem(params);
   },
+
+  save: function() {
+    console.log('save arrangement');
+    return this._super.apply(this, arguments);
+  }
 });

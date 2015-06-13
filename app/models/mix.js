@@ -23,9 +23,10 @@ export default DS.Model.extend(
     transition.set('fromTrack', fromTrack);
     transition.set('toTrack', toTrack);
 
-    this.insertTransitionAt(index, transition);
-
-    return transition;
+    return transition.save().then(() => {
+      this.insertTransitionAt(index, transition);
+      return transition;
+    });
   },
 
   appendTransition: function(transition) {
@@ -61,7 +62,6 @@ export default DS.Model.extend(
     mixItem.set('transition', transition);
     mixItem.save();
   },
-
 
   // TODO: mix needs to validate transitions when removing tracks
   removeTrack: function(track) {

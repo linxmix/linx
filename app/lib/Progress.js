@@ -12,7 +12,13 @@ export default Ember.Object.extend({
     });
 
     // TODO: also have a way to cancel the actual process?
-  }.on('destroy'),
+
+  },
+
+  destroy: function() {
+    this.cancelProgress();
+    this._super.apply(this, arguments);
+  },
 
   onProgress: function(percent) {
     this.setProperties({

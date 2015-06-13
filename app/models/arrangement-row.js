@@ -7,4 +7,8 @@ export default DS.Model.extend(
   AbstractListItemMixin('arrangement'), AbstractListMixin('arrangement-clip'), {
 
   clips: Ember.computed.alias('content'),
+
+  createClip: function(...args) {
+    this.createItem.apply(this, args);
+  }
 });
