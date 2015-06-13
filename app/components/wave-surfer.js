@@ -21,7 +21,7 @@ export default Ember.Component.extend({
   bars: null, // array of floats (seconds)
 
   // params
-  audioContext: null, // injected by app
+  clock: null, // injected by app
   wave: Ember.computed(function() {
     return Wave.create({
       component: this,
@@ -64,7 +64,7 @@ export default Ember.Component.extend({
 
     var params = {
       container: this.$('.wave')[0],
-      audioContext: this.get('audioContext.context')
+      audioContext: this.get('clock.context')
     };
 
     wave.initWavesurfer(params);
@@ -118,7 +118,7 @@ export const Wave = Ember.ObjectProxy.extend({
   loadFile: function() {
     var file = this.get('file');
     var wavesurfer = this.get('wavesurfer');
-    console.log("load audioFile", wavesurfer, file);
+    // console.log("load audioFile", wavesurfer, file);
 
     if (file && wavesurfer) {
       wavesurfer.loadBlob(file);
@@ -128,7 +128,7 @@ export const Wave = Ember.ObjectProxy.extend({
   loadStream: function() {
     var streamUrl = this.get('streamUrl');
     var wavesurfer = this.get('wavesurfer');
-    console.log("load streamUrl", wavesurfer, streamUrl);
+    // console.log("load streamUrl", wavesurfer, streamUrl);
 
     if (streamUrl && wavesurfer) {
       wavesurfer.load(streamUrl);

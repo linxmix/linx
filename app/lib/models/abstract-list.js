@@ -4,7 +4,6 @@ import DS from 'ember-data';
 export default function(itemType) {
   var mixinParams = {
     content: DS.hasMany(itemType, { async: true }),
-    items: Ember.computed.alias('content'),
 
     dirtyContent: Ember.computed.filterBy('content', 'isDirty'),
     contentIsDirty: Ember.computed.gt('dirtyContent.length', 0),

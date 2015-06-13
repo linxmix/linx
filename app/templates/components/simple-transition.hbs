@@ -1,6 +1,8 @@
-{{#each row in arrangement.items}}
+{{arrangement-player arrangement=arrangement}}
+
+{{#each row in arrangement.rows}}
   {{#arrangement-row model=row}}
-    {{#each item in row.content}}
+    {{#each item in row.items}}
       {{arrangement-item model=item}}
     {{/each}}
   {{/arrangement-row}}

@@ -1,0 +1,22 @@
+{{!-- Back --}}
+<div class="ui basic inverted teal back button" {{action 'skipBack'}}>
+  <i class="step backward icon"></i>
+</div>
+
+{{!-- Play/Pause --}}
+{{#unless isPlaying}}
+  <div class="inverted green ui playpause icon button" {{action 'playpause'}}>
+    <i class="play icon"></i>
+    Play
+  </div>
+{{else}}
+  <div class="inverted red ui playpause icon button" {{action 'playpause'}}>
+    <i class="pause icon"></i>
+    Pause
+  </div>
+{{/unless}}
+
+{{!-- Forth --}}
+<div class="ui basic inverted teal forth button" {{action 'skipForth'}}>
+  <i class="step forward icon"></i>
+</div>

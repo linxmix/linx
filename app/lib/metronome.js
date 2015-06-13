@@ -1,46 +1,56 @@
 import Ember from 'ember';
+import RequireAttributes from 'linx/lib/require-attributes';
 
-export const PLAY_STATES = ['PAUSE', 'PLAY'];
+// Holds rhythym based on global clock
+export default Ember.Object.extend(
+  RequireAttributes('clock'), {
 
-export default Ember.Object.extend({
+  isPlaying: false,
+  lastPlayTime: 0,
+  startTime: 0,
 
-  // expected params
+  // TODO: Dynamic BPM
   bpm: 128.000,
-  numBeats: null,
-
-  // timers
-  beat: 1,
-  bar: 1,
-
-  position: 0,
-
-  secondsPerBeat: function() {
-    return this.get('bpm') 
+  bps: function() {
+    return this.get('bpm') / 60.0;
   }.property('bpm'),
 
-  beat: function() {
-
-  }.property('bpm', 'numBeats'),
-
-  play: function(time) {
-    // TODO: schedule periodic update against App.clock and seconds per beat
-    var clock = App.clock;
-    var secondsPerBeat = this.get('secondsPerBeat');
+  // returns the sequencerTime of the given beat
+  beatToTime: function(beat) {
+    // TODO: Dynamic BPM
+    return beat * (1 / this.get('bps'));
   },
 
-  pause: function() {
-    // TODO: unschedule periodic update based on App.clock
+  // returns the sequencerBeat of the given time
+  timeToBeat: function(time) {
+    // TODO: Dynamic BPM
+    return time * this.get('bps');
   },
 
-  stop: function() {
-    this.pause();
-    this.set('beat', 0);
+  getClockTime: function() {
+    return this.get('clock.audioContext.currentTime');
   },
 
-  update: function(beat) {
-    // TODO
-    this.set('bar', (beat / 4));
-    this.set('minutes', minutesFormat);
-    this.set('seconds', secondsFormat);
+  getPlayedTime: function() {
+    return this.getClockTime() - this.get('lastPlayTime');
   },
+
+  getCurrentTime: function() {
+    return this.get('startTime') + this.getPlayedTime();
+  },
+
+  seekTo: function(time) {
+    this.set('startTime', time);
+    this.set('lastPlayTime', this.getClockTime());
+  },
+
+  updateTimes: function() {
+    if (this.get('isPlaying')) {
+      this.set('lastPlayTime', this.getClockTime());
+    } else {
+      this.set('startTime', this.getCurrentTime());
+    }
+    console.log("lastPlayTime", this.get('lastPlayTime'));
+    console.log("startTime", this.get('startTime'));
+  }.observes('isPlaying'),
 });
