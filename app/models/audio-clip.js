@@ -6,10 +6,24 @@ import Clip from './clip';
 export default Clip.extend({
   type: Ember.computed(() => { return 'audio-clip' }),
 
-  isReady: Ember.computed.and('isLoaded', 'isAudioLoaded', 'track.isLoaded'),
+  // TODO: figure out what we need to actually be ready
+  isReady: Ember.computed.and('isLoaded', 'isAudioLoaded', 'track.isLoaded', 'track.analysis'),
   isAudioLoaded: false,
 
-  // TODO: make this be a buffer?
+  // TODO: make editable, and an attr
+  startTime: function() {
+    var beats = this.get('track.analysis.beats');
+
+    if (beats) {
+      console.log("beats", beats);
+      return beats[0].start;
+    } else {
+      return 0;
+    }
+
+  }.property('track.analysis.isLoaded'),
+
+  // TODO: deprecated
   file: null,
 
   track: DS.belongsTo('track', { async: true }),

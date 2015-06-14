@@ -10,5 +10,10 @@ export default Ember.Component.extend(
     didLoadWave: function() {
       this.get('model').set('isAudioLoaded', true);
     }
-  }
+  },
+
+  // TODO: figure this out. might need actual clipped audioBuffer
+  realSeekTime: function() {
+    return this.get('seekTime') + this.get('model.startTime');
+  }.property('seekTime', 'model.startTime'),
 });
