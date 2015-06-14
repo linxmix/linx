@@ -20,10 +20,14 @@ var Clock = Ember.Object.extend({
 
     this.setProperties({
       'audioContext': audioContext,
-      'clock': waaClock
+      '_clock': waaClock
     });
 
     waaClock.start();
+  },
+
+  callbackAtTime: function(cb, time) {
+    this.get('_clock').callbackAtTime(cb, time);
   },
 })
 

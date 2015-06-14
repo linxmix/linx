@@ -6,6 +6,7 @@ export default Ember.Component.extend(
 
   // optional params
   isPlaying: false,
+  isDisabled: false,
 
   classNames: ['PlayButtons'],
 });

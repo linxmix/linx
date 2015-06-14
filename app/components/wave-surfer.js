@@ -5,17 +5,19 @@ import RequireAttributes from 'linx/lib/require-attributes';
 import _ from 'npm:underscore';
 
 export default Ember.Component.extend({
-  classNames: ['wave-surfer'],
+  classNames: ['WaveSurfer'],
 
-  // expected params
+  // expected one of these two params
   file: null,
   streamUrl: null,
 
-  // optional params
-  // TODO: create wavesurfer region, update when start/end change
+  // TODO: create wavesurfer region, update when start/end change?
   start: 0,
   end: null,
+  
+  // optional params
   isPlaying: false,
+  seekTime: 0,
   waveParams: null,
   beats: null, // array of floats (seconds)
   bars: null, // array of floats (seconds)
@@ -23,11 +25,14 @@ export default Ember.Component.extend({
   // params
   clock: null, // injected by app
   wave: Ember.computed(function() {
-    return Wave.create({
-      component: this,
-    });
+    return Wave.create({ component: this });
   }),
-  progress: Ember.computed.alias('wave.progress'),
+
+  onWaveLoad: function() {
+    if (this.get('wave.isLoaded')) {
+      this.sendAction('didLoadWave');
+    }
+  }.observes('wave.isLoaded').on('init'),
 
   drawBeats: function() {
     var beats = this.get('beats');
@@ -63,7 +68,7 @@ export default Ember.Component.extend({
     var wave = this.get('wave');
 
     var params = {
-      container: this.$('.wave')[0],
+      container: this.$('.WaveSurfer-wave')[0],
       audioContext: this.get('clock.context')
     };
 
@@ -77,7 +82,7 @@ export default Ember.Component.extend({
 });
 
 // Wraps Wavesurfer
-export const Wave = Ember.ObjectProxy.extend({
+export const Wave = Ember.Object.extend({
 
   // expected params
   component: null,
@@ -105,6 +110,28 @@ export const Wave = Ember.ObjectProxy.extend({
   regions: Ember.computed(function() { return []; }),
   
   progress: Ember.computed(function() { return Progress.create(); }),
+
+  playStateDidChange: function() {
+    Ember.run.once(this, 'updatePlayState');
+  }.observes('component.isPlaying', 'component.seekTime', 'isLoaded').on('init'),
+
+  updatePlayState: function() {
+    if (this.get('isLoaded')) {
+      var isPlaying = this.get('component.isPlaying');
+      var seekTime = this.get('component.seekTime');
+      var wavesurfer = this.get('wavesurfer');
+      console.log("update wavesurfer playstate", isPlaying, seekTime);
+
+      // TODO: handle time > end where?
+      if (isPlaying) {
+        wavesurfer.play(seekTime);
+      } else if (wavesurfer.isPlaying()) {
+        wavesurfer.pause();
+      } else {
+        wavesurfer.seekToTime(seekTime);
+      }
+    }
+  },
 
   createRegion: function(params) {
     return Region.create(_.defaults({

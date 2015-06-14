@@ -1,8 +1,14 @@
 import Ember from 'ember';
-import RequireAttrs from 'linx/lib/require-attributes';
+import RequireAttributes from 'linx/lib/require-attributes';
 
 export default Ember.Component.extend(
-  RequireAttrs('model'), {
+  RequireAttributes('model', 'isPlaying', 'seekTime', 'metronome'), {
 
-  classNames: ['audio-clip'],
+  classNames: ['AudioClip'],
+
+  actions: {
+    didLoadWave: function() {
+      this.get('model').set('isAudioLoaded', true);
+    }
+  }
 });

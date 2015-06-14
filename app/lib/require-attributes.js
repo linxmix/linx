@@ -16,7 +16,7 @@ export default function() {
   return Ember.Mixin.create({
     _assertAttributes: function() {
       attributes.forEach((attribute) => {
-        Ember.assert('Must specify a ' + attribute + ' to use ' + this.get('constructor'), this.get(attribute));
+        Ember.assert('Must specify a ' + attribute + ' to use ' + this.get('constructor'), !Ember.isNone(this.get(attribute)));
       });
       this._super.apply(this, arguments);
     }.on('init'),

@@ -13,4 +13,17 @@ export default DS.Model.extend(
 
   // TODO: standardize method of retrieving async object from promise on fulfill?
   clip: DS.belongsTo('clip', { polymorphic: true, async: true }),
+
+  isPlaying: false,
+  seekTime: 0,
+  playpause: function() {
+    this.toggleProperty('isPlaying');
+  },
+  play: function(time) {
+    this.set('isPlaying', true);
+    this.set('seekTime', time);
+  },
+  pause: function() {
+    this.set('isPlaying', false);
+  },
 });

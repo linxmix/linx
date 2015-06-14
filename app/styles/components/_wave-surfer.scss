@@ -1,6 +1,9 @@
-.wave-surfer {
+.WaveSurfer {
+  width: 100%;
+  height: 100%;
+
   // position off screen
-  .wave.hidden {
+  .WaveSurfer-wave.hidden {
     position: absolute;
     left: -10000px;
     width: 100%;

@@ -381,4 +381,21 @@ WaveSurfer.enableDragSelection = function (options) {
     this.regions.enableDragSelection(options);
 };
 
+// DKANE WaveSurfer Functions
+function augment(property, fn) {
+  if (WaveSurfer[property]) {
+    console.log("WaveSurfer." + property + " exists, deprecate mine");
+  } else {
+    WaveSurfer[property] = fn;
+  }
+}
+
+augment('seekToTime', function(time) {
+  return this.seekTo(time / this.getDuration());
+});
+
+augment('isPlaying', function() {
+  return !this.backend.isPaused();
+});
+
 export default WaveSurfer;

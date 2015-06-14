@@ -49,25 +49,28 @@ export default Ember.Object.extend(
     this.set('lastPlayTime', this.getClockTime());
   },
 
-  scheduleAtBeat: function(playable, beat) {
-    return this.scheduleAtTime(playable, this.beatToTime(beat));
+  scheduleAtBeat: function(cb, beat) {
+    return this.scheduleAtTime(cb, this.beatToTime(beat));
   },
 
-  scheduleAtTime: function(playable, time) {
+  scheduleAtTime: function(cb, time) {
+    Ember.assert('ScheduleAtTime called with cb and time',
+      Ember.typeOf(time) === 'number',
+      Ember.typeOf(cb) === 'function');
+
     var delay = time - this.getCurrentTime();
-    console.log("schedulingAtTime", playable, time, delay);
+    console.log("schedulingAtTime", time, delay);
 
     if (delay > 0) {
-      return clock.callbackAtTime(() => {
+      return this.get('clock').callbackAtTime(() => {
         // recalculate delay for accuracy
         delay = time - this.getCurrentTime();
-        console.log("playing playable", playable, this.getCurrentTime(), delay);
-        playable.play(this, -delay);
+        cb(-delay);
       }, this.getClockTime() + delay)
 
     // delay is negative, so play this clip forwards some time
     } else {
-      playable.play(this, -delay);
+      cb(-delay);
     }
   },
 
@@ -77,8 +80,8 @@ export default Ember.Object.extend(
     } else {
       this.set('startTime', this.getCurrentTime());
     }
-    console.log("lastPlayTime", this.get('lastPlayTime'));
-    console.log("startTime", this.get('startTime'));
-    console.log("currentTime", this.getCurrentTime());
+    // console.log("metronome lastPlayTime", this.get('lastPlayTime'));
+    // console.log("metronome startTime", this.get('startTime'));
+    console.log("metronome currentTime", this.getCurrentTime());
   },
 });

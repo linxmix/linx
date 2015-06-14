@@ -1,1 +1,8 @@
-<div {{bind-attr class=":wave wave.isLoaded::hidden"}}></div>
+<div {{bind-attr class=":WaveSurfer-wave wave.isLoaded::hidden"}}></div>
+
+{{progress-bar
+  class="WaveSurfer-progress"
+  isDone=wave.isLoaded
+  text="Loading Wave..."
+}}
+

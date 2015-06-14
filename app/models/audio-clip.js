@@ -6,25 +6,8 @@ import Clip from './clip';
 export default Clip.extend({
   type: Ember.computed(() => { return 'audio-clip' }),
 
-  play: function(metronome, time) {
-    console.log("play audio clip", time, this.get('track'), this.get('track.title'));
-
-    // TODO
-    // if !isNumber(time) this.set('isPlaying', true)
-    // else if time < 0 throw error
-    // else if (time > this.length) return;
-    // else 
-    //   this.seekTo(time); this.set('isPlaying', true);
-
-    // TODO: seekTo without play?
-  },
-
-  pause: function() {
-    console.log("pause audio clip", this.get('track'), this.get('track.title'));
-
-  },
-
-  isReady: Ember.computed.and('this.isLoaded', 'track.isLoaded'),
+  isReady: Ember.computed.and('isLoaded', 'isAudioLoaded', 'track.isLoaded'),
+  isAudioLoaded: false,
 
   // TODO: make this be a buffer?
   file: null,

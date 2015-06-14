@@ -1,10 +1,11 @@
 import Ember from 'ember';
 import Metronome from 'linx/lib/metronome';
 import RequireAttributes from 'linx/lib/require-attributes';
+import _ from 'npm:underscore';
 
 // sequences arrangementClips as events against metronome
 // wraps imperative behaviour to avoid overhead of realtime computed properties
-// exposes metronome and playback actions
+// exposes metronome, isPlaying, isReady and playback actions
 export default Ember.Mixin.create(
   RequireAttributes('arrangement', 'clock'), {
 
@@ -31,11 +32,18 @@ export default Ember.Mixin.create(
   metronome: Ember.computed(function() {
     return Metronome.create({ clock: this.get('clock') });
   }),
+  notReady: Ember.computed.not('isReady'),
+  isReady: function() {
+    if (!this.get('_arrangementClips.length')) { return false; }
+
+    return this.get('_arrangementClips.length') === this.get('_clipEvents.length');
+  }.property('_arrangementClips.length', '_clipEvents.length'),
 
   // internal params
   _arrangementClips: Ember.computed.oneWay('arrangement.clips'),
   _clipEvents: function() {
-    console.log("arrangement-player events", this.get('_arrangementClips'));
+    var notReadyClips = this.get('_arrangementClips').filterBy('isReady', false);
+    if (notReadyClips.get('length') > 0) { return []; }
 
     return this.get('_arrangementClips').map((clip) => {
       return ClipEvent.create({
@@ -43,7 +51,7 @@ export default Ember.Mixin.create(
         player: this,
       });
     });
-  }.property('_arrangementClips.@each')
+  }.property('_arrangementClips.@each.isReady')
 });
 
 // binds an arrangementClip to the metronome as a ClipEvent
@@ -52,33 +60,33 @@ var ClipEvent = Ember.Object.extend(
 
   // params
   metronome: Ember.computed.alias('player.metronome'),
-  clip: Ember.computed.alias('arrangementClip.clip.content'), // TODO: not content...
   startBeat: Ember.computed.alias('arrangementClip.startBeat'),
 
   // internal params
   _event: null,
 
-  update: function() {
+  schedulingDidChange: function() {
+    Ember.run.once(this, 'updateEvent');
+  }.observes('metronome.isPlaying', 'metronome.startTime', 'startBeat', 'arrangementClip'),
+
+  updateEvent: function() {
     this.unschedule();
-    var clip = this.get('clip');
-    if (!clip) {
-      return;
-    } else if (this.get('metronome.isPlaying')) {
+    if (this.get('metronome.isPlaying')) {
       this.schedule();
     } else {
-      clip.pause();
+      this.get('arrangementClip').pause();
     }
-  }.observes('metronome.isPlaying', 'metronome.startTime', 'startBeat', 'clip'),
+  },
 
-  // schedule this clip to play at start of clip
   schedule: function() {
-    var clip = this.get('clip');
+    var arrangementClip = this.get('arrangementClip');
     var startBeat = this.get('startBeat');
-    var event = this.get('metronome').scheduleAtBeat(clip, startBeat);
+    var metronome = this.get('metronome');
+    var event = metronome.scheduleAtBeat(arrangementClip.play.bind(arrangementClip), startBeat);
 
     if (event) {
       event.onexpired = function(event) {
-        console.log('EVENT EXPIRED!', event, clip);
+        console.log('EVENT EXPIRED!', event, arrangementClip);
       }
       this.set('_event', event);
     }
