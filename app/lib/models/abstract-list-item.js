@@ -19,6 +19,7 @@ export default function(listType) {
 
   // save only after finishing loading
   mixinParams.save = function() {
+    // TODO: why does this happen? how to fix?
     if (this.get('isLoaded')) {
       return this._super.apply(this, arguments);
     } else {

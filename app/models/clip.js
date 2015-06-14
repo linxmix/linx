@@ -4,18 +4,21 @@ import DS from 'ember-data';
 // Base clip model
 export default DS.Model.extend({
 
-  // TODO: define api
-  // length [ in beats? ]
-  // playClip [ at given beat [ or time, 0-1? ] ]
-  // pauseClip
-  // tempo [ current tempo? ]
-  // baseTempo
+  play: function(metronome, time) {
+    throw new Error('Must implement clip.play');
+  },
 
-  type: Ember.computed(() => { return 'clip' }),
+  pause: function() {
+    throw new Error('Must implement clip.pause');
+  },
+
+  type: function() {
+    throw new Error('Must implement computed property: clip.type');
+  }.property(),
+
+  isReady: function() {
+    throw new Error('Must implement computed property: clip.isReady');
+  }.property(),
 
   arrangementClip: DS.hasMany('arrangement-clip', { async: true }),
-
-  // length: function() {
-  //   return this.get('end') - this.get('start');
-  // }.property('start', 'end'),
 });

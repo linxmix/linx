@@ -14,10 +14,11 @@ export default function() {
   var attributes = Array.prototype.slice.call(arguments);
 
   return Ember.Mixin.create({
-    assertAttributes: function() {
+    _assertAttributes: function() {
       attributes.forEach((attribute) => {
         Ember.assert('Must specify a ' + attribute + ' to use ' + this.get('constructor'), this.get(attribute));
       });
+      this._super.apply(this, arguments);
     }.on('init'),
   });
 }

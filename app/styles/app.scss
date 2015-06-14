@@ -5,7 +5,10 @@ $site-nav-height: 35px;
 @import 'components/site-nav';
 @import 'components/wave-surfer';
 @import 'components/page-drop';
+@import 'components/progress-bar';
 
 @import 'components/arrangement-grid';
 @import 'components/arrangement-row';
 @import 'components/arrangement-clip';
+
+@import 'components/simple-transition';

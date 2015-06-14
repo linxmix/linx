@@ -5,10 +5,10 @@ export default {
   name: 'clock',
 
   initialize: function(container, app) {
-    app.register("clock:main", Clock);
+    app.register("service:clock", Clock);
 
-    app.inject("component:wave-surfer", "clock", "clock:main");
-    app.inject("component:arrangement-player", "clock", "clock:main");
+    app.inject("component:wave-surfer", "clock", "service:clock");
+    app.inject("component:simple-transition", "clock", "service:clock");
   },
 };
 

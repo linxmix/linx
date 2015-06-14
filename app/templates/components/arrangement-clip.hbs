@@ -1,1 +1,5 @@
-{{component model.type model=model.clip}}
+{{#if model.isReady}}
+  {{component model.type model=model.clip}}
+{{else}}
+  {{progress-bar isDone=model.isReady text="Loading Clip..."}}
+{{/if}}

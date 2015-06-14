@@ -6,10 +6,11 @@ import AbstractListItemMixin from 'linx/lib/models/abstract-list-item';
 export default DS.Model.extend(
   AbstractListItemMixin('arrangement-row'), {
 
-  type: Ember.computed.alias('clip.type'),
-
   startBeat: DS.attr('number'), // starting beat in arrangement
-  length: Ember.computed.alias('clip.length'),
 
+  type: Ember.computed.alias('clip.type'),
+  isReady: Ember.computed.bool('clip.isReady'),
+
+  // TODO: standardize method of retrieving async object from promise on fulfill?
   clip: DS.belongsTo('clip', { polymorphic: true, async: true }),
 });

@@ -1,9 +1,30 @@
-{{arrangement-player arrangement=arrangement}}
+{{play-buttons
+  isPlaying=isPlaying
+  playpause='playpause'
+  skipBack='skipBack'
+  skipForth='skipForth'
+}}
 
-{{#each row in arrangement.rows}}
-  {{#arrangement-row model=row}}
-    {{#each clip in row.clips}}
-      {{arrangement-clip model=clip}}
-    {{/each}}
-  {{/arrangement-row}}
+<hr/>
+
+{{#each clip in arrangement.clips}}
+  <div>clip isReady {{clip.isReady}}</div>
 {{/each}}
+
+<hr/>
+
+{{#each event in _clipEvents}}
+  <div>event {{event.arrangementClip.clip.track.title}}</div>
+{{/each}}
+
+<hr/>
+
+<div class="SimpleTransition-arrangement">
+  {{#each row in arrangement.rows}}
+    {{#arrangement-row model=row}}
+      {{#each clip in row.clips}}
+        {{arrangement-clip model=clip}}
+      {{/each}}
+    {{/arrangement-row}}
+  {{/each}}
+</div>

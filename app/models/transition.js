@@ -18,7 +18,7 @@ export default DS.Model.extend({
   // simple tempo curve [ TODO ]
   // simple volume curve [ TODO ]
   // TODO: delete old arrangement, if exists?
-  initSimpleArrangement: function() {
+  initSimple: function() {
     Ember.RSVP.all([this.get('fromTrack'), this.get('toTrack')]).then((results) => {
       var store = this.get('store');
       var fromTrack = results[0];
@@ -33,11 +33,11 @@ export default DS.Model.extend({
       // create tracks' clips and rows
       var fromRow = arrangement.createRow();
       var fromClip = store.createRecord('audio-clip', { track: fromTrack });
-      fromRow.createClip({ start: 0, clip: fromClip });
+      fromRow.createClip({ startBeat: 1, clip: fromClip });
 
       var toRow = arrangement.createRow();
       var toClip = store.createRecord('audio-clip', { track: toTrack });
-      toRow.createClip({ start: 0, clip: toClip });
+      toRow.createClip({ startBeat: 1, clip: toClip });
 
       var savePromises = [fromClip.save(), toClip.save(), arrangement.save()];
       Ember.RSVP.all(savePromises).then((results) => {
