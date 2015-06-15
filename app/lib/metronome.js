@@ -16,9 +16,14 @@ export default Ember.Object.extend(
   startTime: 0, // in context's frame of reference
   isPlaying: false,
   bpm: 128.000, // TODO: Dynamic BPM
+
   bps: function() {
     return this.get('bpm') / 60.0;
   }.property('bpm'),
+
+  spb: function() {
+    return 1 / this.get('bps');
+  }.property('bps'),
 
   // returns the sequencerTime of the given beat
   beatToTime: function(beat) {

@@ -21,7 +21,7 @@
 
 <hr/>
 
-<div class="SimpleTransition-arrangement">
+{{#simple-arrangement arrangement=arrangement}}
   {{#each row in arrangement.rows}}
     {{#arrangement-row model=row}}
       {{#each clip in row.clips}}
@@ -29,4 +29,4 @@
       {{/each}}
     {{/arrangement-row}}
   {{/each}}
-</div>
+{{/simple-arrangement}}

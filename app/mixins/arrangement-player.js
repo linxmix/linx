@@ -15,7 +15,7 @@ export default Ember.Mixin.create(
     },
 
     skipBack: function() {
-      console.log("skip back unimplemented");
+      this.get('metronome').seekToTime(0);
     },
 
     skipForth: function() {
@@ -75,6 +75,7 @@ var ClipEvent = Ember.Object.extend(
       this.schedule();
     } else {
       this.get('arrangementClip').pause();
+      this.unschedule();
     }
   },
 
