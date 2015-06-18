@@ -17,7 +17,19 @@ export default DS.Model.extend({
 
   // params
   streamUrl: Ember.computed.any('s3StreamUrl', 'scStreamUrl'),
+  audioSummary: Ember.computed.alias('echonestTrack.audio_summary'),
+  bpm: Ember.computed.alias('audioSummary.tempo'),
+  bps: function() {
+    return this.get('bpm') / 60.0;
+  }.property('bpm'),
+  spb: function() {
+    return 1 / this.get('bps');
+  }.property('bps'),
   analysis: Ember.computed.alias('echonestTrack.analysis'),
+  firstBeatTime: function() {
+    var beatStartTime = this.get('analysis.beats.firstObject.start');
+    return beatStartTime;
+  }.property('analysis.beats.firstObject.start'),
 
   s3StreamUrl: function() {
     if (!Ember.isNone(this.get('s3Url'))) {

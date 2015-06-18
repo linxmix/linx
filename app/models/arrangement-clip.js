@@ -7,20 +7,33 @@ export default DS.Model.extend(
   AbstractListItemMixin('arrangement-row'), {
 
   startBeat: DS.attr('number'), // starting beat in arrangement
+  length: Ember.computed.alias('clip.length'), // length, in beats of the clip
+  endBeat: function() {
+    return this.get('startBeat') + this.get('length');
+  }.property('startBeat', 'length'),
 
-  type: Ember.computed.alias('clip.type'),
   isReady: Ember.computed.bool('clip.isReady'),
+  type: Ember.computed.alias('clip.type'),
 
-  // TODO: standardize method of retrieving async object from promise on fulfill?
   clip: DS.belongsTo('clip', { polymorphic: true, async: true }),
 
   isPlaying: false,
+  seekBeat: 0,
   seekTime: 0,
   playpause: function() {
     this.toggleProperty('isPlaying');
   },
-  play: function(time) {
-    this.set('isPlaying', true);
+  play: function(beat, time) {
+    var length = this.get('length');
+
+    if (beat > length) {
+      this.set('isPlaying', false);
+      beat = length;
+    } else {
+      this.set('isPlaying', true);
+    }
+
+    this.set('seekBeat', beat);
     this.set('seekTime', time);
   },
   pause: function() {

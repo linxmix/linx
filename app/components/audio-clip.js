@@ -2,7 +2,7 @@ import Ember from 'ember';
 import RequireAttributes from 'linx/lib/require-attributes';
 
 export default Ember.Component.extend(
-  RequireAttributes('model', 'isPlaying', 'seekTime', 'metronome'), {
+  RequireAttributes('model', 'isPlaying', 'seekTime'), {
 
   classNames: ['AudioClip'],
 
@@ -12,8 +12,19 @@ export default Ember.Component.extend(
     }
   },
 
-  // TODO: figure this out. might need actual clipped audioBuffer
-  realSeekTime: function() {
-    return this.get('seekTime') + this.get('model.startTime');
-  }.property('seekTime', 'model.startTime'),
+  // TODO: audio-clip moving wavesurfer left/right based on startTime
+
+  audioSeekTime: function() {
+    var seekTime = this.get('seekTime');
+    var startTime = this.get('model.startTime');
+    var endTime = this.get('model.endTime');
+    console.log("audioSeekTime", seekTime, startTime, endTime);
+
+    // TODO: move this logic upwards, issue pause
+    if (seekTime > endTime) {
+      return startTime;
+    } else {
+      return startTime + seekTime;
+    }
+  }.property('seekTime', 'model.startTime', 'model.endTime'),
 });

@@ -102,7 +102,7 @@ export const Wave = Ember.Object.extend({
       normalize: true,
       height: 128,
       fillParent: false,
-      scrollParent: true,
+      scrollParent: false,
       cursorWidth: 2,
       renderer: 'Canvas',
     };

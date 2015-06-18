@@ -6,27 +6,36 @@ import Clip from './clip';
 export default Clip.extend({
   type: Ember.computed(() => { return 'audio-clip' }),
 
-  // TODO: figure out what we need to actually be ready
+  startBeat: DS.attr('number'), // starting beat in audio
+  length: DS.attr('number'), // length of audio-clip, in beats
+  endBeat: function() {
+    return this.get('startBeat') + this.get('length');
+  }.property('startBeat', 'length'),
+
+  // TODO: figure out what we need to actually be ready.
+  //       when audio is loaded and models are ready?
   isReady: Ember.computed.and('isLoaded', 'isAudioLoaded', 'track.isLoaded', 'track.analysis'),
   isAudioLoaded: false,
 
-  // TODO: make editable, and an attr
+  bpm: Ember.computed.alias('track.bpm'),
+  bps: Ember.computed.alias('track.bps'),
+  spb: Ember.computed.alias('track.spb'),
+  firstBeatTime: Ember.computed.alias('track.firstBeatTime'),
+  lengthTime: function() {
+    return this.get('spb') * this.get('length');
+  }.property('spb', 'length'),
   startTime: function() {
-    var beats = this.get('track.analysis.beats');
+    return this.get('firstBeatTime') + (this.get('startBeat') * this.get('spb'));
+  }.property('firstBeatTime', 'startBeat', 'spb'),
+  endTime: function() {
+    return this.get('startTime') + this.get('lengthTime');
+  }.property('startTime', 'lengthTime'),
 
-    if (beats) {
-      console.log("beats", beats);
-      return beats[0].start;
-    } else {
-      return 0;
-    }
-
-  }.property('track.analysis.isLoaded'),
+  arrangementClips: DS.hasMany('arrangement-clip', { async: true }),
+  track: DS.belongsTo('track', { async: true }),
 
   // TODO: deprecated
   file: null,
-
-  track: DS.belongsTo('track', { async: true }),
 });
 
 // TODO: code to copy section of audiobuffer

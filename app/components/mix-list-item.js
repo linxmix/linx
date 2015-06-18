@@ -8,7 +8,7 @@ export default Ember.Component.extend(
 
   actions: {
     createTransition: function() {
-      this.sendAction('createTransitionAt', this.get('index'));
+      this.sendAction('createTransitionAt', this.get('index'), 'overlap');
     },
 
     removeTransition: function() {

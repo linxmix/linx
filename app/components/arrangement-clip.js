@@ -2,6 +2,9 @@ import Ember from 'ember';
 import RequireAttributes from 'linx/lib/require-attributes';
 import cssStyle from 'linx/lib/computed/css-style';
 
+// TODO: figure this out
+export const PX_PER_SEC = 20;
+
 export default Ember.Component.extend(
   RequireAttributes('model', 'metronome'), {
 
@@ -11,23 +14,28 @@ export default Ember.Component.extend(
 
   componentStyle: cssStyle({
     'left': 'startPx',
+    'width': 'lengthPx',
   }),
 
   startPx: function() {
-    // TODO: fix with hack fix
-    console.log("startPx", (this.beatToPx(this.get('model.startBeat')) - this.timeToPx(this.get('model.clip.startTime'))))
-    var item = this.beatToPx(this.get('model.startBeat'));
-    var clip = this.timeToPx(this.get('model.clip.startTime'));
-    var px = item - clip;
-    return px + 'px';
-  }.property('model.startBeat', 'model.clip.startTime'),
+    return this.beatToPx(this.get('model.startBeat')) + 'px';
+  }.property('model.startBeat'),
+
+  endPx: function() {
+    return this.beatToPx(this.get('model.endBeat')) + 'px';
+  }.property('model.endBeat'),
+
+  lengthPx: function() {
+    console.log("length", this.get('model.length'));
+    return this.beatToPx(this.get('model.length')) + 'px';
+  }.property('model.length'),
 
   beatToPx: function(beat) {
     var spb = this.get('metronome.spb');
-    return ((beat - 1) * spb * 20); // b * (s / b) * (px / s) = px
+    return (beat * spb * PX_PER_SEC); // b * (s / b) * (px / s) = px
   },
 
   timeToPx: function(time) {
-    return time * 20; // s * (px / s) = px
+    return time * PX_PER_SEC; // s * (px / s) = px
   }
 });

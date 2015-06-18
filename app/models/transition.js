@@ -52,5 +52,49 @@ export default DS.Model.extend({
         this.save();
       });
     });
+  },
+
+  initOverlap: function() {
+    Ember.RSVP.all([this.get('fromTrack'), this.get('toTrack')]).then((results) => {
+      var store = this.get('store');
+      var fromTrack = results[0];
+      var toTrack = results[1];
+      var arrangement = this.get('store').createRecord('arrangement');
+
+      console.log("createOverlapArrangement", fromTrack.get('title'), toTrack.get('title'), arrangement);
+      this.set('arrangement', arrangement);
+
+      var audioClips = [];
+      var row = arrangement.createRow();
+
+      // create fromTrack's clips
+      var fromAudioClip = store.createRecord('audio-clip', {
+        track: fromTrack,
+        startBeat: 0,
+        length: 32,
+      });
+      var fromArrangementClip = row.createClip({
+        startBeat: 0,
+        clip: fromAudioClip
+      });
+      audioClips.push(fromAudioClip);
+
+      // create toTrack's clips
+      var toAudioClip = store.createRecord('audio-clip', {
+        track: toTrack,
+        startBeat: 0,
+        length: 32,
+      });
+      var toArrangementClip = row.createClip({
+        startBeat: 16,
+        clip: toAudioClip
+      });
+      audioClips.push(toAudioClip);
+
+      var savePromises = audioClips.map(function(clip) { return clip.save(); });
+      Ember.RSVP.all(savePromises).then((results) => {
+        this.save();
+      });
+    });
   }
 });

@@ -1,5 +1,6 @@
 .ArrangementClip {
   height: 100%;
-  position: relative;
+  position: absolute;
+  display: inline-block;
   border: 1px solid blue;
 }

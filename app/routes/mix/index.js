@@ -42,10 +42,13 @@ export default Ember.Route.extend({
     },
 
     // TODO: want to be able to make fancier, not just simpleTransition
-    createSimpleTransitionAt: function(index) {
+    createTransitionAt: function(index, type) {
       var mix = this.get('controller.model');
       mix.createTransitionAt(index).then((transition) => {
-        transition.initSimple();
+        switch (type) {
+          case 'overlap': transition.initOverlap(); break;
+          default: transition.initSimple();
+        }
         this.transitionTo('mix.transition', transition);
       });
     },

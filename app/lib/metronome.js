@@ -28,7 +28,7 @@ export default Ember.Object.extend(
   // returns the sequencerTime of the given beat
   beatToTime: function(beat) {
     // TODO: Dynamic BPM
-    return (beat - 1) * (1 / this.get('bps'));
+    return beat * (1 / this.get('bps'));
   },
 
   // returns the sequencerBeat of the given time
@@ -49,9 +49,17 @@ export default Ember.Object.extend(
     return this.get('startTime') + this.getPlayedTime();
   },
 
+  getCurrentBeat: function() {
+    return this.timeToBeat(this.getCurrentTime());
+  },
+
   seekToTime: function(time) {
     this.set('startTime', time);
     this.set('lastPlayTime', this.getClockTime());
+  },
+
+  seekToBeat: function(beat) {
+    this.seekToTime(this.beatToTime(beat));
   },
 
   scheduleAtBeat: function(cb, beat) {
@@ -69,13 +77,13 @@ export default Ember.Object.extend(
     if (delay > 0) {
       return this.get('clock').callbackAtTime(() => {
         // recalculate delay for accuracy
-        delay = time - this.getCurrentTime();
-        cb(-delay);
+        delay = this.getCurrentTime() - time;
+        cb(this.timeToBeat(delay), delay);
       }, this.getClockTime() + delay)
 
     // delay is negative, so play this clip forwards some time
     } else {
-      cb(-delay);
+      cb(this.timeToBeat(-delay), -delay);
     }
   },
 
