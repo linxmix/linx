@@ -11,7 +11,6 @@ export default Ember.Component.extend({
   file: null,
   streamUrl: null,
 
-  // TODO: create wavesurfer region, update when start/end change?
   start: 0,
   end: null,
   
@@ -19,11 +18,11 @@ export default Ember.Component.extend({
   isPlaying: false,
   seekTime: 0,
   waveParams: null,
-  beats: null, // array of floats (seconds)
-  bars: null, // array of floats (seconds)
 
   // params
+  pitchSemitones: 0,
   clock: null, // injected by app
+  audioContext: Ember.computed.alias('clock.audioContext'),
   wave: Ember.computed(function() {
     return Wave.create({ component: this });
   }),
@@ -34,42 +33,12 @@ export default Ember.Component.extend({
     }
   }.observes('wave.isLoaded').on('init'),
 
-  drawBeats: function() {
-    var beats = this.get('beats');
-    var wave = this.get('wave');
-
-    if (wave && beats) {
-      beats.forEach(function(beat) {
-        wave.createRegion({
-          start: beat,
-          color: 'green',
-          className: 'beat-region',
-        });
-      });
-    }
-  }.observes('beats.[]', 'wave'),
-
-  drawBars: function() {
-    var bars = this.get('bars');
-    var wave = this.get('wave');
-
-    if (wave && bars) {
-      bars.forEach(function(beat) {
-        wave.createRegion({
-          start: beat,
-          color: 'red',
-          className: 'bar-region',
-        });
-      });
-    }
-  }.observes('bars.[]', 'wave'),
-
   initWave: function() {
     var wave = this.get('wave');
 
     var params = {
       container: this.$('.WaveSurfer-wave')[0],
-      audioContext: this.get('clock.context')
+      audioContext: this.get('audioContext')
     };
 
     wave.initWavesurfer(params);
@@ -89,6 +58,7 @@ export const Wave = Ember.Object.extend({
 
   // params
   wavesurfer: null,
+  audioContext: Ember.computed.alias('component.audioContext'),
   file: Ember.computed.alias('component.file'),
   streamUrl: Ember.computed.alias('component.streamUrl'),
   isLoading: Ember.computed.alias('progress.isLoading'),
@@ -107,8 +77,6 @@ export const Wave = Ember.Object.extend({
       renderer: 'Canvas',
     };
   }),
-  regions: Ember.computed(function() { return []; }),
-  
   progress: Ember.computed(function() { return Progress.create(); }),
 
   playStateDidChange: function() {
@@ -131,15 +99,6 @@ export const Wave = Ember.Object.extend({
         wavesurfer.seekToTime(seekTime);
       }
     }
-  },
-
-  createRegion: function(params) {
-    return Region.create(_.defaults({
-      wave: this,
-    }, params));
-
-    this.get('regions').pushObject(region);
-    return region;
   },
 
   loadFile: function() {
@@ -166,7 +125,6 @@ export const Wave = Ember.Object.extend({
     this.set('isLoaded', false);
     this.resetProgress();
     this.resetWavesurfer();
-    this.destroyRegions();
   },
 
   resetProgress: function() {
@@ -177,13 +135,6 @@ export const Wave = Ember.Object.extend({
   resetWavesurfer: function() {
     var wavesurfer = this.get('wavesurfer');
     wavesurfer && wavesurfer.reset();
-  },
-
-  destroyRegions: function() {
-    this.get('regions').forEach(function(region) {
-      region.destroy();
-    });
-    this.set('regions', []);
   },
 
   destroyProgress: function() {
@@ -198,7 +149,6 @@ export const Wave = Ember.Object.extend({
 
   destroy: function() {
     this.destroyProgress();
-    this.destroyRegions();
     this.destroyWavesurfer();
     this._super.apply(this, arguments);
   },
@@ -210,7 +160,6 @@ export const Wave = Ember.Object.extend({
     var progress = this.get('progress');
 
     wavesurfer.init(_.defaults({}, params, this.get('defaultParams')));
-    wavesurfer.initRegions();
 
     // Setup Handlers
     wavesurfer.on('loading', function(percent, xhr) {
@@ -237,78 +186,6 @@ export const Wave = Ember.Object.extend({
     });
 
     this.set('wavesurfer', wavesurfer);
-  }
-});
-
-// Wraps Wavesurfer regions
-export const Region = Ember.Object.extend(
-  RequireAttributes('wave'), {
-
-  // optional params
-  start: undefined,
-  end: undefined,
-  resize: undefined,
-  drag: undefined,
-  loop: undefined,
-  color: undefined,
-  className: undefined,
-  data: undefined,
-
-  // params
-  id: Ember.computed(function() { return Ember.uuid(); }),
-  region: null,
-  wavesurfer: Ember.computed.alias('wave.wavesurfer'),
-
-  draw: function() {
-    var wavesurfer = this.get('wavesurfer');
-    var params = this.get('params');
-    var region = this.get('region');
-
-    if (!this.get('wave.isLoaded')) { return; }
-
-    // console.log("draw region", params);
-    if (!region) {
-      this.set('region', wavesurfer.addRegion(params));
-    } else {
-      region.update(params);
-    }
-  }.observes('wave.isLoaded', 'wavesurfer', 'params').on('init'),
-
-  destroy: function() {
-    this.destroyRegion();
-    this._super.apply(this, arguments);
   },
 
-  destroyRegion: function() {
-    var region = this.get('region');
-    region && region.remove();
-  },
-
-  params: function(key, value) {
-    return _.defaults({}, {
-      id: this.get('id'),
-      start: this.get('start'),
-      end: this.get('end'),
-      resize: this.get('resize'),
-      drag: this.get('resize'),
-      loop: this.get('resize'),
-      color: this.get('color'),
-      data: Ember.merge({
-        className: this.get('className'),
-      }, this.get('data')),
-    }, this.get('defaultParams'));
-  }.property('id', 'start', 'end', 'resize', 'drag', 'loop', 'color', 'className', 'data', 'defaultParams'),
-
-  defaultParams: Ember.computed(function() {
-    return {
-      resize: false,
-      drag: false,
-      loop: false,
-      color: 'black',
-      start: 0,
-      end: null,
-      data: null,
-      className: 'linx-region',
-    };
-  }),
 });
