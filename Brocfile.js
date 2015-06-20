@@ -25,6 +25,7 @@ var app = new EmberApp({
 // please specify an object with the list of modules as keys
 // along with the exports of each module as its value.
 
+app.import('vendor/js/soundtouch.min.js');
 
 // Hack webworker support
 // http://stackoverflow.com/questions/24175120/ember-cli-project-and-web-workers
