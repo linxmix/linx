@@ -32,7 +32,7 @@ FifoSampleBuffer.prototype.clear = function() {
 //  [class] WebAudioBufferSource(buffer)
 //  [function] getWebAudioNode(audioContext, source)
 //
-const BUFFER_SIZE = 16384;
+const BUFFER_SIZE = 16384 / 8;
 
 function WebAudioBufferSource(buffer) {
   this.buffer = buffer;

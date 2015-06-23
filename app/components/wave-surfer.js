@@ -11,6 +11,7 @@ export default Ember.Component.extend({
   file: null,
   streamUrl: null,
 
+  // TODO: keep these?
   start: 0,
   end: null,
   
@@ -20,7 +21,8 @@ export default Ember.Component.extend({
   waveParams: null,
 
   // params
-  pitchSemitones: 0,
+  pitch: 0, // semitones
+  tempo: 1, // rate
   clock: null, // injected by app
   audioContext: Ember.computed.alias('clock.audioContext'),
   wave: Ember.computed(function() {
@@ -51,16 +53,18 @@ export default Ember.Component.extend({
 });
 
 // Wraps Wavesurfer
-export const Wave = Ember.Object.extend({
-
-  // expected params
-  component: null,
+export const Wave = Ember.Object.extend(
+  RequireAttributes('component'), {
 
   // params
   wavesurfer: null,
+  pitch: Ember.computed.alias('component.pitch'),
+  tempo: Ember.computed.alias('component.tempo'),
   audioContext: Ember.computed.alias('component.audioContext'),
   file: Ember.computed.alias('component.file'),
   streamUrl: Ember.computed.alias('component.streamUrl'),
+  seekTime: Ember.computed.alias('component.seekTime'),
+  isPlaying: Ember.computed.alias('component.isPlaying'),
   isLoading: Ember.computed.alias('progress.isLoading'),
   isLoaded: false,
   defaultParams: Ember.computed(function() {
@@ -81,14 +85,14 @@ export const Wave = Ember.Object.extend({
 
   playStateDidChange: function() {
     Ember.run.once(this, 'updatePlayState');
-  }.observes('component.isPlaying', 'component.seekTime', 'isLoaded').on('init'),
+  }.observes('isPlaying', 'seekTime', 'isLoaded').on('init'),
 
   updatePlayState: function() {
     if (this.get('isLoaded')) {
       var isPlaying = this.get('component.isPlaying');
       var seekTime = this.get('component.seekTime');
       var wavesurfer = this.get('wavesurfer');
-      console.log("update wavesurfer playstate", isPlaying, seekTime);
+      // console.log("update wavesurfer playstate", isPlaying, seekTime);
 
       // TODO: handle time > end where?
       if (isPlaying) {
@@ -100,6 +104,22 @@ export const Wave = Ember.Object.extend({
       }
     }
   },
+
+  updateTempo: function() {
+    var wavesurfer = this.get('wavesurfer');
+    var tempo = this.get('tempo');
+    if (wavesurfer) {
+      wavesurfer.setTempo(tempo);
+    }
+  }.observes('wavesurfer', 'tempo'),
+
+  updatePitch: function() {
+    var wavesurfer = this.get('wavesurfer');
+    var pitch = this.get('pitch');
+    if (wavesurfer) {
+      wavesurfer.setPitch(pitch);
+    }
+  }.observes('wavesurfer', 'pitch'),
 
   loadFile: function() {
     var file = this.get('file');
