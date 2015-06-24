@@ -8,6 +8,14 @@
 
 <hr/>
 
+<div>BPM: {{input type="number" value=metronome.bpm}}</div>
+{{#each clip in arrangement.clips}}
+  <div>
+    Pitch: {{input type="number" value=clip.clip.pitch}}
+  </div>
+{{/each}}
+<hr/>
+
 <div>arrangementPlayer isReady {{isReady}}</div>
 {{#each clip in arrangement.clips}}
   <div>clip isReady {{clip.isReady}}</div>
@@ -21,7 +29,11 @@
 
 <hr/>
 
-{{#simple-arrangement arrangement=arrangement}}
+{{#simple-arrangement
+  arrangement=arrangement
+  isReady=isReady
+  seekToClick='seekToClick'
+}}
   {{#each row in arrangement.rows}}
     {{#arrangement-row model=row}}
       {{#each clip in row.clips}}

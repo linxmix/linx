@@ -5,6 +5,12 @@ import ArrangementPlayerMixin from 'linx/mixins/arrangement-player';
 export default Ember.Component.extend(ArrangementPlayerMixin, 
   RequireAttributes('transition'), {
 
+  actions: {
+    seekToClick: function(e, x) {
+      console.log('seekToClick', e, x);
+    }
+  },
+
   classNames: ['SimpleTransition'],
 
   // params

@@ -55,7 +55,10 @@ Wavesurfer.WebAudio.setTempo = function(tempo) {
 };
 
 Wavesurfer.WebAudio.setPitch = function(pitch) {
-  console.log("setting pitch", pitch);
+  console.log("setting pitch", pitch, this.soundtouch, this.linxPitch, typeof pitch);
+  if (typeof pitch === 'string') {
+    try { pitch = parseInt(pitch); } catch (e) { }
+  }
   if (typeof pitch !== 'number') {
     pitch = 0;
   }

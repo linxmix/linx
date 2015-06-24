@@ -17,6 +17,9 @@ export default Clip.extend({
   isReady: Ember.computed.and('isLoaded', 'isAudioLoaded', 'track.isLoaded', 'track.analysis'),
   isAudioLoaded: false,
 
+  // TODO: turn into attr?
+  pitch: function() { return 0; }.property(),
+
   bpm: Ember.computed.alias('track.bpm'),
   bps: Ember.computed.alias('track.bps'),
   spb: Ember.computed.alias('track.spb'),

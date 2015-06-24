@@ -1,4 +1,9 @@
 .SimpleArrangement {
   border: 1px solid orange;
   overflow: hidden;
+  cursor: crosshair;
+}
+
+.SimpleArrangement--loading {
+  cursor: wait;
 }
