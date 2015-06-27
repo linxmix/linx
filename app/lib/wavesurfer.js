@@ -34,18 +34,16 @@ Wavesurfer.setPitch = function(pitch) {
 };
 
 Wavesurfer.WebAudio.setTempo = function(tempo) {
-  var prevTempo = this.linxTempo;
+  // console.log("setting tempo", tempo);
   if (typeof tempo !== 'number') {
     tempo = 1;
   }
-  if (typeof prevTempo !== 'number') {
-    prevTempo = 1;
-  }
 
-  var ratio = tempo / prevTempo;
-  console.log("setting tempo", tempo, prevTempo, ratio);
-  this.playbackRate = ratio;
-  this.linxTempo = tempo;
+  // update startPosition and lastPlay for new tempo
+  this.startPosition += this.getPlayedTime();
+  this.lastPlay = this.ac.currentTime;
+
+  this.linxTempo = this.playbackRate = tempo;
 
   // update soundtouch tempo
   var soundtouch = this.soundtouch;
@@ -55,7 +53,7 @@ Wavesurfer.WebAudio.setTempo = function(tempo) {
 };
 
 Wavesurfer.WebAudio.setPitch = function(pitch) {
-  console.log("setting pitch", pitch, this.soundtouch, this.linxPitch, typeof pitch);
+  // console.log("setting pitch", pitch);
   if (typeof pitch === 'string') {
     try { pitch = parseInt(pitch); } catch (e) { }
   }
@@ -70,7 +68,7 @@ Wavesurfer.WebAudio.setPitch = function(pitch) {
   if (soundtouch) {
     soundtouch.pitchSemitones = pitch;
   }
-}
+};
 
 // 'play' is equivalent to 'create and connect soundtouch source'
 Wavesurfer.WebAudio.play = function(start, end) {
@@ -82,7 +80,7 @@ Wavesurfer.WebAudio.play = function(start, end) {
   start = adjustedTime.start;
   end = adjustedTime.end;
   this.scheduledPause = end;
-  var startPosition = ~~(start * this.ac.sampleRate);
+  var startSample = ~~(start * this.ac.sampleRate);
 
   // init soundtouch
   this.soundtouch = new SoundTouch();
@@ -91,7 +89,7 @@ Wavesurfer.WebAudio.play = function(start, end) {
 
   // hook up soundtouch node
   this.soundtouchSource = new WebAudioBufferSource(this.buffer);
-  this.soundtouchFilter = new SimpleFilter(this.soundtouchSource, this.soundtouch, startPosition);
+  this.soundtouchFilter = new SimpleFilter(this.soundtouchSource, this.soundtouch, startSample);
   this.soundtouchNode = getWebAudioNode(this.ac, this.soundtouchFilter);
   this.soundtouchNode.connect(this.analyser);
 
@@ -106,7 +104,7 @@ Wavesurfer.WebAudio.pause = function() {
   this.soundtouchNode && this.soundtouchNode.disconnect();
 
   this.setState(this.PAUSED_STATE);
-}
+};
 
 // turn into no-op
 Wavesurfer.WebAudio.createSource = function() {};

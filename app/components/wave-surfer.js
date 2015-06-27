@@ -14,7 +14,7 @@ export default Ember.Component.extend({
   // TODO: keep these?
   start: 0,
   end: null,
-  
+
   // optional params
   isPlaying: false,
   seekTime: 0,
@@ -79,6 +79,7 @@ export const Wave = Ember.Object.extend(
       scrollParent: false,
       cursorWidth: 2,
       renderer: 'Canvas',
+      interact: false,
     };
   }),
   progress: Ember.computed(function() { return Progress.create(); }),

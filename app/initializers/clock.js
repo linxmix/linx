@@ -27,7 +27,7 @@ var Clock = Ember.Object.extend({
   },
 
   callbackAtTime: function(cb, time) {
-    this.get('_clock').callbackAtTime(cb, time);
+    return this.get('_clock').callbackAtTime(cb, time);
   },
 })
 
