@@ -34,17 +34,17 @@ export default DS.Model.extend({
       var clips = [];
       var fromRow = arrangement.createRow();
       var fromClip = store.createRecord('audio-clip', { track: fromTrack });
-      fromRow.createClip({ startBeat: 1, clip: fromClip });
+      fromRow.createClip({ startBeat: 0, clip: fromClip });
       clips.push(fromClip);
 
       var toRow = arrangement.createRow();
       var toClip = store.createRecord('audio-clip', { track: toTrack });
-      toRow.createClip({ startBeat: 17, clip: toClip });
+      toRow.createClip({ startBeat: 16, clip: toClip });
       clips.push(toClip);
 
       var toRow2 = arrangement.createRow();
       var toClip2 = store.createRecord('audio-clip', { track: toTrack });
-      toRow2.createClip({ startBeat: 33, clip: toClip2 });
+      toRow2.createClip({ startBeat: 32, clip: toClip2 });
       clips.push(toClip2);
 
       var savePromises = clips.map(function(clip) { return clip.save(); });

@@ -3,13 +3,12 @@ import RequireAttributes from 'linx/lib/require-attributes';
 import cssStyle from 'linx/lib/computed/css-style';
 
 // TODO: figure this out
-export const PX_PER_SEC = 20;
+export const PX_PER_BEAT = 20;
 
 export default Ember.Component.extend(
-  RequireAttributes('model', 'metronome'), {
+  RequireAttributes('clipEvent'), {
 
   classNames: ['ArrangementClip'],
-
   attributeBindings: ['componentStyle:style'],
 
   componentStyle: cssStyle({
@@ -17,25 +16,22 @@ export default Ember.Component.extend(
     'width': 'lengthPx',
   }),
 
+  // params
+  arrangementClip: Ember.computed.alias('clipEvent.arrangementClip'),
+
   startPx: function() {
-    return this.beatToPx(this.get('model.startBeat')) + 'px';
-  }.property('model.startBeat'),
+    return this.beatToPx(this.get('arrangementClip.startBeat')) + 'px';
+  }.property('arrangementClip.startBeat'),
 
   endPx: function() {
-    return this.beatToPx(this.get('model.endBeat')) + 'px';
-  }.property('model.endBeat'),
+    return this.beatToPx(this.get('arrangementClip.endBeat')) + 'px';
+  }.property('arrangementClip.endBeat'),
 
   lengthPx: function() {
-    console.log("length", this.get('model.length'));
-    return this.beatToPx(this.get('model.length')) + 'px';
-  }.property('model.length'),
+    return this.beatToPx(this.get('arrangementClip.length')) + 'px';
+  }.property('arrangementClip.length'),
 
   beatToPx: function(beat) {
-    var spb = this.get('metronome.spb');
-    return (beat * spb * PX_PER_SEC); // b * (s / b) * (px / s) = px
-  },
-
-  timeToPx: function(time) {
-    return time * PX_PER_SEC; // s * (px / s) = px
+    return beat * PX_PER_BEAT; // beat * (px / beat) = px
   }
 });

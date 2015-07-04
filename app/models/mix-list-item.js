@@ -7,4 +7,6 @@ export default DS.Model.extend(
 
   track: DS.belongsTo('track', { async: true }),
   transition: DS.belongsTo('transition', { async: true }),
+
+  mix: Ember.computed.alias('list'),
 });

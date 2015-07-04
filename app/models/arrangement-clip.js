@@ -16,27 +16,4 @@ export default DS.Model.extend(
   type: Ember.computed.alias('clip.type'),
 
   clip: DS.belongsTo('clip', { polymorphic: true, async: true }),
-
-  isPlaying: false,
-  seekBeat: 0,
-  seekTime: 0,
-  playpause: function() {
-    this.toggleProperty('isPlaying');
-  },
-  play: function(beat, time) {
-    var length = this.get('length');
-
-    if (beat > length) {
-      this.set('isPlaying', false);
-      beat = length;
-    } else {
-      this.set('isPlaying', true);
-    }
-
-    this.set('seekBeat', beat);
-    this.set('seekTime', time);
-  },
-  pause: function() {
-    this.set('isPlaying', false);
-  },
 });

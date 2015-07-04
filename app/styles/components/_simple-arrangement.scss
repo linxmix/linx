@@ -7,3 +7,9 @@
 .SimpleArrangement--loading {
   cursor: wait;
 }
+
+.SimpleArrangement-playhead {
+  position: relative;
+  border-left: 2px solid red;
+  height: 100%;
+}

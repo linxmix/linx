@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 import AbstractListMixin from 'linx/lib/models/abstract-list';
-import { flatten } from 'linx/utils';
+import { flatten } from 'linx/lib/utils';
 
 export default DS.Model.extend(
   AbstractListMixin('arrangement-row'), {

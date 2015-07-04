@@ -23,22 +23,18 @@
 
 <hr/>
 
-{{#each event in _clipEvents}}
-  <div>event {{event.arrangementClip.clip.track.title}}</div>
-{{/each}}
-
-<hr/>
-
 {{#simple-arrangement
   arrangement=arrangement
+  metronome=metronome
   isReady=isReady
   seekToClick='seekToClick'
 }}
-  {{#each row in arrangement.rows}}
-    {{#arrangement-row model=row}}
-      {{#each clip in row.clips}}
-        {{arrangement-clip model=clip metronome=metronome}}
-      {{/each}}
-    {{/arrangement-row}}
-  {{/each}}
+  {{#arrangement-row}}
+    {{#each clipEvent in clipEvents}}
+      {{arrangement-clip
+        clipEvent=clipEvent
+        metronome=metronome
+      }}
+    {{/each}}
+  {{/arrangement-row}}
 {{/simple-arrangement}}

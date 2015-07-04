@@ -89,7 +89,8 @@ Wavesurfer.WebAudio.play = function(start, end) {
 
   // hook up soundtouch node
   this.soundtouchSource = new WebAudioBufferSource(this.buffer);
-  this.soundtouchFilter = new SimpleFilter(this.soundtouchSource, this.soundtouch, startSample);
+  this.soundtouchFilter = new SimpleFilter(this.soundtouchSource, this.soundtouch);
+  this.soundtouchFilter.sourcePosition = startSample;
   this.soundtouchNode = getWebAudioNode(this.ac, this.soundtouchFilter);
   this.soundtouchNode.connect(this.analyser);
 

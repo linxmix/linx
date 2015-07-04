@@ -8,12 +8,12 @@ export default function(listType) {
     }.property('index')
   };
 
-  mixinParams[listType] = DS.belongsTo(listType, { async: true });
+  mixinParams.list = DS.belongsTo(listType, { async: true });
 
   // add index as computedProperty
-  mixinParams.index = Ember.computed(listType + '.content.[]', function() {
+  mixinParams.index = Ember.computed('list.content.[]', function() {
     // TODO: why is item.list !== list?
-    var list = this.get(listType);
+    var list = this.get('list');
     return list.get('content').indexOf(this);
   });
 

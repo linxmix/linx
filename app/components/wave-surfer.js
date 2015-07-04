@@ -23,8 +23,7 @@ export default Ember.Component.extend({
   // params
   pitch: 0, // semitones
   tempo: 1, // rate
-  clock: null, // injected by app
-  audioContext: Ember.computed.alias('clock.audioContext'),
+  session: Ember.inject.service(),
   wave: Ember.computed(function() {
     return Wave.create({ component: this });
   }),
@@ -40,7 +39,7 @@ export default Ember.Component.extend({
 
     var params = {
       container: this.$('.WaveSurfer-wave')[0],
-      audioContext: this.get('audioContext')
+      audioContext: this.get('session.audioContext')
     };
 
     wave.initWavesurfer(params);
@@ -95,7 +94,6 @@ export const Wave = Ember.Object.extend(
       var wavesurfer = this.get('wavesurfer');
       // console.log("update wavesurfer playstate", isPlaying, seekTime);
 
-      // TODO: handle time > end where?
       if (isPlaying) {
         wavesurfer.play(seekTime);
       } else if (wavesurfer.isPlaying()) {

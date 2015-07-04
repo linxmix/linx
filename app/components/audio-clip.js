@@ -20,26 +20,18 @@ export default Ember.Component.extend(
   tempo: function() {
     var audioBpm = this.get('audioBpm');
     var syncBpm = this.get('syncBpm');
-    console.log("tempo", audioBpm, syncBpm, audioBpm / syncBpm);
     if (Ember.isNone(syncBpm)) {
       return 1;
     } else {
       return syncBpm / audioBpm;
     }
-    return ratio;
   }.property('audioBpm', 'syncBpm'),
 
   audioSeekTime: function() {
     var seekTime = this.get('seekTime');
     var startTime = this.get('model.startTime');
-    var endTime = this.get('model.endTime');
-    console.log("audioSeekTime", seekTime, startTime, endTime);
+    // console.log("audioSeekTime", seekTime, startTime);
 
-    if (seekTime > endTime) {
-      return startTime;
-    } else {
-      return startTime + seekTime;
-    }
-  }.property('seekTime', 'model.startTime', 'model.endTime'),
-
+    return startTime + seekTime;
+  }.property('seekTime', 'model.startTime'),
 });
