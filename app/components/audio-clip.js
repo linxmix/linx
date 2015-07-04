@@ -1,10 +1,15 @@
 import Ember from 'ember';
 import RequireAttributes from 'linx/lib/require-attributes';
+import cssStyle from 'linx/lib/computed/css-style';
 
 export default Ember.Component.extend(
-  RequireAttributes('model', 'isPlaying', 'seekTime'), {
+  RequireAttributes('model', 'isPlaying', 'seekTime', 'pxPerBeat'), {
 
   classNames: ['AudioClip'],
+
+  waveSurferStyle: cssStyle({
+    'left': 'startPx',
+  }),
 
   actions: {
     didLoadWave: function() {
@@ -12,7 +17,9 @@ export default Ember.Component.extend(
     }
   },
 
-  // TODO: audio-clip moving wavesurfer left/right based on startTime
+  startPx: function() {
+    return (this.get('model.startBeat') * this.get('pxPerBeat')) + 'px';
+  }.property('model.startBeat', 'pxPerBeat'),
 
   // params
   audioBpm: Ember.computed.alias('model.bpm'),

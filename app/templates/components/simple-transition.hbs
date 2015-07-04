@@ -8,7 +8,10 @@
 
 <hr/>
 
-<div>BPM: {{input type="number" value=metronome.bpm}}</div>
+<div>BPM: {{input type="number" value=inputBpm}}</div>
+<div>Zoom: {{input type="number" value=inputZoom}}</div>
+
+<hr/>
 {{#each clip in arrangement.clips}}
   <div>
     Pitch: {{input type="number" value=clip.clip.pitch}}
@@ -27,13 +30,15 @@
   arrangement=arrangement
   metronome=metronome
   isReady=isReady
-  seekToClick='seekToClick'
+  pxPerBeat=pxPerBeat
+  seekToBeat='seekToBeat'
 }}
   {{#arrangement-row}}
     {{#each clipEvent in clipEvents}}
       {{arrangement-clip
         clipEvent=clipEvent
         metronome=metronome
+        pxPerBeat=pxPerBeat
       }}
     {{/each}}
   {{/arrangement-row}}

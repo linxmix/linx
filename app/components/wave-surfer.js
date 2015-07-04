@@ -1,8 +1,9 @@
 import Ember from 'ember';
 import Progress from 'linx/lib/progress';
 import Wavesurfer from 'linx/lib/wavesurfer';
-import RequireAttributes from 'linx/lib/require-attributes';
 import _ from 'npm:underscore';
+import RequireAttributes from 'linx/lib/require-attributes';
+import { bpmToBps, isNumber } from 'linx/lib/utils';
 
 export default Ember.Component.extend({
   classNames: ['WaveSurfer'],
@@ -11,14 +12,12 @@ export default Ember.Component.extend({
   file: null,
   streamUrl: null,
 
-  // TODO: keep these?
-  start: 0,
-  end: null,
-
   // optional params
+  audioBpm: null,
   isPlaying: false,
   seekTime: 0,
   waveParams: null,
+  pxPerBeat: 15,
 
   // params
   pitch: 0, // semitones
@@ -63,6 +62,8 @@ export const Wave = Ember.Object.extend(
   file: Ember.computed.alias('component.file'),
   streamUrl: Ember.computed.alias('component.streamUrl'),
   seekTime: Ember.computed.alias('component.seekTime'),
+  pxPerBeat: Ember.computed.alias('component.pxPerBeat'),
+  audioBpm: Ember.computed.alias('component.audioBpm'),
   isPlaying: Ember.computed.alias('component.isPlaying'),
   isLoading: Ember.computed.alias('progress.isLoading'),
   isLoaded: false,
@@ -119,6 +120,17 @@ export const Wave = Ember.Object.extend(
       wavesurfer.setPitch(pitch);
     }
   }.observes('wavesurfer', 'pitch'),
+
+  updateZoom: function() {
+    var wavesurfer = this.get('wavesurfer');
+    var pxPerBeat = this.get('pxPerBeat');
+    var audioBpm = this.get('audioBpm');
+    var isLoaded = this.get('isLoaded');
+    if (isLoaded && wavesurfer && isNumber(pxPerBeat) && isNumber(audioBpm)) {
+      var pxPerSec = pxPerBeat * bpmToBps(audioBpm);
+      wavesurfer.zoom(pxPerSec);
+    }
+  }.observes('wavesurfer', 'isLoaded', 'pxPerBeat', 'audioBpm').on('init'),
 
   loadFile: function() {
     var file = this.get('file');

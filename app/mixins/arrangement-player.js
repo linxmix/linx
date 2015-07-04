@@ -24,12 +24,17 @@ export default Ember.Mixin.create(
 
     seekToTime: function(time) {
       this.get('metronome').seekToTime(time);
+    },
+
+    seekToBeat: function(beat) {
+      this.get('metronome').seekToBeat(beat);
     }
   },
 
   // params
   isPlaying: Ember.computed.alias('metronome.isPlaying'),
   session: Ember.inject.service(),
+  pxPerBeat: 15,
 
   metronome: function() {
     var audioContext = this.get('session.audioContext');

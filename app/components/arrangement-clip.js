@@ -2,11 +2,8 @@ import Ember from 'ember';
 import RequireAttributes from 'linx/lib/require-attributes';
 import cssStyle from 'linx/lib/computed/css-style';
 
-// TODO: figure this out
-export const PX_PER_BEAT = 20;
-
 export default Ember.Component.extend(
-  RequireAttributes('clipEvent'), {
+  RequireAttributes('clipEvent', 'pxPerBeat'), {
 
   classNames: ['ArrangementClip'],
   attributeBindings: ['componentStyle:style'],
@@ -21,17 +18,17 @@ export default Ember.Component.extend(
 
   startPx: function() {
     return this.beatToPx(this.get('arrangementClip.startBeat')) + 'px';
-  }.property('arrangementClip.startBeat'),
+  }.property('arrangementClip.startBeat', 'pxPerBeat'),
 
   endPx: function() {
     return this.beatToPx(this.get('arrangementClip.endBeat')) + 'px';
-  }.property('arrangementClip.endBeat'),
+  }.property('arrangementClip.endBeat', 'pxPerBeat'),
 
   lengthPx: function() {
     return this.beatToPx(this.get('arrangementClip.length')) + 'px';
-  }.property('arrangementClip.length'),
+  }.property('arrangementClip.length', 'pxPerBeat'),
 
   beatToPx: function(beat) {
-    return beat * PX_PER_BEAT; // beat * (px / beat) = px
+    return beat * this.get('pxPerBeat'); // beat * (px / beat) = px
   }
 });

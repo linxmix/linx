@@ -13,6 +13,17 @@ function augment(property, fn) {
   }
 }
 
+augment('zoom', function(pxPerSec) {
+  this.params.minPxPerSec = pxPerSec;
+
+  // DKANE CHANGE: don't change scrollParent (???)
+  // this.params.scrollParent = true;
+
+  this.drawBuffer();
+
+  this.seekAndCenter(this.getCurrentTime() / this.getDuration());
+}),
+
 augment('seekToTime', function(time) {
   return this.seekTo(time / this.getDuration());
 });
@@ -54,9 +65,6 @@ Wavesurfer.WebAudio.setTempo = function(tempo) {
 
 Wavesurfer.WebAudio.setPitch = function(pitch) {
   // console.log("setting pitch", pitch);
-  if (typeof pitch === 'string') {
-    try { pitch = parseInt(pitch); } catch (e) { }
-  }
   if (typeof pitch !== 'number') {
     pitch = 0;
   }

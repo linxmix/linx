@@ -20,6 +20,9 @@ export default Ember.Object.extend(
   tickTime: function() {
     return this.getCurrentTime();
   }.property('absTickTime'),
+  tickBeat: function() {
+    return beatToTime(this.get('tickTime'), this.get('bpm'));
+  }.property('tickTime'),
 
   playpause: function() {
     var isPlaying = !this.get('isPlaying');

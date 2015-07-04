@@ -3,11 +3,8 @@ import BubbleActions from 'linx/lib/bubble-actions';
 import RequireAttributes from 'linx/lib/require-attributes';
 import cssStyle from 'linx/lib/computed/css-style';
 
-// TODO: figure this out
-export const PX_PER_SEC = 20;
-
 export default Ember.Component.extend(
-  RequireAttributes('arrangement', 'metronome'),
+  RequireAttributes('arrangement', 'metronome', 'pxPerBeat'),
   BubbleActions('seekToClick'), {
 
   classNames: ['SimpleArrangement'],
@@ -17,15 +14,14 @@ export default Ember.Component.extend(
     'left': 'playheadPx'
   }),
 
+  // on click, seekToBeat
   click: function(e) {
-    this.sendAction('seekToClick', e, e.offsetX);
+    var x = e.pageX - this.$().offset().left;
+    var beat = x / this.get('pxPerBeat');
+    this.sendAction('seekToBeat', beat);
   },
 
   playheadPx: function() {
-    return this.timeToPx(this.get('metronome.tickTime')) + 'px';
-  }.property('metronome.tickTime'),
-
-  timeToPx: function(time) {
-    return time * PX_PER_SEC; // s * (px / s) = px
-  }
+    return (this.get('metronome.tickBeat') * this.get('pxPerBeat')) + 'px';
+  }.property('metronome.tickBeat', 'pxPerBeat'),
 });

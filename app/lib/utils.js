@@ -20,3 +20,7 @@ export const timeToBeat = function(time, bpm) {
 export const bpmToBps = function(bpm) {
   return bpm / 60.0;
 };
+
+export const isNumber = function(number) {
+  return Ember.typeOf(number) === 'number';
+}
