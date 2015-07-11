@@ -63,7 +63,7 @@ export default DS.RESTAdapter.extend({
   */
 
   pathForType: function (type) {
-    var splitType = type.split('echonest');
+    var splitType = type.split('echonest-');
     if (splitType.length > 1) {
       return splitType[1].toLowerCase();
     }
@@ -87,7 +87,7 @@ export default DS.RESTAdapter.extend({
       id: id
     };
 
-    return this.get(type, [this.buildURL(type.typeKey), 'profile'].join('/'), query);
+    return this.get(type, [this.buildURL(type.modelName), 'profile'].join('/'), query);
   },
 
   /**
@@ -101,7 +101,7 @@ export default DS.RESTAdapter.extend({
   */
 
   findQuery: function(store, type, query) {
-    return this.get(type, [this.buildURL(type.typeKey), 'search'].join('/'), query);
+    return this.get(type, [this.buildURL(type.modelName), 'search'].join('/'), query);
   },
 
   /**
@@ -128,7 +128,7 @@ export default DS.RESTAdapter.extend({
   */
 
   createRecord: function (store, type) {
-    throw 'You cannot create an %@'.fmt(type.typeKey);
+    throw 'You cannot create an %@'.fmt(type.modelName);
   },
 
   /**
@@ -141,7 +141,7 @@ export default DS.RESTAdapter.extend({
   */
 
   deleteRecord: function(store, type, record) {
-    throw 'You cannot delete an %@'.fmt(type.typeKey);
+    throw 'You cannot delete an %@'.fmt(type.modelName);
   },
 
   /**
@@ -154,6 +154,6 @@ export default DS.RESTAdapter.extend({
   */
 
   updateRecord: function(store, type, record) {
-    throw 'You cannot update an %@'.fmt(type.typeKey);
+    throw 'You cannot update an %@'.fmt(type.modelName);
   }
 });
