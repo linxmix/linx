@@ -66,6 +66,13 @@ Wavesurfer.WebAudio.setTempo = function(tempo) {
 
 Wavesurfer.WebAudio.setPitch = function(pitch) {
   // console.log("setting pitch", pitch);
+
+  // TODO: remove this check, only for two-way binding to input
+  try {
+    pitch = parseFloat(pitch);
+  } catch(e) {
+
+  }
   if (typeof pitch !== 'number') {
     pitch = 0;
   }
@@ -84,17 +91,12 @@ Wavesurfer.WebAudio.play = function(start, end) {
   if (!this.isPaused()) {
     this.pause();
   }
-  // console.log("wavesurfer play origStart", start);
 
   var adjustedTime = this.seekTo(start, end);
   start = adjustedTime.start;
   end = adjustedTime.end;
   this.scheduledPause = end;
   var startSample = ~~(start * this.ac.sampleRate);
-
-  // console.log("wavesurfer play adjustedTime", start);
-
-
 
   // init soundtouch
   this.soundtouch = new SoundTouch();

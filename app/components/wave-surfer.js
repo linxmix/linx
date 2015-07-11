@@ -84,27 +84,34 @@ export const Wave = Ember.Object.extend(
   }),
   progress: Ember.computed(function() { return Progress.create(); }),
 
-  playStateDidChange: function() {
-    Ember.run.once(this, 'updatePlayState');
-  }.observes('isPlaying', 'seekTime', 'isLoaded').on('init'),
-
   updatePlayState: function() {
-    if (this.get('isLoaded')) {
-      var isPlaying = this.get('component.isPlaying');
-      var seekTime = this.get('component.seekTime');
-      var wavesurfer = this.get('wavesurfer');
-      // console.log("update wavesurfer playstate", isPlaying, seekTime);
+    var wavesurfer = this.get('wavesurfer');
+    if (wavesurfer && this.get('isLoaded')) {
+      var wavesurferIsPlaying = wavesurfer.isPlaying();
+      var isPlaying = this.get('isPlaying');
 
-      if (isPlaying) {
-        wavesurfer.play(seekTime);
-      } else {
-        if (wavesurfer.isPlaying()) {
-          wavesurfer.pause();
-        }
+      // sync isPlaying and wavesurfer
+      if (isPlaying && !wavesurferIsPlaying) {
+        wavesurfer.play();
+      } else if (!isPlaying && wavesurferIsPlaying) {
+        wavesurfer.pause();
+      }
+    }
+  }.observes('wavesurfer', 'isPlaying', 'isLoaded').on('init'),
+
+  updatePlayTime: function() {
+    var wavesurfer = this.get('wavesurfer');
+    if (wavesurfer && this.get('isLoaded')) {
+      var currentTime = wavesurfer.getCurrentTime();
+      var seekTime = this.get('seekTime');
+      var isPlaying = this.get('isPlaying');
+
+      // if playing, only seek if seekTime and currentTime have diverged
+      if (!isPlaying || Math.abs(seekTime - currentTime) >= 0.01) {
         wavesurfer.seekToTime(seekTime);
       }
     }
-  },
+  }.observes('wavesurfer', 'isLoaded', 'isPlaying', 'seekTime').on('init'),
 
   updateTempo: function() {
     var wavesurfer = this.get('wavesurfer');

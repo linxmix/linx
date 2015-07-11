@@ -28,6 +28,12 @@ export default Ember.Object.extend(
 
   seekToBeat: function(beat) {
     console.log("metronome seekToBeat", beat);
+    var prevBeat = this.get('seekBeat');
+
+    // hack to make sure to trigger property changes
+    if (beat === prevBeat) {
+      beat += 0.00000000001;
+    }
 
     this.setProperties({
       seekBeat: beat,
