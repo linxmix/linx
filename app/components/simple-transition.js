@@ -9,7 +9,7 @@ export default Ember.Component.extend(ArrangementPlayerMixin,
   inputBpm: Ember.computed.oneWay('metronome.bpm'),
   inputZoom: Ember.computed.oneWay('pxPerBeat'),
   _inputBpmDidChange: function() {
-    this.set('metronome.bpm', parseFloat(this.get('inputBpm')));
+    this.get('metronome').setBpm(parseFloat(this.get('inputBpm')));
   }.observes('inputBpm'),
   _inputZoomDidChange: function() {
     this.set('pxPerBeat', parseFloat(this.get('inputZoom')));

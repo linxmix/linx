@@ -25,6 +25,7 @@ augment('zoom', function(pxPerSec) {
 }),
 
 augment('seekToTime', function(time) {
+  // console.log("wavesurfer seekToTime", time);
   return this.seekTo(time / this.getDuration());
 });
 
@@ -83,12 +84,17 @@ Wavesurfer.WebAudio.play = function(start, end) {
   if (!this.isPaused()) {
     this.pause();
   }
+  // console.log("wavesurfer play origStart", start);
 
   var adjustedTime = this.seekTo(start, end);
   start = adjustedTime.start;
   end = adjustedTime.end;
   this.scheduledPause = end;
   var startSample = ~~(start * this.ac.sampleRate);
+
+  // console.log("wavesurfer play adjustedTime", start);
+
+
 
   // init soundtouch
   this.soundtouch = new SoundTouch();

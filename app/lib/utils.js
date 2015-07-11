@@ -24,3 +24,13 @@ export const bpmToBps = function(bpm) {
 export const isNumber = function(number) {
   return Ember.typeOf(number) === 'number';
 }
+
+export const clamp = function(min, n, max) {
+  if (n < min) {
+    return min;
+  } else if (n > max) {
+    return max;
+  } else {
+    return n;
+  }
+}

@@ -86,6 +86,11 @@ export const ClockEvent = Ember.Object.extend(
     return this.get('clock').getCurrentTime();
   },
 
+  // Returns difference between given time and currentTime
+  getDelay: function(time) {
+    return this.getCurrentTime() - time;
+  },
+
   clear: function() {
     var event = this.get('_event');
     event && event.clear();
@@ -119,13 +124,15 @@ export const ClockEvent = Ember.Object.extend(
 
       // if we are a non-repeating event past deadline, execute now
       if (!isRepeatingEvent && (deadline <= this.getCurrentTime())) {
-        Ember.run(this, '_execute');
+        Ember.run(this, '_execute', this.getCurrentTime());
       }
 
       // otherwise, schedule execution
       else {
+        console.log("evnet schedule", deadline);
+
         var event = this.get('clock').callbackAtTime(() => {
-          Ember.run(this, '_execute');
+          Ember.run(this, '_execute', deadline);
         }, deadline);
 
         if (isRepeatingEvent) {
@@ -137,9 +144,9 @@ export const ClockEvent = Ember.Object.extend(
     }
   },
 
-  _execute: function() {
+  _execute: function(executionTime) {
     var onExecute = this.get('onExecute');
-    onExecute && onExecute(this.getCurrentTime() - this.get('deadline'));
+    onExecute && onExecute(this.getDelay(executionTime));
   },
 
   _setupExpiredHandler: function() {

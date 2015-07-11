@@ -2,7 +2,7 @@ import Ember from 'ember';
 import RequireAttributes from 'linx/lib/require-attributes';
 import Clock from 'linx/lib/clock';
 import { ClockEvent } from 'linx/lib/clock';
-import { beatToTime, timeToBeat } from 'linx/lib/utils';
+import { beatToTime, timeToBeat, clamp } from 'linx/lib/utils';
 
 // Holds rhythym based on clock
 export default Ember.Object.extend(
@@ -15,7 +15,6 @@ export default Ember.Object.extend(
   lastPlayTime: 0, // [s] last time metronome was played
   isPlaying: false,
   bpm: 128.000, // set by tempo automation
-  absSeekTime: 0,
   absTickTime: Ember.computed.alias('_clock.tickTime'),
   tickTime: function() {
     return this.getCurrentTime();
@@ -23,6 +22,12 @@ export default Ember.Object.extend(
   tickBeat: function() {
     return beatToTime(this.get('tickTime'), this.get('bpm'));
   }.property('tickTime'),
+
+  setBpm: function(bpm) {
+    // update seekTime
+    this.seekToTime(this.getCurrentTime());
+    this.set('bpm', bpm);
+  },
 
   playpause: function() {
     var isPlaying = !this.get('isPlaying');
@@ -52,11 +57,6 @@ export default Ember.Object.extend(
     return this.get('absSeekTime') + this._getPlayedTime();
   },
 
-  // Returns difference between given time and currentTime
-  getDelay: function(time) {
-    return this.getCurrentTime() - time;
-  },
-
   createClipEvent: function(clip) {
     return ClipEvent.create({
       arrangementClip: clip,
@@ -66,9 +66,10 @@ export default Ember.Object.extend(
   },
 
   seekToTime: function(time) {
+    console.log("metronome seekToTime", time);
     this.setProperties({
       seekTime: time,
-      absSeekTime: this._getAbsTime()
+      absSeekTime: this._getAbsTime() + time
     });
   },
 
@@ -136,14 +137,7 @@ var ClipEvent = Ember.Object.extend(
     // factor in delay
     seekTime += delay;
 
-    // clamp seekTime
-    if (seekTime < 0) {
-      return 0;
-    } else if (seekTime > lengthTime) {
-      return lengthTime;
-    } else {
-      return seekTime;
-    }
+    return clamp(0, seekTime, lengthTime);
   }.property('_seekTime', 'lengthTime', '_delay'),
 
   // internal params
@@ -176,18 +170,21 @@ var ClipEvent = Ember.Object.extend(
 
   _updateEventTimes: function() {
     var metronome = this.get('metronome');
+    var seekTime = this.get('_seekTime');
     var metronomeIsPlaying = metronome.get('isPlaying');
 
-    // if metronome is paused, pause this
-    if (!metronomeIsPlaying) {
+
+    // if metronome is paused or jumped back, pause this
+    if (!(metronomeIsPlaying && seekTime >= 0)) {
       this.set('isPlaying', false);
     }
 
     // update events
     var startEvent = this.get('_startEvent');
     var endEvent = this.get('_endEvent');
-    var seekTime = this.get('_seekTime');
     var absStartTime = metronome.getCurrentAbsTime() - seekTime;
+
+    console.log("_schedulingDidChange", this.get('_seekTime'));
 
     startEvent.setProperties({
       deadline: absStartTime,
@@ -201,7 +198,7 @@ var ClipEvent = Ember.Object.extend(
   },
 
   _executeStart: function(delay) {
-    console.log("execute start", this.get('arrangementClip.clip.track.title'))
+    console.log("execute start", this.get('arrangementClip.clip.track.title'), delay)
     this.setProperties({
       _delay: delay,
       isPlaying: true,

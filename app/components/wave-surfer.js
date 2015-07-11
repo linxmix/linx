@@ -97,9 +97,10 @@ export const Wave = Ember.Object.extend(
 
       if (isPlaying) {
         wavesurfer.play(seekTime);
-      } else if (wavesurfer.isPlaying()) {
-        wavesurfer.pause();
       } else {
+        if (wavesurfer.isPlaying()) {
+          wavesurfer.pause();
+        }
         wavesurfer.seekToTime(seekTime);
       }
     }
