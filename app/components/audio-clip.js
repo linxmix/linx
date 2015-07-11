@@ -1,9 +1,10 @@
 import Ember from 'ember';
 import RequireAttributes from 'linx/lib/require-attributes';
 import cssStyle from 'linx/lib/computed/css-style';
+import { beatToTime } from 'linx/lib/utils';
 
 export default Ember.Component.extend(
-  RequireAttributes('model', 'isPlaying', 'seekTime', 'pxPerBeat'), {
+  RequireAttributes('model', 'isPlaying', 'seekBeat', 'pxPerBeat'), {
 
   classNames: ['AudioClip'],
 
@@ -22,6 +23,7 @@ export default Ember.Component.extend(
   }.property('model.startBeat', 'pxPerBeat'),
 
   // params
+  startTime: Ember.computed.alias('model.startTime'),
   audioBpm: Ember.computed.alias('model.bpm'),
   syncBpm: null,
   tempo: function() {
@@ -34,11 +36,15 @@ export default Ember.Component.extend(
     }
   }.property('audioBpm', 'syncBpm'),
 
+  seekTime: function() {
+    return beatToTime(this.get('seekBeat'), this.get('audioBpm'));
+  }.property('seekBeat', 'audioBpm'),
+
   audioSeekTime: function() {
     var seekTime = this.get('seekTime');
-    var startTime = this.get('model.startTime');
-    // console.log("audioSeekTime", seekTime, startTime);
+    var startTime = this.get('startTime');
+    console.log("audioSeekTime", seekTime + startTime);
 
     return startTime + seekTime;
-  }.property('seekTime', 'model.startTime'),
+  }.property('seekTime', 'startTime'),
 });

@@ -129,7 +129,7 @@ export const ClockEvent = Ember.Object.extend(
 
       // otherwise, schedule execution
       else {
-        console.log("evnet schedule", deadline);
+        // console.log("evnet schedule", deadline);
 
         var event = this.get('clock').callbackAtTime(() => {
           Ember.run(this, '_execute', deadline);

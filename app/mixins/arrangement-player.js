@@ -15,15 +15,11 @@ export default Ember.Mixin.create(
     },
 
     skipBack: function() {
-      this.get('metronome').seekToTime(0);
+      this.get('metronome').seekToBeat(0);
     },
 
     skipForth: function() {
       console.log("skip forth unimplemented");
-    },
-
-    seekToTime: function(time) {
-      this.get('metronome').seekToTime(time);
     },
 
     seekToBeat: function(beat) {
