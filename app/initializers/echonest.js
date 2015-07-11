@@ -3,18 +3,12 @@ import DS from 'ember-data';
 import ENV from 'linx/config/environment';
 import ajax from 'ic-ajax';
 import retryWithBackoff from 'ember-backoff/retry-with-backoff';
+import RequireAttributes from 'linx/lib/require-attributes';
 
 export default {
   name: 'Echonest',
-  after: 'store',
 
-  initialize: function(container, app) {
-    var store = container.lookup('store:main');
-
-    Echonest.reopen({
-      store: store,
-    });
-
+  initialize: function(registry, app) {
     app.register("Echonest:main", Echonest);
     app.inject("model:track", "echonest", "Echonest:main");
     app.inject("model:echonest-track", "echonest", "Echonest:main");
@@ -22,12 +16,11 @@ export default {
 };
 
 var Echonest = Ember.Object.extend({
+  store: Ember.inject.service(),
+
   // TODO: move to config
   baseUrl: 'http://developer.echonest.com/api/v4',
   apiKey: ENV.ECHONEST_KEY,
-
-  // expected params
-  store: null,
 
   // fetch echonest-track from linx-track
   // TODO: identifyTrackMD5 first?

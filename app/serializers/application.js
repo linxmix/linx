@@ -10,7 +10,7 @@ export default DS.FirebaseSerializer.extend({
     key = this.keyForAttribute ? this.keyForAttribute(key, "serialize") : key;
 
     if (!Ember.isNone(belongsTo)) {
-      json[key + "Type"] = belongsTo.typeKey;
+      json[key + "Type"] = belongsTo.modelName;
     }
 
     return this._super.apply(this, arguments);
