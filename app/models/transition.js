@@ -1,14 +1,13 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-// import DependentModel from 'linx/lib/models/dependent-model';
+import DependentModel from 'linx/lib/models/dependent-model';
 
-export default DS.Model.extend({
-  // DependentModel('arrangement'), {
+export default DS.Model.extend(
+  DependentModel('arrangement'), {
 
   fromTime: DS.attr('number'), // end time of fromTrack
   toTime: DS.attr('number'), // start time of toTrack
 
-  arrangement: DS.belongsTo('arrangement', { async: true }),
   fromTrack: DS.belongsTo('track', { async: true }),
   toTrack: DS.belongsTo('track', { async: true }),
   mixListItems: DS.hasMany('mix-list-item', { async: true }),
@@ -23,9 +22,7 @@ export default DS.Model.extend({
       var store = this.get('store');
       var fromTrack = results[0];
       var toTrack = results[1];
-      var arrangement = this.get('store').createRecord('arrangement', {
-        totalBeats: 64, // TODO: make 64 the default numBeats?
-      });
+      var arrangement = this.get('arrangement');
 
       console.log("createSimpleArrangement", fromTrack.get('title'), toTrack.get('title'), arrangement);
       this.set('arrangement', arrangement);
@@ -54,15 +51,19 @@ export default DS.Model.extend({
     });
   },
 
-  initOverlap: function() {
-    Ember.RSVP.all([this.get('fromTrack'), this.get('toTrack')]).then((results) => {
-      var store = this.get('store');
-      var fromTrack = results[0];
-      var toTrack = results[1];
-      var arrangement = this.get('store').createRecord('arrangement');
+  // TODO: delete old arrangement, if exists?
+  initOverlap: function(fromTrack, toTrack) {
+    console.log(fromTrack, toTrack);
+    if (!(fromTrack && toTrack)) {
+      throw new Error("Cannot create transition without fromTrack and toTrack");
+    }
 
-      console.log("createOverlapArrangement", fromTrack.get('title'), toTrack.get('title'), arrangement);
-      this.set('arrangement', arrangement);
+    // TODO(AFTERPROMISE): do this easier
+    return this.get('arrangement').then((arrangement) => {
+      var store = this.get('store');
+      console.log("arrangement", arrangement);
+
+      console.log("createOverlapArrangement", fromTrack.get('title'), toTrack.get('title'));
 
       var audioClips = [];
       var row = arrangement.createRow();
@@ -92,8 +93,8 @@ export default DS.Model.extend({
       audioClips.push(toAudioClip);
 
       var savePromises = audioClips.map(function(clip) { return clip.save(); });
-      Ember.RSVP.all(savePromises).then((results) => {
-        this.save();
+      return Ember.RSVP.all(savePromises).then((results) => {
+        return this.save();
       });
     });
   }

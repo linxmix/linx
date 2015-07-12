@@ -39,9 +39,10 @@ export default Ember.Mixin.create(
     }
   }.property('session.audioContext'),
 
+  // TODO: why do computed props not work here?
   notReady: Ember.computed.not('isReady'),
   readyClips: function() {
-    return this.get('_arrangementClips').filterBy('isReady');
+    return this.getWithDefault('_arrangementClips', []).filterBy('isReady');
   }.property('_arrangementClips.@each.isReady'),
   isReady: function() {
     return this.get('_arrangementClips.length') === this.get('readyClips.length');

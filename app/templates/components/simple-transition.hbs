@@ -1,3 +1,23 @@
+{{#simple-arrangement
+  arrangement=arrangement
+  metronome=metronome
+  isReady=isReady
+  pxPerBeat=pxPerBeat
+  seekToBeat='seekToBeat'
+}}
+  {{#arrangement-row}}
+    {{#each clipEvent in clipEvents}}
+      {{arrangement-clip
+        clipEvent=clipEvent
+        metronome=metronome
+        pxPerBeat=pxPerBeat
+      }}
+    {{/each}}
+  {{/arrangement-row}}
+{{/simple-arrangement}}
+
+<hr/>
+
 {{play-buttons
   isDisabled=notReady
   isPlaying=isPlaying
@@ -23,23 +43,3 @@
 {{#each clip in arrangement.clips}}
   <div>clip isReady {{clip.isReady}}</div>
 {{/each}}
-
-<hr/>
-
-{{#simple-arrangement
-  arrangement=arrangement
-  metronome=metronome
-  isReady=isReady
-  pxPerBeat=pxPerBeat
-  seekToBeat='seekToBeat'
-}}
-  {{#arrangement-row}}
-    {{#each clipEvent in clipEvents}}
-      {{arrangement-clip
-        clipEvent=clipEvent
-        metronome=metronome
-        pxPerBeat=pxPerBeat
-      }}
-    {{/each}}
-  {{/arrangement-row}}
-{{/simple-arrangement}}

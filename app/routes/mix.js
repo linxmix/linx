@@ -2,11 +2,6 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
   actions: {
-    saveMix: function() {
-      var mix = this.get('controller.model');
-      mix.save();
-    },
-
     deleteMix: function() {
       var mix = this.get('controller.model');
 
@@ -33,16 +28,20 @@ export default Ember.Route.extend({
 
     addSeedTrack: function(track) {
       // TODO(AFTERPROMISE): do this easier
-      this.get('controller.model.seedList').then((seedList) => {
-        console.log("add seed track", seedList, track);
-        (seedList.get('content') || seedList).addTrack(track);
-      });
+      this.get('controller.model.seedList.content').addTrack(track);
     },
 
     removeSeedTrack: function(track) {
       // TODO(AFTERPROMISE): do this easier
-      this.get('controller.model.seedList').then((seedList) => {
-        seedList.get('content').removeTrack(track);
+      this.get('controller.model.seedList.content').removeTrack(track);
+    },
+
+    previewTrack: function(toTrack) {
+      var mix = this.get('controller.model');
+      var fromTrack = mix.get('tracks').get('lastObject');
+      var transition = this.get('store').createRecord('transition');
+      transition.initOverlap(fromTrack, toTrack).then(() => {
+        this.transitionTo('mix.transition', transition);
       });
     },
 
@@ -56,6 +55,7 @@ export default Ember.Route.extend({
       mix.removeTrackAt(index);
     },
 
+    // TODO: deprecated
     createTransitionAt: function(index, type) {
       var mix = this.get('controller.model');
       mix.createTransitionAt(index).then((transition) => {

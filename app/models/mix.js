@@ -12,26 +12,8 @@ export default DS.Model.extend(
   seedList: Ember.computed.alias('track-list'),
 
   // params
-  tracks: Ember.computed.mapBy('track'),
-  transitions: Ember.computed.mapBy('transitions'), // TODO: remove null/undefined?
-
-  createTransitionAt: function(index) {
-    var fromTrack = this.trackAt(index);
-    var toTrack = this.trackAt(index + 1);
-
-    if (!(fromTrack && toTrack)) {
-      throw new Error("Cannot create transition without fromTrack and toTrack");
-    }
-
-    var transition = this.get('store').createRecord('transition');
-    transition.set('fromTrack', fromTrack);
-    transition.set('toTrack', toTrack);
-
-    return transition.save().then(() => {
-      this.insertTransitionAt(index, transition);
-      return transition;
-    });
-  },
+  tracks: Ember.computed.mapBy('items', 'track'),
+  transitions: Ember.computed.mapBy('items', 'transitions'), // TODO: remove null/undefined?
 
   appendTransition: function(transition) {
     this.insertTransitionAt(this.get('length'), transition);

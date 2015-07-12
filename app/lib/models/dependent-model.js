@@ -45,6 +45,7 @@ export default function(...typeKeys) {
   params.save = function() {
     var promises = typeKeys.map((typeKey, i) => {
       return this.get(typeKey).then((model) => {
+        // TODO(AFTERPROMISE): do this easier
         return model && model.save();
       });
     });
@@ -57,6 +58,7 @@ export default function(...typeKeys) {
   params.destroyRecord = function() {
     var promises = typeKeys.map((typeKey) => {
       return this.get(typeKey).then((model) => {
+        // TODO(AFTERPROMISE): do this easier
         return model && model.destroyRecord();
       });
     });

@@ -30,7 +30,6 @@ export default Ember.Component.extend({
       source: source,
       searchFields: searchFields,
       onSelect: (trackWrapper) => {
-        console.log("did select track", trackWrapper);
         this.sendAction('action', trackWrapper.track);
       }
     });
