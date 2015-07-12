@@ -61,6 +61,7 @@ export default DS.Model.extend(
     // TODO(AFTERPROMISE): do this easier
     return this.get('arrangement').then((arrangement) => {
       var store = this.get('store');
+      arrangement.clear();
       console.log("arrangement", arrangement);
 
       console.log("createOverlapArrangement", fromTrack.get('title'), toTrack.get('title'));

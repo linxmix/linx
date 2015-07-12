@@ -22,6 +22,7 @@ export default Ember.Component.extend({
   // params
   pitch: 0, // semitones
   tempo: 1, // rate
+  volume: 0,
   session: Ember.inject.service(),
   wave: Ember.computed(function() {
     return Wave.create({ component: this });
@@ -56,8 +57,11 @@ export const Wave = Ember.Object.extend(
 
   // params
   wavesurfer: null,
+
   pitch: Ember.computed.alias('component.pitch'),
   tempo: Ember.computed.alias('component.tempo'),
+  volume: Ember.computed.alias('component.volume'),
+
   audioContext: Ember.computed.alias('component.audioContext'),
   file: Ember.computed.alias('component.file'),
   streamUrl: Ember.computed.alias('component.streamUrl'),
@@ -128,6 +132,23 @@ export const Wave = Ember.Object.extend(
       wavesurfer.setPitch(pitch);
     }
   }.observes('wavesurfer', 'pitch'),
+
+  updateVolume: function() {
+    var wavesurfer = this.get('wavesurfer');
+    var volume = this.get('volume');
+    if (wavesurfer) {
+
+      // TODO(EASY): remove this check, only for two-way binding to input
+      try {
+        volume = parseFloat(volume);
+      } catch(e) {}
+
+      if (typeof volume !== 'number') {
+        volume = 0;
+      }
+      wavesurfer.setVolume(volume);
+    }
+  }.observes('wavesurfer', 'volume'),
 
   updateZoom: function() {
     var wavesurfer = this.get('wavesurfer');

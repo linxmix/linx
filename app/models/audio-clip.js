@@ -12,13 +12,14 @@ export default Clip.extend({
     return this.get('startBeat') + this.get('length');
   }.property('startBeat', 'length'),
 
-  // TODO: figure out what we need to actually be ready.
-  //       when audio is loaded and models are ready?
+  // TODO(EASY): figure out what we need to actually be ready.
+  //             when audio is loaded and models are ready?
   isReady: Ember.computed.and('isLoaded', 'isAudioLoaded', 'track.isLoaded', 'track.analysis'),
   isAudioLoaded: false,
 
-  // TODO: turn into attr?
+  // TODO(EASY): turn into attrs?
   pitch: function() { return 0; }.property(),
+  volume: function() { return 1; }.property(),
 
   bpm: Ember.computed.alias('track.bpm'),
   bps: Ember.computed.alias('track.bps'),

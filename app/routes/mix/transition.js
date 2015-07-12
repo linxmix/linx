@@ -13,7 +13,7 @@ export default Ember.Route.extend(PreventDirtyTransitionMixin, {
 
       if (window.confirm("Are you sure you want to delete this transition? It cannot be restored once deleted.")) {
 
-        // clean up relationships on parent very manually 
+        // clean up relationships on parent very manually
         // TODO: fix when issue is resolved
         // http://stackoverflow.com/questions/24644902/deleterecord-with-multiple-belongsto-relationships-in-ember-cli
         var mix = this.modelFor('mix');
@@ -27,9 +27,7 @@ export default Ember.Route.extend(PreventDirtyTransitionMixin, {
   },
 
   model: function(params) {
-    return this.get('store').find('transition', params.transition_id).then((transition) => {
-      return transition;
-    }, (reason) => {
+    return this.get('store').find('transition', params.transition_id).catch((reason) => {
       // if transition not found, redirect to mix
       this.replaceWith('mix');
     });
