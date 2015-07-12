@@ -9,7 +9,7 @@ export default DS.Model.extend(
   totalBeats: DS.attr('number'), // total number of beats in this arrangement
 
   // params
-  rows: Ember.computed.alias('content'),
+  rows: Ember.computed.alias('items'),
   clips: function() {
     return flatten(this.get('rows').mapBy('clips'));
   }.property('rows.@each.clips'),

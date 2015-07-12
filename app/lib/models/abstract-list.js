@@ -3,22 +3,11 @@ import DS from 'ember-data';
 
 export default function(itemType) {
   var mixinParams = {
-    content: DS.hasMany(itemType, { async: true }),
+    items: DS.hasMany(itemType, { async: true }),
 
-    dirtyContent: Ember.computed.filterBy('content', 'isDirty'),
-    contentIsDirty: Ember.computed.gt('dirtyContent.length', 0),
-    anyDirty: Ember.computed.any('isDirty', 'contentIsDirty'),
-
-    saveContent: function() {
-      this.get('dirtyContent').forEach(function(item) {
-        item.save();
-      });
-    },
-
-    // creates and returns a new item, does NOT insert into list
-    _createItem: function(params) {
-      return this.get('store').createRecord(itemType, params);
-    },
+    dirtyItems: Ember.computed.filterBy('items', 'isDirty'),
+    itemsAreDirty: Ember.computed.gt('dirtyItems.length', 0),
+    anyDirty: Ember.computed.any('isDirty', 'itemsAreDirty'),
 
     // creates a new item and appends it to end of list
     createItem: function(params) {
@@ -32,28 +21,39 @@ export default function(itemType) {
       return item;
     },
 
+    // returns item at index, or if none, creates new item at index and returns it
     assertItemAt: function(index) {
       return this.objectAt(index) || this.createItemAt(index);
+    },
+
+    // creates and returns a new item, does NOT insert into list
+    _createItem: function(params) {
+      return this.get('store').createRecord(itemType, params);
     },
 
     //
     // Necessary functions to be Ember.MutableArray
     //
-    length: Ember.computed.alias('content.length'),
+    length: Ember.computed.alias('items.length'),
 
     nextObject: function(index, previousObject, context) {
-      var content = this.get('content');
-      return content.nextObject.apply(content, arguments);
+      var items = this.get('items');
+      return items.nextObject.apply(items, arguments);
+    },
+
+    objectAt: function(index) {
+      var items = this.get('items');
+      return items.objectAt.apply(items, arguments);
     },
 
     replace: function(index, amount, objects) {
-      var content = this.get('content');
+      var items = this.get('items');
 
-      var itemsToRemove = content.slice(index, index + amount);
+      var itemsToRemove = items.slice(index, index + amount);
       var itemsToSave = objects;
 
-      // replace local content immediately
-      content.replace.apply(content, arguments);
+      // replace local items immediately
+      items.replace.apply(items, arguments);
 
       // destroy items that are removed,
       var removePromises = itemsToRemove.map((item) => {
@@ -67,16 +67,21 @@ export default function(itemType) {
 
       // then once saves and removes are done, save list
       Ember.RSVP.all(removePromises.concat(savePromises)).then((results) => {
-        // console.log("list save from replace", this.toString(), itemType);
+        // console.log("list save from replace", this.get('constructor') + '');
         // console.log("itemsToRemove", itemsToRemove.get('length'));
         // console.log("itemsToSave", itemsToSave.get('length'));
         this.save();
       });
     },
 
-    objectAt: function(index) {
-      var content = this.get('content');
-      return content.objectAt.apply(content, arguments);
+    // augment destroyRecord to also destroy items
+    destroyRecord: function() {
+      var promises = this.get('items').map((item) => {
+        return item && item.destroyRecord();
+      });
+
+      promises.push(this._super.apply(this, arguments));
+      return Ember.RSVP.all(promises);
     },
 
   };

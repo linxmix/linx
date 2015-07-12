@@ -1,11 +1,15 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 import AbstractListMixin from 'linx/lib/models/abstract-list';
+import DependentModelMixin from 'linx/lib/models/dependent-model';
 
 export default DS.Model.extend(
-  AbstractListMixin('mix-list-item'), {
+  AbstractListMixin('mix-list-item'),
+  DependentModelMixin('track-list'), {
 
   title: DS.attr('string'),
+
+  seedList: Ember.computed.alias('track-list'),
 
   // params
   tracks: Ember.computed.mapBy('track'),
@@ -65,7 +69,7 @@ export default DS.Model.extend(
 
   // TODO: mix needs to validate transitions when removing tracks
   removeTrack: function(track) {
-    var item = this.get('content').find((item) => {
+    var item = this.get('items').find((item) => {
       return item.get('track.id') === track.get('id');
     });
     var index = item && item.get('index');
@@ -81,7 +85,7 @@ export default DS.Model.extend(
   },
 
   removeTransition: function(transition) {
-    var item = this.get('content').find((item) => {
+    var item = this.get('items').find((item) => {
       return item.get('transition.id') === transition.get('id');
     });
     var index = item && item.get('index');

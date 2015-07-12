@@ -11,10 +11,9 @@ export default function(listType) {
   mixinParams.list = DS.belongsTo(listType, { async: true });
 
   // add index as computedProperty
-  mixinParams.index = Ember.computed('list.content.[]', function() {
-    // TODO: why is item.list !== list?
+  mixinParams.index = Ember.computed('list.items.[]', function() {
     var list = this.get('list');
-    return list.get('content').indexOf(this);
+    return list.get('items').indexOf(this);
   });
 
   // save only after finishing loading

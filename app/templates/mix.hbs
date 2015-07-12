@@ -1,3 +1,45 @@
 <div class="mix-page">
+
+  {{page-drop action="onPageDrop"}}
+
+  <div>{{model.title}}</div>
+  <div class="inverted red ui icon button" {{action 'deleteMix'}}>
+    <i class="remove icon"></i>
+    Delete Mix
+  </div>
+
+  <hr/>
+
+  <div class="ui two column grid">
+    <div class="column">
+      {{#mix-list mix=model}}
+        {{#each item in model.items}}
+          {{mix-list-item
+            item=item
+            createTransitionAt='createTransitionAt'
+            removeTrackAt='removeTrackAt'
+            removeTransitionAt='removeTransitionAt'
+          }}
+        {{/each}}
+      {{/mix-list}}
+    </div>
+
+    <div class="column">
+      {{search-tracks tracks=searchTracks action="addSeedTrack"}}
+
+      {{#track-list trackList=model.seedList}}
+        {{#each item in model.seedList.items}}
+          {{track-list-item
+            item=item
+            removeTrack="removeSeedTrack"
+          }}
+        {{/each}}
+      {{/track-list}}
+    </div>
+
+  </div>
+
+  <hr/>
+
   {{outlet}}
 </div>

@@ -3,12 +3,14 @@ import Ember from 'ember';
 export default Ember.Route.extend({
   actions: {
     createMix: function() {
-      var mix = this.get('store').createRecord('mix', {
+      var store = this.get('store');
+      var mix = store.createRecord('mix', {
         title: 'Mix ' + Ember.uuid(),
       });
 
-      mix.save();
-      this.transitionTo('mix', mix);
+      mix.save().then(() => {
+        this.transitionTo('mix', mix);
+      });
     }
   },
 
