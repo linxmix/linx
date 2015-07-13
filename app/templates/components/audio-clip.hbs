@@ -14,3 +14,12 @@
 
   didLoadWave='didLoadWave'
 }}
+
+{{#each region in regions}}
+  {{clip-region
+    startBeat=region.startBeat
+    endBeat=region.endBeat
+    color=region.color
+    pxPerBeat=pxPerBeat
+  }}
+{{/each}}

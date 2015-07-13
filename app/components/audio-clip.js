@@ -1,7 +1,8 @@
 import Ember from 'ember';
 import RequireAttributes from 'linx/lib/require-attributes';
 import cssStyle from 'linx/lib/computed/css-style';
-import { beatToTime } from 'linx/lib/utils';
+import { flatten, beatToTime } from 'linx/lib/utils';
+import _ from 'npm:underscore';
 
 export default Ember.Component.extend(
   RequireAttributes('model', 'isPlaying', 'seekBeat', 'pxPerBeat'), {
@@ -47,4 +48,32 @@ export default Ember.Component.extend(
 
     return startTime + seekTime;
   }.property('seekTime', 'startTime'),
+
+  track: Ember.computed.alias('model.track'),
+
+  regions: function() {
+    var regions = flatten([
+      // this.getWithDefault('track.confidentBeats', []),
+      // this.getWithDefault('track.confidentBars', []),
+      this.getWithDefault('track.confidentSections', []),
+    ]).mapBy('startBeat').map((beat) => {
+      return {
+        startBeat: beat,
+        color: 'green'
+      }
+    });
+
+    var fadeInEndBeat = this.get('track.fadeInEndBeat')
+    var fadeOutStartBeat = this.get('track.fadeOutStartBeat')
+    fadeInEndBeat && regions.push({
+      startBeat: fadeInEndBeat,
+      color: 'red',
+    });
+    fadeOutStartBeat && regions.push({
+      startBeat: fadeOutStartBeat,
+      color: 'red'
+    });
+
+    return regions
+  }.property('track.confidentBeats.[]', 'track.confidentBars.[]', 'track.confidentSections.[]', 'track.fadeInEndBeat', 'track.fadeOutStartBeat'),
 });

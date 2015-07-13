@@ -8,22 +8,4 @@
     left: -10000px;
     width: 100%;
   }
-
-  .beat-region {
-    // override default wavesurfer marker style
-    height: 10% !important;
-    width: 2px !important;
-    top: auto !important;
-    bottom: 0 !important;
-    cursor: pointer !important;
-  }
-
-  .bar-region {
-    // override default wavesurfer marker style
-    height: 10% !important;
-    width: 2px !important;
-    // top: auto !important;
-    // bottom: 0 !important;
-    cursor: pointer !important;
-  }
 }
