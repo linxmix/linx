@@ -9,7 +9,7 @@ export const flatten = function(array) {
 
 export const beatToTime = function(beat, bpm) {
   var bps = bpmToBps(bpm);
-  return beat * (1 / bps);
+  return beat * (1.0 / bps);
 };
 
 export const timeToBeat = function(time, bpm) {
@@ -19,6 +19,10 @@ export const timeToBeat = function(time, bpm) {
 
 export const bpmToBps = function(bpm) {
   return bpm / 60.0;
+};
+
+export const bpmToSpb = function(bpm) {
+  return 1.0 / bpmToBps(bpm);
 };
 
 export const isNumber = function(number) {

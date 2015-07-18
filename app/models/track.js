@@ -1,49 +1,8 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-import { timeToBeat } from 'linx/lib/utils';
-import withDefault from 'linx/lib/with-default';
-import RequireAttributes from 'linx/lib/require-attributes';
-import _ from 'npm:underscore';
 
-export const MIN_BEAT_CONFIDENCE = 0.5;
-export const MIN_BAR_CONFIDENCE = 0.5;
-export const MIN_SECTION_CONFIDENCE = 0.5;
-
-const Unit = Ember.Object.extend(
-  RequireAttributes('start', 'confidence', 'type', 'bpm'), {
-
-  // optional params
-  duration: null,
-
-  isConfident: function() {
-    return this.get('confidence') >= this.get('minConfidence');
-  }.property('confidence', 'minConfidence'),
-
-  minConfidence: function() {
-    switch (this.get('type')) {
-      case 'beat': return MIN_BEAT_CONFIDENCE; break;
-      case 'bar': return MIN_BAR_CONFIDENCE; break;
-      case 'section': return MIN_SECTION_CONFIDENCE; break;
-    }
-  }.property('type'),
-
-  startBeat: function() {
-    return timeToBeat(this.get('start'), this.get('bpm'));
-  }.property('start', 'bpm')
-});
-
-const unitProperty = function(propertyPath, unitType) {
-  return Ember.computed(propertyPath, 'bpm', function() {
-    var bpm = this.get('bpm');
-
-    return this.getWithDefault(propertyPath, []).map((params) => {
-      return Unit.create(_.defaults(params, {
-        type: unitType,
-        bpm: bpm,
-      }));
-    });
-  });
-};
+import { flatten, timeToBeat } from 'linx/lib/utils';
+import { BEAT_MARKER_TYPE, BAR_MARKER_TYPE, SECTION_MARKER_TYPE } from './marker';
 
 export default DS.Model.extend({
   title: DS.attr('string'),
@@ -53,52 +12,34 @@ export default DS.Model.extend({
   md5: DS.attr('string'),
   s3Url: DS.attr('string'),
 
-  audioClip: DS.hasMany('audio-clip', { async: true }),
   _echonestTrack: DS.belongsTo('echonest-track', { async: true }),
 
   // injected by app
   echonest: null,
 
-  // params
+  // analysis params
+  isAnalyzed: DS.attr('boolean', { defaultValue: false }),
+  duration: DS.attr('number'),
+  bpm: DS.attr('number'),
+  timeSignature: DS.attr('number'),
+  key: DS.attr('number'),
+  mode: DS.attr('number'),
+  loudness: DS.attr('number'),
+
+  markers: DS.hasMany('marker', { async: true }),
+  sortedMarkers: Ember.computed.alias('markers'),
+
+  sortedBeatMarkers: Ember.computed.filterBy('sortedMarkers', 'type', BEAT_MARKER_TYPE),
+  sortedBarMarkers: Ember.computed.filterBy('sortedMarkers', 'type', BAR_MARKER_TYPE),
+  sortedSectionMarkers: Ember.computed.filterBy('sortedMarkers', 'type', SECTION_MARKER_TYPE),
+
+  firstBeatMarker: Ember.computed.alias('sortedBeatMarkers.firstObject'),
+
   streamUrl: Ember.computed.any('s3StreamUrl', 'scStreamUrl'),
-  audioSummary: Ember.computed.alias('echonestTrack.audio_summary'),
-  bps: function() {
-    return this.get('bpm') / 60.0;
-  }.property('bpm'),
-  spb: function() {
-    return 1 / this.get('bps');
-  }.property('bps'),
-  analysis: Ember.computed.alias('echonestTrack.analysis'),
-  firstBeatTime: function() {
-    var beatStartTime = this.get('analysis.beats.firstObject.start');
-    return beatStartTime;
-  }.property('analysis.beats.firstObject.start'),
-
-  bpm: Ember.computed.alias('audioSummary.tempo'),
-  timeSignature: Ember.computed.alias('audioSummary.time_signature'),
-  key: Ember.computed.alias('audioSummary.key'),
-  loudness: Ember.computed.alias('audioSummary.loudness'),
-
-  fadeInEndBeat: function() {
-    var time = this.get('analysis.track.end_of_fade_in');
-    return timeToBeat(time, this.get('bpm'));
-  }.property('analysis.track.end_of_fade_in', 'bpm'),
-
-  fadeOutStartBeat: function() {
-    var time = this.get('analysis.track.start_of_fade_out');
-    return timeToBeat(time, this.get('bpm'));
-  }.property('analysis.track.start_of_fade_out', 'bpm'),
-
-  beats: unitProperty('analysis.beats', 'beat'),
-  bars: unitProperty('analysis.bars', 'bar'),
-  sections: unitProperty('analysis.sections', 'section'),
-
-  confidentBeats: Ember.computed.filterBy('beats', 'isConfident'),
-  confidentBars: Ember.computed.filterBy('bars', 'isConfident'),
-  confidentSections: Ember.computed.filterBy('sections', 'isConfident'),
 
   s3StreamUrl: function() {
     if (!Ember.isNone(this.get('s3Url'))) {
+      // TODO: move to config
       return "http://s3-us-west-2.amazonaws.com/linx-music/" + this.get('s3Url');
     }
   }.property('s3Url'),
@@ -134,4 +75,71 @@ export default DS.Model.extend({
 
     return promiseObject;
   },
+
+  // analyzes the track for core audio data. returns a promise.
+  // caches by default, can optionally force re-analysis to clear cached data
+
+  // TODO: make declarative... make analysis a model?
+  analyze: function(forceAnalysis) {
+    if (!forceAnalysis && this.get('isAnalyzed')) {
+      return new Ember.RSVP.Promise((resolve, reject) => { resolve(); });
+    }
+
+    else {
+      var store = this.get('store');
+
+      return this.get('echonestTrack').then((echonestTrack) => {
+        return echonestTrack.get('analysis').then((analysis) => {
+          var bpm = echonestTrack.get('bpm');
+
+          var beatMarkers = [store.createRecord('marker', {
+            type: BEAT_MARKER_TYPE,
+            start: echonestTrack.get('firstBeatStart'),
+            track: this,
+          })];
+
+          var barMarkers = echonestTrack.get('confidentBars').map((bar) => {
+            return store.createRecord('marker', {
+              type: BAR_MARKER_TYPE,
+              start: bar.get('start'),
+              track: this,
+            });
+          });
+
+          var sectionMarkers = echonestTrack.get('confidentSections').map((section) => {
+            return store.createRecord('marker', {
+              type: SECTION_MARKER_TYPE,
+              start: section.get('start'),
+              track: this,
+            });
+          });
+
+          // save all markers, then set properties and save track
+          var markers = flatten([beatMarkers, barMarkers, sectionMarkers]);
+          var markerSavePromises = markers.map((marker) => { return marker.save(); });
+
+          return Ember.RSVP.all(markerSavePromises).then(() => {
+            return this.get('markers').then(() => {
+              // TODO: delete old beat/bar markers
+              this.get('markers').pushObjects(markers);
+
+              this.setProperties({
+                isAnalyzed: true,
+                duration: echonestTrack.get('duration'),
+                bpm: bpm,
+                timeSignature: echonestTrack.get('timeSignature'),
+                key: echonestTrack.get('key'),
+                mode: echonestTrack.get('mode'),
+                loudness: echonestTrack.get('loudness'),
+              });
+
+              return this.save();
+            });
+          });
+
+        });
+      });
+    }
+  },
+
 });

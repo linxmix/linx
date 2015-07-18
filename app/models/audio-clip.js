@@ -24,13 +24,13 @@ export default Clip.extend({
   bpm: Ember.computed.alias('track.bpm'),
   bps: Ember.computed.alias('track.bps'),
   spb: Ember.computed.alias('track.spb'),
-  firstBeatTime: Ember.computed.alias('track.firstBeatTime'),
+  firstBeatStart: Ember.computed.alias('track.firstBeatStart'),
   lengthTime: function() {
     return this.get('spb') * this.get('length');
   }.property('spb', 'length'),
   startTime: function() {
-    return this.get('firstBeatTime') + (this.get('startBeat') * this.get('spb'));
-  }.property('firstBeatTime', 'startBeat', 'spb'),
+    return this.get('firstBeatStart') + (this.get('startBeat') * this.get('spb'));
+  }.property('firstBeatStart', 'startBeat', 'spb'),
   endTime: function() {
     return this.get('startTime') + this.get('lengthTime');
   }.property('startTime', 'lengthTime'),
