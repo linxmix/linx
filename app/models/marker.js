@@ -17,6 +17,6 @@ export default DS.Model.extend({
 
   // params
   startBeat: function() {
-    return timeToBeat(this.get('start'), this.get('track.bpm'));
-  }.property('track.bpm', 'start'),
+    return timeToBeat(this.get('start'), this.get('track.audioMeta.bpm'));
+  }.property('track.audioMeta.bpm', 'start'),
 });

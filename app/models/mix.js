@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 import AbstractListMixin from 'linx/lib/models/abstract-list';
-import withDefaultModel from 'linx/lib/with-default-model';
+import withDefaultModel from 'linx/lib/computed/with-default-model';
 
 export default DS.Model.extend(
   AbstractListMixin('mix-list-item'), {

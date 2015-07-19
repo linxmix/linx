@@ -19,11 +19,14 @@ export default DS.Model.extend({
   mode: DS.attr('number'),
   loudness: DS.attr('number'),
 
+  track: DS.belongsTo('track'),
+
   markers: DS.hasMany('marker', { async: true }),
   userMarkers: Ember.computed.filterBy('markers', 'type', USER_MARKER_TYPE),
   analysisMarkers: Ember.computed.setDiff('markers', 'userMarkers'),
 
-  sortedMarkers: Ember.computed.sort('markers', 'start'),
+  markerSorting: ['start'],
+  sortedMarkers: Ember.computed.sort('markers', 'markerSorting'),
   sortedBeatMarkers: Ember.computed.filterBy('sortedMarkers', 'type', BEAT_MARKER_TYPE),
   sortedBarMarkers: Ember.computed.filterBy('sortedMarkers', 'type', BAR_MARKER_TYPE),
   sortedSectionMarkers: Ember.computed.filterBy('sortedMarkers', 'type', SECTION_MARKER_TYPE),
@@ -40,6 +43,7 @@ export default DS.Model.extend({
 
   destroyAnalysisMarkers: function() {
     return this.get('markers').then((markers) => {
+      console.log("destroy analysis markers", this.get('analysisMarkers').slice());
       return Ember.RSVP.all(this.get('analysisMarkers').map((marker) => {
         return marker && marker.destroyRecord();
       }));
@@ -48,7 +52,7 @@ export default DS.Model.extend({
 
   // Updates audio-meta based on the given EchonestTrack.Analysis
   // Returns a promise which resolves into this model
-  parseAnalysis: function(analysis) {
+  processAnalysis: function(analysis) {
     var markerParams = [];
 
     // add beat marker
@@ -58,7 +62,7 @@ export default DS.Model.extend({
     });
 
     // add bar markers
-    markerParams.concat(analysis.get('confidentBars').map((bar) => {
+    markerParams = markerParams.concat(analysis.get('confidentBars').map((bar) => {
       return {
         type: BAR_MARKER_TYPE,
         start: bar.get('start'),
@@ -66,7 +70,7 @@ export default DS.Model.extend({
     }));
 
     // add section markers
-    markerParams.concat(analysis.get('confidentSections').map((section) => {
+    markerParams = markerParams.concat(analysis.get('confidentSections').map((section) => {
       return {
         type: SECTION_MARKER_TYPE,
         start: section.get('start'),
@@ -85,11 +89,13 @@ export default DS.Model.extend({
 
     // create and save all markers, then set properties and save track
     var store = this.get('store');
+    var track = this.get('track');
     var markers = markerParams.map((params) => {
       return store.createRecord('marker', _.defaults(params, {
-        track: this,
+        track: track,
       }));
     });
+    console.log('saving markers', markers.slice());
     var markerSavePromises = markers.map((marker) => { return marker.save(); });
 
     return Ember.RSVP.all(markerSavePromises).then(() => {

@@ -2,7 +2,7 @@ import DS from 'ember-data';
 import RequireAttributes from 'linx/lib/require-attributes';
 import _ from 'npm:underscore';
 
-import { bpmToSpb } from 'linx/lib/utils';
+import { bpmToSpb, assertPromise } from 'linx/lib/utils';
 
 export default DS.Model.extend({
   title: DS.attr('string'),
@@ -56,6 +56,11 @@ export default DS.Model.extend({
       // });
     // });
   }.property('analysisUrl'),
+
+  // TODO: shouldnt need to do this, called from dependent model
+  save: function() {
+    return assertPromise(this);
+  },
 });
 
 const Analysis = Ember.Object.extend(

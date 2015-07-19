@@ -2,7 +2,7 @@ import Ember from 'ember';
 import BubbleActions from 'linx/lib/bubble-actions';
 import RequireAttributes from 'linx/lib/require-attributes';
 import cssStyle from 'linx/lib/computed/css-style';
-import withDefault from 'linx/lib/with-default';
+import withDefault from 'linx/lib/computed/with-default';
 
 import {
   BEAT_MARKER_TYPE,
@@ -11,7 +11,7 @@ import {
   FADE_IN_MARKER_TYPE,
   FADE_OUT_MARKER_TYPE,
   USER_MARKER_TYPE,
-} from './marker';
+} from 'linx/models/marker';
 
 export default Ember.Component.extend(
   BubbleActions(), RequireAttributes('marker', 'pxPerBeat'), {
@@ -28,13 +28,13 @@ export default Ember.Component.extend(
 
   color: Ember.computed.any('marker.color', 'typeColor'),
   typeColor: function() {
-    switch (this.get('model.type')) {
-      case BEAT_MARKER_TYPE: return 'rgba(0,1,1,0.5)';
-      case BAR_MARKER_TYPE: return 'rgba(1,0,0,0.5)';
-      case SECTION_MARKER_TYPE: return 'rgba(0,1,0,0.5)';
-      case FADE_IN_MARKER_TYPE: case FADE_OUT_MARKER_TYPE: return 'rgba(1,1,0,0.5)';
+    switch (this.get('marker.type')) {
+      case BEAT_MARKER_TYPE: return 'rgba(0,255,255,0.5)';
+      case BAR_MARKER_TYPE: return 'rgba(255,0,0,0.5)';
+      case SECTION_MARKER_TYPE: return 'rgba(0,255,0,0.5)';
+      case FADE_IN_MARKER_TYPE: case FADE_OUT_MARKER_TYPE: return 'rgba(255,255,0,0.5)';
     }
-  }.property('model.type'),
+  }.property('marker.type'),
 
   startPx: function() {
     return (this.get('marker.startBeat') * this.get('pxPerBeat')) + 'px';
