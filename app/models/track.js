@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import DS from 'ember-data';
+import withDefaultModel from 'linx/lib/with-default-model';
 
 export default DS.Model.extend({
   title: DS.attr('string'),
@@ -10,7 +11,14 @@ export default DS.Model.extend({
   s3Url: DS.attr('string'),
 
   _echonestTrack: DS.belongsTo('echonest-track', { async: true }),
+  echonestTrack: withDefaultModel('_echonestTrack', function() {
+    return this.fetchEchonestTrack();
+  }),
+
   _audioMeta: DS.belongsTo('audio-meta', { async: true, dependent: true }),
+  audioMeta: withDefaultModel('_audioMeta', function() {
+    return this.fetchAudioMeta();
+  }),
 
   // injected by app
   echonest: null,
@@ -33,49 +41,23 @@ export default DS.Model.extend({
   identify: function() {
   },
 
-  // if we have not yet identified this track in echonest, upload and return promise object
-  // otherwise, load the relationship as normal
-  echonestTrack: function() {
-    var echonestTrackId = this.get('_data._echonestTrack');
-
-    if (!this.get('isLoaded') || echonestTrackId) {
-      return this.get('_echonestTrack');
-    } else {
-      return DS.PromiseObject.create({
-        promise: this.fetchEchonestTrack(),
-      });
-    }
-  }.property('isLoaded', '_echonestTrack'),
-
+  // figure out which track this is in echonest
   fetchEchonestTrack: function() {
     return this.get('echonest').fetchTrack(this)
       .then((echonestTrack) => {
-        this.set('_echonestTrack', echonestTrack);
-        return this.save().then(() => {
-          return echonestTrack;
-        });
+        return echonestTrack;
       });
   },
 
-  // if we have no audio meta for this track, create new and parse echonest analysis
-  // otherwise, load the relationship as normal
-  audioMeta: function() {
-    var audioMetaId = this.get('_data.audioMeta');
-
-    if (!this.get('isLoaded') || audioMetaId) {
-      return this.get('_echonestTrack');
-    } else {
-      return DS.PromiseObject.create({
-        promise: this.get('echonestTrack').then((echonestTrack) => {
-          return this.get('echonestAnalysis').then((echonestAnalysis) => {
-            var audioMeta = this.get('store').createRecord('audio-meta');
-            audioMeta.processAnalysis(analysis);
-            return audioMeta;
-          });
-        }),
+  // analyze echonest track, then parse into new audio meta
+  fetchAudioMeta: function() {
+    return this.get('echonestTrack').then((echonestTrack) => {
+      return echonestTrack.get('analysis').then((analysis) => {
+        var audioMeta = this.get('store').createRecord('audio-meta', {
+          track: this
+        });
+        return audioMeta.processAnalysis(analysis);
       });
-    }
-  }.property('isLoaded', '_audioMeta'),
-
-  echonestAnalysis: Ember.computed.alias('echonestTrack.analysis')
+    });
+  },
 });

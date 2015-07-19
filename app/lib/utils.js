@@ -27,7 +27,11 @@ export const bpmToSpb = function(bpm) {
 
 export const isNumber = function(number) {
   return Ember.typeOf(number) === 'number';
-}
+};
+
+export const isObject = function(object) {
+  return Ember.typeOf(object) === 'object';
+};
 
 export const clamp = function(min, n, max) {
   if (n < min) {
@@ -37,4 +41,10 @@ export const clamp = function(min, n, max) {
   } else {
     return n;
   }
-}
+};
+
+export const assertPromise = function(x) {
+  return new Ember.RSVP.Promise(function(resolve) {
+    resolve(x);
+  });
+};

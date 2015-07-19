@@ -30,7 +30,7 @@ export default DS.Model.extend({
 
   analysisUrl: Ember.computed.alias('audio_summary.analysis_url'),
   analysis: function() {
-    return DS.promiseObject.create({
+    return DS.PromiseObject.create({
       promise: this.get('echonest').fetchAnalysis(this.get('analysisUrl')).then((analysis) => {
         return Analysis.create({
           analysis: analysis

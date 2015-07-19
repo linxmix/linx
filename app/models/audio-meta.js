@@ -47,6 +47,7 @@ export default DS.Model.extend({
   },
 
   // Updates audio-meta based on the given EchonestTrack.Analysis
+  // Returns a promise which resolves into this model
   parseAnalysis: function(analysis) {
     var markerParams = [];
 
