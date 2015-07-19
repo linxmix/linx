@@ -26,14 +26,19 @@ export default Clip.extend({
   audioMeta: Ember.computed.alias('track.audioMeta'),
   bpm: Ember.computed.alias('audioMeta.bpm'),
 
-  lengthTime: function() {
-    return beatToTime(this.get('length', this.get('bpm')));
-  }.property('bpm', 'length'),
-
   startTime: function() {
     return this.get('audioMeta.firstBeatMarker.start') +
       beatToTime(this.get('startBeat'), this.get('bpm'));
   }.property('audioMeta.firstBeatMarker.start', 'startBeat', 'bpm'),
+
+  lengthTime: function() {
+    return beatToTime(this.get('length', this.get('bpm')));
+  }.property('bpm', 'length'),
+
+  endTime: function() {
+    // TODO: why doesnt lengthTime work?
+    return this.get('startTime') + beatToTime(this.get('length'), this.get('bpm'));
+  }.property('startTime', 'length', 'bpm'),
 
   arrangementClips: DS.hasMany('arrangement-clip', { async: true }),
   track: DS.belongsTo('track', { async: true }),

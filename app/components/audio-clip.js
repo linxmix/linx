@@ -25,6 +25,7 @@ export default Ember.Component.extend(
 
   // params
   startTime: Ember.computed.alias('model.startTime'),
+  endTime: Ember.computed.alias('model.endTime'),
   audioBpm: Ember.computed.alias('model.bpm'),
   syncBpm: null,
   tempo: function() {
@@ -49,4 +50,14 @@ export default Ember.Component.extend(
     return startTime + seekTime;
   }.property('seekTime', 'startTime'),
 
+  markers: Ember.computed.alias('model.audioMeta.markers'),
+  visibleMarkers: function() {
+    var startTime = this.get('startTime');
+    var endTime = this.get('endTime');
+
+    return this.getWithDefault('markers', []).filter((marker) => {
+      var markerStart = marker.get('start');
+      return markerStart >= startTime && markerStart <= endTime
+    });
+  }.property('startTime', 'endTime', 'markers.@each.start'),
 });

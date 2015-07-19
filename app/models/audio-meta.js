@@ -43,7 +43,6 @@ export default DS.Model.extend({
 
   destroyAnalysisMarkers: function() {
     return this.get('markers').then((markers) => {
-      console.log("destroy analysis markers", this.get('analysisMarkers').slice());
       return Ember.RSVP.all(this.get('analysisMarkers').map((marker) => {
         return marker && marker.destroyRecord();
       }));
@@ -95,7 +94,6 @@ export default DS.Model.extend({
         track: track,
       }));
     });
-    console.log('saving markers', markers.slice());
     var markerSavePromises = markers.map((marker) => { return marker.save(); });
 
     return Ember.RSVP.all(markerSavePromises).then(() => {
