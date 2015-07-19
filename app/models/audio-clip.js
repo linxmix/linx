@@ -2,38 +2,38 @@ import Ember from 'ember';
 import DS from 'ember-data';
 import Clip from './clip';
 
+import { beatToTime } from 'linx/lib/utils';
+
 // Clip that points to a section of an AudioBuffer
 export default Clip.extend({
   type: Ember.computed(() => { return 'audio-clip' }),
 
   startBeat: DS.attr('number'), // starting beat in audio
   length: DS.attr('number'), // length of audio-clip, in beats
+
   endBeat: function() {
     return this.get('startBeat') + this.get('length');
   }.property('startBeat', 'length'),
 
-  // TODO(EASY): figure out what we need to actually be ready.
-  //             when audio is loaded and models are ready?
-  isReady: Ember.computed.and('isLoaded', 'isAudioLoaded', 'track.isLoaded', 'track.analysis'),
+  // TODO: move isAudioLoaded into ex track.audio.isLoaded?
+  isReady: Ember.computed.and('isLoaded', 'isAudioLoaded', 'track.isLoaded', 'track.audioMeta.isLoaded'),
   isAudioLoaded: false,
 
-  // TODO(EASY): turn into attrs?
+  // TODO: turn into attrs?
   pitch: function() { return 0; }.property(),
   volume: function() { return 1; }.property(),
 
-  bpm: Ember.computed.alias('track.bpm'),
-  bps: Ember.computed.alias('track.bps'),
-  spb: Ember.computed.alias('track.spb'),
-  firstBeatStart: Ember.computed.alias('track.firstBeatStart'),
+  audioMeta: Ember.computed.alias('track.audioMeta'),
+  bpm: Ember.computed.alias('audioMeta.bpm'),
+
   lengthTime: function() {
-    return this.get('spb') * this.get('length');
-  }.property('spb', 'length'),
+    return beatToTime(this.get('length', this.get('bpm')));
+  }.property('bpm', 'length'),
+
   startTime: function() {
-    return this.get('firstBeatStart') + (this.get('startBeat') * this.get('spb'));
-  }.property('firstBeatStart', 'startBeat', 'spb'),
-  endTime: function() {
-    return this.get('startTime') + this.get('lengthTime');
-  }.property('startTime', 'lengthTime'),
+    return this.get('audioMeta.firstBeatMarker.start') +
+      beatToTime(this.get('startBeat'), this.get('bpm'));
+  }.property('audioMeta.firstBeatMarker.start', 'startBeat', 'bpm'),
 
   arrangementClips: DS.hasMany('arrangement-clip', { async: true }),
   track: DS.belongsTo('track', { async: true }),

@@ -14,6 +14,7 @@ export default Ember.Component.extend(
   }),
 
   // params
+  clipEvent: null, // set by arrangementPlayer
   arrangementClip: Ember.computed.alias('clipEvent.arrangementClip'),
 
   startPx: function() {

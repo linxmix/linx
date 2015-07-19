@@ -15,11 +15,9 @@
   didLoadWave='didLoadWave'
 }}
 
-{{#each region in regions}}
-  {{clip-region
-    startBeat=region.startBeat
-    endBeat=region.endBeat
-    color=region.color
+{{#each marker in model.markers}}
+  {{clip-marker
+    marker=marker
     pxPerBeat=pxPerBeat
   }}
 {{/each}}

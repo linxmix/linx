@@ -1,15 +1,13 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 import AbstractListMixin from 'linx/lib/models/abstract-list';
-import DependentModelMixin from 'linx/lib/models/dependent-model';
 
 export default DS.Model.extend(
-  AbstractListMixin('mix-list-item'),
-  DependentModelMixin('track-list'), {
+  AbstractListMixin('mix-list-item'), {
 
   title: DS.attr('string'),
 
-  seedList: Ember.computed.alias('track-list'),
+  seedList: DS.belongsTo('track-list', { async: true, dependent: true }),
 
   // params
   tracks: Ember.computed.mapBy('items', 'track'),

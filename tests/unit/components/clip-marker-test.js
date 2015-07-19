@@ -1,6 +1,6 @@
 import { moduleForComponent, test } from 'ember-qunit';
 
-moduleForComponent('clip-region', 'Unit | Component | clip region', {
+moduleForComponent('clip-marker', 'Unit | Component | clip marker', {
   // Specify the other units that are required for this test
   // needs: ['component:foo', 'helper:bar'],
   unit: true
