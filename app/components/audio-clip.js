@@ -27,6 +27,7 @@ export default Ember.Component.extend(
   startTime: Ember.computed.alias('model.startTime'),
   endTime: Ember.computed.alias('model.endTime'),
   audioBpm: Ember.computed.alias('model.bpm'),
+  disableMouseInteraction: true,
   syncBpm: null,
   tempo: function() {
     var audioBpm = this.get('audioBpm');

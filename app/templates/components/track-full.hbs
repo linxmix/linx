@@ -2,7 +2,22 @@
 <div>{{track.title}}</div>
 <div>{{track.artist}}</div>
 
-{{wave-surfer streamUrl=track.streamUrl beats=displayBeats bars=displayBars}}
+<div class="TrackFull-clip">
+  {{audio-clip
+    model=clip
+    isPlaying=isPlaying
+    seekBeat=seekBeat
+    pxPerBeat=pxPerBeat
+    disableMouseInteraction=false
+  }}
+</div>
+
+{{play-buttons
+  isPlaying=isPlaying
+  playpause='playpause'
+  skipBack='skipBack'
+  skipForth='skipForth'
+}}
 
 <hr/>
 

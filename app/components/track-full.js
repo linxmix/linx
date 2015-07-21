@@ -4,12 +4,18 @@ import RequireAttributes from 'linx/lib/require-attributes';
 const EXCLUDE_PARAMs = ['analysis_url', 'AWSAccessKeyId'];
 
 export default Ember.Component.extend(
-  RequireAttributes('track'), {
+  RequireAttributes('track', 'clip'), {
 
-  classNames: ['track-full'],
+  classNames: ['TrackFull'],
 
   echonestTrack: Ember.computed.alias('track.echonestTrack'),
   analysis: Ember.computed.alias('echonestTrack.analysis'),
+
+  actions: {
+    playpause: function() {
+      this.toggleProperty('isPlaying');
+    }
+  },
 
   displayAudioParams: function() {
     var audioParams = this.get('echonestTrack.audioParams') || [];
@@ -18,19 +24,8 @@ export default Ember.Component.extend(
     })
   }.property('echonestTrack.audioParams'),
 
-  displayBeats: function() {
-    var beats = this.get('analysis.beats') || [];
-    return beats.reject(function(beat) {
-      // return beat.confidence < 0.5;
-      return false;
-    }).mapBy('start');
-  }.property('analysis.beats.@each.start'),
-
-  displayBars: function() {
-    var bars = this.get('analysis.bars') || [];
-    return bars.reject(function(beat) {
-      // return beat.confidence < 0.5;
-      return false;
-    }).mapBy('start');
-  }.property('analysis.bars.@each.start')
+  // TODO: remove hack
+  seekBeat: 0,
+  pxPerBeat: 15,
+  isPlaying: false,
 });

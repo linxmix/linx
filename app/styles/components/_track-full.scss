@@ -1,0 +1,11 @@
+.TrackFull {
+
+}
+
+// TODO: remove hacks
+.TrackFull-clip {
+  .AudioClip {
+    position: relative;
+    overflow: scroll;
+  }
+}

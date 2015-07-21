@@ -18,6 +18,7 @@ export default Ember.Component.extend({
   seekTime: 0,
   waveParams: null,
   pxPerBeat: 15,
+  disableMouseInteraction: false,
 
   // params
   pitch: 0, // semitones
@@ -89,6 +90,7 @@ export const Wave = Ember.Object.extend(
   pxPerBeat: Ember.computed.alias('component.pxPerBeat'),
   audioBpm: Ember.computed.alias('component.audioBpm'),
   isPlaying: Ember.computed.alias('component.isPlaying'),
+  disableMouseInteraction: Ember.computed.alias('component.disableMouseInteraction'),
   isLoading: Ember.computed.alias('progress.isLoading'),
   isLoaded: false,
   defaultParams: Ember.computed(function() {
@@ -104,7 +106,7 @@ export const Wave = Ember.Object.extend(
       scrollParent: false,
       cursorWidth: 2,
       renderer: 'Canvas',
-      interact: false,
+      interact: !this.get('disableMouseInteraction'),
     };
   }),
   progress: Ember.computed(function() { return Progress.create(); }),
