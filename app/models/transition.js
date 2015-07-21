@@ -59,6 +59,11 @@ export default DS.Model.extend({
 
       var savePromises = audioClips.map(function(clip) { return clip.save(); });
       return Ember.RSVP.all(savePromises).then((results) => {
+        this.setProperties({
+          fromTrack: fromTrack,
+          toTrack: toTrack,
+        });
+
         return this.save();
       });
     });

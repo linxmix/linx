@@ -5,6 +5,14 @@ import ArrangementPlayerMixin from 'linx/mixins/arrangement-player';
 export default Ember.Component.extend(ArrangementPlayerMixin,
   RequireAttributes('transition'), {
 
+  actions: {
+    toggleEditing: function() {
+      this.toggleProperty('isEditing');
+    }
+  },
+
+  isEditing: false,
+
   // Hacky stuff to convert <input type="number"> values to numbers
   inputBpm: Ember.computed.oneWay('metronome.bpm'),
   inputZoom: Ember.computed.oneWay('pxPerBeat'),
