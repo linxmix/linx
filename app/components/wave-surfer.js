@@ -51,6 +51,26 @@ export default Ember.Component.extend({
   }.on('willDestroyElement'),
 });
 
+// TODO(WAVECOLOR): remove hack
+const WAVE_COLORS = [{
+    wave: 'violet',
+    progress: 'purple'
+  }, {
+    wave: 'steelblue',
+    progress: 'darkblue'
+  },
+];
+
+// {
+//   wave: 'coral',
+//   progress: 'orangered'
+// }
+
+var waveColor = 0;
+function getWaveColor() {
+  return WAVE_COLORS[waveColor++ % WAVE_COLORS.length];
+};
+
 // Wraps Wavesurfer
 export const Wave = Ember.Object.extend(
   RequireAttributes('component'), {
@@ -72,9 +92,10 @@ export const Wave = Ember.Object.extend(
   isLoading: Ember.computed.alias('progress.isLoading'),
   isLoaded: false,
   defaultParams: Ember.computed(function() {
+    var colorOptions = getWaveColor();
     return {
-      waveColor: 'violet',
-      progressColor: 'purple',
+      waveColor: colorOptions.wave,
+      progressColor: colorOptions.progress,
       cursorColor: 'white',
       minPxPerSec: 20,
       normalize: true,
