@@ -4,19 +4,17 @@ import AbstractListMixin from 'linx/lib/models/abstract-list';
 import { flatten } from 'linx/lib/utils';
 
 export default DS.Model.extend(
-  AbstractListMixin('arrangement-row'), {
-
-  totalBeats: DS.attr('number'), // total number of beats in this arrangement
+  AbstractListMixin('arrangement-item'), {
 
   // params
-  rows: Ember.computed.alias('items'),
-  clips: function() {
-    return flatten(this.get('rows').mapBy('clips'));
-  }.property('rows.@each.clips'),
+  clips: Ember.computed.mapBy('items', 'clip'),
+  audioClips: Ember.computed.filterBy('clips', 'type', 'audio-clip'),
+  trackClips: Ember.computed.filterBy('clips', 'type', 'track-clip'),
+  automationClips: Ember.computed.filterBy('clips', 'type', 'automation-clip'),
 
-  createRow: function(params) {
-    return this.createItem(params);
-  },
+  totalBeats: function() {
+    // TODO off sortedClips.lastBeat
+  }.property('foo'),
 
   save: function() {
     console.log('save arrangement');

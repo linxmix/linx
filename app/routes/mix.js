@@ -55,16 +55,14 @@ export default Ember.Route.extend({
       mix.removeTrackAt(index);
     },
 
-    // TODO: deprecated
-    createTransitionAt: function(index, type) {
+    insertTransitionAt: function(index, transition) {
       var mix = this.get('controller.model');
-      mix.createTransitionAt(index).then((transition) => {
-        switch (type) {
-          case 'overlap': transition.initOverlap(); break;
-          default: transition.initSimple();
-        }
-        this.transitionTo('mix.transition', transition);
-      });
+      mix.insertTransitionAt(transition, index);
+    },
+
+    createTransitionAt: function(index) {
+      var mix = this.get('controller.model');
+      mix.createTransitionAt(transition, index);
     },
 
     removeTransitionAt: function(index) {

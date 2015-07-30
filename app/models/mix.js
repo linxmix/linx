@@ -8,10 +8,9 @@ export default DS.Model.extend(
 
   title: DS.attr('string'),
 
-  _seedList: DS.belongsTo('track-list', { async: true, dependent: true }),
-  seedList: withDefaultModel('_seedList', function() {
-    return this.get('store').createRecord('track-list');
-  }),
+  arrangement: function() {
+    // TODO(NOW): generate from tracks and transitions
+  }.property('foo'),
 
   // params
   tracks: Ember.computed.mapBy('items', 'track'),
@@ -35,23 +34,27 @@ export default DS.Model.extend(
     this.insertTrackAt(this.get('length'), track);
   },
 
-  // TODO: mix needs to validate transitions when inserting tracks
+  // TODO: validate transitions after
   insertTrackAt: function(index, track) {
-    var mixItem = this.assertItemAt(index);
     console.log("insertTrackAt", index, track.get('title'));
-    mixItem.set('track', track);
-    mixItem.save();
-  },
-
-  // TODO: mix needs to validate transitions when inserting transition
-  // TODO: if adding transition to end, add toTrack as well
-  insertTransitionAt: function(index, transition) {
     var mixItem = this.assertItemAt(index);
-    mixItem.set('transition', transition);
-    mixItem.save();
+    return mixItem.insertTrack(track);
   },
 
-  // TODO: mix needs to validate transitions when removing tracks
+  // TODO: if adding transition to end, add toTrack as well
+  // TODO: check mixItem.isValidTransition
+  insertTransitionAt: function(index, transition) {
+    console.log("insertTransitionAt", index, transition);
+    var mixItem = this.assertItemAt(index);
+    return mixItem.insertTransition(transition);
+  },
+
+  createTransitionAt: function(index) {
+    console.log("createTransitionAt", index);
+    var mixItem = this.assertItemAt(index);
+    return mixItem.createTransition();
+  }.
+
   removeTrack: function(track) {
     var item = this.get('items').find((item) => {
       return item.get('track.id') === track.get('id');
@@ -65,7 +68,8 @@ export default DS.Model.extend(
 
   // TODO: mix needs to validate transitions when removing tracks
   removeTrackAt: function(index) {
-    this.removeAt(index);
+    var mixItem = this.objectAt(index);
+    return mixItem && mixItem.removeTrack();
   },
 
   removeTransition: function(transition) {
@@ -81,8 +85,7 @@ export default DS.Model.extend(
 
   removeTransitionAt: function(index) {
     var mixItem = this.objectAt(index);
-    mixItem && mixItem.set('transition', null);
-    mixItem.save();
+    return mixItem && mixItem.removeTransition();
   },
 
 });

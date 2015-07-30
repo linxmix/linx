@@ -21,7 +21,7 @@ export default DS.Model.extend({
   // params
   track: Ember.computed(function() {
     return DS.PromiseObject.create({
-      // TODO: can we do better? not with firebase findQuery
+      // TODO(findQuery)
       promise: this.get('store').find('track').then((records) => {
         return records.filterBy('_data._echonestTrack', this.get('id')).get('firstObject');
       }),
