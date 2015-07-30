@@ -32,6 +32,10 @@ export default DS.Model.extend({
   sortedSectionMarkers: Ember.computed.filterBy('sortedMarkers', 'type', SECTION_MARKER_TYPE),
 
   firstBeatMarker: Ember.computed.alias('sortedBeatMarkers.firstObject'),
+  lastBeatMarker: Ember.computed.alias('sortedBeatMarkers.lastObject'),
+  lengthBeats: function() {
+    return this.get('lastBeatMarker.start') - this.get('firstBeatMarker.start');
+  }.property('lastBeatMarker.start', 'firstBeatMarker.start'),
 
   destroyMarkers: function() {
     return this.get('markers').then((markers) => {
@@ -54,10 +58,14 @@ export default DS.Model.extend({
   processAnalysis: function(analysis) {
     var markerParams = [];
 
-    // add beat marker
+    // add start and end beat markers
     markerParams.push({
       type: BEAT_MARKER_TYPE,
       start: analysis.get('firstBeatStart'),
+    });
+    markerParams.push({
+      type: BEAT_MARKER_TYPE,
+      start: analysis.get('lastBeatStart'),
     });
 
     // add bar markers

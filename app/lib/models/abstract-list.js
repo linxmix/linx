@@ -10,7 +10,7 @@ export default function(itemType) {
     anyDirty: Ember.computed.any('isDirty', 'itemsAreDirty'),
 
     // creates a new item and appends it to end of list
-    createItem: function(params) {
+    appendItem: function(params) {
       return this.createItemAt(this.get('length'), params);
     },
 

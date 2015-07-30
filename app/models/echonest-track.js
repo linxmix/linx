@@ -83,6 +83,19 @@ const Analysis = Ember.Object.extend(
     return firstBeatStart;
   }.property('confidentBeats.firstObject.start', 'bpm'),
 
+  // the time of the last beat while still within track
+  lastBeatStart: function() {
+    var duration = this.get('duration');
+    var spb = bpmToSpb(this.get('bpm'));
+
+    var lastBeatStart = confidentBeat.get('start');
+    while ((lastBeatStart - spb) <= duration) {
+      lastBeatStart -= spb;
+    }
+
+    return lastBeatStart;
+  }.property('firstBeatStart', 'bpm', 'duration'),
+
   firstBarStart: function() {
     // TODO
   }.property('beatMarkers.firstObject.start', 'bpm'),

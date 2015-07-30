@@ -60,11 +60,6 @@ export default Ember.Route.extend({
       mix.insertTransitionAt(transition, index);
     },
 
-    createTransitionAt: function(index) {
-      var mix = this.get('controller.model');
-      mix.createTransitionAt(transition, index);
-    },
-
     removeTransitionAt: function(index) {
       var mix = this.get('controller.model');
       mix.removeTransitionAt(index);

@@ -12,6 +12,10 @@ export default DS.Model.extend(
   trackClips: Ember.computed.filterBy('clips', 'type', 'track-clip'),
   automationClips: Ember.computed.filterBy('clips', 'type', 'automation-clip'),
 
+  appendArrangement: function(startBeat, arrangement) {
+    // TODO(TRANSITION)
+  },
+
   totalBeats: function() {
     // TODO off sortedClips.lastBeat
   }.property('foo'),

@@ -8,7 +8,7 @@ export default DS.Model.extend(
   tracks: Ember.computed.mapBy('items', 'track'),
 
   addTrack: function(track) {
-    return this.createItem({
+    return this.appendItem({
       track: track
     });
   },

@@ -2,6 +2,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 import AbstractListItemMixin from 'linx/lib/models/abstract-list-item';
 import _ from 'npm:underscore';
+import { isNumber } from 'linx/lib/utils';
 
 export default DS.Model.extend(
   AbstractListItemMixin('mix'), {
@@ -24,15 +25,6 @@ export default DS.Model.extend(
     return this.save();
   },
 
-  createTransition: function() {
-    var transition = this.get('store').createRecord('transition', {
-      fromTrack: fromTrack,
-      toTrack: toTrack,
-    });
-
-    return this.insertTransition(transition);
-  },
-
   removeTransition: function() {
     this.set('transition', null);
     return this.save();
@@ -42,24 +34,50 @@ export default DS.Model.extend(
     return this.destroyRecord();
   },
 
-  isValid: function() {
+  transitionLengthBeats: Ember.computed.alias('transition.lengthBeats'),
+
+  // calculate starting beat of this item's track, based on prevItem.transition
+  trackStartBeat: function() {
+    var prevItem = this.get('prevItem');
+    if (prevItem && prevItem.get('hasValidTransition')) {
+      return prevItem.get('transition.toTrackStartBeat');;
+    } else {
+      return 0;
+    }
+  }.property('prevItem.hasValidTransition', 'prevItem.transition.toTrackStartBeat'),
+
+  // calculate ending beat of this item's track, based on nextItem.transition
+  trackEndBeat: function() {
+    var nextItem = this.get('nextItem');
+    if (nextItem && nextItem.get('hasValidTransition')) {
+      return nextItem.get('transition.toTrackStartBeat');;
+    } else {
+      return this.get('track.audioMeta.lastBeatMarker');
+    }
+  }.property('nextItem.hasValidTransition', 'nextItem.transition.toTrackStartBeat'),
+
+  trackLengthBeats: function() {
+    return this.get('trackEndBeat') - this.get('trackStartBeat');
+  }.property('trackEndBeat', 'trackStartBeat'),
+
+  hasValidTransition: function() {
     var transition = this.get('transition');
-    var nextTransition = this.get('nextTransition');
+    var hasTransition = !!transition;
 
-    var fromTracksCorrect = true;
-    var toTracksCorrect = true;
-    var timesCorrect = true;
+    var timesAreValid = true;
+    var fromTracksAreValid = true;
+    var toTracksAreValid = true;
 
-    if (transition) {
-      fromTracksCorrect = transition.get('fromTrack') === this.get('track');
-      toTracksCorrect = transition.get('toTrack') === this.get('nextTrack');
+    if (hasTransition) {
+      fromTracksAreValid = transition.get('fromTrack') === this.get('track');
+      toTracksAreValid = transition.get('toTrack') === this.get('nextTrack');
     }
 
-    if (nextTransition) {
-      timesCorrect = transition.get('toTime') <= nextTransition.get('toTime')
-    }
+    // TODO(TRANSITION)
+    // if (nextTransition && nextTransition.get('hasValidTransition')) {
+      // timesAreValid = this.get('prevTransitionBeat')
+    // }
 
-    return _.every([fromTracksCorrect, toTracksCorrect, timesCorrect]);
-  }.property('track', 'nextTrack', 'transition.fromTrack', 'transition.toTrack', 'nextTransition'),
-
+    return _.every([hasTransition, timesAreValid, fromTracksCorrect, toTracksCorrect]);
+  }.property('track', 'nextTrack', 'transition.fromTrack', 'transition.toTrack'),
 });

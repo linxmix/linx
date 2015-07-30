@@ -8,7 +8,7 @@ export default function(listType) {
     index: function() {
       var list = this.get('list');
       return list.get('items').indexOf(this);
-    }.property('list.items.[]');
+    }.property('list.items.[]'),
 
     position: function() {
       return this.get('index') + 1;

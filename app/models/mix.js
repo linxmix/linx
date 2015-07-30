@@ -8,9 +8,42 @@ export default DS.Model.extend(
 
   title: DS.attr('string'),
 
+  // dynamically recomputes this mix's arrangement based on tracks and transitions
   arrangement: function() {
-    // TODO(NOW): generate from tracks and transitions
-  }.property('foo'),
+    var store = this.get('store');
+    var arrangement = store.createRecord('arrangement');
+
+    // generate from tracks and transitions
+    var currBeat = 0; // cursor in arrangement
+    var items = this.get('items');
+    for (var i = 0; i < items.get('length'); i++) {
+      var prevItem = items.objectAt(i - 1);
+      var item = items.objectAt(i);
+      var nextItem = items.objectAt(i + 1);
+      var track = item.get('track');
+
+      // add track to arrangement
+      var trackLengthBeats = item.get('trackLengthBeats');
+      var trackClip = store.createRecord('track-clip', {
+        track: track,
+        startBeat: item.get('trackStartBeat'),
+        lengthBeats: trackLengthBeats
+      });
+      var trackArrangementItem = arrangement.appendItem({
+        clip: trackClip,
+        startBeat: currBeat,
+      });
+      currBeat += trackLengthBeats;
+
+      // TODO(TRANSITION): then add transition
+      if (item.get('hasValidTransition')) {
+        // arrangement.appendArrangement(currBeat, item.get('transition.template'));
+        // currBeat += item.get('transitionLengthBeats');
+      }
+    }
+
+    return arrangement;
+  }.property('items.@each.track', 'items.@each.trackStartBeat', 'items.@each.trackLengthBeats', 'items.@each.transitionLengthBeats'),
 
   // params
   tracks: Ember.computed.mapBy('items', 'track'),
@@ -48,12 +81,6 @@ export default DS.Model.extend(
     var mixItem = this.assertItemAt(index);
     return mixItem.insertTransition(transition);
   },
-
-  createTransitionAt: function(index) {
-    console.log("createTransitionAt", index);
-    var mixItem = this.assertItemAt(index);
-    return mixItem.createTransition();
-  }.
 
   removeTrack: function(track) {
     var item = this.get('items').find((item) => {
