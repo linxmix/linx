@@ -5,8 +5,7 @@ import AbstractListMixin from 'linx/lib/models/abstract-list';
 export default DS.Model.extend(
   AbstractListMixin('track-list-item'), {
 
-  tracks: Ember.computed.mapBy('track'),
-  title: DS.attr('string'),
+  tracks: Ember.computed.mapBy('items', 'track'),
 
   addTrack: function(track) {
     return this.createItem({
