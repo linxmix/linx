@@ -26,17 +26,6 @@
 
     <div class="column">
       {{search-tracks tracks=searchTracks action="addSeedTrack"}}
-
-      {{#track-list trackList=model.seedList}}
-        {{#each item in model.seedList.items}}
-          {{track-list-item
-            item=item
-            removeTrack="removeSeedTrack"
-            addTrack="appendTrack"
-            playTrack="previewTrack"
-          }}
-        {{/each}}
-      {{/track-list}}
     </div>
 
   </div>

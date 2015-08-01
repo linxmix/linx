@@ -68,7 +68,7 @@ export default Ember.Route.extend({
 
   setupController: function(controller, model) {
     // TODO(AFTERPROMISE): just use promise array
-    this.get('store').find('track').then((tracks) => {
+    this.get('store').findAll('track').then((tracks) => {
       controller.set('searchTracks', tracks.get('content'));
     });
 
