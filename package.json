@@ -27,23 +27,21 @@
     "broccoli-uglify-js": "^0.1.3",
     "chalk": "^1.0.0",
     "ember-backoff": "^0.1.0",
-    "ember-browserify": "^1.0.1",
-    "ember-cli": "^0.2.7",
+    "ember-cli": "1.13.6",
     "ember-cli-app-version": "0.3.3",
     "ember-cli-babel": "^5.0.0",
     "ember-cli-content-security-policy": "^0.4.0",
     "ember-cli-dependency-checker": "^1.0.0",
     "ember-cli-dotenv": "^0.4.0",
     "ember-cli-htmlbars": "0.7.6",
+    "ember-cli-htmlbars-inline-precompile": "0.2.0",
     "ember-cli-ic-ajax": "0.1.1",
-    "ember-cli-inject-live-reload": "^1.3.1",
+    "ember-cli-inject-live-reload": "^1.3.0",
     "ember-cli-mocha": "0.9.1",
     "ember-cli-pace": "0.0.13",
     "ember-cli-sass": "^4.0.0",
     "ember-cli-uglify": "^1.0.1",
     "ember-data": "1.0.0-beta.18",
-    "ember-disable-proxy-controllers": "^0.7.0",
-    "ember-export-application-global": "^1.0.2",
     "ember-key-responder": "0.2.1",
     "ember-modal-dialog": "0.3.0",
     "ember-new-computed": "1.0.0",
@@ -58,6 +56,8 @@
     "wavesurfer.js": "^1.0.27"
   },
   "dependencies": {
-    "ember-browserify": "^1.0.1"
+    "ember-browserify": "^1.0.1",
+    "ember-disable-proxy-controllers": "^1.0.0",
+    "ember-export-application-global": "^1.0.2"
   }
 }

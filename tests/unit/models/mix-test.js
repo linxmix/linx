@@ -1,12 +1,14 @@
-import { moduleForModel, test } from 'ember-qunit';
+import {
+  beforeEach,
+  describe,
+  it
+} from 'mocha';
+import { expect } from 'chai';
+import sinon from 'sinon';
 
-moduleForModel('audio-meta', 'Unit | Model | audio meta', {
-  // Specify the other units that are required for this test.
-  needs: []
-});
+import Mix from 'linx/models/mix';
 
-test('it exists', function(assert) {
-  var model = this.subject();
+describe.only('it exists', function(assert) {
   // var store = this.store();
-  assert.ok(!!model);
+  assert.ok(!!Mix);
 });
