@@ -2,14 +2,14 @@ import Ember from 'ember';
 
 // scoreWithDefault: withDefault('score', 3.0)
 export default function(propertyPath, defaultValue) {
-  return Ember.computed(propertyPath, function(key, value) {
+  return Ember.computed(propertyPath, {
+    get: function() {
+      return this.get(propertyPath) || defaultValue;
+    },
 
-    // setter
-    if (arguments.length > 1) {
+    set: function(key, value) {
       this.set(propertyPath, value);
+      return value;
     }
-
-    // getter
-    return this.get(propertyPath) || defaultValue;
   });
 };
