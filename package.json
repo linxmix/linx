@@ -41,6 +41,7 @@
     "ember-cli-pace": "0.0.13",
     "ember-cli-sass": "^4.0.0",
     "ember-cli-uglify": "^1.0.1",
+    "ember-crumbly": "0.2.0",
     "ember-data": "1.0.0-beta.18",
     "ember-key-responder": "0.2.1",
     "ember-modal-dialog": "0.3.0",
