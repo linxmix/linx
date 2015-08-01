@@ -3,6 +3,9 @@ import Application from '../../app';
 import Router from '../../router';
 import config from '../../config/environment';
 
+// import custom helpers
+import customHelpers from './custom-helpers';
+
 export default function startApp(attrs) {
   var application;
 

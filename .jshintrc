@@ -29,5 +29,8 @@
   "white": false,
   "eqnull": true,
   "esnext": true,
-  "unused": false
+  "unused": false,
+
+  /* do not expect assignment call */
+  "-W030": false
 }

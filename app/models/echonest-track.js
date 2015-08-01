@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import DS from 'ember-data';
 import RequireAttributes from 'linx/lib/require-attributes';
 import _ from 'npm:underscore';

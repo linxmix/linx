@@ -15,12 +15,12 @@ export default DS.Model.extend(
   nextTrack: Ember.computed.alias('nextItem.track'),
   nextTransition: Ember.computed.alias('nextItem.transition'),
 
-  insertTrack: function() {
+  insertTrack: function(track) {
     this.set('track', track);
     return this.save();
   },
 
-  insertTransition: function() {
+  insertTransition: function(transition) {
     this.set('transition', transition);
     return this.save();
   },
