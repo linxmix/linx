@@ -23,19 +23,18 @@ export default DS.Model.extend({
   // injected by app
   echonest: null,
 
+  // TODO: abstract into audio-source?
   streamUrl: Ember.computed.any('s3StreamUrl', 'scStreamUrl'),
-
   s3StreamUrl: function() {
     if (!Ember.isNone(this.get('s3Url'))) {
       // TODO: move to config
       return "http://s3-us-west-2.amazonaws.com/linx-music/" + this.get('s3Url');
     }
   }.property('s3Url'),
-
-  // TODO
   scStreamUrl: function() {
     return null;
   }.property(),
+  // /TODO
 
   // TODO: fill out with identify linx md5 tracks, dedupe, etc
   identify: function() {

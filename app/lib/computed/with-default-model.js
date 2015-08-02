@@ -9,7 +9,7 @@ import { assertPromise } from 'linx/lib/utils';
 // createModelFn can return a promise
 export default function(relPath, createModelFn) {
   return Ember.computed({
-    get: function() {
+    get: function(key) {
       var dependentModelId = this.get(`_data.${relPath}`);
 
       // if not loaded, wait till loaded and try again
