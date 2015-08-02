@@ -5,11 +5,10 @@ import {
 } from 'mocha';
 import { describeModel } from 'ember-mocha';
 import { expect } from 'chai';
-import sinon from 'sinon';
 
 import startApp from 'linx/tests/helpers/start-app';
 
-describeModel('track', 'Track',
+describeModel.only('audio-meta', 'AudioMeta',
   {
     needs: [
       'model:audio-meta',
@@ -21,12 +20,12 @@ describeModel('track', 'Track',
   startApp();
 
   beforeEach(function() {
-    console.log('track test before each');
+    console.log('audio meta test before each');
     console.log('serve', server);
     var store = this.store();
   });
 
-  it('can add track', function() {
+  it('is ok', function() {
     expect(true).to.be.true;
   });
 });
