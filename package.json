@@ -11,7 +11,7 @@
     "postinstall": "bower install",
     "start": "npm install && ember server --port=3000",
     "build": "ember build",
-    "test": "ember test",
+    "test": "ember test --server",
     "clean": "rm -rf ./node_modules ./bower_components ./dist ./tmp",
     "clean:all": "npm run clean && npm cache clean && bower cache clean"
   },

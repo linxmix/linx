@@ -14,6 +14,8 @@ const DEFAULTS = {
   responseTime: 0
 };
 
+$.mockjaxSettings.throwUnmocked = true;
+
 export default function() {
   var mocks = [];
 
