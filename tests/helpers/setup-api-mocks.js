@@ -5,28 +5,30 @@ import {
   afterEach,
 } from 'mocha';
 
-import modules from '../mocks/index';
+import * as modules from '../mocks/index';
 
 const DEFAULTS = {
   type: 'GET',
   logging: false,
   contentType: 'application/json',
-  responseTime: 0
+  responseTime: 100
 };
 
 $.mockjaxSettings.throwUnmocked = true;
 
 export default function() {
-  var mocks = [];
+  let mockIds = [];
 
   beforeEach(function() {
-    mocks = modules.map(buildMock)
-      .map(function(mock) { return $.mockjax(mock); });
+    let mocks = Object.keys(modules).without('default').map((moduleKey) => {
+      return buildMock(modules[moduleKey]);
+    });
+    mockIds = mocks.map((mock) => { return $.mockjax(mock); });
   });
 
   afterEach(function() {
-    mocks.map(function(mock) {
-      $.mockjax.clear(mock);
+    mockIds.map(function(mockId) {
+      $.mockjax.clear(mockId);
     });
   });
 }

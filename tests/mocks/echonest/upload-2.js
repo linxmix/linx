@@ -1,5 +1,5 @@
-export const Upload1 = {
-  url: 'echonest',
+export const Upload2 = {
+  url: /echonest.com\/api\/v4\/track\/upload2/,
   responseText: {
     "response": {
       "status": {
