@@ -9,12 +9,11 @@ import * as modules from '../mocks/index';
 
 const DEFAULTS = {
   type: 'GET',
-  logging: false,
-  contentType: 'application/json',
+  logging: true,
   responseTime: 100
 };
 
-$.mockjaxSettings.throwUnmocked = true;
+// $.mockjaxSettings.throwUnmocked = true;
 
 export default function() {
   let mockIds = [];

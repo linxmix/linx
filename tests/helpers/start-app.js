@@ -11,7 +11,6 @@ import {
 import customHelpers from './custom-helpers';
 import setupSinonSandbox from './setup-sinon-sandbox';
 import setupApiMocks from './setup-api-mocks';
-import seedStore from './seed-store';
 
 export default function startApp(attrs) {
   setupSinonSandbox();
@@ -27,8 +26,6 @@ export default function startApp(attrs) {
       application.setupForTesting();
       application.injectTestHelpers();
     });
-
-    seedStore(getStore());
   });
 
   afterEach(function() {

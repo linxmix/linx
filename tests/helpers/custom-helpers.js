@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 function getStore(app) {
-  return app.__container__.lookup('store:main');
+  return app.__container__.lookup('service:store');
 }
 
 var customHelpers = function() {

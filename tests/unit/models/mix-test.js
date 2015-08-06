@@ -20,7 +20,6 @@ describeModel('mix', 'Mix',
   },
   function() {
   beforeEach(function() {
-    console.log("HI");
     var store = this.store();
     this.mix = this.subject();
 

@@ -3,31 +3,23 @@ import {
   describe,
   it
 } from 'mocha';
-import { describeModel } from 'ember-mocha';
 import { expect } from 'chai';
 
-import startApp from 'linx/tests/helpers/start-app';
+import setupUnitTest from 'linx/tests/helpers/setup-unit-test';
 
-describeModel.only('audio-meta', 'AudioMeta',
-  {
-    needs: [
-      'model:audio-meta',
-      'model:marker',
-    ]
-  },
-  function() {
-
-  startApp();
-
-  let store, track1, audioMeta1;
+describe('AudioMeta', function() {
+  setupUnitTest();
 
   beforeEach(function() {
     console.log('audio meta test before each');
-    console.log('serve', server);
-    store = this.store();
+    var track = this.factory.make('giveitupforlove');
+    track.get('audioMeta').then(function() {
+      console.log("got audio meta", arguments);
+    });
   });
 
   it('is ok', function() {
+    expect(this.store.peekAll('track').get('length')).to.equal(1);
     debugger
   });
 });
