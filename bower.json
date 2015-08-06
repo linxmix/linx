@@ -16,7 +16,7 @@
     "firebase": "^2.1.0",
     "semantic-ui": "~2.0.7",
     "ember-mocha": "~0.8.0",
-    "jquery-mockjax": "~2.0.1",
+    "jquery-mockjax": "2.0.1",
     "sinonjs": "~1.14.1"
   },
   "resolutions": {

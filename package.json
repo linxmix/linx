@@ -43,6 +43,7 @@
     "ember-cli-uglify": "^1.0.1",
     "ember-crumbly": "0.2.0",
     "ember-data": "~1.13.7",
+    "ember-data-factory-guy": "1.13.5",
     "ember-new-computed": "1.0.0",
     "ember-radio-button": "1.0.4",
     "ember-sinon": "0.2.1",
