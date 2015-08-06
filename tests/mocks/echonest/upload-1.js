@@ -1,5 +1,9 @@
 export const Upload1 = {
-  url: 'echonest',
+  type: 'POST',
+  url: /echonest.com\/api\/v4\/track\/upload/,
+  data: {
+    url: "http://s3-us-west-2.amazonaws.com/linx-music/songs/2aa83018ce0bb7ca44e9263ed5d25817.mp3"
+  },
   responseText: {
     "response": {
       "status": {

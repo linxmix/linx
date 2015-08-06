@@ -1,4 +1,3 @@
 export { Upload1 } from './echonest/upload-1';
-export { Upload2 } from './echonest/upload-2';
-// export { Upload3 } from './echonest/upload-3';
-// export { Upload4 } from './echonest/upload-4';
+export { Profile1 } from './echonest/profile-1';
+export { Analysis1 } from './echonest/analysis-1';

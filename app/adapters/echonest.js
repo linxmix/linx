@@ -4,6 +4,8 @@ import ajax from 'ic-ajax';
 import Ember from 'ember';
 import ENV from 'linx/config/environment';
 
+import _ from 'npm:underscore';
+
 /**
   @module Adapters
 */
@@ -39,17 +41,18 @@ export default DS.RESTAdapter.extend({
     @return {Promise} promise
   */
 
-  get: function (type, url, data, bucket) {
+  get: function (type, url, data, bucket, ajaxOptions = {}) {
     data = Ember.merge({
       api_key: this.api_key,
       format: 'json',
-      bucket: bucket || type.proto().bucket
+      bucket: bucket || type && type.proto && type.proto().bucket
     }, data);
 
     return this.ajax({
       url: url,
       data: data,
-      traditional: true
+      traditional: true,
+      cache: ajaxOptions.cache
     });
   },
 

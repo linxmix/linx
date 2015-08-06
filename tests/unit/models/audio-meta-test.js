@@ -11,6 +11,7 @@ import startApp from 'linx/tests/helpers/start-app';
 describeModel.only('audio-meta', 'AudioMeta',
   {
     needs: [
+      'model:track',
       'model:audio-meta',
       'model:marker',
     ]
@@ -19,13 +20,15 @@ describeModel.only('audio-meta', 'AudioMeta',
 
   startApp();
 
+  let store, track1, audioMeta1;
+
   beforeEach(function() {
     console.log('audio meta test before each');
     console.log('serve', server);
-    var store = this.store();
+    store = this.store();
   });
 
   it('is ok', function() {
-    expect(true).to.be.true;
+    debugger
   });
 });

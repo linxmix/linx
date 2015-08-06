@@ -1,5 +1,9 @@
 export const Upload2 = {
-  url: /echonest.com\/api\/v4\/track\/upload2/,
+  type: 'POST',
+  url: /echonest.com\/api\/v4\/track\/upload/,
+  data: {
+    url: "http://s3-us-west-2.amazonaws.com/linx-music/songs/2af0f58efab340fcf0ad00c0084c7ff5.mp3"
+  },
   responseText: {
     "response": {
       "status": {
@@ -9,15 +13,15 @@ export const Upload2 = {
       },
       "track": {
         "status": "pending",
-        "title": "Give It Up for Love feat. John Williams (Mysto & Pizzi Remix)",
-        "artist": "EDX, John Williams",
+        "title": "Call My Name (Spencer & Hill Remix) www.livingelectro.com",
+        "artist": "Sultan & Ned Shepard Ft. Nadia Ali",
         "analyzer_version": "3.2.2",
         "release": "",
-        "audio_md5": "848c3760ab8f25f4f9cd6fd46acb801d",
+        "audio_md5": "ffef48a9098a780a74127ffc8968df11",
         "bitrate": 320,
-        "id": "TRAWOGC14E8320817F",
+        "id": "TRSUCYM14EF0B72B00",
         "samplerate": 44100,
-        "md5": "2aa83018ce0bb7ca44e9263ed5d25817"
+        "md5": "2af0f58efab340fcf0ad00c0084c7ff5"
       }
     }
   }
