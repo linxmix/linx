@@ -5,7 +5,7 @@ import { assertPromise } from 'linx/lib/utils';
 
 // seeds store with test data
 export default function(store) {
-  console.log("seed server", server);
+  console.log("seed store");
   DS.Model.reopenClass({
     save() { assertPromise(this); }
   });

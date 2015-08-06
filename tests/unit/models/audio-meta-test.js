@@ -11,7 +11,6 @@ import startApp from 'linx/tests/helpers/start-app';
 describeModel.only('audio-meta', 'AudioMeta',
   {
     needs: [
-      'model:track',
       'model:audio-meta',
       'model:marker',
     ]
