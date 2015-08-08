@@ -21,7 +21,7 @@ export default DS.RESTSerializer.extend({
     var normalized = {};
     delete payload.response.status;
 
-    Ember.keys(payload.response).forEach(function (key) {
+    Object.keys(payload.response).forEach(function (key) {
       normalized['echonest_%@'.fmt(key)] = payload.response[key];
     });
     return normalized;

@@ -13,6 +13,7 @@ const DEFAULTS = {
   responseTime: 100
 };
 
+// TODO: why the false positives?
 // $.mockjaxSettings.throwUnmocked = true;
 
 export default function() {
@@ -22,7 +23,10 @@ export default function() {
     let mocks = Object.keys(modules).without('default').map((moduleKey) => {
       return buildMock(modules[moduleKey]);
     });
-    mockIds = mocks.map((mock) => { return $.mockjax(mock); });
+    mockIds = mocks.map((mock) => {
+      // console.log("SETUP MOCK", mock);
+      return $.mockjax(mock);
+    });
   });
 
   afterEach(function() {

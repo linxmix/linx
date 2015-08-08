@@ -1,5 +1,5 @@
 export const Profile1 = {
-  url: 'http://developer.echonest.com/api/v4/track/profile?api_key=CWBME38JDGQNEJPXT&format=json&bucket=audio_summary&id=TRAWOGC14E8320817F&_=1438821045342',
+  url: /echonest.com\/api\/v4\/track\/profile/,
   data: {
     id: "TRAWOGC14E8320817F"
   },

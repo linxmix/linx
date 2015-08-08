@@ -27,7 +27,8 @@ var Echonest = Ember.Object.extend({
   fetchTrack: function(track) {
     return DS.PromiseObject.create({
       promise: this.uploadTrack(track).then((response) => {
-        return this.get('store').find('echonest-track', response.id);
+        var store = this.get('store');
+        return this.get('store').findRecord('echonest-track', response.id);
       }),
     });
   },
@@ -46,7 +47,6 @@ var Echonest = Ember.Object.extend({
         url: streamUrl
       },
     }).then((response) => {
-      console.log("fetch track id", response);
       return response.response.track;
     });
   },

@@ -50,9 +50,7 @@ export default DS.Model.extend({
 
   // analyze echonest track, then parse into new audio meta
   fetchAudioMeta: function() {
-    console.log("fetchAudioMeta");
     return this.get('echonestTrack').then((echonestTrack) => {
-      console.log("got echones track");
       return echonestTrack.get('analysis').then((analysis) => {
         var audioMeta = this.get('store').createRecord('audio-meta', {
           track: this

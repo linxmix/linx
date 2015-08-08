@@ -2,6 +2,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 import RequireAttributes from 'linx/lib/require-attributes';
 import _ from 'npm:underscore';
+import withDefault from 'linx/lib/computed/with-default';
 
 import { bpmToSpb, assertPromise } from 'linx/lib/utils';
 
@@ -23,7 +24,7 @@ export default DS.Model.extend({
   track: Ember.computed(function() {
     return DS.PromiseObject.create({
       // TODO(findQuery)
-      promise: this.get('store').find('track').then((records) => {
+      promise: this.get('store').findRecord('track').then((records) => {
         return records.filterBy('_data._echonestTrack', this.get('id')).get('firstObject');
       }),
     });
@@ -67,16 +68,13 @@ export default DS.Model.extend({
 const Analysis = Ember.Object.extend(
   RequireAttributes('analysis'), {
 
+  confidentBeatStart: withDefault('confidentBeats.firstObject.start', 0),
+
   // the time of the first beat while still within track, using the most confident beat
   firstBeatStart: function() {
-    var confidentBeat = this.get('confidentBeats.firstObject');
-    if (!confidentBeat) {
-      return 0;
-    }
-
     var spb = bpmToSpb(this.get('bpm'));
 
-    var firstBeatStart = confidentBeat.get('start');
+    var firstBeatStart = this.get('confidentBeatStart');
     while ((firstBeatStart - spb) >= 0) {
       firstBeatStart -= spb;
     }
@@ -89,7 +87,7 @@ const Analysis = Ember.Object.extend(
     var duration = this.get('duration');
     var spb = bpmToSpb(this.get('bpm'));
 
-    var lastBeatStart = confidentBeat.get('start');
+    var lastBeatStart = this.get('confidentBeatStart');
     while ((lastBeatStart - spb) <= duration) {
       lastBeatStart -= spb;
     }
