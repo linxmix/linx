@@ -7,7 +7,7 @@ import { expect } from 'chai';
 
 import setupUnitTest from 'linx/tests/helpers/setup-unit-test';
 
-describe.skip('EchonestTrack', function() {
+describe('EchonestTrack', function() {
   setupUnitTest();
 
   let echonestTrack;
@@ -29,7 +29,7 @@ describe.skip('EchonestTrack', function() {
       expect(analysis).to.be.ok;
     });
 
-    it('has correct track metadata', function() {
+    it('has correct audio metadata', function() {
       expect(analysis.get('duration')).to.equal(367.47320);
       expect(analysis.get('bpm')).to.equal(127.961);
       expect(analysis.get('timeSignature')).to.equal(4);

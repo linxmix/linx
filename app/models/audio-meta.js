@@ -34,9 +34,16 @@ export default DS.Model.extend({
 
   firstBeatMarker: Ember.computed.alias('sortedBeatMarkers.firstObject'),
   lastBeatMarker: Ember.computed.alias('sortedBeatMarkers.lastObject'),
-  lengthBeats: function() {
-    return this.get('lastBeatMarker.start') - this.get('firstBeatMarker.start');
-  }.property('lastBeatMarker.start', 'firstBeatMarker.start'),
+
+  fadeInMarkers: Ember.computed.filterBy('sortedMarkers', 'type', FADE_IN_MARKER_TYPE),
+  fadeInMarker: Ember.computed.alias('fadeInMarkers.firstObject'),
+
+  fadeOutMarkers: Ember.computed.filterBy('sortedMarkers', 'type', FADE_OUT_MARKER_TYPE),
+  fadeOutMarker: Ember.computed.alias('fadeOutMarkers.firstObject'),
+
+  numBeats: function() {
+    return ~~(timeToBeat(this.get('lastBeatMarker.start') - this.get('firstBeatMarker.start'), this.get('bpm')));
+  }.property('lastBeatMarker.start', 'firstBeatMarker.start', 'bpm'),
 
   destroyMarkers: function() {
     return this.get('markers').then((markers) => {
@@ -57,7 +64,6 @@ export default DS.Model.extend({
   // Updates audio-meta based on the given EchonestTrack.Analysis
   // Returns a promise which resolves into this model
   processAnalysis: function(analysis) {
-    console.log("PROCESS ANALYSIS", analysis);
     var markerParams = [];
 
     // add start and end beat markers
@@ -104,13 +110,11 @@ export default DS.Model.extend({
         track: track,
       }));
     });
-    console.log("ANALYSIS SAVE MARKERS", markers);
 
     var markerSavePromises = markers.map((marker) => { return marker.save(); });
 
     return Ember.RSVP.all(markerSavePromises).then(() => {
       return this.destroyAnalysisMarkers().then(() => {
-        console.log("ANALYSIS AFTER SAVE MARKERS", markers);
         this.get('markers').pushObjects(markers);
 
         this.setProperties({
@@ -122,11 +126,7 @@ export default DS.Model.extend({
           loudness: analysis.get('loudness'),
         });
 
-        console.log("BEFORE SAVE")
-        return this.save().then(() => {
-          console.log("AFTER SAVE");
-          return this;
-        });
+        return this.save();
       });
     });
 

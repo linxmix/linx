@@ -7,7 +7,7 @@ import { expect } from 'chai';
 
 import setupUnitTest from 'linx/tests/helpers/setup-unit-test';
 
-describe.only('Track', function() {
+describe('Track', function() {
   setupUnitTest();
 
   let track;
