@@ -12,5 +12,6 @@ export default function() {
   beforeEach(function() {
     this.store = FactoryGuy.getStore();
     this.factory = FactoryGuy;
+    this.container = this.store.get('container');
   });
 }

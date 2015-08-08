@@ -62,9 +62,8 @@ module.exports = function(environment) {
 
     ENV.APP.rootElement = '#ember-testing';
 
-    ENV['ember-cli-mirage'] = {
-      enabled: true
-    }
+    // set test backend
+    ENV.firebase = 'https://linx-2-test.firebaseio.com/';
   }
 
   if (environment === 'production') {

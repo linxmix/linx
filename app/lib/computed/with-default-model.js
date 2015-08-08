@@ -33,7 +33,7 @@ export default function(relPath, createModelFn) {
             return model.save().then(() => {
               this.set(relPath, model);
               return this.save().then(() => {
-                return model
+                return model;
               });
             });
           }),

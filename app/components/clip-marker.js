@@ -26,7 +26,7 @@ export default Ember.Component.extend(
     'background-color': 'color'
   }),
 
-  color: Ember.computed.any('marker.color', 'typeColor'),
+  color: Ember.computed.or('marker.color', 'typeColor'),
   typeColor: function() {
     switch (this.get('marker.type')) {
       case BEAT_MARKER_TYPE: return 'rgba(0,255,255,0.5)';

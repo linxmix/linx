@@ -20,7 +20,7 @@ export default DS.Model.extend({
   mode: DS.attr('number'),
   loudness: DS.attr('number'),
 
-  track: DS.belongsTo('track'),
+  track: DS.belongsTo('track', { async: true }),
 
   markers: DS.hasMany('marker', { async: true }),
   userMarkers: Ember.computed.filterBy('markers', 'type', USER_MARKER_TYPE),
@@ -57,6 +57,7 @@ export default DS.Model.extend({
   // Updates audio-meta based on the given EchonestTrack.Analysis
   // Returns a promise which resolves into this model
   processAnalysis: function(analysis) {
+    console.log("PROCESS ANALYSIS", analysis);
     var markerParams = [];
 
     // add start and end beat markers
@@ -70,20 +71,20 @@ export default DS.Model.extend({
     });
 
     // add bar markers
-    markerParams = markerParams.concat(analysis.get('confidentBars').map((bar) => {
-      return {
-        type: BAR_MARKER_TYPE,
-        start: bar.get('start'),
-      };
-    }));
+    // markerParams = markerParams.concat(analysis.get('confidentBars').map((bar) => {
+    //   return {
+    //     type: BAR_MARKER_TYPE,
+    //     start: bar.get('start'),
+    //   };
+    // }));
 
     // add section markers
-    markerParams = markerParams.concat(analysis.get('confidentSections').map((section) => {
-      return {
-        type: SECTION_MARKER_TYPE,
-        start: section.get('start'),
-      };
-    }));
+    // markerParams = markerParams.concat(analysis.get('confidentSections').map((section) => {
+    //   return {
+    //     type: SECTION_MARKER_TYPE,
+    //     start: section.get('start'),
+    //   };
+    // }));
 
     // add fadeIn and fadeOut markers
     markerParams.push({
@@ -103,10 +104,13 @@ export default DS.Model.extend({
         track: track,
       }));
     });
+    console.log("ANALYSIS SAVE MARKERS", markers);
+
     var markerSavePromises = markers.map((marker) => { return marker.save(); });
 
     return Ember.RSVP.all(markerSavePromises).then(() => {
       return this.destroyAnalysisMarkers().then(() => {
+        console.log("ANALYSIS AFTER SAVE MARKERS", markers);
         this.get('markers').pushObjects(markers);
 
         this.setProperties({
@@ -118,7 +122,11 @@ export default DS.Model.extend({
           loudness: analysis.get('loudness'),
         });
 
-        return this.save();
+        console.log("BEFORE SAVE")
+        return this.save().then(() => {
+          console.log("AFTER SAVE");
+          return this;
+        });
       });
     });
 

@@ -4,6 +4,7 @@ import ENV from 'linx/config/environment';
 import ajax from 'ic-ajax';
 import retryWithBackoff from 'ember-backoff/retry-with-backoff';
 import RequireAttributes from 'linx/lib/require-attributes';
+import { isObject } from 'linx/lib/utils';
 
 export default {
   name: 'Echonest',
@@ -58,6 +59,8 @@ var Echonest = Ember.Object.extend({
         return ajax({
           type: "GET",
           url: analysisUrl,
+        }).then((result) => {
+          return isObject(result) ? result : JSON.parse(result);
         });
       }, 5, 500),
     });

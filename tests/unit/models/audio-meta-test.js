@@ -7,16 +7,33 @@ import { expect } from 'chai';
 
 import setupUnitTest from 'linx/tests/helpers/setup-unit-test';
 
-describe.only('AudioMeta', function() {
+import { assertPromise } from 'linx/lib/utils';
+
+describe.skip('AudioMeta', function() {
   setupUnitTest();
 
+  let echonestTrack, analysis, audioMeta;
+
   beforeEach(function() {
-    console.log('audio meta test before each');
-    var track = this.factory.make('giveitupforlove');
-    wait(track.get('audioMeta'));
+    this.timeout(5000); // give the hardware ample time to process the analysis
+
+    echonestTrack = this.factory.make('echonest-track-giveitupforlove');
+    audioMeta = this.factory.make('audio-meta');
+
+    // stub marker save
+    this.container.lookupFactory('model:marker').reopenClass({
+      save() { console.log("marker save"); return assertPromise(this) }
+    });
+
+    // this.sinon.stub(audioMeta, 'save', assertPromise);
+
+    wait(echonestTrack.get('analysis').then((result) => {
+      analysis = result;
+      return audioMeta.processAnalysis(analysis);
+    }));
   });
 
-  it('is ok', function() {
-    expect(this.store.peekAll('track').get('length')).to.equal(1);
+  it('processed echonest analysis', function() {
+    expect(audioMeta.save).to.have.been.called;
   });
 });

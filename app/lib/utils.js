@@ -33,6 +33,10 @@ export const isObject = function(object) {
   return Ember.typeOf(object) === 'object';
 };
 
+export const isString = function(str) {
+  return Ember.typeOf(str) === 'string';
+};
+
 export const clamp = function(min, n, max) {
   if (n < min) {
     return min;

@@ -24,7 +24,7 @@ export default DS.Model.extend({
   echonest: null,
 
   // TODO: abstract into audio-source?
-  streamUrl: Ember.computed.any('s3StreamUrl', 'scStreamUrl'),
+  streamUrl: Ember.computed.or('s3StreamUrl', 'scStreamUrl'),
   s3StreamUrl: function() {
     if (!Ember.isNone(this.get('s3Url'))) {
       // TODO: move to config

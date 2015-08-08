@@ -7,7 +7,7 @@ export default function(itemType) {
 
     dirtyItems: Ember.computed.filterBy('items', 'isDirty'),
     itemsAreDirty: Ember.computed.gt('dirtyItems.length', 0),
-    anyDirty: Ember.computed.any('isDirty', 'itemsAreDirty'),
+    anyDirty: Ember.computed.or('isDirty', 'itemsAreDirty'),
 
     // creates a new item and appends it to end of list
     appendItem: function(params) {

@@ -24,7 +24,7 @@ export default DS.Model.extend({
   track: Ember.computed(function() {
     return DS.PromiseObject.create({
       // TODO(findQuery)
-      promise: this.get('store').findRecord('track').then((records) => {
+      promise: this.get('store').findAll('track').then((records) => {
         return records.filterBy('_data._echonestTrack', this.get('id')).get('firstObject');
       }),
     });
@@ -88,8 +88,8 @@ const Analysis = Ember.Object.extend(
     var spb = bpmToSpb(this.get('bpm'));
 
     var lastBeatStart = this.get('confidentBeatStart');
-    while ((lastBeatStart - spb) <= duration) {
-      lastBeatStart -= spb;
+    while ((lastBeatStart + spb) <= duration) {
+      lastBeatStart += spb;
     }
 
     return lastBeatStart;

@@ -3,30 +3,39 @@ import {
   describe,
   it
 } from 'mocha';
-import { describeModel } from 'ember-mocha';
 import { expect } from 'chai';
-import sinon from 'sinon';
 
-import startApp from 'linx/tests/helpers/start-app';
+import setupUnitTest from 'linx/tests/helpers/setup-unit-test';
 
-describeModel('track', 'Track',
-  {
-    needs: [
-      'model:audio-meta',
-      'model:marker',
-    ]
-  },
-  function() {
+describe.only('Track', function() {
+  setupUnitTest();
 
-  startApp();
+  let track;
 
   beforeEach(function() {
-    console.log('track test before each');
-    console.log('serve', server);
-    var store = this.store();
+    track = this.factory.make('giveitupforlove');
   });
 
-  it('can add track', function() {
-    expect(true).to.be.true;
+  describe('fetching audio-meta', function() {
+    let echonestTrack, audioMeta;
+
+    beforeEach(function() {
+      wait(track.get('audioMeta').then((result) => {
+        audioMeta = result;
+        echonestTrack = track.get('echonestTrack');
+      }));
+    });
+
+    it('fetched echonest-track', function() {
+      expect(echonestTrack).to.be.ok;
+      expect(echonestTrack.get('id')).to.equal('TRAWOGC14E8320817F');
+    });
+
+    it('fetched audio-meta', function() {
+      expect(audioMeta).to.be.ok;
+      expect(audioMeta.get('track.id')).to.equal(track.get('id'));
+    });
+
   });
+
 });
