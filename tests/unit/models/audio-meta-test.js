@@ -26,6 +26,10 @@ describe.only('AudioMeta', function() {
     echonestTrack = this.factory.make('echonest-track-giveitupforlove');
     audioMeta = this.factory.make('audio-meta');
 
+    // TODO(DBSTUB)
+    // this.factoryHelper.handleCreate('marker');
+    // this.factoryHelper.handleUpdate(audioMeta, { id: audioMeta.get('id') });
+
     wait(echonestTrack.get('analysis').then((result) => {
       analysis = result;
       return audioMeta.processAnalysis(analysis);
