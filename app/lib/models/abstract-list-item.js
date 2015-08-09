@@ -38,7 +38,9 @@ export default function(listType) {
 
     // remove from list before destroying
     destroyRecord: function() {
-      var removePromise = this.get('list').removeAt(this.get('index'));
+      var removePromise = this.get('list').then((list) => {
+        return list.removeAt(this.get('index'));
+      });
 
       return Ember.RSVP.all([this._super.apply(this, arguments), removePromise]);
     },

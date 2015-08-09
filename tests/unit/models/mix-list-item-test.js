@@ -3,87 +3,88 @@ import {
   describe,
   it
 } from 'mocha';
-import { describeModel } from 'ember-mocha';
 import { expect } from 'chai';
-import sinon from 'sinon';
 
-describeModel('mix-list-item', 'MixListItem',
-  {
-    needs: [
-      'model:mix',
-      'model:track',
-      'model:echonest-track',
-      'model:audio-meta',
-      'model:transition',
-      'model:transition-template'
-    ]
-  },
-  function() {
+import setupUnitTest from 'linx/tests/helpers/setup-unit-test';
+
+describe.only('MixListItem', function() {
+  setupUnitTest();
+
+  let mix, mixItem, track, transition;
+
   beforeEach(function() {
-    var store = this.store();
-    this.mixItem = this.subject();
-
-    this.track = store.createRecord('track', {
-      title: 'track'
-    });
-
-    this.transition = store.createRecord('transition', {
-      title: 'transition'
-    });
+    // mix = this.factory.make('mix');
+    mixItem = this.factory.make('mix-list-item');
+    track = this.factory.make('giveitupforlove');
+    transition = this.factory.make('transition');
   });
 
-  it('can add track', function() {
-    expect(this.mixItem.get('track')).not.to.be.ok;
-    this.mixItem.insertTrack(this.track);
-    expect(this.mixItem.get('track')).to.be.ok;
-  });
-
-  it('can add transition', function() {
-    expect(this.mixItem.get('transition')).not.to.be.ok;
-    this.mixItem.insertTrack(this.transition);
-    expect(this.mixItem.get('transition')).to.be.ok;
+  it('has invalid transition when no transition', function() {
+    expect(mixItem.get('hasValidTransition')).to.be.false;
   });
 
   describe('with track', function() {
     beforeEach(function() {
-      this.mixItem.insertTrack(this.track);
+      Ember.run(function() {
+        wait(mixItem.insertTrack(track));
+      });
     });
 
-    it.skip('has correct trackStartBeat and trackEndBeat', function() {
+    it('has invalid transition when no transition', function() {
+      expect(mixItem.get('hasValidTransition')).to.be.false;
+      debugger
     });
 
-    it('has invalid transition', function() {
-      expect(this.mixItem.get('isValidTransition')).to.be.false;
+    it('has correct trackStartBeat', function() {
+      expect(mixItem.get('trackStartBeat')).to.equal(0);
     });
+
+    it('has correct trackEndBeat', function() {
+      expect(mixItem.get('trackEndBeat')).to.equal(0);
+    });
+
+    // TODO: test adding and removing?
+    // it('can add track', function() {
+    //   expect(mixItem.get('track.content')).to.equal(track);
+    // });
+
+    // it('can remove track', function() {
+    //   wait(mixItem.removeTrack());
+
+    //   andThen(function() {
+    //     expect(mixItem.get('track.content')).not.to.be.ok;
+    //   });
+    // });
+
   });
 
-  describe.skip('with track and valid transition', function() {
-    beforeEach(function() {
-      this.mixItem.insertTrack(this.track);
-      this.mixItem.insertTransition(this.track);
-    });
+  // describe.skip('with track and valid transition', function() {
+  //   beforeEach(function() {
+  //     this.mixItem.insertTrack(this.track);
+  //     this.mixItem.insertTransition(this.track);
+  //   });
 
-    it('has valid transition', function() {
-      expect(this.mixItem.get('isValidTransition')).to.be.true;
-    });
+  //   it('has valid transition', function() {
+  //     expect(this.mixItem.get('isValidTransition')).to.be.true;
+  //   });
 
-    it.skip('has correct trackStartBeat and trackEndBeat', function() {
-      // expect(this.mix.get('length')).to.equal(2);
-    });
-  });
+  //   it.skip('has correct trackStartBeat and trackEndBeat', function() {
+  //     // expect(this.mix.get('length')).to.equal(2);
+  //   });
+  // });
 
-  describe.skip('with track and invalid transition', function() {
-    beforeEach(function() {
-      this.mixItem.insertTrack(this.track);
-      this.mixItem.insertTransition(this.track);
-    });
+  // describe.skip('with track and invalid transition', function() {
+  //   beforeEach(function() {
+  //     this.mixItem.insertTrack(this.track);
+  //     this.mixItem.insertTransition(this.track);
+  //   });
 
-    it('has invalid transition', function() {
-      expect(this.mixItem.get('isValidTransition')).to.be.false;
-    });
+  //   it('has invalid transition', function() {
+  //     expect(this.mixItem.get('isValidTransition')).to.be.false;
+  //   });
 
-    it.skip('has correct trackStartBeat and trackEndBeat', function() {
-      // expect(this.mix.get('length')).to.equal(2);
-    });
-  });
+  //   it.skip('has correct trackStartBeat and trackEndBeat', function() {
+  //     // expect(this.mix.get('length')).to.equal(2);
+  //   });
+  // });
 });

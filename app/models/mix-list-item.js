@@ -62,7 +62,7 @@ export default DS.Model.extend(
 
   hasValidTransition: function() {
     var transition = this.get('transition');
-    var hasTransition = !!transition;
+    var hasTransition = Ember.isPresent(transition.get('content'));
 
     var timesAreValid = true;
     var fromTracksAreValid = true;
@@ -78,6 +78,6 @@ export default DS.Model.extend(
       // timesAreValid = this.get('prevTransitionBeat')
     // }
 
-    return _.every([hasTransition, timesAreValid, fromTracksCorrect, toTracksCorrect]);
+    return _.every([hasTransition, timesAreValid, fromTracksAreValid, toTracksAreValid]);
   }.property('track', 'nextTrack', 'transition.fromTrack', 'transition.toTrack'),
 });
