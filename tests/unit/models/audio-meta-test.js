@@ -15,7 +15,7 @@ import {
   USER_MARKER_TYPE,
 } from 'linx/models/marker';
 
-describe('AudioMeta', function() {
+describe.only('AudioMeta', function() {
   setupUnitTest();
 
   let echonestTrack, analysis, audioMeta;

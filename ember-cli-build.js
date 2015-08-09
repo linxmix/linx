@@ -43,8 +43,6 @@ module.exports = function(defaults) {
       mangle: true,
       compress: true
     });
-  } else {
-    app.import(app.bowerDirectory + '/jquery-mockjax/dist/jquery.mockjax.js', { type: 'test' });
   }
 
   return app.toTree(workers);
