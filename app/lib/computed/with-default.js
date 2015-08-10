@@ -4,7 +4,8 @@ import Ember from 'ember';
 export default function(propertyPath, defaultValue) {
   return Ember.computed(propertyPath, {
     get: function() {
-      return this.get(propertyPath) || defaultValue;
+      var propertyValue = this.get(propertyPath)
+      return Ember.isPresent(propertyValue) ? propertyValue : defaultValue;
     },
 
     set: function(key, value) {

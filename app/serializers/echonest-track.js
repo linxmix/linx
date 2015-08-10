@@ -1,3 +1,3 @@
-import EchonestSerializer from 'linx/serializers/echonest';
+import EchonestSerializer from './echonest';
 
 export default EchonestSerializer;

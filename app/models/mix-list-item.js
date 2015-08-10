@@ -7,7 +7,7 @@ import { isNumber } from 'linx/lib/utils';
 export default DS.Model.extend(
   AbstractListItemMixin('mix'), {
 
-  mix: Ember.computed.alias('list'),
+  mix: DS.belongsTo('mix', { async: true }),
 
   track: DS.belongsTo('track', { async: true }),
   transition: DS.belongsTo('transition', { async: true }),

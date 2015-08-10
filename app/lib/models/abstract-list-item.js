@@ -1,48 +1,50 @@
 import Ember from 'ember';
 import DS from 'ember-data';
+import withDefault from 'linx/lib/computed/with-default';
 
-export default function(listType) {
+export default function(listPropertyPath) {
   var mixinParams = {
-    list: DS.belongsTo(listType, { async: true }),
+    _items: withDefault(`${listPropertyPath}.items`, []),
 
     index: function() {
-      var list = this.get('list');
-      return list.get('items').indexOf(this);
-    }.property('list.items.[]'),
+      var items = this.get('_items');
+      return items.indexOf(this);
+    }.property('_items.[]'),
 
     position: function() {
       return this.get('index') + 1;
     }.property('index'),
 
     nextItem: function() {
-      return this.get('list').objectAt(this.get('index') + 1);
-    }.property('index', 'list.items.[]'),
+      return this.get('_items').objectAt(this.get('index') + 1);
+    }.property('index', '_items.[]'),
 
     prevItem: function() {
-      return this.get('list').objectAt(this.get('index') - 1);
-    }.property('index', 'list.items.[]'),
+      return this.get('_items').objectAt(this.get('index') - 1);
+    }.property('index', '_items.[]'),
 
-    // save only after finishing loading
-    save: function() {
-      // TODO: why does this happen? how to fix?
-      if (this.get('isLoaded')) {
-        return this._super.apply(this, arguments);
-      } else {
-        return new Ember.RSVP.Promise((resolve, reject) => {
-          this.one('didLoad', () => {
-            DS.Model.prototype.save.apply(this).then(resolve, reject);
-          });
-        });
-      }
-    },
+    // // save only after finishing loading
+    // save: function() {
+    //   // TODO: why does this happen? how to fix?
+    //   if (this.get('isLoaded')) {
+    //     return this._super.apply(this, arguments);
+    //   } else {
+    //     return new Ember.RSVP.Promise((resolve, reject) => {
+    //       this.one('didLoad', () => {
+    //         DS.Model.prototype.save.apply(this).then(resolve, reject);
+    //       });
+    //     });
+    //   }
+    // },
 
-    // remove from list before destroying
     destroyRecord: function() {
-      var removePromise = this.get('list').then((list) => {
-        return list.removeAt(this.get('index'));
-      });
+      // remove from list before destroying
+      try {
+        this.get('_items').removeAt(this.get('index'));
+      } catch (e) {
+      }
 
-      return Ember.RSVP.all([this._super.apply(this, arguments), removePromise]);
+      return this._super.apply(this, arguments);
     },
   };
 

@@ -6,6 +6,8 @@ import AbstractListItemMixin from 'linx/lib/models/abstract-list-item';
 export default DS.Model.extend(
   AbstractListItemMixin('arrangement'), {
 
+  arrangement: DS.belongsTo('arrangement', { async: true }),
+
   row: DS.attr('number'), // in complex display
   startBeat: DS.attr('number'),
 

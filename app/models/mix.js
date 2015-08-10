@@ -9,7 +9,6 @@ export default DS.Model.extend(
   title: DS.attr('string'),
 
   // params
-  length: Ember.computed.alias('items.length'),
   tracks: Ember.computed.mapBy('items', 'track'),
   transitions: Ember.computed.mapBy('items', 'transitions'), // TODO: remove null/undefined?
 
@@ -34,7 +33,7 @@ export default DS.Model.extend(
   // TODO: validate transitions after
   insertTrackAt: function(index, track) {
     console.log("insertTrackAt", index, track.get('title'));
-    var mixItem = this.assertItemAt(index);
+    var mixItem = this.getOrCreateItemAt(index);
     return mixItem.insertTrack(track);
   },
 
@@ -42,17 +41,15 @@ export default DS.Model.extend(
   // TODO: check mixItem.isValidTransition
   insertTransitionAt: function(index, transition) {
     console.log("insertTransitionAt", index, transition);
-    var mixItem = this.assertItemAt(index);
+    var mixItem = this.getOrCreateItemAt(index);
     return mixItem.insertTransition(transition);
   },
 
   removeTrack: function(track) {
-    var item = this.get('items').find((item) => {
-      return item.get('track.id') === track.get('id');
-    });
+    var item = this.get('items').findBy('track.id', track.get('id'));
     var index = item && item.get('index');
 
-    if (!Ember.isNone(index)) {
+    if (Ember.isPresent(index)) {
       return this.removeTrackAt(index);
     }
   },
@@ -64,12 +61,10 @@ export default DS.Model.extend(
   },
 
   removeTransition: function(transition) {
-    var item = this.get('items').find((item) => {
-      return item.get('transition.id') === transition.get('id');
-    });
+    var item = this.get('items').findBy('transition.id', transition.get('id'));
     var index = item && item.get('index');
 
-    if (!Ember.isNone(index)) {
+    if (Ember.isPresent(index)) {
       return this.removeTransitionAt(index);
     }
   },

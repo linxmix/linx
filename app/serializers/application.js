@@ -1,6 +1,7 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
+// TODO(DBSTUB)
 export default DS.FirebaseSerializer.extend({
 
   // Patch polymorphism until part of Ember Firebase. https://github.com/firebase/emberfire/issues/245
