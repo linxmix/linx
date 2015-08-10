@@ -17,6 +17,19 @@ export default function(itemModelName) {
       return this.createItemAt(this.get('length'), params);
     },
 
+    removeItem: function(item) {
+      return this.get('items').removeObject(item);
+    },
+
+    insertItemAt: function(index, item) {
+      return this.get('items').insertAt(index, item);
+    },
+
+    // swaps position of items at two given indices
+    swapItems: function(indexA, indexB) {
+      // TODO
+    },
+
     // creates a new item and inserts it at given index
     createItemAt: function(index, params) {
       var item = this._createItem(params);
@@ -31,7 +44,7 @@ export default function(itemModelName) {
 
     // creates and returns a new item, does NOT insert into list
     _createItem: function(params) {
-      return this.get('store').createRecord(itemType, params);
+      return this.get('store').createRecord(itemModelName, params);
     },
 
     objectAt: function(index) {
@@ -43,6 +56,16 @@ export default function(itemModelName) {
     destroyRecord: function() {
       var promises = this.get('items').map((item) => {
         return item && item.destroyRecord();
+      });
+
+      promises.push(this._super.apply(this, arguments));
+      return Ember.RSVP.all(promises);
+    },
+
+    // augment save to also save new items
+    save: function() {
+      var promises = this.get('items').filterBy('isNew').map((item) => {
+        return item && item.save();
       });
 
       promises.push(this._super.apply(this, arguments));

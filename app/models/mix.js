@@ -33,7 +33,7 @@ export default DS.Model.extend(
   // TODO: validate transitions after
   insertTrackAt: function(index, track) {
     console.log("insertTrackAt", index, track.get('title'));
-    var mixItem = this.getOrCreateItemAt(index);
+    var mixItem = this.createItemAt(index);
     return mixItem.insertTrack(track);
   },
 
@@ -41,7 +41,7 @@ export default DS.Model.extend(
   // TODO: check mixItem.isValidTransition
   insertTransitionAt: function(index, transition) {
     console.log("insertTransitionAt", index, transition);
-    var mixItem = this.getOrCreateItemAt(index);
+    var mixItem = this.createItemAt(index);
     return mixItem.insertTransition(transition);
   },
 

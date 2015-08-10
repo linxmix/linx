@@ -7,7 +7,7 @@ import { expect } from 'chai';
 
 import setupUnitTest from 'linx/tests/helpers/setup-unit-test';
 
-describe.only('MixListItem', function() {
+describe('MixListItem', function() {
   setupUnitTest();
 
   let mix, mixItem, track, transition;
