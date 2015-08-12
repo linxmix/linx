@@ -39,13 +39,13 @@ describe('EchonestTrack', function() {
     });
 
     it('has correct fadeInTime and fadeOutTime', function() {
-      expect(analysis.get('fadeInTime')).to.equal(0.11188);
-      expect(analysis.get('fadeOutTime')).to.equal(359.59583);
+      expect(analysis.get('fadeInTime')).to.be.closeTo(0.11188, 0.005);
+      expect(analysis.get('fadeOutTime')).to.be.closeTo(359.59583, 0.005);
     });
 
     it('has correct firstBeatStart and lastBeatStart', function() {
-      expect(analysis.get('firstBeatStart')).to.equal(0.15951140261485935);
-      expect(analysis.get('lastBeatStart')).to.equal(367.30262532014035);
+      expect(analysis.get('firstBeatStart')).to.be.closeTo(0.15951140261485935, 0.005);
+      expect(analysis.get('lastBeatStart')).to.be.closeTo(367.30262532014035, 0.005);
     });
 
     it.skip('has correct firstBarStart and lastBarStart', function() {

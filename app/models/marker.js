@@ -16,7 +16,7 @@ export default DS.Model.extend({
   type: DS.attr('string'), // one of MARKER_TYPES
   start: DS.attr('number'), // [s] timestamp in audio
 
-  audioMeta: DS.belongsTo('audio-meta'),
+  audioMeta: DS.belongsTo('audio-meta', { async: true }),
 
   // params
   startBeat: function() {

@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import {
   beforeEach,
   describe,
@@ -9,7 +10,7 @@ import setupUnitTest from 'linx/tests/helpers/setup-unit-test';
 import makeTrack from 'linx/tests/helpers/make-track';
 import makeTransition from 'linx/tests/helpers/make-transition';
 
-describe.only('MixListItem', function() {
+describe('MixListItem', function() {
   setupUnitTest();
 
   let mixItem;
