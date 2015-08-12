@@ -35,6 +35,9 @@ export default DS.Model.extend({
   firstBeatMarker: Ember.computed.alias('sortedBeatMarkers.firstObject'),
   lastBeatMarker: Ember.computed.alias('sortedBeatMarkers.lastObject'),
 
+  firstBeat: Ember.computed.alias('firstBeatMarker.startBeat'),
+  lastBeat: Ember.computed.alias('lastBeatMarker.startBeat'),
+
   fadeInMarkers: Ember.computed.filterBy('sortedMarkers', 'type', FADE_IN_MARKER_TYPE),
   fadeInMarker: Ember.computed.alias('fadeInMarkers.firstObject'),
 

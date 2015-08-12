@@ -6,28 +6,41 @@ import {
 import { expect } from 'chai';
 
 import setupUnitTest from 'linx/tests/helpers/setup-unit-test';
+import makeTrack from 'linx/tests/helpers/make-track';
+import makeTransition from 'linx/tests/helpers/make-transition';
 
-describe('MixListItem', function() {
+describe.only('MixListItem', function() {
   setupUnitTest();
 
-  let mix, mixItem, track, transition;
+  let mixItem;
 
   beforeEach(function() {
-    // mix = this.factory.make('mix');
     mixItem = this.factory.make('mix-list-item');
-    track = this.factory.make('giveitupforlove');
-    transition = this.factory.make('transition');
 
     // TODO(DBSTUB)
     // this.factoryHelper.handleCreate('mix-list-item');
   });
 
-  it('has invalid transition when no transition', function() {
-    expect(mixItem.get('hasValidTransition')).to.be.false;
+  describe('when empty', function() {
+    it('has invalid transition', function() {
+      expect(mixItem.get('hasValidTransition')).to.be.false;
+    });
+
+    it('has no transition', function() {
+      expect(mixItem.get('hasTransition')).to.be.false;
+    });
+
+    it('times are not valid', function() {
+      expect(mixItem.get('timesAreValid')).to.be.false;
+    });
   });
 
   describe('with track', function() {
+    let track, firstBeatStart, lastBeatStart;
+
     beforeEach(function() {
+      track = makeTrack.call(this);
+
       Ember.run(function() {
         wait(mixItem.insertTrack(track));
       });
@@ -45,35 +58,71 @@ describe('MixListItem', function() {
       });
     });
 
-    it('has invalid transition when no transition', function() {
+    it('has invalid transition', function() {
       expect(mixItem.get('hasValidTransition')).to.be.false;
-      // debugger
+    });
+
+    it('times are valid', function() {
+      expect(mixItem.get('timesAreValid')).to.be.true;
     });
 
     it('has correct trackStartBeat', function() {
-      expect(mixItem.get('trackStartBeat')).to.equal(0);
+      expect(mixItem.get('trackStartBeat')).to.be.closeTo(track.get('audioMeta.firstBeat'), 0.005);
     });
 
-    it.skip('has correct trackEndBeat', function() {
-      expect(mixItem.get('trackEndBeat')).to.equal(0);
+    it('has correct trackEndBeat', function() {
+      expect(mixItem.get('trackEndBeat')).to.be.closeTo(track.get('audioMeta.lastBeat'), 0.005);
     });
 
+    it('has correct trackLengthBeats', function() {
+      expect(mixItem.get('trackLengthBeats')).to.be.closeTo(track.get('audioMeta.numBeats'), 0.005);
+    });
   });
 
-  // describe.skip('with track and valid transition', function() {
-  //   beforeEach(function() {
-  //     this.mixItem.insertTrack(this.track);
-  //     this.mixItem.insertTransition(this.track);
-  //   });
+  describe('with track and transition', function() {
+    let track, transition;
 
-  //   it('has valid transition', function() {
-  //     expect(this.mixItem.get('isValidTransition')).to.be.true;
-  //   });
+    beforeEach(function() {
+      track = makeTrack.call(this);
+      transition = makeTransition.call(this, {
+        fromTrack: track
+      });
 
-  //   it.skip('has correct trackStartBeat and trackEndBeat', function() {
-  //     // expect(this.mix.get('length')).to.equal(2);
-  //   });
-  // });
+      Ember.run(function() {
+        wait(mixItem.insertTrack(track));
+        wait(mixItem.insertTransition(transition));
+      });
+    });
+
+    it('can add transition', function() {
+      expect(mixItem.get('transition.content')).to.equal(transition);
+    });
+
+    it('has transition', function() {
+      expect(mixItem.get('hasTransition')).to.be.true;
+    });
+
+    it('times are valid', function() {
+      expect(mixItem.get('timesAreValid')).to.be.true;
+    });
+
+    // expect invalid transition because there is no toTrack
+    it('has invalid transition', function() {
+      expect(mixItem.get('hasValidTransition')).to.be.false;
+    });
+
+    it('has correct trackStartBeat', function() {
+      expect(mixItem.get('trackStartBeat')).to.be.closeTo(track.get('audioMeta.firstBeat'), 0.005);
+    });
+
+    it('has correct trackEndBeat', function() {
+      expect(mixItem.get('trackEndBeat')).to.be.closeTo(track.get('audioMeta.lastBeat'), 0.005);
+    });
+
+    it('has correct trackLengthBeats', function() {
+      expect(mixItem.get('trackLengthBeats')).to.be.closeTo(track.get('audioMeta.numBeats'), 0.005);
+    });
+  });
 
   // describe.skip('with track and invalid transition', function() {
   //   beforeEach(function() {

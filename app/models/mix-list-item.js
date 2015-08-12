@@ -9,11 +9,10 @@ export default DS.Model.extend(
 
   mix: DS.belongsTo('mix', { async: true }),
 
+  prevTransition: Ember.computed.alias('prevItem.transition'),
   track: DS.belongsTo('track', { async: true }),
   transition: DS.belongsTo('transition', { async: true }),
-
   nextTrack: Ember.computed.alias('nextItem.track'),
-  nextTransition: Ember.computed.alias('nextItem.transition'),
 
   insertTrack: function(track) {
     this.set('track', track);
@@ -40,44 +39,34 @@ export default DS.Model.extend(
   trackStartBeat: function() {
     var prevItem = this.get('prevItem');
     if (prevItem && prevItem.get('hasValidTransition')) {
-      return prevItem.get('transition.toTrackStartBeat');;
+      return this.get('prevTransition.toTrackStartBeat');;
     } else {
-      return 0;
+      return this.get('track.audioMeta.firstBeat');
     }
-  }.property('prevItem.hasValidTransition', 'prevItem.transition.toTrackStartBeat'),
+  }.property('prevItem.hasValidTransition', 'prevTransition.toTrackStartBeat', 'track.audioMeta.firstBeat'),
 
-  // calculate ending beat of this item's track, based on nextItem.transition
+  // calculate ending beat of this item's track, based on item.transition
   trackEndBeat: function() {
-    var nextItem = this.get('nextItem');
-    if (nextItem && nextItem.get('hasValidTransition')) {
-      return nextItem.get('transition.toTrackStartBeat');;
+    if (this.get('hasValidTransition')) {
+      return this.get('transition.fromTrackEndBeat');
     } else {
-      return this.get('track.audioMeta.lastBeatMarker');
+      return this.get('track.audioMeta.lastBeat');
     }
-  }.property('nextItem.hasValidTransition', 'nextItem.transition.toTrackStartBeat'),
+  }.property('hasValidTransition', 'transition.fromTrackEndBeat', 'track.audioMeta.lastBeat'),
 
   trackLengthBeats: function() {
     return this.get('trackEndBeat') - this.get('trackStartBeat');
   }.property('trackEndBeat', 'trackStartBeat'),
 
-  hasValidTransition: function() {
-    var transition = this.get('transition');
-    var hasTransition = Ember.isPresent(transition.get('content'));
+  hasTransition: Ember.computed.bool('transition.content'),
+  fromTrackIsValid: Ember.computed.equal('track.content', 'transition.fromTrack.content'),
+  toTrackIsValid: Ember.computed.equal('transition.toTrack.content', 'nextTrack.content'),
 
-    var timesAreValid = true;
-    var fromTracksAreValid = true;
-    var toTracksAreValid = true;
+  timesAreValid: function() {
+    var startBeat = this.get('trackStartBeat');
+    var endBeat = this.get('transition.fromTrackEndBeat');
+    return isNumber(startBeat) && isNumber(endBeat) && startBeat <= endBeat;
+  }.property('trackStartBeat', 'transition.fromTrackEndBeat'),
 
-    if (hasTransition) {
-      fromTracksAreValid = transition.get('fromTrack') === this.get('track');
-      toTracksAreValid = transition.get('toTrack') === this.get('nextTrack');
-    }
-
-    // TODO(TRANSITION)
-    // if (nextTransition && nextTransition.get('hasValidTransition')) {
-      // timesAreValid = this.get('prevTransitionBeat')
-    // }
-
-    return _.every([hasTransition, timesAreValid, fromTracksAreValid, toTracksAreValid]);
-  }.property('track', 'nextTrack', 'transition.fromTrack', 'transition.toTrack'),
+  hasValidTransition: Ember.computed.and('hasTransition', 'fromTrackIsValid', 'toTrackIsValid', 'timesAreValid')
 });

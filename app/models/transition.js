@@ -28,6 +28,9 @@ export default DS.Model.extend({
     });
   }),
 
+  fromTrackEndBeat: Ember.computed.alias('fromTrackMarker.startBeat'),
+  toTrackStartBeat: Ember.computed.alias('toTrackMarker.startBeat'),
+
   template: DS.belongsTo('transition-template', { async: true }),
 
   fromTrack: DS.belongsTo('track', { async: true }),
@@ -38,7 +41,7 @@ export default DS.Model.extend({
     Ember.assert('Transition.setStart requires a valid number', isNumber(time));
 
     var marker = this.get('fromTrackMarker');
-    marker.set('start', start);
+    marker.set('start', time);
     return marker.save();
   },
 
@@ -47,7 +50,7 @@ export default DS.Model.extend({
     Ember.assert('Transition.setEnd requires a valid number', isNumber(time));
 
     var marker = this.get('toTrackMarker');
-    marker.set('end', end);
+    marker.set('end', time);
     return marker.save();
   },
 });

@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import {
   beforeEach,
   describe,
@@ -203,7 +204,7 @@ describe('AbstractList', function() {
         saveList(list, done);
       });
 
-      it.only('preserves item ordering', function() {
+      it('preserves item ordering', function() {
         expect(itemA.get('index')).to.equal(1);
         expect(itemB.get('index')).to.equal(0);
       });
