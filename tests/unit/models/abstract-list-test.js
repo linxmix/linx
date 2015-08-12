@@ -6,9 +6,10 @@ import {
 import { expect } from 'chai';
 
 import setupUnitTest from 'linx/tests/helpers/setup-unit-test';
+import { assertPromise } from 'linx/lib/utils';
 
 // End to end testing of abstract list.
-describe.only('AbstractList', function() {
+describe('AbstractList', function() {
   setupUnitTest();
 
   let list;
@@ -19,7 +20,7 @@ describe.only('AbstractList', function() {
     });
   });
 
-  describe('with one item', function() {
+  describe('operations with one item', function() {
     let item;
 
     beforeEach(function() {
@@ -55,18 +56,76 @@ describe.only('AbstractList', function() {
       expect(list.get('length')).to.equal(0);
       expect(list.objectAt(0)).not.to.equal(item);
     });
+  });
 
-    describe('after saving list to store', function() {
+  describe('with multiple items', function() {
+    let itemA, itemB;
+
+    beforeEach(function() {
+      itemA = list.appendItem();
+      itemB = list.appendItem();
+
+      wait(itemA.save());
+    });
+
+    it('has correct length', function() {
+      expect(list.get('length')).to.equal(2);
+    });
+
+    it('items have correct indices', function() {
+      expect(itemA.get('index')).to.equal(0);
+      expect(itemB.get('index')).to.equal(1);
+    });
+
+    it('items have correct prevItem', function() {
+      expect(itemA.get('prevItem')).to.not.be.ok;
+      expect(itemB.get('prevItem')).to.equal(itemA);
+    });
+
+    it('items have correct nextItem', function() {
+      expect(itemA.get('nextItem')).to.equal(itemB);
+      expect(itemB.get('nextItem')).to.not.be.ok;
+    });
+
+    it('can swap items', function() {
+      list.swapItems(itemA, itemB);
+      expect(itemA.get('index')).to.equal(1);
+      expect(itemB.get('index')).to.equal(0);
+    });
+
+    it('can swap items by index', function() {
+      list.swap(0, 1);
+      expect(itemA.get('index')).to.equal(1);
+      expect(itemB.get('index')).to.equal(0);
+    });
+  });
+
+
+  describe('saving list', function() {
+
+    describe('when empty', function() {
       beforeEach(function(done) {
-        Ember.run(() => {
-          list.save().then(() => {
-            done();
-          });
-        });
+        saveList(list, done);
       });
 
       it('list is no longer new', function() {
         expect(list.get('isNew')).to.be.false;
+      });
+
+      it('can be fetched from store', function(done) {
+        this.store.find('abstract-list', list.get('id')).then((storedList) => {
+          expect(storedList).to.equal(list);
+          done();
+        });
+      });
+    });
+
+    describe('with one new item', function() {
+      let item;
+
+      beforeEach(function(done) {
+        item = list.appendItem();
+        saveList(list, done);
       });
 
       it('new item is saved', function() {
@@ -77,13 +136,6 @@ describe.only('AbstractList', function() {
         expect(list.objectAt(0)).to.equal(item);
         expect(list.get('length')).to.equal(1);
         expect(item.get('list.content')).to.equal(list);
-      });
-
-      it('can be fetched from store', function(done) {
-        this.store.find('abstract-list', list.get('id')).then((storedList) => {
-          expect(storedList).to.equal(list);
-          done();
-        });
       });
 
       it('removes item from list when item is deleted', function(done) {
@@ -101,56 +153,68 @@ describe.only('AbstractList', function() {
         });
       });
     });
-  });
 
-  describe('with multiple items', function() {
-    let savedItem, newItem;
+    describe('with one saved item', function() {
+      let item;
 
-    beforeEach(function() {
-      savedItem = list.appendItem();
-      newItem = list.appendItem();
+      beforeEach(function(done) {
+        item = list.appendItem();
 
-      wait(savedItem.save());
-    });
-
-    it('has correct length', function() {
-      expect(list.get('length')).to.equal(2);
-    });
-
-    it('items have correct indices', function() {
-      expect(savedItem.get('index')).to.equal(0);
-      expect(newItem.get('index')).to.equal(1);
-    });
-
-    it('items have correct prevItem', function() {
-      expect(savedItem.get('prevItem')).to.not.be.ok;
-      expect(newItem.get('prevItem')).to.equal(savedItem);
-    });
-
-    it('items have correct nextItem', function() {
-      expect(savedItem.get('nextItem')).to.equal(newItem);
-      expect(newItem.get('nextItem')).to.not.be.ok;
-    });
-
-    it('can swap items', function() {
-      list.swapItems(0, 1);
-      expect(savedItem.get('index')).to.equal(1);
-      expect(newItem.get('index')).to.equal(0);
-    });
-
-    describe('after list is saved to store', function() {
-      it.skip('only saves new items', function() {
-
+        item.save().then(() => {
+          this.sinon.stub(item, 'save', assertPromise);
+          saveList(list, done);
+        });
       });
 
-      it.skip('preserves item ordering', function() {
-
-      });
-
-      it.skip('can swap items, and the new order persists', function() {
-
+      it('does not save item', function() {
+        expect(item.save.called).to.be.false;
       });
     });
 
+    describe('with two items', function() {
+      let itemA, itemB;
+
+      beforeEach(function(done) {
+        itemA = list.appendItem();
+        itemB = list.appendItem();
+
+        saveList(list, done);
+      });
+
+      it('saves both items', function() {
+        expect(itemA.get('isNew')).to.be.false;
+        expect(itemB.get('isNew')).to.be.false;
+      });
+
+      it('preserves item ordering', function() {
+        expect(itemA.get('index')).to.equal(0);
+        expect(itemB.get('index')).to.equal(1);
+      });
+    });
+
+    describe('with two reordered items', function() {
+      let itemA, itemB;
+
+      beforeEach(function(done) {
+        itemA = list.appendItem();
+        itemB = list.appendItem();
+        list.swapItems(itemA, itemB);
+
+        saveList(list, done);
+      });
+
+      it.only('preserves item ordering', function() {
+        expect(itemA.get('index')).to.equal(1);
+        expect(itemB.get('index')).to.equal(0);
+      });
+    });
   });
 });
+
+function saveList(list, done) {
+  Ember.run(() => {
+    list.save().then(() => {
+      done();
+    });
+  });
+}

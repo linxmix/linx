@@ -25,9 +25,29 @@ export default function(itemModelName) {
       return this.get('items').insertAt(index, item);
     },
 
+    indexOf: function(item) {
+      return this.get('items').indexOf(item);
+    },
+
+    objectAt: function(index) {
+      return this.get('items').objectAt(index);
+    },
+
+    // swaps position of items
+    swapItems: function(itemA, itemB) {
+      return this.swap(this.indexOf(itemA), this.indexOf(itemB));
+    },
+
     // swaps position of items at two given indices
-    swapItems: function(indexA, indexB) {
-      // TODO
+    swap: function(indexA, indexB) {
+      var items = this.get('items');
+      var itemA = this.objectAt(indexA);
+      var itemB = this.objectAt(indexB);
+
+      items.replace(indexA, 1, [itemB]);
+      items.replace(indexB, 1, [itemA]);
+
+      return items;
     },
 
     // creates a new item and inserts it at given index
@@ -45,11 +65,6 @@ export default function(itemModelName) {
     // creates and returns a new item, does NOT insert into list
     _createItem: function(params) {
       return this.get('store').createRecord(itemModelName, params);
-    },
-
-    objectAt: function(index) {
-      var items = this.get('items');
-      return items.objectAt.apply(items, arguments);
     },
 
     // augment destroyRecord to also destroy items
