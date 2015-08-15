@@ -3,6 +3,7 @@ import DS from 'ember-data';
 import AbstractListItemMixin from 'linx/lib/models/abstract-list-item';
 import _ from 'npm:underscore';
 import { isNumber } from 'linx/lib/utils';
+import equalProps from 'linx/lib/computed/equal-props';
 
 export default DS.Model.extend(
   AbstractListItemMixin('mix'), {
@@ -33,7 +34,7 @@ export default DS.Model.extend(
     return this.destroyRecord();
   },
 
-  transitionLengthBeats: Ember.computed.alias('transition.lengthBeats'),
+  numTransitionBeats: Ember.computed.alias('transition.numBeats'),
 
   // calculate starting beat of this item's track, based on prevItem.transition
   trackStartBeat: function() {
@@ -59,8 +60,8 @@ export default DS.Model.extend(
   }.property('trackEndBeat', 'trackStartBeat'),
 
   hasTransition: Ember.computed.bool('transition.content'),
-  fromTrackIsValid: Ember.computed.equal('track.content', 'transition.fromTrack.content'),
-  toTrackIsValid: Ember.computed.equal('transition.toTrack.content', 'nextTrack.content'),
+  fromTrackIsValid: equalProps('track.content', 'transition.fromTrack.content'),
+  toTrackIsValid: equalProps('transition.toTrack.content', 'nextTrack.content'),
 
   timesAreValid: function() {
     var startBeat = this.get('trackStartBeat');

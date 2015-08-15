@@ -10,7 +10,7 @@ import {
 
 export default DS.Model.extend({
   title: DS.attr('string'),
-  lengthBeats: DS.attr('number'),
+  numBeats: DS.attr('number'),
 
   _fromTrackMarker: DS.belongsTo('marker', { async: true }),
   fromTrackMarker: withDefaultModel('_fromTrackMarker', function() {

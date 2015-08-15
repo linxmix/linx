@@ -1,13 +1,11 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
+import makeTrack from './make-track';
+
 import {
-  BEAT_MARKER_TYPE,
-  BAR_MARKER_TYPE,
-  SECTION_MARKER_TYPE,
-  FADE_IN_MARKER_TYPE,
-  FADE_OUT_MARKER_TYPE,
-  USER_MARKER_TYPE,
+  TRANSITION_IN_MARKER_TYPE,
+  TRANSITION_OUT_MARKER_TYPE,
 } from 'linx/models/marker';
 
 
@@ -15,35 +13,40 @@ import {
 export default function(options = {}) {
   var fromTrackEnd = Ember.getWithDefault(options, 'fromTrackEnd', 100);
   var toTrackStart = Ember.getWithDefault(options, 'toTrackStart', 50);
+  var numBeats = Ember.getWithDefault(options, 'numBeats', 20);
 
-  var firstBeatMarker = this.factory.make('marker', {
-    type: BEAT_MARKER_TYPE,
-    start: firstBeatStart
+  var fromTrack = Ember.getWithDefault(options, 'fromTrack', makeTrack.call(this));
+  var toTrack = Ember.getWithDefault(options, 'toTrack', makeTrack.call(this));
+
+  var fromTrackMarker = this.factory.make('marker', {
+    type: TRANSITION_OUT_MARKER_TYPE,
+    audioMeta: fromTrack.get('audioMeta.content'),
+    start: fromTrackEnd,
   });
 
-  var lastBeatMarker = this.factory.make('marker', {
-    type: BEAT_MARKER_TYPE,
-    start: lastBeatStart
+  var toTrackMarker = this.factory.make('marker', {
+    type: TRANSITION_IN_MARKER_TYPE,
+    audioMeta: toTrack.get('audioMeta.content'),
+    start: toTrackStart
   });
 
-  var track = this.factory.make('track');
-
-  // make withDefaultModel think track has audioMeta
-  track.set('_data', {
-    _audioMeta: 1
+  var transition = this.factory.make('transition', {
+    _fromTrackMarker: fromTrackMarker,
+    _toTrackMarker: toTrackMarker,
+    fromTrack,
+    toTrack,
+    numBeats
   });
 
-  var audioMeta = this.factory.make('audio-meta', {
-    track: track,
-    bpm: 128.00,
-    duration: 367.47320,
-    bpm: 127.961,
-    timeSignature: 4,
-    key: 11,
-    mode: 0,
-    loudness: -4.804,
-    markers: [firstBeatMarker, lastBeatMarker]
+  // make withDefaultModel think transition has markers
+  transition.set('_data', {
+    _fromTrackMarker: 1,
+    _toTrackMarker: 2
   });
 
-  return track;
+  return {
+    fromTrack,
+    toTrack,
+    transition
+  };
 };

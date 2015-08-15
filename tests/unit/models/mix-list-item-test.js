@@ -9,6 +9,7 @@ import { expect } from 'chai';
 import setupUnitTest from 'linx/tests/helpers/setup-unit-test';
 import makeTrack from 'linx/tests/helpers/make-track';
 import makeTransition from 'linx/tests/helpers/make-transition';
+import describeAttrs from 'linx/tests/helpers/describe-attrs';
 
 describe('MixListItem', function() {
   setupUnitTest();
@@ -23,21 +24,18 @@ describe('MixListItem', function() {
   });
 
   describe('when empty', function() {
-    it('has invalid transition', function() {
-      expect(mixItem.get('hasValidTransition')).to.be.false;
-    });
-
-    it('has no transition', function() {
-      expect(mixItem.get('hasTransition')).to.be.false;
-    });
-
-    it('times are not valid', function() {
-      expect(mixItem.get('timesAreValid')).to.be.false;
+    describeAttrs('mix-item', {
+      subject() { return mixItem; },
+      hasTransition: false,
+      timesAreValid: false,
+      fromTrackIsValid: false,
+      toTrackIsValid: false,
+      hasValidTransition: false,
     });
   });
 
   describe('with track', function() {
-    let track, firstBeatStart, lastBeatStart;
+    let track;
 
     beforeEach(function() {
       track = makeTrack.call(this);
@@ -59,38 +57,29 @@ describe('MixListItem', function() {
       });
     });
 
-    it('has invalid transition', function() {
-      expect(mixItem.get('hasValidTransition')).to.be.false;
-    });
-
-    it('times are valid', function() {
-      expect(mixItem.get('timesAreValid')).to.be.true;
-    });
-
-    it('has correct trackStartBeat', function() {
-      expect(mixItem.get('trackStartBeat')).to.be.closeTo(track.get('audioMeta.firstBeat'), 0.005);
-    });
-
-    it('has correct trackEndBeat', function() {
-      expect(mixItem.get('trackEndBeat')).to.be.closeTo(track.get('audioMeta.lastBeat'), 0.005);
-    });
-
-    it('has correct trackLengthBeats', function() {
-      expect(mixItem.get('trackLengthBeats')).to.be.closeTo(track.get('audioMeta.numBeats'), 0.005);
+    describeAttrs('mix-item', {
+      subject() { return mixItem; },
+      hasTransition: false,
+      timesAreValid: false,
+      fromTrackIsValid: false,
+      toTrackIsValid: false,
+      hasValidTransition: false,
+      trackStartBeat() { return track.get('audioMeta.firstBeat'); },
+      trackEndBeat() { return track.get('audioMeta.lastBeat'); },
+      trackLengthBeats() { return track.get('audioMeta.numBeats'); },
     });
   });
 
   describe('with track and transition', function() {
-    let track, transition;
+    let fromTrack, transition;
 
     beforeEach(function() {
-      track = makeTrack.call(this);
-      transition = makeTransition.call(this, {
-        fromTrack: track
-      });
+      let results = makeTransition.call(this);
+      fromTrack = results.fromTrack;
+      transition = results.transition;
 
       Ember.run(function() {
-        wait(mixItem.insertTrack(track));
+        wait(mixItem.insertTrack(fromTrack));
         wait(mixItem.insertTransition(transition));
       });
     });
@@ -99,44 +88,83 @@ describe('MixListItem', function() {
       expect(mixItem.get('transition.content')).to.equal(transition);
     });
 
-    it('has transition', function() {
-      expect(mixItem.get('hasTransition')).to.be.true;
+    it('can remove transition', function() {
+      Ember.run(function() {
+        wait(mixItem.removeTransition());
+      });
+
+      andThen(function() {
+        expect(mixItem.get('transition.content')).not.to.be.ok;
+      });
     });
 
-    it('times are valid', function() {
-      expect(mixItem.get('timesAreValid')).to.be.true;
-    });
-
-    // expect invalid transition because there is no toTrack
-    it('has invalid transition', function() {
-      expect(mixItem.get('hasValidTransition')).to.be.false;
-    });
-
-    it('has correct trackStartBeat', function() {
-      expect(mixItem.get('trackStartBeat')).to.be.closeTo(track.get('audioMeta.firstBeat'), 0.005);
-    });
-
-    it('has correct trackEndBeat', function() {
-      expect(mixItem.get('trackEndBeat')).to.be.closeTo(track.get('audioMeta.lastBeat'), 0.005);
-    });
-
-    it('has correct trackLengthBeats', function() {
-      expect(mixItem.get('trackLengthBeats')).to.be.closeTo(track.get('audioMeta.numBeats'), 0.005);
+    describeAttrs('mix-item', {
+      subject() { return mixItem; },
+      hasTransition: true,
+      timesAreValid: true,
+      fromTrackIsValid: true,
+      toTrackIsValid: false,
+      hasValidTransition: false,
+      trackStartBeat() { return fromTrack.get('audioMeta.firstBeat'); },
+      trackEndBeat() { return fromTrack.get('audioMeta.lastBeat'); },
+      trackLengthBeats() { return fromTrack.get('audioMeta.numBeats'); },
     });
   });
 
-  // describe.skip('with track and invalid transition', function() {
-  //   beforeEach(function() {
-  //     this.mixItem.insertTrack(this.track);
-  //     this.mixItem.insertTransition(this.track);
-  //   });
+  describe('with nextItem', function() {
+    let nextItem;
 
-  //   it('has invalid transition', function() {
-  //     expect(this.mixItem.get('isValidTransition')).to.be.false;
-  //   });
+    beforeEach(function() {
+      nextItem = this.factory.make('mix-list-item');
 
-  //   it.skip('has correct trackStartBeat and trackEndBeat', function() {
-  //     // expect(this.mix.get('length')).to.equal(2);
-  //   });
-  // });
+      mixItem.set('nextItem', nextItem);
+      nextItem.set('prevItem', mixItem);
+    });
+
+    it('nextItem is ok', function() {
+      expect(mixItem.get('nextItem')).to.equal(nextItem);
+    });
+
+    it('prevItem is ok', function() {
+      expect(mixItem).not.to.equal(nextItem);
+      expect(nextItem.get('prevItem')).to.equal(mixItem);
+    });
+
+    describe('with fromTrack, toTrack, and transition', function() {
+      let fromTrack, transition, toTrack;
+
+      beforeEach(function() {
+        let results = makeTransition.call(this);
+
+        fromTrack = results.fromTrack;
+        transition = results.transition;
+        toTrack = results.toTrack;
+
+        Ember.run(function() {
+          wait(mixItem.insertTrack(fromTrack));
+          wait(mixItem.insertTransition(transition));
+          wait(nextItem.insertTrack(toTrack));
+        });
+      });
+
+      describeAttrs('mix-item', {
+        subject() { return mixItem; },
+        hasTransition: true,
+        timesAreValid: true,
+        fromTrackIsValid: true,
+        toTrackIsValid: true,
+        hasValidTransition: true,
+        trackStartBeat() { return fromTrack.get('audioMeta.firstBeat'); },
+        trackEndBeat() { return transition.get('fromTrackEndBeat'); },
+      });
+
+      describeAttrs('next-item', {
+        subject() { return nextItem; },
+        hasTransition: false,
+        trackStartBeat() { return transition.get('toTrackStartBeat'); },
+        trackEndBeat() { return toTrack.get('audioMeta.lastBeat'); },
+      });
+    });
+  });
+
 });
