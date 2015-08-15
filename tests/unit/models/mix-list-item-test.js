@@ -130,7 +130,7 @@ describe('MixListItem', function() {
       expect(nextItem.get('prevItem')).to.equal(mixItem);
     });
 
-    describe('with fromTrack, toTrack, and transition', function() {
+    describe('with fromTrack, transition, and toTrack', function() {
       let fromTrack, transition, toTrack;
 
       beforeEach(function() {
@@ -163,6 +163,26 @@ describe('MixListItem', function() {
         hasTransition: false,
         trackStartBeat() { return transition.get('toTrackStartBeat'); },
         trackEndBeat() { return toTrack.get('audioMeta.lastBeat'); },
+      });
+
+      describe('when timing of transition is impossible', function() {
+        beforeEach(function() {
+          transition.setFromTrackEnd(-100);
+        });
+
+        describeAttrs('mix-item', {
+          subject() { return mixItem; },
+          hasTransition: true,
+          timesAreValid: false,
+          hasValidTransition: false,
+          trackStartBeat() { return fromTrack.get('audioMeta.firstBeat'); },
+          trackEndBeat() { return fromTrack.get('audioMeta.lastBeat'); },
+        });
+
+        describeAttrs('next-item', {
+          subject() { return nextItem; },
+          trackStartBeat() { return toTrack.get('audioMeta.firstBeat') },
+        });
       });
     });
   });

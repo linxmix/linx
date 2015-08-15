@@ -37,20 +37,18 @@ export default DS.Model.extend({
   toTrack: DS.belongsTo('track', { async: true }),
 
   // sets fromTrackMarker to given time in fromTrack
-  setStart: function(time) {
-    Ember.assert('Transition.setStart requires a valid number', isNumber(time));
+  setFromTrackEnd: function(time) {
+    Ember.assert('Transition.setFromTrackEnd requires a valid number', isNumber(time));
 
     var marker = this.get('fromTrackMarker');
     marker.set('start', time);
-    return marker.save();
   },
 
   // sets toTrackMarker to given time in toTrack
-  setEnd: function(time) {
-    Ember.assert('Transition.setEnd requires a valid number', isNumber(time));
+  setToTrackStart: function(time) {
+    Ember.assert('Transition.setToTrackStart requires a valid number', isNumber(time));
 
     var marker = this.get('toTrackMarker');
-    marker.set('end', time);
-    return marker.save();
+    marker.set('start', time);
   },
 });
