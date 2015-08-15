@@ -2,6 +2,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 import AbstractListMixin from 'linx/lib/models/abstract-list';
 import withDefaultModel from 'linx/lib/computed/with-default-model';
+import filterEmpty from 'linx/lib/computed/filter-empty';
 
 export default DS.Model.extend(
   AbstractListMixin('mix-list-item'), {
@@ -9,40 +10,60 @@ export default DS.Model.extend(
   title: DS.attr('string'),
 
   // params
-  tracks: Ember.computed.mapBy('items', 'track'),
-  transitions: Ember.computed.mapBy('items', 'transitions'), // TODO: remove null/undefined?
+  tracks: Ember.computed.mapBy('items', 'track.content'),
+  transitions: Ember.computed.mapBy('items', 'transition.content'),
+  nonEmptyTransitions: filterEmpty('transitions'),
 
-  appendTransition: function(transition) {
-    this.insertTransitionAt(this.get('length'), transition);
-  },
+  numTracks: Ember.computed.alias('tracks.length'),
+  numTransitions: Ember.computed.alias('nonEmptyTransitions.length'),
 
-  transitionAt: function(index) {
-    var mixItem = this.objectAt(index);
-    return mixItem && mixItem.get('transition');
-  },
+  // adds tracks when appending given transition
+  appendTransitionWithTracks: function(transition) {
+    var index = this.get('length');
+    var prevTrack = this.trackAt(index - 1);
+    var promises = [];
 
-  trackAt: function(index) {
-    var mixItem = this.objectAt(index);
-    return mixItem && mixItem.get('track');
+    var fromTrack = transition.get('fromTrack');
+    var toTrack = transition.get('toTrack');
+
+    // if prevTrack matches fromTrack, use it
+    if (prevTrack && prevTrack.get('id') === fromTrack.get('id')) {
+      index -= 1;
+
+    // otherwise, just add fromTrack
+    } else {
+      promises.push(this.insertTrackAt(index, fromTrack));
+    }
+
+    // then add transition and toTrack
+    promises.push(this.insertTransitionAt(index, transition));
+    promises.push(this.insertTrackAt(index + 1, toTrack));
+
+    return Ember.RSVP.all(promises);
   },
 
   appendTrack: function(track) {
-    this.insertTrackAt(this.get('length'), track);
+    return this.insertTrackAt(this.get('length'), track);
   },
 
-  // TODO: validate transitions after
+  transitionAt: function(index) {
+    return this.get('transitions').objectAt(index);
+  },
+
+  trackAt: function(index) {
+    return this.get('tracks').objectAt(index);
+  },
+
   insertTrackAt: function(index, track) {
     console.log("insertTrackAt", index, track.get('title'));
     var mixItem = this.createItemAt(index);
     return mixItem.insertTrack(track);
   },
 
-  // TODO: if adding transition to end, add toTrack as well
-  // TODO: check mixItem.isValidTransition
   insertTransitionAt: function(index, transition) {
     console.log("insertTransitionAt", index, transition);
-    var mixItem = this.createItemAt(index);
-    return mixItem.insertTransition(transition);
+    var mixItem = this.objectAt(index);
+    return mixItem && mixItem.insertTransition(transition);
   },
 
   removeTrack: function(track) {
@@ -54,7 +75,6 @@ export default DS.Model.extend(
     }
   },
 
-  // TODO: mix needs to validate transitions when removing tracks
   removeTrackAt: function(index) {
     var mixItem = this.objectAt(index);
     return mixItem && mixItem.removeTrack();

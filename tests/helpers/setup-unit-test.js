@@ -6,13 +6,14 @@ import {
   beforeEach,
 } from 'mocha';
 
+function setProperties() {
+  this.store = FactoryGuy.getStore();
+  this.factory = FactoryGuy;
+  this.factoryHelper = FactoryGuyTestHelper;
+  this.container = this.store.get('container');
+}
+
 export default function() {
   startApp();
-
-  beforeEach(function() {
-    this.store = FactoryGuy.getStore();
-    this.factory = FactoryGuy;
-    this.factoryHelper = FactoryGuyTestHelper;
-    this.container = this.store.get('container');
-  });
+  beforeEach(setProperties);
 }

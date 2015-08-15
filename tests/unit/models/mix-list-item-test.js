@@ -181,7 +181,7 @@ describe('MixListItem', function() {
 
         describeAttrs('next-item', {
           subject() { return nextItem; },
-          trackStartBeat() { return toTrack.get('audioMeta.firstBeat') },
+          trackStartBeat() { return toTrack.get('audioMeta.firstBeat'); },
         });
       });
     });
