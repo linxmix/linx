@@ -4,69 +4,6 @@ import RequireAttributes from 'linx/lib/require-attributes';
 
 const TICK_INTERVAL = 0.2; // [s] Time between clock ticks
 
-// Wraps WaaClock to provide computed properties
-export default Ember.Object.extend(
-  RequireAttributes('audioContext'), {
-
-  // params
-  tickTime: 0,
-  isStarted: false,
-  start: function() {
-    if (!this.get('isStarted')) {
-      this.get('_clock').start();
-      this.set('isStarted', true);
-    }
-  },
-
-  stop: function() {
-    if (this.get('isStarted')) {
-      this.get('_clock').stop();
-      this.set('isStarted', false);
-    }
-  },
-
-  getCurrentTime: function() {
-    return this.get('audioContext').currentTime;
-  },
-
-  callbackAtTime: function(cb, time) {
-    return this.get('_clock').callbackAtTime(cb, time);
-  },
-
-  // internal params
-  _clock: Ember.computed(function() { return new WaaClock(this.get('audioContext')); }),
-  _tickEvent: null,
-  _setupTickEvent: function() {
-    this._removeTickEvent();
-
-    if (this.get('isStarted') && false) {
-      this.set('_tickEvent', ClockEvent.create({
-        onExecute: () => { Ember.run(this, '_tick'); },
-        onExpired: () => { console.log("TICK EXPIRED"); },
-        deadline: this.getCurrentTime(),
-        repeatInterval: TICK_INTERVAL,
-        clock: this,
-        isScheduled: true,
-      }));
-    }
-  }.observes('isStarted').on('init'),
-
-  _removeTickEvent: function() {
-    var tickEvent = this.get('_tickEvent');
-    if (tickEvent) { tickEvent.destroy(); }
-  },
-
-  _tick: function() {
-    this.set('tickTime', this.getCurrentTime());
-  },
-
-  destroy: function() {
-    this.get('_clock').stop();
-    this._removeTickEvent();
-    this._super.apply(this, arguments);
-  }
-});
-
 // Wraps Waaclock event
 export const ClockEvent = Ember.Object.extend(
   RequireAttributes('clock'), {
@@ -163,4 +100,68 @@ export const ClockEvent = Ember.Object.extend(
     this.clear();
     this._super.apply(this, arguments);
   },
+});
+
+
+// Wraps WaaClock to provide computed properties
+export default Ember.Object.extend(
+  RequireAttributes('audioContext'), {
+
+  // params
+  tickTime: 0,
+  isStarted: false,
+  start: function() {
+    if (!this.get('isStarted')) {
+      this.get('_clock').start();
+      this.set('isStarted', true);
+    }
+  },
+
+  stop: function() {
+    if (this.get('isStarted')) {
+      this.get('_clock').stop();
+      this.set('isStarted', false);
+    }
+  },
+
+  getCurrentTime: function() {
+    return this.get('audioContext').currentTime;
+  },
+
+  callbackAtTime: function(cb, time) {
+    return this.get('_clock').callbackAtTime(cb, time);
+  },
+
+  // internal params
+  _clock: Ember.computed(function() { return new WaaClock(this.get('audioContext')); }),
+  _tickEvent: null,
+  _setupTickEvent: function() {
+    this._removeTickEvent();
+
+    if (this.get('isStarted') && false) {
+      this.set('_tickEvent', ClockEvent.create({
+        onExecute: () => { Ember.run(this, '_tick'); },
+        onExpired: () => { console.log("TICK EXPIRED"); },
+        deadline: this.getCurrentTime(),
+        repeatInterval: TICK_INTERVAL,
+        clock: this,
+        isScheduled: true,
+      }));
+    }
+  }.observes('isStarted').on('init'),
+
+  _removeTickEvent: function() {
+    var tickEvent = this.get('_tickEvent');
+    if (tickEvent) { tickEvent.destroy(); }
+  },
+
+  _tick: function() {
+    this.set('tickTime', this.getCurrentTime());
+  },
+
+  destroy: function() {
+    this.get('_clock').stop();
+    this._removeTickEvent();
+    this._super.apply(this, arguments);
+  }
 });

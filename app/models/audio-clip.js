@@ -6,7 +6,7 @@ import { beatToTime } from 'linx/lib/utils';
 
 // Clip that points to a section of an AudioBuffer
 export default Clip.extend({
-  type: Ember.computed(() => { return 'audio-clip' }),
+  type: Ember.computed(() => { return 'audio-clip'; }),
 
   startBeat: DS.attr('number'), // starting beat in audio
   lengthBeats: DS.attr('number'), // length of audio-clip, in beats

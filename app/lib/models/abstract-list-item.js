@@ -48,5 +48,5 @@ export default function(listPropertyPath) {
     },
   };
 
-  return Ember.Mixin.create(mixinParams)
-};
+  return Ember.Mixin.create(mixinParams);
+}

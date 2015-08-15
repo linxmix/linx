@@ -21,7 +21,7 @@ export default DS.RESTAdapter.extend({
   ajax: ajax,
   host: ENV.echonest && ENV.echonest.host ||  'http://developer.echonest.com',
   namespace: ENV.echonest && ENV.echonest.namespace || 'api/v4',
-  api_key: ENV.echonest && config.echonest.api_key || ENV.ECHONEST_KEY,
+  api_key: ENV.echonest && ENV.echonest.api_key || ENV.ECHONEST_KEY,
 
   /**
     Called by 'find' and 'findQuery' and performs an HTTP `GET` request with default params

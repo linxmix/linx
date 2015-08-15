@@ -1,17 +1,16 @@
 import Ember from 'ember';
 
 // Concats string properties together separated by new lines.
-var concatLines = function(properties) {
-  var properties = Array.prototype.slice.call(arguments, 0),
-      getter = function() {
-        var self = this;
+var concatLines = function(...properties) {
+    let getter = function() {
+      var self = this;
 
-        return properties.map(function(property) {
-          return self.get(property);
-        }).filter(function(value) {
-          return value;
-        }).join('\n\n');
-      };
+      return properties.map(function(property) {
+        return self.get(property);
+      }).filter(function(value) {
+        return value;
+      }).join('\n\n');
+    };
 
   return Ember.computed.apply(Ember, properties.concat(getter));
 };

@@ -1,4 +1,5 @@
 /* global SoundTouch:true */
+/* global FifoSampleBuffer:true */
 
 import RequireAttributes from 'linx/lib/require-attributes';
 

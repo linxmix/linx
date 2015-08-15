@@ -9,4 +9,4 @@ export default function(...propertyPaths) {
 
     return vals.every((val) => { return Ember.isPresent(val); }) && vals.uniq().length === 1;
   }]));
-};
+}

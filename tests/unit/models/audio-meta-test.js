@@ -21,7 +21,7 @@ describe('AudioMeta', function() {
   let echonestTrack, analysis, audioMeta;
 
   beforeEach(function() {
-    this.timeout(5000); // give the hardware ample time to process the analysis
+    this.timeout(10000); // give the hardware ample time to process the analysis
 
     echonestTrack = this.factory.make('echonest-track-giveitupforlove');
     audioMeta = this.factory.make('audio-meta');

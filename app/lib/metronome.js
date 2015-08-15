@@ -189,7 +189,7 @@ var ClipEvent = Ember.Object.extend(
   },
 
   _executeStart: function(delay) {
-    console.log("execute start", this.get('arrangementClip.clip.track.title'), delay)
+    console.log("execute start", this.get('arrangementClip.clip.track.title'), delay);
     this.setProperties({
       _delayTime: delay,
       isPlaying: true,
@@ -197,7 +197,7 @@ var ClipEvent = Ember.Object.extend(
   },
 
   _executeEnd: function(delay) {
-    console.log("execute end", this.get('arrangementClip.clip.track.title'))
+    console.log("execute end", this.get('arrangementClip.clip.track.title'));
     this.set('isPlaying', false);
   },
 

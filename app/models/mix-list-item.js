@@ -40,7 +40,7 @@ export default DS.Model.extend(
   trackStartBeat: function() {
     var prevItem = this.get('prevItem');
     if (prevItem && prevItem.get('hasValidTransition')) {
-      return this.get('prevTransition.toTrackStartBeat');;
+      return this.get('prevTransition.toTrackStartBeat');
     } else {
       return this.get('track.audioMeta.firstBeat');
     }

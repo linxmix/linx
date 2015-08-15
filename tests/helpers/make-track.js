@@ -35,7 +35,6 @@ export default function(options = {}) {
 
   var audioMeta = this.factory.make('audio-meta', {
     track: track,
-    bpm: 128.00,
     duration: 367.47320,
     bpm: 127.961,
     timeSignature: 4,
@@ -46,4 +45,4 @@ export default function(options = {}) {
   });
 
   return track;
-};
+}

@@ -5,73 +5,6 @@ import _ from 'npm:underscore';
 import RequireAttributes from 'linx/lib/require-attributes';
 import { bpmToBps, isNumber } from 'linx/lib/utils';
 
-export default Ember.Component.extend({
-  classNames: ['WaveSurfer'],
-
-  // expected one of these two params
-  file: null,
-  streamUrl: null,
-
-  // optional params
-  audioBpm: null,
-  isPlaying: false,
-  seekTime: 0,
-  waveParams: null,
-  pxPerBeat: 15,
-  disableMouseInteraction: false,
-
-  // params
-  pitch: 0, // semitones
-  tempo: 1, // rate
-  volume: 0,
-  session: Ember.inject.service(),
-  wave: Ember.computed(function() {
-    return Wave.create({ component: this });
-  }),
-
-  onWaveLoad: function() {
-    if (this.get('wave.isLoaded')) {
-      this.sendAction('didLoadWave');
-    }
-  }.observes('wave.isLoaded').on('init'),
-
-  initWave: function() {
-    var wave = this.get('wave');
-
-    var params = {
-      container: this.$('.WaveSurfer-wave')[0],
-      audioContext: this.get('session.audioContext')
-    };
-
-    wave.initWavesurfer(params);
-  }.on('didInsertElement'),
-
-  destroyWave: function() {
-    var wave = this.get('wave');
-    wave && wave.destroy();
-  }.on('willDestroyElement'),
-});
-
-// TODO(WAVECOLOR): remove hack
-const WAVE_COLORS = [{
-    wave: 'violet',
-    progress: 'purple'
-  }, {
-    wave: 'steelblue',
-    progress: 'darkblue'
-  },
-];
-
-// {
-//   wave: 'coral',
-//   progress: 'orangered'
-// }
-
-var waveColor = 0;
-function getWaveColor() {
-  return WAVE_COLORS[waveColor++ % WAVE_COLORS.length];
-};
-
 // Wraps Wavesurfer
 export const Wave = Ember.Object.extend(
   RequireAttributes('component'), {
@@ -272,3 +205,71 @@ export const Wave = Ember.Object.extend(
   },
 
 });
+
+
+export default Ember.Component.extend({
+  classNames: ['WaveSurfer'],
+
+  // expected one of these two params
+  file: null,
+  streamUrl: null,
+
+  // optional params
+  audioBpm: null,
+  isPlaying: false,
+  seekTime: 0,
+  waveParams: null,
+  pxPerBeat: 15,
+  disableMouseInteraction: false,
+
+  // params
+  pitch: 0, // semitones
+  tempo: 1, // rate
+  volume: 0,
+  session: Ember.inject.service(),
+  wave: Ember.computed(function() {
+    return Wave.create({ component: this });
+  }),
+
+  onWaveLoad: function() {
+    if (this.get('wave.isLoaded')) {
+      this.sendAction('didLoadWave');
+    }
+  }.observes('wave.isLoaded').on('init'),
+
+  initWave: function() {
+    var wave = this.get('wave');
+
+    var params = {
+      container: this.$('.WaveSurfer-wave')[0],
+      audioContext: this.get('session.audioContext')
+    };
+
+    wave.initWavesurfer(params);
+  }.on('didInsertElement'),
+
+  destroyWave: function() {
+    var wave = this.get('wave');
+    wave && wave.destroy();
+  }.on('willDestroyElement'),
+});
+
+// TODO(WAVECOLOR): remove hack
+const WAVE_COLORS = [{
+    wave: 'violet',
+    progress: 'purple'
+  }, {
+    wave: 'steelblue',
+    progress: 'darkblue'
+  },
+];
+
+// {
+//   wave: 'coral',
+//   progress: 'orangered'
+// }
+
+var waveColor = 0;
+function getWaveColor() {
+  return WAVE_COLORS[waveColor++ % WAVE_COLORS.length];
+}

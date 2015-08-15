@@ -58,7 +58,7 @@ export default Ember.Component.extend(
 
     return this.getWithDefault('markers', []).filter((marker) => {
       var markerStart = marker.get('start');
-      return markerStart >= startTime && markerStart <= endTime
+      return markerStart >= startTime && markerStart <= endTime;
     });
   }.property('startTime', 'endTime', 'markers.@each.start'),
 });

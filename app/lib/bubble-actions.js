@@ -15,7 +15,7 @@ export default function(...actions) {
   var actionsHash = actions.reduce((actionsHash, actionName) => {
     actionsHash[actionName] = function(...actionArgs) {
       this.sendAction.apply(this, [actionName].concat(actionArgs));
-    }
+    };
     return actionsHash;
   }, {});
 

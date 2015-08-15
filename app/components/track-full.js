@@ -21,7 +21,7 @@ export default Ember.Component.extend(
     var audioParams = this.get('echonestTrack.audioParams') || [];
     return audioParams.reject(function(param) {
       return EXCLUDE_PARAMs.contains(param.key);
-    })
+    });
   }.property('echonestTrack.audioParams'),
 
   // TODO: remove hack

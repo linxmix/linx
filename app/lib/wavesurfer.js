@@ -1,3 +1,5 @@
+/* global SimpleFilter:true */
+
 import Wavesurfer from 'npm:wavesurfer.js';
 import SoundTouch from 'linx/lib/soundtouch';
 import { WebAudioBufferSource, getWebAudioNode } from 'linx/lib/soundtouch';

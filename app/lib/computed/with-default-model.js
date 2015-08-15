@@ -54,4 +54,4 @@ export default function(relPath, createModelFn) {
       return value;
     }
   });
-};
+}

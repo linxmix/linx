@@ -1,5 +1,5 @@
 import Ember from 'ember';
-import BubbleActions from 'linx/lib/bubble-actions'
+import BubbleActions from 'linx/lib/bubble-actions';
 
 export default Ember.Component.extend(
   BubbleActions('playpause', 'skipBack', 'skipForth'), {

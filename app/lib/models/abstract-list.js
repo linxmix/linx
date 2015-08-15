@@ -90,4 +90,4 @@ export default function(itemModelName) {
   };
 
   return Ember.Mixin.create(mixinParams);
-};
+}
