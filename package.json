@@ -53,7 +53,7 @@
     "semantic-ui-ember": "0.0.1",
     "underscore": "^1.8.3",
     "waaclock": "^0.5.2",
-    "wavesurfer.js": "^1.0.27"
+    "wavesurfer.js": "1.0.27"
   },
   "dependencies": {
     "ember-browserify": "^1.0.1",
