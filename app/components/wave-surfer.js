@@ -178,12 +178,12 @@ export const Wave = Ember.Object.extend(
     wavesurfer.on('loading', function(percent, xhr) {
       // TODO: do something with xhr?
       wave.set('isLoaded', false);
-      progress.onProgress(percent);
+      // progress.onProgress(percent);
     });
 
     wavesurfer.on('ready', function() {
       wave.set('isLoaded', true);
-      progress.onFinish();
+      // progress.onFinish();
     });
 
     wavesurfer.on('reset', function() {

@@ -3,7 +3,7 @@ import Metronome from 'linx/lib/metronome';
 import RequireAttributes from 'linx/lib/require-attributes';
 import _ from 'npm:underscore';
 
-// sequences arrangementClips as events against metronome
+// sequences arrangementItems as events against metronome
 // wraps imperative behaviour to avoid overhead of realtime computed properties
 // exposes metronome, clipEvents, isPlaying, isReady and playback actions
 export default Ember.Mixin.create(
@@ -42,24 +42,24 @@ export default Ember.Mixin.create(
   // TODO: why do computed props not work here?
   notReady: Ember.computed.not('isReady'),
   readyClips: function() {
-    return this.getWithDefault('_arrangementClips', []).filterBy('isReady');
-  }.property('_arrangementClips.@each.isReady'),
+    return this.getWithDefault('_arrangementItems', []).filterBy('isReady');
+  }.property('_arrangementItems.@each.isReady'),
   isReady: function() {
-    return this.get('_arrangementClips.length') === this.get('readyClips.length');
-  }.property('_arrangementClips.[]', 'readyClips.[]'),
+    return this.get('_arrangementItems.length') === this.get('readyClips.length');
+  }.property('_arrangementItems.[]', 'readyClips.[]'),
 
   clipEvents: Ember.computed(function() { return []; }),
 
-  _arrangementClips: Ember.computed.oneWay('arrangement.clips'),
-  _arrangementClipsWithEvents: Ember.computed.mapBy('clipEvents', 'arrangementClip'),
-  _arrangementClipsWithoutEvents: Ember.computed.setDiff('_arrangementClips', '_arrangementClipsWithEvents'),
+  _arrangementItems: Ember.computed.oneWay('arrangement.items'),
+  _arrangementItemsWithEvents: Ember.computed.mapBy('clipEvents', 'arrangementItem'),
+  _arrangementItemsWithoutEvents: Ember.computed.setDiff('_arrangementItems', '_arrangementItemsWithEvents'),
   _updateClipEvents: function() {
     var clipEvents = this.get('clipEvents');
     var metronome = this.get('metronome');
 
-    this.get('_arrangementClipsWithoutEvents').map((clip) => {
-      var clipEvent = metronome.createClipEvent(clip);
+    this.get('_arrangementItemsWithoutEvents').map((item) => {
+      var clipEvent = metronome.createClipEvent(item);
       clipEvents.pushObject(clipEvent);
     });
-  }.observes('_arrangementClipsWithoutEvents.[]', 'metronome', 'clipEvents').on('init'),
+  }.observes('_arrangementItemsWithoutEvents.[]', 'metronome', 'clipEvents').on('init'),
 });

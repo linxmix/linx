@@ -14,8 +14,14 @@ export default Ember.Component.extend(
   actions: {
     playpause: function() {
       this.toggleProperty('isPlaying');
+    },
+
+    queueTrack(track) {
+      this.get('session').queueTrack(track);
     }
   },
+
+  session: Ember.inject.service(),
 
   displayAudioParams: function() {
     var audioParams = this.get('echonestTrack.audioParams') || [];

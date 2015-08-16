@@ -119,6 +119,8 @@ export default DS.Model.extend(
       });
       currBeat += numTrackBeats;
 
+      debugger
+
       // TODO(TRANSITION): then add transition
       if (item.get('hasValidTransition')) {
         // arrangement.appendArrangement(currBeat, item.get('transition.template'));

@@ -69,9 +69,10 @@ export default Ember.Object.extend(
     return this.get('absSeekTime') + this._getPlayedTime();
   },
 
-  createClipEvent: function(clip) {
+  createClipEvent: function(item) {
+    console.log('createClipEvent', item, item.get('clip.content'))
     return ClipEvent.create({
-      arrangementClip: clip,
+      arrangementItem: item,
       metronome: this,
       clock: this.get('_clock'),
     });
@@ -106,14 +107,14 @@ export default Ember.Object.extend(
   },
 });
 
-// binds an arrangementClip to the metronome as a ClipEvent
+// binds an arrangementItem to the metronome as a ClipEvent
 var ClipEvent = Ember.Object.extend(
-  RequireAttributes('arrangementClip', 'metronome', 'clock'), {
+  RequireAttributes('arrangementItem', 'metronome', 'clock'), {
 
   // params
-  startBeat: Ember.computed.alias('arrangementClip.startBeat'),
-  endBeat: Ember.computed.alias('arrangementClip.endBeat'),
-  length: Ember.computed.alias('arrangementClip.length'),
+  startBeat: Ember.computed.alias('arrangementItem.startBeat'),
+  endBeat: Ember.computed.alias('arrangementItem.endBeat'),
+  length: Ember.computed.alias('arrangementItem.length'),
   bpm: Ember.computed.alias('metronome.bpm'),
   isPlaying: false,
 
@@ -189,7 +190,7 @@ var ClipEvent = Ember.Object.extend(
   },
 
   _executeStart: function(delay) {
-    console.log("execute start", this.get('arrangementClip.clip.track.title'), delay);
+    console.log("execute start", this.get('arrangementItem.clip.track.title'), delay);
     this.setProperties({
       _delayTime: delay,
       isPlaying: true,
@@ -197,7 +198,7 @@ var ClipEvent = Ember.Object.extend(
   },
 
   _executeEnd: function(delay) {
-    console.log("execute end", this.get('arrangementClip.clip.track.title'));
+    console.log("execute end", this.get('arrangementItem.clip.track.title'));
     this.set('isPlaying', false);
   },
 

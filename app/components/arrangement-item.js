@@ -5,7 +5,7 @@ import cssStyle from 'linx/lib/computed/css-style';
 export default Ember.Component.extend(
   RequireAttributes('clipEvent', 'pxPerBeat'), {
 
-  classNames: ['ArrangementClip'],
+  classNames: ['ArrangementItem'],
   attributeBindings: ['componentStyle:style'],
 
   componentStyle: cssStyle({
@@ -15,19 +15,19 @@ export default Ember.Component.extend(
 
   // params
   clipEvent: null, // set by arrangementPlayer
-  arrangementClip: Ember.computed.alias('clipEvent.arrangementClip'),
+  arrangementItem: Ember.computed.alias('clipEvent.arrangementItem'),
 
   startPx: function() {
-    return this.beatToPx(this.get('arrangementClip.startBeat')) + 'px';
-  }.property('arrangementClip.startBeat', 'pxPerBeat'),
+    return this.beatToPx(this.get('arrangementItem.startBeat')) + 'px';
+  }.property('arrangementItem.startBeat', 'pxPerBeat'),
 
   endPx: function() {
-    return this.beatToPx(this.get('arrangementClip.endBeat')) + 'px';
-  }.property('arrangementClip.endBeat', 'pxPerBeat'),
+    return this.beatToPx(this.get('arrangementItem.endBeat')) + 'px';
+  }.property('arrangementItem.endBeat', 'pxPerBeat'),
 
   lengthPx: function() {
-    return this.beatToPx(this.get('arrangementClip.length')) + 'px';
-  }.property('arrangementClip.length', 'pxPerBeat'),
+    return this.beatToPx(this.get('arrangementItem.length')) + 'px';
+  }.property('arrangementItem.length', 'pxPerBeat'),
 
   beatToPx: function(beat) {
     return beat * this.get('pxPerBeat'); // beat * (px / beat) = px

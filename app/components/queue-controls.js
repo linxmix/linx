@@ -11,7 +11,7 @@ export default Ember.Component.extend(
   classNameBindings: [],
 
   // params
-  queue: Ember.inject.service(),
-  mix: Ember.computed.alias('queue.mix'),
-  arrangement: Ember.computed.alias('mix.arrangement'),
+  session: Ember.inject.service(),
+  queue: Ember.computed.alias('session.queue'),
+  arrangement: Ember.computed.alias('queue.arrangement'),
 });
