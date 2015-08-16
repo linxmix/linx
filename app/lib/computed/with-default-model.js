@@ -10,11 +10,11 @@ import { assertPromise } from 'linx/lib/utils';
 export default function(relPath, createModelFn) {
   return Ember.computed({
     get: function(key) {
-      var dependentModelId = this.get(`_data.${relPath}`);
+      var dependentModelId = this.get(`_internalModel._relationships.initializedRelationships.${relPath}.inverseRecord.id`);
 
       // if not loaded, wait till loaded and try again
       if (!this.get('isLoaded')) {
-        console.log("Dependent Model - NOT LOADED", key);
+        console.log("WithDefaultModel - NOT LOADED", key);
         return DS.PromiseObject.create({
           promise: new Ember.RSVP.Promise((resolve, reject) => {
             this.one('didLoad', () => {
@@ -27,7 +27,7 @@ export default function(relPath, createModelFn) {
       // if relationship is empty, create default
       // TODO: leave saving up to the implementer?
       else if (!dependentModelId) {
-        console.log("Dependent Model - EMPTY", key, this.get('id'));
+        console.log("WithDefaultModel - EMPTY", key, this.get('id'));
         return DS.PromiseObject.create({
           promise: assertPromise(createModelFn.call(this)).then((model) => {
             return model.save().then(() => {
@@ -42,14 +42,14 @@ export default function(relPath, createModelFn) {
 
       // if relationship is filled, return as normal
       else {
-        console.log("Dependent Model - NORMAL", key);
+        console.log("WithDefaultModel - NORMAL", key);
         return this.get(relPath);
       }
 
     },
 
     set: function(key, value) {
-      console.log("Dependent Model - SETTER", key);
+      console.log("WithDefaultModel - SETTER", key);
       this.set(relPath, value);
       return value;
     }

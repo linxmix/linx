@@ -19,9 +19,9 @@ import _ from 'npm:underscore';
 export default DS.RESTAdapter.extend({
   defaultSerializer: 'echonest',
   ajax: ajax,
-  host: ENV.echonest && ENV.echonest.host ||  'http://developer.echonest.com',
-  namespace: ENV.echonest && ENV.echonest.namespace || 'api/v4',
-  api_key: ENV.echonest && ENV.echonest.api_key || ENV.ECHONEST_KEY,
+  host: 'http://developer.echonest.com',
+  namespace: 'api/v4',
+  api_key: ENV.ECHONEST_KEY,
 
   /**
     Called by 'find' and 'findQuery' and performs an HTTP `GET` request with default params
@@ -33,7 +33,7 @@ export default DS.RESTAdapter.extend({
 
     'bucket' is passed as into 'data' if available, if not is is taken from the model.
 
-    @method get
+    @method getAjax
     @param {subclass of DS.Model} type
     @param {String} url
     @param {object} data
@@ -41,7 +41,7 @@ export default DS.RESTAdapter.extend({
     @return {Promise} promise
   */
 
-  get: function (type, url, data, bucket, ajaxOptions = {}) {
+  getAjax: function (type, url, data, bucket, ajaxOptions = {}) {
     data = Ember.merge({
       api_key: this.api_key,
       format: 'json',
@@ -75,26 +75,26 @@ export default DS.RESTAdapter.extend({
   },
 
   /**
-    Overrides DS.RESTAdapter.find to call 'get' with a url and query containing
+    Overrides DS.RESTAdapter.findRecord to call 'getAjax' with a url and query containing
     the required record's ID
 
-    @method find
+    @method findRecord
     @param {DS.Store} store
     @param {subclass of DS.Model} type
     @param {String} id
     @return {Promise} promise
   */
 
-  find: function(store, type, id) {
+  findRecord: function(store, type, id) {
     var query = {
       id: id
     };
 
-    return this.get(type, [this.buildURL(type.modelName), 'profile'].join('/'), query);
+    return this.getAjax(type, [this.buildURL(type.modelName), 'profile'].join('/'), query);
   },
 
   /**
-    Overrides DS.RESTAdapter.findQuery to call 'get' with a url and query
+    Overrides DS.RESTAdapter.findQuery to call 'getAjax' with a url and query
 
     @method findQuery
     @param {DS.Store} store
@@ -104,11 +104,11 @@ export default DS.RESTAdapter.extend({
   */
 
   findQuery: function(store, type, query) {
-    return this.get(type, [this.buildURL(type.modelName), 'search'].join('/'), query);
+    return this.getAjax(type, [this.buildURL(type.modelName), 'search'].join('/'), query);
   },
 
   /**
-    Overrides DS.RESTAdapter.findHasMany to call 'get' with a url and query
+    Overrides DS.RESTAdapter.findHasMany to call 'getAjax' with a url and query
 
     @method findHasMany
     @param {DS.Store} store
@@ -119,7 +119,7 @@ export default DS.RESTAdapter.extend({
 
   findHasMany: function (store, record, url) {
     var type = record.constructor;
-    return this.get(type, [this.buildURL(), url].join('/'), {id: record.get('id')});
+    return this.getAjax(type, [this.buildURL(), url].join('/'), {id: record.get('id')});
   },
 
   /**
