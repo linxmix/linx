@@ -1,5 +1,4 @@
 import Ember from 'ember';
-import Progress from 'linx/lib/progress';
 import Wavesurfer from 'linx/lib/wavesurfer';
 import _ from 'npm:underscore';
 import RequireAttributes from 'linx/lib/require-attributes';
@@ -24,7 +23,6 @@ export const Wave = Ember.Object.extend(
   audioBpm: Ember.computed.alias('component.audioBpm'),
   isPlaying: Ember.computed.alias('component.isPlaying'),
   disableMouseInteraction: Ember.computed.alias('component.disableMouseInteraction'),
-  isLoading: Ember.computed.alias('progress.isLoading'),
   isLoaded: false,
   defaultParams: Ember.computed(function() {
     var colorOptions = getWaveColor();
@@ -42,7 +40,6 @@ export const Wave = Ember.Object.extend(
       interact: !this.get('disableMouseInteraction'),
     };
   }),
-  progress: Ember.computed(function() { return Progress.create(); }),
 
   updatePlayState: function() {
     var wavesurfer = this.get('wavesurfer');

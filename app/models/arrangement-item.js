@@ -11,7 +11,7 @@ export default DS.Model.extend(
   row: DS.attr('number'), // in complex display
   startBeat: DS.attr('number'),
 
-  lengthBeats: Ember.computed.alias('clip.lengthBeats'),
+  numBeats: Ember.computed.alias('clip.numBeats'),
   endBeat: Ember.computed.alias('clip.endBeat'),
 
   type: Ember.computed.alias('clip.type'),

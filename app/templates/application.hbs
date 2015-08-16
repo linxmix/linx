@@ -1,13 +1,16 @@
-<div class="application">
+<div class="application pushable">
   {{site-nav}}
 
   <div class="main-container pusher">
     {{outlet}}
   </div>
 
+  {{#bottom-bar isActive=isBottomBarActive}}
+    {{queue-controls}}
+  {{/bottom-bar}}
 </div>
 
-{{!-- 
+{{!--
   {{#arrangement-grid arrangement=arrangement}}
     {{#each row in arrangement.sortedRows}}
       {{#arrangement-row row=row}}

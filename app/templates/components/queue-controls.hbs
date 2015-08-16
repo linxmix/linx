@@ -1,0 +1,25 @@
+{{play-buttons
+  isPlaying=isPlaying
+  isDisabled=notReady
+  playpause="playpause"
+  skipBack="skipBack"
+  skipForth="skipForth"
+}}
+
+{{#simple-arrangement
+  arrangement=arrangement
+  metronome=metronome
+  isReady=isReady
+  pxPerBeat=pxPerBeat
+  seekToBeat="seekToBeat"
+}}
+  {{#arrangement-row size="mini"}}
+    {{#each clipEvent in clipEvents}}
+      {{arrangement-clip
+        clipEvent=clipEvent
+        metronome=metronome
+        pxPerBeat=pxPerBeat
+      }}
+    {{/each}}
+  {{/arrangement-row}}
+{{/simple-arrangement}}

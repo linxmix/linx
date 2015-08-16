@@ -66,7 +66,7 @@ describe('MixListItem', function() {
       hasValidTransition: false,
       trackStartBeat() { return track.get('audioMeta.firstBeat'); },
       trackEndBeat() { return track.get('audioMeta.lastBeat'); },
-      trackLengthBeats() { return track.get('audioMeta.numBeats'); },
+      numTrackBeats() { return track.get('audioMeta.numBeats'); },
     });
   });
 
@@ -107,7 +107,7 @@ describe('MixListItem', function() {
       hasValidTransition: false,
       trackStartBeat() { return fromTrack.get('audioMeta.firstBeat'); },
       trackEndBeat() { return fromTrack.get('audioMeta.lastBeat'); },
-      trackLengthBeats() { return fromTrack.get('audioMeta.numBeats'); },
+      numTrackBeats() { return fromTrack.get('audioMeta.numBeats'); },
     });
   });
 

@@ -10,9 +10,10 @@ export default DS.Model.extend(
 
   mix: DS.belongsTo('mix', { async: true }),
 
-  prevTransition: Ember.computed.alias('prevItem.transition'),
   track: DS.belongsTo('track', { async: true }),
   transition: DS.belongsTo('transition', { async: true }),
+
+  prevTransition: Ember.computed.alias('prevItem.transition'),
   nextTrack: Ember.computed.alias('nextItem.track'),
 
   insertTrack: function(track) {
@@ -34,7 +35,6 @@ export default DS.Model.extend(
     return this.destroyRecord();
   },
 
-  numTransitionBeats: Ember.computed.alias('transition.numBeats'),
 
   // calculate starting beat of this item's track, based on prevItem.transition
   trackStartBeat: function() {
@@ -55,9 +55,13 @@ export default DS.Model.extend(
     }
   }.property('hasValidTransition', 'transition.fromTrackEndBeat', 'track.audioMeta.lastBeat'),
 
-  trackLengthBeats: function() {
+  numTrackBeats: function() {
     return this.get('trackEndBeat') - this.get('trackStartBeat');
   }.property('trackEndBeat', 'trackStartBeat'),
+  numTransitionBeats: Ember.computed.alias('transition.numBeats'),
+
+  beatParts: Ember.computed.collect('numTrackBeats', 'numTransitionBeats'),
+  numBeats: Ember.computed.sum('beatParts'),
 
   hasTransition: Ember.computed.bool('transition.content'),
   fromTrackIsValid: equalProps('track.content', 'transition.fromTrack.content'),

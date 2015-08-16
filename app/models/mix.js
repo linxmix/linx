@@ -109,17 +109,15 @@ export default DS.Model.extend(
       var track = item.get('track');
 
       // add track to arrangement
-      var trackLengthBeats = item.get('trackLengthBeats');
+      var numTrackBeats = item.get('numTrackBeats');
       var trackClip = store.createRecord('track-clip', {
-        track: track,
-        startBeat: item.get('trackStartBeat'),
-        lengthBeats: trackLengthBeats
+        mixItem: item
       });
       var trackArrangementItem = arrangement.appendItem({
         clip: trackClip,
         startBeat: currBeat,
       });
-      currBeat += trackLengthBeats;
+      currBeat += numTrackBeats;
 
       // TODO(TRANSITION): then add transition
       if (item.get('hasValidTransition')) {
@@ -129,6 +127,6 @@ export default DS.Model.extend(
     }
 
     return arrangement;
-  }.property('items.@each.track', 'items.@each.trackStartBeat', 'items.@each.trackLengthBeats', 'items.@each.transitionLengthBeats'),
+  }.property('items.@each.track', 'items.@each.trackStartBeat', 'items.@each.numTrackBeats', 'items.@each.transitionLengthBeats'),
 
 });

@@ -9,11 +9,11 @@ export default Clip.extend({
   type: Ember.computed(() => { return 'audio-clip'; }),
 
   startBeat: DS.attr('number'), // starting beat in audio
-  lengthBeats: DS.attr('number'), // length of audio-clip, in beats
+  numBeats: DS.attr('number'), // length of audio-clip, in beats
 
   endBeat: function() {
-    return this.get('startBeat') + this.get('lengthBeats');
-  }.property('startBeat', 'lengthBeats'),
+    return this.get('startBeat') + this.get('numBeats');
+  }.property('startBeat', 'numBeats'),
 
   // TODO: move isAudioLoaded into ex track.audio.isLoaded?
   isReady: Ember.computed.and('isLoaded', 'isAudioLoaded', 'track.isLoaded', 'track.audioMeta.isLoaded'),
@@ -32,13 +32,13 @@ export default Clip.extend({
   }.property('audioMeta.firstBeatMarker.start', 'startBeat', 'bpm'),
 
   lengthTime: function() {
-    return beatToTime(this.get('lengthBeats', this.get('bpm')));
-  }.property('bpm', 'lengthBeats'),
+    return beatToTime(this.get('numBeats', this.get('bpm')));
+  }.property('bpm', 'numBeats'),
 
   endTime: function() {
     // TODO: why doesnt lengthTime work?
-    return this.get('startTime') + beatToTime(this.get('lengthBeats'), this.get('bpm'));
-  }.property('startTime', 'lengthBeats', 'bpm'),
+    return this.get('startTime') + beatToTime(this.get('numBeats'), this.get('bpm'));
+  }.property('startTime', 'numBeats', 'bpm'),
 
   // TODO: turn into section of audioBuffer
   track: DS.belongsTo('track', { async: true }),

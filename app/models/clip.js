@@ -17,8 +17,8 @@ export default DS.Model.extend({
     throw new Error('Must implement computed property: clip.type');
   }.property(),
 
-  lengthBeats: function() {
-    throw new Error('Must implement computed property: clip.lengthBeats');
+  numBeats: function() {
+    throw new Error('Must implement computed property: clip.numBeats');
   }.property(),
 
   isReady: function() {
