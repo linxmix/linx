@@ -1,10 +1,11 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-import AbstractListItemMixin from 'linx/lib/models/abstract-list-item';
 
 // Wraps Clip models to hold arrangement information
 export default DS.Model.extend(
-  AbstractListItemMixin('arrangement'), {
+  RequireAttributes('startBeat', 'numBeats', 'endBeat') ,{
+
+  type: Ember.computed(() => { return 'arrangement-item'; }),
 
   arrangement: DS.belongsTo('arrangement', { async: true }),
 
@@ -14,7 +15,7 @@ export default DS.Model.extend(
   numBeats: Ember.computed.alias('clip.numBeats'),
   endBeat: Ember.computed.alias('clip.endBeat'),
 
-  type: Ember.computed.alias('clip.type'),
+  clipType: Ember.computed.alias('clip.type'),
   isReady: Ember.computed.alias('clip.isReady'),
 
   clip: DS.belongsTo('clip', { polymorphic: true, async: true }),

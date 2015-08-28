@@ -1,10 +1,11 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 import withDefault from 'linx/lib/computed/with-default';
+import _ from 'npm:underscore';
 
-export default function(itemModelName) {
+export default function(itemModelName, relOptions = {}) {
   var mixinParams = {
-    _items: DS.hasMany(itemModelName, { async: true }),
+    _items: DS.hasMany(itemModelName, _.defaults(relOptions, { async: true })),
     items: withDefault('_items.content', []),
 
     dirtyItems: Ember.computed.filterBy('items', 'isDirty'),
@@ -63,8 +64,8 @@ export default function(itemModelName) {
     },
 
     // creates and returns a new item, does NOT insert into list
-    _createItem: function(params) {
-      return this.get('store').createRecord(itemModelName, params);
+    _createItem: function(params = {}) {
+      return this.get('store').createRecord(params.type || itemModelName, params);
     },
 
     // augment destroyRecord to also destroy items
@@ -77,8 +78,12 @@ export default function(itemModelName) {
       return Ember.RSVP.all(promises);
     },
 
-    // augment save to also save new items
+    // augment save to optionally also save new items
     save: function() {
+      if (!relOptions.saveItems) {
+        return this._super.apply(this, arguments);
+      }
+
       var promises = this.get('items').filterBy('isNew').map((item) => {
         return item && item.save();
       });

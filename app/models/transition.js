@@ -31,8 +31,8 @@ export default DS.Model.extend({
   fromTrackEndBeat: Ember.computed('numBeats', 'fromTrackMarker.startBeat', function() {
     return this.get('fromTrackMarker.startBeat') + this.get('numBeats');
   }),
-  toTrackEndBeat: Ember.computed('numBeats', 'toTrackMarker.startBeat', function() {
-    return this.get('toTrackMarker.startBeat') + this.get('numBeats');
+  toTrackStartBeat: Ember.computed('toTrackMarker.startBeat', function() {
+    return this.get('toTrackMarker.startBeat');
   }),
 
   template: DS.belongsTo('transition-template', { async: true }),

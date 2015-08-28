@@ -1,8 +1,11 @@
 import Ember from 'ember';
 import DS from 'ember-data';
+import RequireAttributes from 'linx/lib/require-attributes';
 
 // Base clip model,
-export default DS.Model.extend({
+export default DS.Model.extend(
+  RequireAttributes('startBeat', 'numBeats', 'isReady', 'type') {
+
   arrangementItem: DS.belongsTo('arrangement-item', { async: true }),
 
   play: function(metronome, time) {
@@ -11,17 +14,5 @@ export default DS.Model.extend({
 
   pause: function() {
     throw new Error('Must implement clip.pause');
-  },
-
-  type: function() {
-    throw new Error('Must implement computed property: clip.type');
-  }.property(),
-
-  numBeats: function() {
-    throw new Error('Must implement computed property: clip.numBeats');
-  }.property(),
-
-  isReady: function() {
-    throw new Error('Must implement computed property: clip.isReady');
-  }.property(),
+  }
 });

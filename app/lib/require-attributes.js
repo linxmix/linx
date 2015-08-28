@@ -19,6 +19,6 @@ export default function() {
         Ember.assert('Must specify a ' + attribute + ' to use ' + this.get('constructor'), !Ember.isNone(this.get(attribute)));
       });
       this._super.apply(this, arguments);
-    }.on('init'),
+    }.on('init').on('ready'),
   });
 }

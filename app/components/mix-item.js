@@ -4,7 +4,7 @@ import RequireAttributes from 'linx/lib/require-attributes';
 export default Ember.Component.extend(
   RequireAttributes('item'), {
 
-  classNames: ['MixListItem', 'item'],
+  classNames: ['MixItem', 'item'],
 
   actions: {
     createTransition: function() {

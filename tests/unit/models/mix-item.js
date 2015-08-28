@@ -11,16 +11,16 @@ import makeTrack from 'linx/tests/helpers/make-track';
 import makeTransition from 'linx/tests/helpers/make-transition';
 import describeAttrs from 'linx/tests/helpers/describe-attrs';
 
-describe('MixListItem', function() {
+describe('MixItem', function() {
   setupUnitTest();
 
   let mixItem;
 
   beforeEach(function() {
-    mixItem = this.factory.make('mix-list-item');
+    mixItem = this.factory.make('mix-item');
 
     // TODO(DBSTUB)
-    // this.factoryHelper.handleCreate('mix-list-item');
+    // this.factoryHelper.handleCreate('mix-item');
   });
 
   describe('when empty', function() {
@@ -115,7 +115,7 @@ describe('MixListItem', function() {
     let nextItem;
 
     beforeEach(function() {
-      nextItem = this.factory.make('mix-list-item');
+      nextItem = this.factory.make('mix-item');
 
       mixItem.set('nextItem', nextItem);
       nextItem.set('prevItem', mixItem);

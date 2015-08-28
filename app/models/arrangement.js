@@ -1,10 +1,9 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 import AbstractListMixin from 'linx/lib/models/abstract-list';
-import { flatten } from 'linx/lib/utils';
 
 export default DS.Model.extend(
-  AbstractListMixin('arrangement-item'), {
+  AbstractListMixin('arrangement-item', { polymorphic: true, saveItems: false }), {
 
   // params
   clips: Ember.computed.mapBy('items', 'clip'),
@@ -12,13 +11,14 @@ export default DS.Model.extend(
   trackClips: Ember.computed.filterBy('clips', 'type', 'track-clip'),
   automationClips: Ember.computed.filterBy('clips', 'type', 'automation-clip'),
 
+  itemSort: ['endBeat:asc'],
+  sortedItems: Ember.computed.sort('items', 'itemSort'),
+  lastBeat: Ember.computed.alias('sortedItems.lastObject.lastBeat'),
+  numBeats: Ember.computed.alias('lastBeat'),
+
   appendArrangement: function(startBeat, arrangement) {
     // TODO(TRANSITION)
   },
-
-  totalBeats: function() {
-    // TODO off sortedClips.lastBeat
-  }.property('foo'),
 
   save: function() {
     console.log('save arrangement');
