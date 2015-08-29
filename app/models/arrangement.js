@@ -1,10 +1,10 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-import AbstractListMixin from 'linx/mixins/models/abstract-list';
+import OrderedHasManyMixin from 'linx/mixins/models/ordered-has-many';
 import isEvery from 'linx/lib/computed/is-every';
 
 export default DS.Model.extend(
-  AbstractListMixin('arrangement-event', { polymorphic: true, saveItems: false }), {
+  OrderedHasManyMixin('arrangement-event', { polymorphic: true, saveItems: false }), {
   type: 'arrangement',
 
   // params

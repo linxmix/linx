@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import DS from 'ember-data';
 import {
   beforeEach,
   describe,
@@ -9,15 +10,15 @@ import { expect } from 'chai';
 import setupUnitTest from 'linx/tests/helpers/setup-unit-test';
 import { assertPromise } from 'linx/lib/utils';
 
-// End to end testing of abstract list.
-describe('AbstractList', function() {
+// End to end testing of ordered-has-many and ordered-has-many-item.
+describe('OrderedHasMany', function() {
   setupUnitTest();
 
   let list;
 
   beforeEach(function() {
     Ember.run(() => {
-      list = this.store.createRecord('abstract-list');
+      list = this.store.createRecord('ordered-has-many');
     });
   });
 
@@ -114,7 +115,7 @@ describe('AbstractList', function() {
       });
 
       it('can be fetched from store', function(done) {
-        this.store.find('abstract-list', list.get('id')).then((storedList) => {
+        this.store.find('ordered-has-many', list.get('id')).then((storedList) => {
           expect(storedList).to.equal(list);
           done();
         });

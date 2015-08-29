@@ -1,9 +1,9 @@
 import DS from 'ember-data';
-import AbstractListItemMixin from 'linx/mixins/models/abstract-list-item';
+import OrderedHasManyItemMixin from 'linx/mixins/models/ordered-has-many-item';
 
 // Model exists solely for testing
 export default DS.Model.extend(
-  AbstractListItemMixin('list'), {
+  OrderedHasManyItemMixin('list'), {
 
   list: DS.belongsTo('abstract-list', { async: true }),
 });

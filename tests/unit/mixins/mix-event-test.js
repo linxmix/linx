@@ -11,20 +11,20 @@ import makeTrack from 'linx/tests/helpers/make-track';
 import makeTransition from 'linx/tests/helpers/make-transition';
 import describeAttrs from 'linx/tests/helpers/describe-attrs';
 
-describe('MixItem', function() {
+describe('MixEvent', function() {
   setupUnitTest();
 
   let mixItem;
 
   beforeEach(function() {
-    mixItem = this.factory.make('mix-item');
+    mixItem = this.factory.make('mix-event');
 
     // TODO(DBSTUB)
-    // this.factoryHelper.handleCreate('mix-item');
+    // this.factoryHelper.handleCreate('mix-event');
   });
 
   describe('when empty', function() {
-    describeAttrs('mix-item', {
+    describeAttrs('mix-event', {
       subject() { return mixItem; },
       hasTransition: false,
       timesAreValid: false,
@@ -57,7 +57,7 @@ describe('MixItem', function() {
       });
     });
 
-    describeAttrs('mix-item', {
+    describeAttrs('mix-event', {
       subject() { return mixItem; },
       hasTransition: false,
       timesAreValid: false,
@@ -98,7 +98,7 @@ describe('MixItem', function() {
       });
     });
 
-    describeAttrs('mix-item', {
+    describeAttrs('mix-event', {
       subject() { return mixItem; },
       hasTransition: true,
       timesAreValid: true,
@@ -115,7 +115,7 @@ describe('MixItem', function() {
     let nextItem;
 
     beforeEach(function() {
-      nextItem = this.factory.make('mix-item');
+      nextItem = this.factory.make('mix-event');
 
       mixItem.set('nextItem', nextItem);
       nextItem.set('prevItem', mixItem);
@@ -147,7 +147,7 @@ describe('MixItem', function() {
         });
       });
 
-      describeAttrs('mix-item', {
+      describeAttrs('mix-event', {
         subject() { return mixItem; },
         hasTransition: true,
         timesAreValid: true,
@@ -170,7 +170,7 @@ describe('MixItem', function() {
           transition.setFromTrackEnd(-100);
         });
 
-        describeAttrs('mix-item', {
+        describeAttrs('mix-event', {
           subject() { return mixItem; },
           hasTransition: true,
           timesAreValid: false,

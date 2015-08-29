@@ -1,13 +1,13 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
-import AbstractListItemMixin from 'linx/mixins/models/abstract-list-item';
+import OrderedHasManyItemMixin from 'linx/mixins/models/ordered-has-many-item';
 
 import add from 'linx/lib/computed/add';
 
 // Wraps Clip models to hold arrangement information
 export default DS.Model.extend(
-  AbstractListItemMixin('arrangement'),
+  OrderedHasManyItemMixin('arrangement'),
   RequireAttributes('startBeat', 'numBeats', 'endBeat'), {
   type: 'arrangement-event',
 
