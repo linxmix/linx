@@ -5,6 +5,10 @@ import _ from 'npm:underscore';
 
 export default function(itemModelName, relOptions = {}) {
   let mixinParams = {
+
+    // config
+    saveItems: false,
+
     _items: DS.hasMany(itemModelName, _.defaults(relOptions, { async: true })),
     items: withDefault('_items.content', []),
 
@@ -80,7 +84,7 @@ export default function(itemModelName, relOptions = {}) {
 
     // augment save to optionally also save new items
     save: function() {
-      if (!relOptions.saveItems) {
+      if (!this.get('saveItems')) {
         return this._super.apply(this, arguments);
       }
 

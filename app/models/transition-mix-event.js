@@ -6,11 +6,12 @@ import MixEventMixin from 'linx/mixins/models/mix-event';
 
 import { isNumber } from 'linx/lib/utils';
 import equalProps from 'linx/lib/computed/equal-props';
+import subtract from 'linx/lib/computed/subtract';
 
 export default ArrangementEvent.extend(MixEventMixin('transition'), {
   transition: Ember.computed.reads('clip.transition'),
 
-  startBeat: subract('prevEvent.endBeat', 'transition.numBeats'), // overlap
+  startBeat: subtract('prevEvent.endBeat', 'transition.numBeats'), // overlap
   isValid: Ember.computed.and('hasTransition', 'timesAreValid', 'fromTrackIsValid', 'toTrackIsValid'),
   isValidTransition: Ember.computed.reads('isValid'),
 

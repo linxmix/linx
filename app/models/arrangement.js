@@ -4,7 +4,7 @@ import OrderedHasManyMixin from 'linx/mixins/models/ordered-has-many';
 import isEvery from 'linx/lib/computed/is-every';
 
 export default DS.Model.extend(
-  OrderedHasManyMixin('arrangement-event', { polymorphic: true, saveItems: false }), {
+  OrderedHasManyMixin('arrangement-event', { polymorphic: true }), {
   type: 'arrangement',
 
   // params

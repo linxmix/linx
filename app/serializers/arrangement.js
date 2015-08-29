@@ -1,4 +1,4 @@
 import DS from 'ember-data';
-import AbstractListSerializer from './abstract-list-serializer';
+import OrderedHasManySerializer from './ordered-has-many';
 
-export default AbstractListSerializer;
+export default OrderedHasManySerializer;

@@ -7,5 +7,5 @@ export default function(...props) {
     return _.rest(props).reduce((remaining, prop) => {
       return remaining - this.get(prop);
     }, this.get(props.get('firstObject')));
-  });
+  }));
 }

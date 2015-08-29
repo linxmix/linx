@@ -1,10 +1,10 @@
 import Ember from 'ember';
 import DS from 'ember-data';
+
 import RequireAttributes from 'linx/lib/require-attributes';
 
-// Base clip model
 export default DS.Model.extend(
-  RequireAttributes('numBeats', 'isReady', 'type') {
+  RequireAttributes('numBeats', 'isReady', 'type'), {
 
   arrangementEvent: DS.belongsTo('arrangement-event', { async: true, polymorphic: true }),
 

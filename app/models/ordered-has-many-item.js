@@ -5,5 +5,5 @@ import OrderedHasManyItemMixin from 'linx/mixins/models/ordered-has-many-item';
 export default DS.Model.extend(
   OrderedHasManyItemMixin('list'), {
 
-  list: DS.belongsTo('abstract-list', { async: true }),
+  list: DS.belongsTo('ordered-has-many', { async: true }),
 });

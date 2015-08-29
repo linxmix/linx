@@ -70,8 +70,8 @@ export default Ember.Object.extend(
   },
 
   createClipEvent: function(item) {
-    console.log('createClipEvent', item, item.get('clip.content'))
-    return ClipEvent.create({
+    console.log('createClipEvent', item, item.get('clip.content'));
+    return ArrangementEvent.create({
       arrangementItem: item,
       metronome: this,
       clock: this.get('_clock'),

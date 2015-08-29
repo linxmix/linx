@@ -3,6 +3,8 @@ import DS from 'ember-data';
 
 import RequireAttributes from 'linx/lib/require-attributes';
 import withDefault from 'linx/lib/computed/with-default';
+import withDefaultModel from 'linx/lib/computed/with-default-model';
+import { variableTernary } from 'linx/lib/computed/ternary';
 
 export default function(type) {
   let eventType = `${type}-mix-event`;
