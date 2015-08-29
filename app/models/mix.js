@@ -5,11 +5,13 @@ import withDefaultModel from 'linx/lib/computed/with-default-model';
 import filterEmpty from 'linx/lib/computed/filter-empty';
 import { flatten } from 'linx/lib/utils';
 import add from 'linx/lib/computed/add';
+import Arrangement from './arrangement';
 
-export default DS.Model.extend(
-  AbstractListMixin('mix-item', { polymorphic: true }), {
+export default Arrangement.extend({
 
   title: DS.attr('string'),
+
+  validItems: Ember.computed.filterBy('items', 'isValid', true),
 
   // params
   tracks: function() {
@@ -20,8 +22,6 @@ export default DS.Model.extend(
 
   numTracks: Ember.computed.alias('tracks.length'),
   numTransitions: Ember.computed.alias('nonEmptyTransitions.length'),
-
-  numBeats: Ember.computed.alias('items.lastObject.endBeat'),
 
   // adds arrangements when appending given transition
   appendTransitionWithTracks: function(transition) {
@@ -98,10 +98,5 @@ export default DS.Model.extend(
   removeTransitionAt: function(index) {
     var mixItem = this.objectAt(index);
     return mixItem && mixItem.removeTransition();
-  },
-
-  _arrangement: DS.belongsTo('arrangement', { async: true }),
-  arrangement: withDefaultModel('_arrangement', function() {
-    return this.get('store').createRecord('arrangement');
-  }),
+  }
 });

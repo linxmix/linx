@@ -107,27 +107,29 @@ export default Ember.Object.extend(
   },
 });
 
-// binds an arrangementItem to the metronome as a ClipEvent
-var ClipEvent = Ember.Object.extend(
+// TODO(TRANSITION)
+// binds arrangementItem and clip to the metronome
+var ArrangementEvent = Ember.Object.extend(
   RequireAttributes('arrangementItem', 'metronome', 'clock'), {
 
   // params
+  clip: Ember.computed.reads('arrangementItem.clip'),
   startBeat: Ember.computed.alias('arrangementItem.startBeat'),
   endBeat: Ember.computed.alias('arrangementItem.endBeat'),
-  length: Ember.computed.alias('arrangementItem.length'),
+  numBeats: Ember.computed.alias('arrangementItem.numBeats'),
   bpm: Ember.computed.alias('metronome.bpm'),
   isPlaying: false,
 
   clipSeekBeat: function() {
     var seekBeat = this.get('_seekBeat');
     var delayBeats = this.get('_delayBeats');
-    var length = this.get('length');
+    var numBeats = this.get('numBeats');
 
     // factor in delay
     seekBeat += delayBeats;
 
-    return clamp(0, seekBeat, length);
-  }.property('_seekBeat', 'length', '_delayBeats'),
+    return clamp(0, seekBeat, numBeats);
+  }.property('_seekBeat', 'numBeats', '_delayBeats'),
 
   // internal params
   _delayTime: 0,

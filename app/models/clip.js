@@ -4,7 +4,7 @@ import RequireAttributes from 'linx/lib/require-attributes';
 
 // Base clip model,
 export default DS.Model.extend(
-  RequireAttributes('startBeat', 'numBeats', 'isReady', 'type') {
+  RequireAttributes('numBeats', 'isReady', 'type') {
 
   arrangementItem: DS.belongsTo('arrangement-item', { async: true }),
 

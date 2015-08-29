@@ -10,7 +10,7 @@ import {
 
 export default DS.Model.extend({
   title: DS.attr('string'),
-  numBeats: DS.attr('number'),
+  isTemplate: DS.attr('boolean'),
 
   _fromTrackMarker: DS.belongsTo('marker', { async: true }),
   fromTrackMarker: withDefaultModel('_fromTrackMarker', function() {
@@ -35,10 +35,11 @@ export default DS.Model.extend({
     return this.get('toTrackMarker.startBeat');
   }),
 
-  template: DS.belongsTo('transition-template', { async: true }),
-
   fromTrack: DS.belongsTo('track', { async: true }),
   toTrack: DS.belongsTo('track', { async: true }),
+  arrangement: DS.belongsTo('arrangement', { async: true }),
+
+  numBeats: Ember.computed.reads('arrangement.numBeats'),
 
   // sets fromTrackMarker to given time in fromTrack
   setFromTrackEnd: function(time) {

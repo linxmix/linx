@@ -1,24 +1,19 @@
-import MixItem from './mix-item';
 import Ember from 'ember';
 import DS from 'ember-data';
-import equalProps from 'linx/lib/computed/equal-props';
-import { isNumber } from 'linx/lib/utils';
 
-// Mix item which contains a mix
-export default MixItem.extend({
-  type: Ember.computed(() => { return 'mix-mix-item'; }),
+import ArrangementItem from './arrangement-item';
+import MixListItemMixin from 'linx/mixins/models/mix-list-item';
 
-  model: DS.belongsTo('mix', { async: true }),
-  mix: Ember.computed.alias('model'),
-  tracks: Ember.computed.mapBy('mix.tracks', 'content'),
+import { variableTernary } from 'linx/lib/computed/ternary';
 
-  clipStartBeatWithoutTransition: Ember.computed.alias('mix.items.firstObject.clipStartBeat'),
-  clipStartBeatWithTransition: Ember.computed.alias('prevTransition.toTrackStartBeat'),
+export default ArrangementItem.extend(MixListItemMixin, {
+  type: 'mix-mix-item',
 
-  clipEndBeatWithoutTransition: Ember.computed.alias('mix.numBeats'),
-  clipEndBeatWithTransition: function() {
-    let numBeats = this.get('mix.numBeats');
-    let delta = this.get('mix.items.lastObject.clipEndBeat') - this.get('transition.fromTrackEndBeat');
-    return numBeats - delta;
-  }.property('mix.numBeats', 'mix.items.lastObject.clipEndBeat', 'transition.fromTrackEndBeat'),
+  nestedMix: DS.belongsTo('mix', { async: true }),
+  tracks: Ember.computed.reads('nestedMix.tracks'),
+
+  _clip: DS.belongsTo('mix-mix-item-clip', { async: true }),
+  clip: withDefaultModel('_clip', function() {
+    return this.get('store').createRecord('mix-mix-item-clip');
+  }),
 });

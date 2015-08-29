@@ -1,46 +1,22 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-import MixItem from './mix-item';
-import { isNumber } from 'linx/lib/utils';
 
-// Mix item which contains a track
-export default MixItem.extend({
-  type: Ember.computed(() => { return 'track-mix-item'; }),
+import ArrangementItem from './arrangement-item';
+import MixListItemMixin from 'linx/mixins/models/mix-list-item';
 
-  model: DS.belongsTo('track', { async: true }),
-  track: Ember.computed.alias('model'),
+import { variableTernary } from 'linx/lib/computed/ternary';
+
+export default ArrangementItem.extend(MixListItemMixin, {
+  type: 'track-mix-item',
+
+  track: DS.belongsTo('track', { async: true }),
 
   tracks: function() {
-    return [this.get('track.content')];
-  }.property('track.content'),
+    return [this.get('track')];
+  }.property('track'),
 
-  clipStartBeatWithoutTransition: Ember.computed.reads('track.audioMeta.firstBeat'),
-  clipStartBeatWithTransition: Ember.computed.reads('prevTransition.toTrackStartBeat'),
-
-  clipEndBeatWithoutTransition: Ember.computed.reads('track.audioMeta.lastBeat'),
-  clipEndBeatWithTransition: Ember.computed.reads('transition.fromTrackEndBeat'),
-
-  _clip: DS.belongsTo('track-clip', { async: true }),
+  _clip: DS.belongsTo('track-mix-item-clip', { async: true }),
   clip: withDefaultModel('_clip', function() {
-    return this.get('store').createRecord('track-clip');
+    return this.get('store').createRecord('track-mix-item-clip');
   }),
-
-  _transitionClip: DS.belongsTo('transition-clip', { async: true }),
-  transitionClip: withDefaultModel('_transitionClip', function() {
-    return this.get('store').createRecord('transition-clip');
-  }),
-
-  addToArrangement(arrangement) {
-    var numTrackBeats = item.get('numTrackBeats');
-    var trackClip = store.createRecord('track-clip', {
-      mixItem: item
-    });
-    var trackArrangementItem = arrangement.appendItem({
-      clip: trackClip,
-      startBeat: currBeat,
-    });
-    currBeat += numTrackBeats;
-  },
-
-
 });
