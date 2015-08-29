@@ -10,16 +10,22 @@ import withDefault from 'linx/lib/computed/with-default';
 export default Ember.Mixin.create(
   RequireAttributes('startBeatWithTransition', 'startBeatWithoutTransition', 'endBeatWithTransition', 'endBeatWithoutTransition'), {
 
+  prevEvent: Ember.computed.reads('arrangementEvent.prevEvent'),
+  nextEvent: Ember.computed.reads('arrangementEvent.nextEvent'),
+
+  prevTransition: Ember.computed.reads('prevEvent.transition'),
+  nextTransition: Ember.computed.reads('nextEvent.transition'),
+
   isTransitionable: true,
 
   startBeat: Ember.computed.variableTernary(
-    'arrangementItem.prevItemIsValidTransition',
+    'prevEvent.isValidTransition',
     'startBeatWithTransition',
     'startBeatWithoutTransition'
   ),
 
   endBeat: Ember.computed.variableTernary(
-    'arrangementItem.nextItemIsValidTransition',
+    'nextEvent.isValidTransition',
     'endBeatWithTransition',
     'endBeatWithoutTransition'
   ),

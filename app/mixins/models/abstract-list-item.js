@@ -3,11 +3,11 @@ import DS from 'ember-data';
 import withDefault from 'linx/lib/computed/with-default';
 
 export default function(listPropertyPath) {
-  var mixinParams = {
+  let mixinParams = {
     _items: withDefault(`${listPropertyPath}.items`, []),
 
     index: function() {
-      var items = this.get('_items');
+      let items = this.get('_items');
       return items.indexOf(this);
     }.property('_items.[]'),
 

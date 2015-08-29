@@ -1,19 +1,20 @@
 import Ember from 'ember';
 import DS from 'ember-data';
+
 import Clip from './clip';
 
 import { beatToTime } from 'linx/lib/utils';
 
-// Clip that points to a section of an AudioBuffer
 export default Clip.extend({
-  type: 'audio-clip',
+  type: 'track-clip',
+  track: Ember.computed.reads('arrangementEvent.track'),
 
-  startBeat: DS.attr('number'), // starting beat in audio
-  numBeats: DS.attr('number'), // length of audio-clip, in beats
+  audioStartBeat: DS.attr('number'),
+  numBeats: DS.attr('number'), // length of track-clip, in beats
 
-  endBeat: function() {
-    return this.get('startBeat') + this.get('numBeats');
-  }.property('startBeat', 'numBeats'),
+  audioEndBeat: function() {
+    return this.get('audioStartBeat') + this.get('numBeats');
+  }.property('audioStartBeat', 'numBeats'),
 
   // TODO: move isAudioLoaded into ex track.audio.isLoaded?
   isReady: Ember.computed.and('isLoaded', 'isAudioLoaded', 'track.isLoaded', 'track.audioMeta.isLoaded'),
@@ -26,22 +27,19 @@ export default Clip.extend({
   audioMeta: Ember.computed.alias('track.audioMeta'),
   bpm: Ember.computed.alias('audioMeta.bpm'),
 
-  startTime: function() {
+  audioStartTime: function() {
     return this.get('audioMeta.firstBeatMarker.start') +
-      beatToTime(this.get('startBeat'), this.get('bpm'));
-  }.property('audioMeta.firstBeatMarker.start', 'startBeat', 'bpm'),
+      beatToTime(this.get('audioStartBeat'), this.get('bpm'));
+  }.property('audioMeta.firstBeatMarker.start', 'audioStartBeat', 'bpm'),
 
-  lengthTime: function() {
+  audioLength: function() {
     return beatToTime(this.get('numBeats', this.get('bpm')));
   }.property('bpm', 'numBeats'),
 
-  endTime: function() {
-    // TODO: why doesnt lengthTime work?
-    return this.get('startTime') + beatToTime(this.get('numBeats'), this.get('bpm'));
-  }.property('startTime', 'numBeats', 'bpm'),
-
-  // TODO: turn into section of audioBuffer
-  track: DS.belongsTo('track', { async: true }),
+  audioEndTime: function() {
+    // TODO: why doesnt audioLength work?
+    return this.get('audioStartTime') + beatToTime(this.get('numBeats'), this.get('bpm'));
+  }.property('audioStartTime', 'numBeats', 'bpm'),
 });
 
 // TODO: code to copy section of audiobuffer

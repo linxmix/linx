@@ -1,27 +1,22 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-import AbstractListMixin from 'linx/lib/models/abstract-list';
+import AbstractListMixin from 'linx/mixins/models/abstract-list';
 import isEvery from 'linx/lib/computed/is-every';
 
 export default DS.Model.extend(
-  AbstractListMixin('arrangement-item', { polymorphic: true, saveItems: false }), {
+  AbstractListMixin('arrangement-event', { polymorphic: true, saveItems: false }), {
+  type: 'arrangement',
 
   // params
-  clips: Ember.computed.mapBy('items', 'clip'),
-  audioClips: Ember.computed.filterBy('clips', 'type', 'audio-clip'),
-  trackClips: Ember.computed.filterBy('clips', 'type', 'track-clip'),
-  automationClips: Ember.computed.filterBy('clips', 'type', 'automation-clip'),
+  events: Ember.computed.alias('items'),
+  clips: Ember.computed.mapBy('events', 'clip'),
 
-  isReady: isEvery('clips', 'isReady', true),
+  isReady: isEvery('events', 'isReady', true),
 
-  itemSort: ['endBeat:asc'],
-  sortedItems: Ember.computed.sort('items', 'itemSort'),
-  lastBeat: Ember.computed.alias('sortedItems.lastObject.lastBeat'),
-  numBeats: Ember.computed.alias('lastBeat'),
-
-  appendArrangement: function(startBeat, arrangement) {
-    // TODO(TRANSITION)
-  },
+  eventSort: ['endBeat:asc'],
+  sortedEvents: Ember.computed.sort('events', 'eventSort'),
+  lastBeat: Ember.computed.reads('sortedEvents.lastObject.lastBeat'),
+  numBeats: Ember.computed.reads('lastBeat'),
 
   save: function() {
     console.log('save arrangement');

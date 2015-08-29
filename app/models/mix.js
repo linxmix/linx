@@ -1,27 +1,26 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-import AbstractListMixin from 'linx/lib/models/abstract-list';
-import withDefaultModel from 'linx/lib/computed/with-default-model';
-import filterEmpty from 'linx/lib/computed/filter-empty';
-import { flatten } from 'linx/lib/utils';
-import add from 'linx/lib/computed/add';
+
 import Arrangement from './arrangement';
 
+import withDefaultModel from 'linx/lib/computed/with-default-model';
+import { flatten } from 'linx/lib/utils';
+import add from 'linx/lib/computed/add';
+
 export default Arrangement.extend({
+  type: 'mix',
 
   title: DS.attr('string'),
-
-  validItems: Ember.computed.filterBy('items', 'isValid', true),
+  validEvents: Ember.computed.filterBy('events', 'isValid', true),
 
   // params
   tracks: function() {
-    return flatten(this.get('items').mapBy('tracks'));
-  }.property('items.@each.tracks'),
-  transitions: Ember.computed.mapBy('items', 'transition.content'),
-  nonEmptyTransitions: filterEmpty('transitions'),
+    return flatten(this.get('events').mapBy('tracks'));
+  }.property('events.@each.tracks'),
+  transitions: Ember.computed.filterBy('events', 'transition.content'),
 
-  numTracks: Ember.computed.alias('tracks.length'),
-  numTransitions: Ember.computed.alias('nonEmptyTransitions.length'),
+  numTracks: Ember.computed.reads('tracks.length'),
+  numTransitions: Ember.computed.reads('transitions.length'),
 
   // adds arrangements when appending given transition
   appendTransitionWithTracks: function(transition) {

@@ -5,18 +5,17 @@ import ArrangementClip from './arrangement-clip';
 import TransitionableClipMixin from 'linx/mixins/models/transitionable-clip';
 
 export default ArrangementClip.extend(TransitionableClipMixin, {
-  type: 'mix-mix-item-clip',
+  type: 'mix-mix-clip',
+  mix: DS.belongsTo('mix', { async: true }),
+  arrangement: Ember.computed.reads('mix.arrangement'),
 
-  startBeatWithoutTransition: Ember.computed.reads('mix.items.firstObject.startBeat'),
+  startBeatWithoutTransition: Ember.computed.reads('mix.validEvents.firstObject.startBeat'),
   endBeatWithoutTransition: Ember.computed.reads('numBeats'),
 
   startBeatWithTransition: Ember.computed.reads('prevTransition.toTrackStartBeat'),
   endBeatWithTransition: function() {
     let numBeats = this.get('numBeats');
-    let delta = this.get('mix.validItems.lastObject.clip.endBeat') - this.get('transition.fromTrackEndBeat');
+    let delta = this.get('mix.validEvents.lastObject.clip.endBeat') - this.get('nextTransition.fromTrackEndBeat');
     return numBeats - delta;
-  }.property('numBeats', 'mix.validItems.lastObject.clip.endBeat', 'transition.fromTrackEndBeat'),
-
-  mix: Ember.computed.reads('arrangementItem.mix'),
-  arrangement: Ember.computed.reads('mix.arrangement'),
+  }.property('numBeats', 'mix.validEvents.lastObject.clip.endBeat', 'nextTransition.fromTrackEndBeat'),
 });

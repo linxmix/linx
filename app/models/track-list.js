@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-import AbstractListMixin from 'linx/lib/models/abstract-list';
+import AbstractListMixin from 'linx/mixins/models/abstract-list';
 
 export default DS.Model.extend(
   AbstractListMixin('track-list-item'), {

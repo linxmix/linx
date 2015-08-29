@@ -4,7 +4,7 @@ import withDefault from 'linx/lib/computed/with-default';
 import _ from 'npm:underscore';
 
 export default function(itemModelName, relOptions = {}) {
-  var mixinParams = {
+  let mixinParams = {
     _items: DS.hasMany(itemModelName, _.defaults(relOptions, { async: true })),
     items: withDefault('_items.content', []),
 
@@ -41,9 +41,9 @@ export default function(itemModelName, relOptions = {}) {
 
     // swaps position of items at two given indices
     swap: function(indexA, indexB) {
-      var items = this.get('items');
-      var itemA = this.objectAt(indexA);
-      var itemB = this.objectAt(indexB);
+      let items = this.get('items');
+      let itemA = this.objectAt(indexA);
+      let itemB = this.objectAt(indexB);
 
       items.replace(indexA, 1, [itemB]);
       items.replace(indexB, 1, [itemA]);
@@ -53,7 +53,7 @@ export default function(itemModelName, relOptions = {}) {
 
     // creates a new item and inserts it at given index
     createItemAt: function(index, params) {
-      var item = this._createItem(params);
+      let item = this._createItem(params);
       this.get('items').insertAt(index, item);
       return item;
     },
@@ -70,7 +70,7 @@ export default function(itemModelName, relOptions = {}) {
 
     // augment destroyRecord to also destroy items
     destroyRecord: function() {
-      var promises = this.get('items').map((item) => {
+      let promises = this.get('items').map((item) => {
         return item && item.destroyRecord();
       });
 
@@ -84,7 +84,7 @@ export default function(itemModelName, relOptions = {}) {
         return this._super.apply(this, arguments);
       }
 
-      var promises = this.get('items').filterBy('isNew').map((item) => {
+      let promises = this.get('items').filterBy('isNew').map((item) => {
         return item && item.save();
       });
 

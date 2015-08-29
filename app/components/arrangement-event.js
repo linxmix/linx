@@ -5,7 +5,7 @@ import cssStyle from 'linx/lib/computed/css-style';
 export default Ember.Component.extend(
   RequireAttributes('clipEvent', 'pxPerBeat'), {
 
-  classNames: ['ArrangementItem'],
+  classNames: ['ArrangementEvent'],
   attributeBindings: ['componentStyle:style'],
 
   componentStyle: cssStyle({
