@@ -34,14 +34,16 @@ export default function(options = {}) {
     _fromTrackMarker: fromTrackMarker,
     _toTrackMarker: toTrackMarker,
     fromTrack,
-    toTrack,
-    numBeats
+    toTrack
   });
 
-  // make withDefaultModel think transition has markers
-  transition.set('_data', {
-    _fromTrackMarker: 1,
-    _toTrackMarker: 2
+  transition.setProperties({
+    numBeats,
+    // make withDefaultModel think transition has markers
+    _data: {
+      _fromTrackMarker: 1,
+      _toTrackMarker: 2
+    }
   });
 
   return {

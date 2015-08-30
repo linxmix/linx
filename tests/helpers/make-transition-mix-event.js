@@ -8,19 +8,29 @@ import makeTrackMixEvent from 'linx/tests/helpers/make-track-mix-event';
 export default function(options = {}) {
   let { fromTrack, transition, toTrack } = makeTransition.call(this);
 
-  let { trackMixEvent: fromTrackMixEvent } = makeTrackMixEvent.call(this, { track: fromTrack });
-  let { trackMixEvent: toTrackMixEvent } = makeTrackMixEvent.call(this, { track: toTrack });
+  let {
+    trackMixEvent: fromTrackMixEvent,
+    trackMixClip: fromTrackMixClip,
+  } = makeTrackMixEvent.call(this, { track: fromTrack });
+
+  let {
+    trackMixEvent: toTrackMixEvent,
+    trackMixClip: toTrackMixClip,
+  } = makeTrackMixEvent.call(this, { track: toTrack });
 
   let transitionMixEvent = this.factory.make('transition-mix-event');
 
-  // make withDefaultModel think event has clip
   transitionMixEvent.setProperties({
     prevEvent: fromTrackMixEvent,
     nextEvent: toTrackMixEvent,
+    // make withDefaultModel think event has clip
     _data: {
       _clip: 1
     }
   });
+
+  fromTrackMixEvent.set('nextEvent', transitionMixEvent);
+  toTrackMixEvent.set('prevEvent', transitionMixEvent);
 
   let transitionMixClip = this.factory.make('transition-mix-clip', {
     transition: transition,
@@ -28,8 +38,12 @@ export default function(options = {}) {
   });
 
   return {
+    fromTrack,
     fromTrackMixEvent,
+    fromTrackMixClip,
+    toTrack,
     toTrackMixEvent,
+    toTrackMixClip,
     transition,
     transitionMixEvent,
     transitionMixClip
