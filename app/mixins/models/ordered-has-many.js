@@ -26,6 +26,10 @@ export default function(itemModelName, relOptions = {}) {
       return this.get('items').removeObject(item);
     },
 
+    removeAt: function(index) {
+      return this.get('items').removeAt(index);
+    },
+
     insertItemAt: function(index, item) {
       return this.get('items').insertAt(index, item);
     },
@@ -69,7 +73,7 @@ export default function(itemModelName, relOptions = {}) {
 
     // creates and returns a new item, does NOT insert into list
     _createItem: function(params = {}) {
-      return this.get('store').createRecord(params.type || itemModelName, params);
+      return this.get('store').createRecord(params.modelName || itemModelName, params);
     },
 
     // augment destroyRecord to also destroy items

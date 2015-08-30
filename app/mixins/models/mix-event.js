@@ -6,16 +6,24 @@ import withDefault from 'linx/lib/computed/with-default';
 import withDefaultModel from 'linx/lib/computed/with-default-model';
 import { variableTernary } from 'linx/lib/computed/ternary';
 
-export default function(type) {
-  let eventType = `${type}-mix-event`;
-  let clipModelName = `${type}-mix-clip`;
+export default function(modelName) {
+  let eventModelName = `${modelName}-mix-event`;
+  let clipModelName = `${modelName}-mix-clip`;
 
   let mixinParams = {
-    type: eventType,
+    type: eventModelName,
 
     // overridable properties
     isValid: true,
     tracks: Ember.computed(() => { return []; }),
+
+    // helpful methods
+    setModel(model) {
+      return this.get('clip').then((clip) => {
+        clip.set(modelName, model);
+        return clip.save();
+      });
+    },
 
     // helpful properties
     prevClip: Ember.computed.reads('prevEvent.clip'),

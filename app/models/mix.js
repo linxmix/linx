@@ -22,10 +22,33 @@ export default Arrangement.extend({
   numTracks: Ember.computed.reads('tracks.length'),
   numTransitions: Ember.computed.reads('transitions.length'),
 
-  // adds arrangements when appending given transition
+  // appends model as an event, returns a promise which resolves into the event
+  appendTrack: appendModelFn('track'),
+  appendTransition: appendModelFn('transition'),
+  appendMix: appendModelFn('mix'),
+
+  // adds matching tracks when appending given transition
   appendTransitionWithTracks: function(transition) {
+    return this.appendTransition(transition).then((transitionMixEvent) => {
+      let promises = [];
+
+      // append tracks if not already present
+      // TODO(TRANSITION)
+      if (!transitionMixEvent.get('fromTrackIsValid')) {
+        // promises.append(this.appendTrack())
+      }
+
+      if (!transitionMixEvent.get('toTrackIsValid')) {
+        // promises.append(this.appendTrack())
+      }
+
+      return Ember.RSVP.all(promises).then(() => {
+        return transitionMixEvent;
+      });
+    });
+
     var index = this.get('length');
-    var prevTrack = this.trackAt(index - 1);
+    var prevEvent = this.trackAt(index - 1);
     var promises = [];
 
     var fromTrack = transition.get('fromTrack');
@@ -46,56 +69,19 @@ export default Arrangement.extend({
 
     return Ember.RSVP.all(promises);
   },
-
-  appendTrack: function(track) {
-    return this.insertTrackAt(this.get('length'), track);
-  },
-
-  transitionAt: function(index) {
-    return this.get('transitions').objectAt(index);
-  },
-
-  trackAt: function(index) {
-    return this.get('tracks').objectAt(index);
-  },
-
-  insertTrackAt: function(index, track) {
-    console.log("insertTrackAt", index, track.get('title'));
-    var mixItem = this.createItemAt(index);
-    return mixItem.insertTrack(track);
-  },
-
-  insertTransitionAt: function(index, transition) {
-    console.log("insertTransitionAt", index, transition);
-    var mixItem = this.objectAt(index);
-    return mixItem && mixItem.insertTransition(transition);
-  },
-
-  removeTrack: function(track) {
-    var item = this.get('items').findBy('track.id', track.get('id'));
-    var index = item && item.get('index');
-
-    if (Ember.isPresent(index)) {
-      return this.removeTrackAt(index);
-    }
-  },
-
-  removeTrackAt: function(index) {
-    var mixItem = this.objectAt(index);
-    return mixItem && mixItem.removeTrack();
-  },
-
-  removeTransition: function(transition) {
-    var item = this.get('items').findBy('transition.id', transition.get('id'));
-    var index = item && item.get('index');
-
-    if (Ember.isPresent(index)) {
-      return this.removeTransitionAt(index);
-    }
-  },
-
-  removeTransitionAt: function(index) {
-    var mixItem = this.objectAt(index);
-    return mixItem && mixItem.removeTransition();
-  }
 });
+
+// returns a function which creates model as an event, then returns a promise which resolves into the event
+function appendModelFn(type) {
+  let modelName = `${type}-mix-event`;
+
+  return function(model) {
+    let mixEvent = this.appendItem({ modelName });
+
+    return mixEvent.save().then(() => {
+      return mixEvent.setModel(model).then(() => {
+        return mixEvent;
+      });
+    });
+  }
+};
