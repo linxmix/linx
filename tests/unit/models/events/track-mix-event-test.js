@@ -14,8 +14,15 @@ describe('TrackMixEvent', function() {
   setupUnitTest();
 
   describe('when empty', function() {
+    let trackMixEvent;
+
+    beforeEach(function() {
+      trackMixEvent = this.factory.make('track-mix-event');
+      trackMixEvent.set('clip', null);
+    });
+
     describeAttrs('trackMixEvent', {
-      subject() { return this.factory.make('track-mix-event'); },
+      subject() { return trackMixEvent; },
       isValid: false,
       startBeat: 0
     });
@@ -25,12 +32,15 @@ describe('TrackMixEvent', function() {
     let track, trackMixClip, trackMixEvent;
 
     beforeEach(function() {
-      let { track, trackMixClip, trackMixEvent } = makeTrackMixEvent.call(this);
+      let results = makeTrackMixEvent.call(this);
+      track = results.track;
+      trackMixClip = results.trackMixClip;
+      trackMixEvent = results.trackMixEvent;
     });
 
     describeAttrs('trackMixEvent', {
       subject() { return trackMixEvent; },
-      track: track,
+      'track.content': () => track,
       isValid: true,
     });
   });

@@ -29,7 +29,7 @@ describe('TransitionMixEvent', function() {
     });
 
     describeAttrs('transitionMixEvent', {
-      subject() { return transitionMixEvent },
+      subject() { return transitionMixEvent; },
       hasTransition: false,
       fromTrackIsValid: false,
       toTrackIsValid: false,

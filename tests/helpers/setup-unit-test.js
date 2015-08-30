@@ -16,4 +16,10 @@ function setProperties() {
 export default function() {
   startApp();
   beforeEach(setProperties);
+
+  beforeEach(function(done) {
+    // TODO(DBSTUB)
+    // reset firebase
+    this.container.lookup('service:firebase').remove(done);
+  });
 }

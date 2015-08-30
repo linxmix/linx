@@ -7,7 +7,7 @@ import { expect } from 'chai';
 
 import setupUnitTest from 'linx/tests/helpers/setup-unit-test';
 
-describe('Track', function() {
+describe('TrackModel', function() {
   setupUnitTest();
 
   let track;
@@ -22,7 +22,7 @@ describe('Track', function() {
     beforeEach(function() {
       wait(track.get('audioMeta').then((result) => {
         audioMeta = result;
-        echonestTrack = track.get('echonestTrack');
+        echonestTrack = track.get('echonestTrack.content');
       }));
     });
 
@@ -35,7 +35,5 @@ describe('Track', function() {
       expect(audioMeta).to.be.ok;
       expect(audioMeta.get('track.id')).to.equal(track.get('id'));
     });
-
   });
-
 });

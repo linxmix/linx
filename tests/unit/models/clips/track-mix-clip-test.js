@@ -18,7 +18,10 @@ describe('TrackMixClip', function() {
     let track, trackMixClip, trackMixEvent;
 
     beforeEach(function() {
-      let { track, trackMixClip, trackMixEvent } = makeTrackMixEvent.call(this);
+      let results = makeTrackMixEvent.call(this);
+      track = results.track;
+      trackMixClip = results.trackMixClip;
+      trackMixEvent = results.trackMixEvent;
     });
 
     describeAttrs('trackMixClip', {

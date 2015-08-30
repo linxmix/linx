@@ -25,21 +25,19 @@ export default function(relPath, createModelFn) {
       }
 
       // if relationship is empty, create default
+      // TODO: make save optional
       else if (!dependentModelId) {
         console.log("WithDefaultModel - EMPTY", key, this.get('id'));
-        return asResolvedPromise(createModelFn.call(this)).then((model) => {
 
-          // TODO(TRANSITION)
-          if (!this.get('preventDefaultModelSave')) {
+        return DS.PromiseObject.create({
+          promise: asResolvedPromise(createModelFn.call(this)).then((model) => {
             return model.save().then(() => {
               this.set(relPath, model);
               return this.save().then(() => {
                 return model;
               });
             });
-          } else {
-            return model;
-          }
+          }),
         });
       }
 

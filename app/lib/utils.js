@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import DS from 'ember-data';
 import _ from 'npm:underscore';
 
 export const flatten = function(array) {
@@ -59,4 +60,4 @@ export const asResolvedPromise = function(returnedObject, PromiseTypeConstructor
       resolve(returnedObject);
     })
   });
-}
+};
