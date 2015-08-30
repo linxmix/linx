@@ -4,7 +4,7 @@ import RequireAttributes from 'linx/lib/require-attributes';
 import _ from 'npm:underscore';
 import withDefault from 'linx/lib/computed/with-default';
 
-import { bpmToSpb, assertPromise } from 'linx/lib/utils';
+import { bpmToSpb, asResolvedPromise } from 'linx/lib/utils';
 
 const Analysis = Ember.Object.extend(
   RequireAttributes('analysis'), {
@@ -137,7 +137,7 @@ export default DS.Model.extend({
 
   // TODO: shouldnt need to do this, called from dependent model
   save: function() {
-    return assertPromise(this);
+    return asResolvedPromise(this);
   },
 });
 

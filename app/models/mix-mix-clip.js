@@ -7,6 +7,7 @@ import TransitionableClipMixin from 'linx/mixins/models/transitionable-clip';
 export default ArrangementClip.extend(TransitionableClipMixin, {
   type: 'mix-mix-clip',
   mix: DS.belongsTo('mix', { async: true }),
+  arrangementEvent: DS.belongsTo('mix-mix-event', { async: true }),
   arrangement: Ember.computed.reads('mix.arrangement'),
 
   startBeatWithoutTransition: Ember.computed.reads('mix.validEvents.firstObject.startBeat'),

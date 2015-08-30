@@ -4,6 +4,7 @@ import ArrangementClip from './arrangement-clip';
 
 export default ArrangementClip.extend({
   type: 'transition-mix-clip',
+  arrangementEvent: DS.belongsTo('transition-mix-event', { async: true }),
   transition: DS.belongsTo('transition', { async: true }),
   arrangement: Ember.computed.reads('transition.arrangement'),
 

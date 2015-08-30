@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import _ from 'npm:underscore';
 
 export const flatten = function(array) {
   return array.reduce(function(flattened, el) {
@@ -47,8 +48,15 @@ export const clamp = function(min, n, max) {
   }
 };
 
-export const assertPromise = function(x) {
-  return new Ember.RSVP.Promise(function(resolve) {
-    resolve(x);
+export const asResolvedPromise = function(returnedObject, PromiseTypeConstructor = DS.PromiseObject) {
+
+  if (_.isArray(returnedObject)) {
+    PromiseTypeConstructor = DS.PromiseArray;
+  }
+
+  return PromiseTypeConstructor.create({
+    promise: new Ember.RSVP.Promise(function (resolve, reject) {
+      resolve(returnedObject);
+    })
   });
-};
+}

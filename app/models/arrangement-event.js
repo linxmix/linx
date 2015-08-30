@@ -6,13 +6,16 @@ import OrderedHasManyItemMixin from 'linx/mixins/models/ordered-has-many-item';
 
 import add from 'linx/lib/computed/add';
 
-// Wraps Clip models to hold arrangement information
+// Wraps Clip model to hold arrangement information
 export default DS.Model.extend(
-  OrderedHasManyItemMixin('arrangement'),
-  RequireAttributes('startBeat', 'numBeats', 'endBeat'), {
+  OrderedHasManyItemMixin('arrangement'), {
+  // TODO(REQUIREPROPERTIES)
+  // RequireAttributes('startBeat', 'numBeats', 'endBeat'), {
   type: 'arrangement-event',
 
   arrangement: DS.belongsTo('arrangement', { async: true, polymorphic: true }),
+
+  mix: DS.belongsTo('mix', { async: true }),
   clip: DS.belongsTo('clip', { polymorphic: true, async: true }),
 
   row: DS.attr('number'), // in complex display

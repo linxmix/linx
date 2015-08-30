@@ -46,7 +46,7 @@ export default function(options = {}) {
 
   return {
     fromTrack,
+    transition,
     toTrack,
-    transition
   };
 }

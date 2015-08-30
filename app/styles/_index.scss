@@ -17,3 +17,9 @@
 .pusher {
   // top: -20px;
 }
+
+// HACK: make it go away
+#ember-testing-container {
+  width: 0 !important;
+  height: 0 !important;
+}

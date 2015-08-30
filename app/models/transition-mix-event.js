@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
-import ArrangementEvent from './arrangement-item';
+import ArrangementEvent from './arrangement-event';
 import MixEventMixin from 'linx/mixins/models/mix-event';
 
 import { isNumber } from 'linx/lib/utils';

@@ -15,7 +15,7 @@ export default function(name, options) {
   let subject;
 
   beforeEach(function() {
-    subject = options.subject();
+    subject = options.subject.call(this);
   });
 
   describe(`${name} attributes`, function() {
@@ -23,14 +23,16 @@ export default function(name, options) {
       let val = options[key];
 
       it(`${key} is correct`, function() {
-        let expectedVal = _.isFunction(val) ? val() : val;
-        let actualVal = subject.get(key);
+        Ember.run(function() {
+          let expectedVal = _.isFunction(val) ? val() : val;
+          let actualVal = subject.get(key);
 
-        if (_.isNumber(expectedVal)) {
-          expect(actualVal).to.be.closeTo(expectedVal, EPSILON);
-        } else {
-          expect(actualVal).to.equal(expectedVal);
-        }
+          if (_.isNumber(expectedVal)) {
+            expect(actualVal).to.be.closeTo(expectedVal, EPSILON);
+          } else {
+            expect(actualVal).to.equal(expectedVal);
+          }
+        });
       });
     });
   });

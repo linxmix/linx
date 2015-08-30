@@ -7,7 +7,7 @@ import { beatToTime } from 'linx/lib/utils';
 
 export default Clip.extend({
   type: 'track-clip',
-  track: Ember.computed.reads('arrangementEvent.track'),
+  track: DS.belongsTo('track', { async: true }),
 
   audioStartBeat: DS.attr('number'),
   numBeats: DS.attr('number'), // length of track-clip, in beats

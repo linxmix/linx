@@ -1,7 +1,10 @@
 import Ember from 'ember';
 import DS from 'ember-data';
+
 import OrderedHasManyMixin from 'linx/mixins/models/ordered-has-many';
+
 import isEvery from 'linx/lib/computed/is-every';
+import withDefault from 'linx/lib/computed/with-default';
 
 export default DS.Model.extend(
   OrderedHasManyMixin('arrangement-event', { polymorphic: true }), {
@@ -16,7 +19,7 @@ export default DS.Model.extend(
   eventSort: ['endBeat:asc'],
   sortedEvents: Ember.computed.sort('events', 'eventSort'),
   lastBeat: Ember.computed.reads('sortedEvents.lastObject.lastBeat'),
-  numBeats: Ember.computed.reads('lastBeat'),
+  numBeats: withDefault('lastBeat', 0),
 
   save: function() {
     console.log('save arrangement');

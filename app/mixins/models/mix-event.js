@@ -21,6 +21,8 @@ export default function(type) {
     prevClip: Ember.computed.reads('prevEvent.clip'),
     nextClip: Ember.computed.reads('nextEvent.clip'),
 
+    mix: DS.belongsTo('mix', { async: true }),
+
     _clip: DS.belongsTo(clipModelName, { async: true }),
     clip: withDefaultModel('_clip', function() {
       return this.get('store').createRecord(clipModelName);
@@ -34,5 +36,7 @@ export default function(type) {
     startBeat: variableTernary('prevEvent.isValidTransition', 'prevEvent.startBeat', 'defaultStartBeat'),
   };
 
-  return Ember.Mixin.create(RequireAttributes('startBeat', 'type'), mixinParams);
+  // TODO(REQUIREPROPERTIES)
+  // return Ember.Mixin.create(RequireAttributes('startBeat', 'type'), mixinParams);
+  return Ember.Mixin.create(mixinParams);
 }

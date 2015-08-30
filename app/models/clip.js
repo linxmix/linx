@@ -3,8 +3,9 @@ import DS from 'ember-data';
 
 import RequireAttributes from 'linx/lib/require-attributes';
 
-export default DS.Model.extend(
-  RequireAttributes('numBeats', 'isReady', 'type'), {
+export default DS.Model.extend({
+  // TODO(REQUIREPROPERTIES)
+  // RequireAttributes('numBeats', 'isReady', 'type'), {
 
   arrangementEvent: DS.belongsTo('arrangement-event', { async: true, polymorphic: true }),
 

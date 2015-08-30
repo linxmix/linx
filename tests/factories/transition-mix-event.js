@@ -1,7 +1,6 @@
 import FactoryGuy from 'ember-data-factory-guy';
 
-FactoryGuy.define('mix-event', {
+FactoryGuy.define('transition-mix-event', {
   default: {
-    list: {}
   },
 });

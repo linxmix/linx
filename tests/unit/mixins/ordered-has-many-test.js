@@ -8,7 +8,7 @@ import {
 import { expect } from 'chai';
 
 import setupUnitTest from 'linx/tests/helpers/setup-unit-test';
-import { assertPromise } from 'linx/lib/utils';
+import { asResolvedPromise } from 'linx/lib/utils';
 
 import OrderedHasManyMixin from 'linx/mixins/models/ordered-has-many';
 
@@ -168,7 +168,7 @@ describe('OrderedHasMany', function() {
         item = list.appendItem();
 
         item.save().then(() => {
-          this.sinon.stub(item, 'save', assertPromise);
+          this.sinon.stub(item, 'save', asResolvedPromise);
           saveList(list, done);
         });
       });
@@ -242,7 +242,7 @@ describe('OrderedHasMany', function() {
         item = list.appendItem();
 
         item.save().then(() => {
-          this.sinon.stub(item, 'save', assertPromise);
+          this.sinon.stub(item, 'save', asResolvedPromise);
           saveList(list, done);
         });
       });

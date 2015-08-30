@@ -2,7 +2,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 import FactoryGuy from 'ember-data-factory-guy';
 
-import { assertPromise } from 'linx/lib/utils';
+import { asResolvedPromise } from 'linx/lib/utils';
 
 // seeds store with test data
 export default function(store) {
@@ -10,13 +10,13 @@ export default function(store) {
 
   console.log("seed store");
   DS.Model.reopenClass({
-    save() { assertPromise(this); }
+    save() { asResolvedPromise(this); }
   });
 
   // TODO: why need to do this?
   // FactoryGuy.setStore(store);
   // var track = FactoryGuy.make('giveitupforlove');
-  // return assertPromise(track);
+  // return asResolvedPromise(track);
   return FactoryGuy.getStore();
   // return track.get('audioMeta');
 
