@@ -2,30 +2,47 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import Clip from './clip';
+import TransitionableClipMixin from 'linx/mixins/models/transitionable-clip';
 
 import { beatToTime } from 'linx/lib/utils';
+import { withDefaultProperty } from 'linx/lib/computed/with-default';
 
-export default Clip.extend({
+export default Clip.extend(TransitionableClipMixin, {
   type: 'track-clip',
+
+  // implementing transitionableClip
+  firstTrack: Ember.computed.reads('track'),
+  lastTrack: Ember.computed.reads('track'),
+
+  clipStartBeatWithoutTransition: Ember.computed.reads('track.audioMeta.firstBeat'),
+  clipEndBeatWithoutTransition: Ember.computed.reads('track.audioMeta.lastBeat'),
+
+  clipStartBeatWithTransition: Ember.computed.reads('prevTransition.toTrackStartBeat'),
+  clipEndBeatWithTransition: Ember.computed.reads('nextTransition.fromTrackEndBeat'),
+
+  // implementing Clip
+  isValid: Ember.computed.and('track.content', 'isValidNumBeats'),
+  numBeats: withDefaultProperty('_numBeats', 'numBeatsClip'),
+  isReady: Ember.computed.and('isLoaded', 'isAudioLoaded', 'track.isLoaded', 'track.audioMeta.isLoaded'),
+
+  // track-clip specific
   track: DS.belongsTo('track', { async: true }),
+  _audioStartBeat: DS.attr('number'),
+  _numBeats: DS.attr('number'),
+  _audioEndBeat: DS.attr('number'),
 
-  audioStartBeat: DS.attr('number'),
-  numBeats: DS.attr('number'), // length of track-clip, in beats
-
-  audioEndBeat: function() {
-    return this.get('audioStartBeat') + this.get('numBeats');
-  }.property('audioStartBeat', 'numBeats'),
+  audioStartBeat: withDefaultProperty('_audioStartBeat', 'clipStartBeat'),
+  audioEndBeat: withDefaultProperty('_audioEndBeat', 'clipEndBeat'),
 
   // TODO: move isAudioLoaded into ex track.audio.isLoaded?
-  isReady: Ember.computed.and('isLoaded', 'isAudioLoaded', 'track.isLoaded', 'track.audioMeta.isLoaded'),
   isAudioLoaded: false,
 
-  // TODO: turn into attrs?
-  pitch: function() { return 0; }.property(),
-  volume: function() { return 1; }.property(),
+  // TODO: move into FxChainMixin
+  pitch: 0,
+  volume: 1,
 
-  audioMeta: Ember.computed.alias('track.audioMeta'),
-  bpm: Ember.computed.alias('audioMeta.bpm'),
+  audioMeta: Ember.computed.reads('track.audioMeta'),
+  bpm: Ember.computed.reads('audioMeta.bpm'),
 
   audioStartTime: function() {
     return this.get('audioMeta.firstBeatMarker.start') +

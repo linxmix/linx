@@ -7,21 +7,12 @@ import makeTrack from 'linx/tests/helpers/make-track';
 export default function(options = {}) {
   let track = Ember.getWithDefault(options, 'track', makeTrack.call(this, options));
 
-  let trackMixEvent = this.factory.make('track-mix-event');
-
-  // make withDefaultModel think event has clip
-  trackMixEvent.set('_data', {
-    _clip: 1
-  });
-
-  let trackMixClip = this.factory.make('track-mix-clip', {
+  let trackClip = this.factory.make('track-clip', {
     track: track,
-    arrangementEvent: trackMixEvent,
   });
 
   return {
     track,
-    trackMixClip,
-    trackMixEvent,
+    trackClip,
   };
 }

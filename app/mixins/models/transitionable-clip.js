@@ -9,27 +9,31 @@ import withDefault from 'linx/lib/computed/with-default';
 
 export default Ember.Mixin.create({
   // TODO(REQUIREPROPERTIES)
-  // RequireAttributes('startBeatWithTransition', 'startBeatWithoutTransition', 'endBeatWithTransition', 'endBeatWithoutTransition'), {
+  // RequireAttributes('clipStartBeatWithTransition', 'clipStartBeatWithoutTransition', 'clipEndBeatWithTransition', 'clipEndBeatWithoutTransition'), {
 
-  prevEvent: Ember.computed.reads('arrangementEvent.prevEvent'),
-  nextEvent: Ember.computed.reads('arrangementEvent.nextEvent'),
+  fromTrack: null,
+  toTrack: null,
 
-  prevTransition: Ember.computed.reads('prevEvent.transition'),
-  nextTransition: Ember.computed.reads('nextEvent.transition'),
+  prevTransition: Ember.computed.reads('prevClip.transition'),
+  nextTransition: Ember.computed.reads('nextClip.transition'),
 
   isTransitionable: true,
 
-  startBeat: variableTernary(
-    'prevEvent.isValidTransition',
-    'startBeatWithTransition',
-    'startBeatWithoutTransition'
+  clipStartBeat: variableTernary(
+    'prevClip.isValidTransition',
+    'clipStartBeatWithTransition',
+    'clipStartBeatWithoutTransition'
   ),
 
-  endBeat: variableTernary(
-    'nextEvent.isValidTransition',
-    'endBeatWithTransition',
-    'endBeatWithoutTransition'
+  clipEndBeat: variableTernary(
+    'nextClip.isValidTransition',
+    'clipEndBeatWithTransition',
+    'clipEndBeatWithoutTransition'
   ),
 
-  numBeats: subtract('endBeat', 'startBeat'),
+  numBeatsClip: subtract('clipEndBeat', 'clipStartBeat'),
+
+  // overlap with prevClip if is transition
+  _startBeat: withDefault('prevClip.endBeat', 0),
+  startBeat: variableTernary('prevClip.isValidTransition', 'prevClip.startBeat', '_startBeat'),
 });

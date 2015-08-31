@@ -5,7 +5,12 @@ import Clip from './clip';
 export default Clip.extend({
   type: 'arrangement-clip',
 
-  arrangement: DS.belongsTo('arrangement', { async: true }),
-  numBeats: Ember.computed.reads('arrangement.numBeats'),
-  isReady: Ember.computed.reads('arrangement.isReady'),
+  // implementing Clip
+  isValid: Ember.computed.and('nestedArrangement.content', 'isValidNumBeats'),
+  numBeats: Ember.computed.reads('nestedArrangement.numBeats'),
+  isReady: Ember.computed.reads('nestedArrangement.isReady'),
+
+  // arrangement-clip specific
+  nestedArrangement: DS.belongsTo('arrangement', { async: true, inverse: null }),
+  isReady: Ember.computed.reads('nestedArrangement.isReady'),
 });

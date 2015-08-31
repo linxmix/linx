@@ -2,18 +2,29 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import RequireAttributes from 'linx/lib/require-attributes';
+import OrderedHasManyItemMixin from 'linx/mixins/models/ordered-has-many-item';
 
-export default DS.Model.extend({
+import add from 'linx/lib/computed/add';
+import subtract from 'linx/lib/computed/subtract';
+
+// Base clip model.
+// Provides helpful properties which may be overridden
+export default DS.Model.extend(
+  OrderedHasManyItemMixin('arrangement'), {
   // TODO(REQUIREPROPERTIES)
-  // RequireAttributes('numBeats', 'isReady', 'type'), {
+  // RequireAttributes('startBeat', 'numBeats', 'isReady', 'isValid', 'type'), {
 
-  arrangementEvent: DS.belongsTo('arrangement-event', { async: true, polymorphic: true }),
+  row: DS.attr('number'), // for complex display
+  startBeat: DS.attr('number', { defaultValue: 0 }), // starting beat in arrangement
+  arrangement: DS.belongsTo('arrangement', { async: true }),
 
-  play: function(metronome, time) {
-    throw new Error('Must implement clip.play');
-  },
+  endBeat: add('startBeat', 'numBeats'),
+  numBeats: subtract('endBeat', 'startBeat'),
 
-  pause: function() {
-    throw new Error('Must implement clip.pause');
-  }
+  prevClip: Ember.computed.reads('prevItem'),
+  nextClip: Ember.computed.reads('nextItem'),
+
+  isValidNumBeats: Ember.computed.gt('numBeats', 0),
+  isValid: Ember.computed.reads('isValidNumBeats'),
+  isReady: false,
 });

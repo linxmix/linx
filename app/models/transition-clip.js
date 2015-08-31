@@ -1,27 +1,36 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
-import ArrangementEvent from './arrangement-event';
-import MixEventMixin from 'linx/mixins/models/mix-event';
+import ArrangementClip from './arrangement-clip';
 
 import { isNumber } from 'linx/lib/utils';
 import equalProps from 'linx/lib/computed/equal-props';
 import subtract from 'linx/lib/computed/subtract';
 
-export default ArrangementEvent.extend(MixEventMixin('transition'), {
-  transition: Ember.computed.reads('clip.transition'),
+export default ArrangementClip.extend({
+  type: 'transition-clip',
 
-  startBeat: subtract('prevEvent.endBeat', 'transition.numBeats'), // overlap
+  // implementing Clip
+  startBeat: subtract('prevClip.endBeat', 'transition.numBeats'), // overlap
   isValid: Ember.computed.and('hasTransition', 'timesAreValid', 'fromTrackIsValid', 'toTrackIsValid'),
-  isValidTransition: Ember.computed.reads('isValid'),
 
+  // implementing arrangementClip
+  nestedArrangement: Ember.computed.reads('transition.arrangement'),
+
+  // transition-clip specific
+  // TODO(TRANSITION)
+  transition: DS.belongsTo('transition', { async: true }),
+  fromClip: Ember.computed.reads('prevClip'),
+  toClip: Ember.computed.reads('nextClip'),
+
+  isValidTransition: Ember.computed.reads('isValid'),
   hasTransition: Ember.computed.bool('transition.content'),
 
   expectedFromTrack: Ember.computed.reads('transition.fromTrack'),
   expectedToTrack: Ember.computed.reads('transition.toTrack'),
 
-  actualFromTrack: Ember.computed.reads('prevEvent.lastTrack'),
-  actualToTrack: Ember.computed.reads('nextEvent.firstTrack'),
+  actualFromTrack: Ember.computed.reads('prevClip.lastTrack'),
+  actualToTrack: Ember.computed.reads('nextClip.firstTrack'),
 
   fromTrackIsValid: equalProps('expectedFromTrack.content', 'actualFromTrack.content'),
   toTrackIsValid: equalProps('expectedToTrack.content', 'actualToTrack.content'),

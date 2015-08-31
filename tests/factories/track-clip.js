@@ -1,6 +1,6 @@
 import FactoryGuy from 'ember-data-factory-guy';
 
-FactoryGuy.define('transition-mix-event', {
+FactoryGuy.define('track-clip', {
   default: {
   },
 });

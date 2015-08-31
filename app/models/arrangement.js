@@ -7,18 +7,17 @@ import isEvery from 'linx/lib/computed/is-every';
 import withDefault from 'linx/lib/computed/with-default';
 
 export default DS.Model.extend(
-  OrderedHasManyMixin('arrangement-event', { polymorphic: true }), {
-  type: 'arrangement',
+  OrderedHasManyMixin('clip', { polymorphic: true }), {
 
   // params
-  events: Ember.computed.alias('items'),
-  clips: Ember.computed.mapBy('events', 'clip'),
+  clips: Ember.computed.alias('items'),
+  validClips: Ember.computed.filterBy('clips', 'isValid', true),
 
-  isReady: isEvery('events', 'isReady', true),
+  isReady: isEvery('clips', 'isReady', true),
 
-  eventSort: ['endBeat:asc'],
-  sortedEvents: Ember.computed.sort('events', 'eventSort'),
-  lastBeat: Ember.computed.reads('sortedEvents.lastObject.lastBeat'),
+  clipSort: ['endBeat:asc'],
+  sortedClips: Ember.computed.sort('clips', 'clipSort'),
+  lastBeat: Ember.computed.reads('sortedCips.lastObject.lastBeat'),
   numBeats: withDefault('lastBeat', 0),
 
   save: function() {
