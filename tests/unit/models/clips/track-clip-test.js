@@ -89,8 +89,8 @@ describe('TrackClipModel', function() {
 
       // setup prevClip
       let prevResults = makeTransitionClip.call(this, { toTrackClip: trackClip });
-      prevClip = results.transitionClip;
-      prevTransition = results.transition;
+      prevClip = prevResults.transitionClip;
+      prevTransition = prevResults.transition;
       prevClip.set('nextClip', trackClip);
 
       // setup nextClip

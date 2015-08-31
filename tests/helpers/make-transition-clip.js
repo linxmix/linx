@@ -10,10 +10,10 @@ export default function(options = {}) {
   let { fromTrack, transition, toTrack, fromTrackClip, toTrackClip } = options;
 
   if (!fromTrack) {
-    fromTrack = makeTrack.call(this);
+    fromTrack = fromTrackClip && fromTrackClip.get('track.content') || makeTrack.call(this);
   }
   if (!toTrack) {
-    toTrack = makeTrack.call(this);
+    toTrack = toTrackClip && toTrackClip.get('track.content') || makeTrack.call(this);
   }
   if (!transition) {
     let results = makeTransition.call(this, { fromTrack, toTrack });
