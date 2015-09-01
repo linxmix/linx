@@ -5,7 +5,13 @@ import { flatten, beatToTime } from 'linx/lib/utils';
 import _ from 'npm:underscore';
 
 export default Ember.Component.extend(
-  RequireAttributes('clip', 'isPlaying', 'seekBeat', 'pxPerBeat'), {
+  RequireAttributes('clip', 'pxPerBeat'), {
+
+  // optional params
+  disableMouseInteraction: true,
+  syncBpm: null,
+  isPlaying: false,
+  seekBeat: 0,
 
   classNames: ['TrackClip'],
 
@@ -22,10 +28,6 @@ export default Ember.Component.extend(
   startPx: function() {
     return (this.get('clip.startBeat') * this.get('pxPerBeat')) + 'px';
   }.property('clip.startBeat', 'pxPerBeat'),
-
-  // optional params
-  disableMouseInteraction: true,
-  syncBpm: null,
 
   // params
   track: Ember.computed.reads('clip.track'),
@@ -63,5 +65,5 @@ export default Ember.Component.extend(
       var markerStart = marker.get('start');
       return markerStart >= startTime && markerStart <= endTime;
     });
-  }.property('startTime', 'endTime', 'markers.@each.start'),
+  }.property('startTime', 'endTime', 'markers.[].start'),
 });

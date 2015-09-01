@@ -2,7 +2,11 @@ import Ember from 'ember';
 import DS from 'ember-data';
 import withDefaultModel from 'linx/lib/computed/with-default-model';
 
-export default DS.Model.extend({
+import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
+
+export default DS.Model.extend(
+  DependentRelationshipMixin('audioMeta'), {
+
   title: DS.attr('string'),
   artist: DS.attr('string'),
   length: DS.attr('number'),
@@ -15,7 +19,7 @@ export default DS.Model.extend({
     return this.fetchEchonestTrack();
   }),
 
-  _audioMeta: DS.belongsTo('audio-meta', { async: true, dependent: true }),
+  _audioMeta: DS.belongsTo('audio-meta', { async: true }),
   audioMeta: withDefaultModel('_audioMeta', function() {
     return this.fetchAudioMeta();
   }),
@@ -41,7 +45,7 @@ export default DS.Model.extend({
   },
 
   // figure out which track this is in echonest
-  fetchEchonestTrack: function() {
+  fetchEchonestTrack() {
     return this.get('echonest').fetchTrack(this)
       .then((echonestTrack) => {
         return echonestTrack;
@@ -49,13 +53,16 @@ export default DS.Model.extend({
   },
 
   // analyze echonest track, then parse into new audio meta
-  fetchAudioMeta: function() {
+  fetchAudioMeta() {
     return this.get('echonestTrack').then((echonestTrack) => {
       return echonestTrack.get('analysis').then((analysis) => {
-        var audioMeta = this.get('store').createRecord('audio-meta', {
+        let audioMeta = this.get('store').createRecord('audio-meta', {
           track: this
         });
-        return audioMeta.processAnalysis(analysis);
+
+        return audioMeta.processAnalysis(analysis).then(() => {
+          return audioMeta.save();
+        });
       });
     });
   },

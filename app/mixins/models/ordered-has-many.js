@@ -15,9 +15,6 @@ export default function(options = {}) {
     // config
     saveItems: true,
 
-    dirtyItems: Ember.computed.filterBy(itemsPath, 'isDirty'),
-    itemsAreDirty: Ember.computed.gt('dirtyItems.length', 0),
-    anyDirty: Ember.computed.or('isDirty', 'itemsAreDirty'),
     length: Ember.computed.alias(`${itemsPath}.length`),
 
     // creates a new item and appends it to end of list

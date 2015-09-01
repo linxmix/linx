@@ -1,3 +1,21 @@
+{{#track-clip
+  clip=clip
+  isPlaying=clipEvent.isPlaying
+  seekBeat=clipEvent.clipSeekBeat
+  syncBpm=clipEvent.bpm
+  pxPerBeat=pxPerBeat
+  as |clipComponent|
+}}
+  {{#each visibleMarkers as |marker|}}
+    {{clip-marker
+      marker=marker
+      pxPerBeat=pxPerBeat
+    }}
+  {{/each}}
+{{/track-clip}}
+
+{{!--  TODO(TRANSITION) --}}
+{{!--
 {{#component clip.modelName
   clip=clip
   isPlaying=clipEvent.isPlaying
@@ -12,4 +30,4 @@
       pxPerBeat=pxPerBeat
     }}
   {{/each}}
-{{/component}}
+{{/component}} --}}

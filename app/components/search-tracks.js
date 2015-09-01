@@ -33,5 +33,5 @@ export default Ember.Component.extend({
         this.sendAction('action', trackWrapper.track);
       }
     });
-  }.on('didInsertElement').observes('tracks.@each'),
+  }.on('didInsertElement').observes('tracks.[]'),
 });
