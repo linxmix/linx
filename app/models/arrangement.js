@@ -7,12 +7,11 @@ import isEvery from 'linx/lib/computed/is-every';
 import withDefault from 'linx/lib/computed/with-default';
 
 export default DS.Model.extend(
-  OrderedHasManyMixin('clip', { polymorphic: true }), {
+  OrderedHasManyMixin('track-clip', { polymorphic: true }), {
 
   mixes: DS.hasMany('mix', { async: true }),
 
   // params
-  clips: Ember.computed.alias('items'),
   validClips: Ember.computed.filterBy('clips', 'isValid', true),
 
   isReady: isEvery('clips', 'isReady', true),
@@ -23,7 +22,8 @@ export default DS.Model.extend(
   numBeats: withDefault('lastBeat', 0),
 
   save: function() {
-    console.log('save arrangement');
-    return this._super.apply(this, arguments);
+    let promise = this._super.apply(this, arguments);
+    console.log('save arrangement', promise);
+    return promise;
   }
 });

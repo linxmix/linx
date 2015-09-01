@@ -1,0 +1,9 @@
+{{!-- {{component model.type
+  model=model
+}}
+ --}}
+ <div class="content">
+  {{#link-to 'track' model.track}}
+    {{position}} &middot; {{model.type}} &middot; {{model.track.title}}
+  {{/link-to}}
+</div>

@@ -28,7 +28,7 @@ describe('OrderedHasMany', function() {
     let item;
 
     beforeEach(function() {
-      item = list.appendItem();
+      item = list.createAndAppend();
     });
 
     it('list is new', function() {
@@ -66,8 +66,8 @@ describe('OrderedHasMany', function() {
     let itemA, itemB;
 
     beforeEach(function() {
-      itemA = list.appendItem();
-      itemB = list.appendItem();
+      itemA = list.createAndAppend();
+      itemB = list.createAndAppend();
 
       wait(itemA.save());
     });
@@ -131,7 +131,7 @@ describe('OrderedHasMany', function() {
       let item;
 
       beforeEach(function(done) {
-        item = list.appendItem();
+        item = list.createAndAppend();
         saveList(list, done);
       });
 
@@ -165,7 +165,7 @@ describe('OrderedHasMany', function() {
       let item;
 
       beforeEach(function(done) {
-        item = list.appendItem();
+        item = list.createAndAppend();
 
         item.save().then(() => {
           this.sinon.stub(item, 'save', asResolvedPromise);
@@ -182,8 +182,8 @@ describe('OrderedHasMany', function() {
       let itemA, itemB;
 
       beforeEach(function(done) {
-        itemA = list.appendItem();
-        itemB = list.appendItem();
+        itemA = list.createAndAppend();
+        itemB = list.createAndAppend();
 
         saveList(list, done);
       });
@@ -203,8 +203,8 @@ describe('OrderedHasMany', function() {
       let itemA, itemB;
 
       beforeEach(function(done) {
-        itemA = list.appendItem();
-        itemB = list.appendItem();
+        itemA = list.createAndAppend();
+        itemB = list.createAndAppend();
         list.swapItems(itemA, itemB);
 
         saveList(list, done);
@@ -226,7 +226,7 @@ describe('OrderedHasMany', function() {
       let item;
 
       beforeEach(function(done) {
-        item = list.appendItem();
+        item = list.createAndAppend();
         saveList(list, done);
       });
 
@@ -239,7 +239,7 @@ describe('OrderedHasMany', function() {
       let item;
 
       beforeEach(function(done) {
-        item = list.appendItem();
+        item = list.createAndAppend();
 
         item.save().then(() => {
           this.sinon.stub(item, 'save', asResolvedPromise);

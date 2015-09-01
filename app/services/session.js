@@ -44,7 +44,7 @@ export default Ember.Service.extend({
   queue: Ember.computed('store', function () {
     var store = this.get('store');
 
-    return store && store.createRecord('mix');
+    // return store && store.createRecord('mix');
   }),
 });
 

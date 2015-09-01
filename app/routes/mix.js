@@ -2,6 +2,11 @@ import Ember from 'ember';
 
 export default Ember.Route.extend({
   actions: {
+    saveMix() {
+      var mix = this.get('controller.model');
+      mix.save();
+    },
+
     deleteMix: function() {
       var mix = this.get('controller.model');
 
@@ -26,50 +31,16 @@ export default Ember.Route.extend({
       });
     },
 
-    addSeedTrack: function(track) {
-      // TODO(AFTERPROMISE): do this easier
-      this.get('controller.model.seedList.content').addTrack(track);
-    },
-
-    removeSeedTrack: function(track) {
-      // TODO(AFTERPROMISE): do this easier
-      this.get('controller.model.seedList.content').removeTrack(track);
-    },
-
-    previewTrack: function(toTrack) {
-      var mix = this.get('controller.model');
-      var fromTrack = mix.get('tracks').get('lastObject');
-      var transition = this.get('store').createRecord('transition');
-      transition.initOverlap(fromTrack, toTrack).then(() => {
-        this.transitionTo('mix.transition', transition);
-      });
-    },
-
     appendTrack: function(track) {
       var mix = this.get('controller.model');
       mix.appendTrack(track);
     },
-
-    removeTrackAt: function(index) {
-      var mix = this.get('controller.model');
-      mix.removeTrackAt(index);
-    },
-
-    insertTransitionAt: function(index, transition) {
-      var mix = this.get('controller.model');
-      mix.insertTransitionAt(transition, index);
-    },
-
-    removeTransitionAt: function(index) {
-      var mix = this.get('controller.model');
-      mix.removeTransitionAt(index);
-    }
   },
 
   setupController: function(controller, model) {
     // TODO(AFTERPROMISE): just use promise array
     this.get('store').findAll('track').then((tracks) => {
-      controller.set('searchTracks', tracks.get('content'));
+      controller.set('searchTracks', tracks);
     });
 
     this._super.apply(this, arguments);

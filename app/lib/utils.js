@@ -62,6 +62,12 @@ export const asResolvedPromise = function(returnedObject, PromiseTypeConstructor
   });
 };
 
+export const assertPromise = function(obj) {
+  return new Ember.RSVP.Promise(function (resolve, reject) {
+    resolve(obj);
+  });
+};
+
 export const getContent = function(obj, prop) {
   return obj.get(prop).then((proxy) => {
     return proxy.get('content');

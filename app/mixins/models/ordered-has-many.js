@@ -1,16 +1,21 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-import withDefault from 'linx/lib/computed/with-default';
+import { default as withDefault, withDefaultProperty } from 'linx/lib/computed/with-default';
 import _ from 'npm:underscore';
 
 export default function(itemModelName, relOptions = {}) {
+
+  console.log('relOptions', relOptions, _.defaults(relOptions, { async: false }))
   let mixinParams = {
 
     // config
     saveItems: false,
 
-    _items: DS.hasMany(itemModelName, _.defaults(relOptions, { async: true })),
-    items: withDefault('_items.content', []),
+    items: DS.hasMany(itemModelName, _.defaults({}, relOptions, {
+      async: false,
+      defaultValue: () => [],
+      polymorphic: true,
+    })),
 
     dirtyItems: Ember.computed.filterBy('items', 'isDirty'),
     itemsAreDirty: Ember.computed.gt('dirtyItems.length', 0),
@@ -18,8 +23,12 @@ export default function(itemModelName, relOptions = {}) {
     length: Ember.computed.alias('items.length'),
 
     // creates a new item and appends it to end of list
-    appendItem: function(params) {
+    createAndAppend: function(params) {
       return this.createItemAt(this.get('length'), params);
+    },
+
+    appendItem: function(item) {
+      this.insertItemAt(this.get('length'), item);
     },
 
     removeItem: function(item) {
@@ -88,16 +97,18 @@ export default function(itemModelName, relOptions = {}) {
 
     // augment save to optionally also save new items
     save: function() {
-      if (!this.get('saveItems')) {
-        return this._super.apply(this, arguments);
-      }
+      let promise = this._super.apply(this, arguments)
+      console.log("SAVEI TEMS")
+      // if (!this.get('saveItems')) {
+        return promise;
+      // }
 
-      let promises = this.get('items').filterBy('isNew').map((item) => {
-        return item && item.save();
-      });
+      // let promises = this.get('items').filterBy('isNew').map((item) => {
+        // return item && item.save();
+      // });
 
-      promises.push(this._super.apply(this, arguments));
-      return Ember.RSVP.all(promises);
+      // promises.push(this._super.apply(this, arguments));
+      // return Ember.RSVP.all(promises);
     },
 
   };

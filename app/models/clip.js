@@ -27,4 +27,11 @@ export default DS.Model.extend(
   isValidNumBeats: Ember.computed.gt('numBeats', 0),
   isValid: Ember.computed.reads('isValidNumBeats'),
   isReady: false,
+
+
+  save: function() {
+    console.log('save clip', this.id);
+    let promise = this._super.apply(this, arguments);
+    return promise;
+  }
 });

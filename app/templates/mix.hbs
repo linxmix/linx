@@ -1,34 +1,31 @@
-<div class="mix-page">
+<div class="MixPage">
 
   {{page-drop action="onPageDrop"}}
 
   <div>{{model.title}}</div>
+  <div class="inverted green ui icon button {{if model.anyDirty '' 'basic disabled'}}" {{action 'saveMix'}}>
+    <i class="cloud upload icon"></i>
+    Save Mix
+  </div>
   <div class="inverted red ui icon button" {{action 'deleteMix'}}>
     <i class="remove icon"></i>
     Delete Mix
   </div>
 
+  {{search-tracks
+    tracks=searchTracks
+    action="appendTrack"
+  }}
+
   <hr/>
 
-  <div class="ui two column grid">
-    <div class="column">
-      {{#mix-list mix=model}}
-        {{#each item in model.items}}
-          {{mix-item
-            item=item
-            createTransitionAt='createTransitionAt'
-            removeTrackAt='removeTrackAt'
-            removeTransitionAt='removeTransitionAt'
-          }}
-        {{/each}}
-      {{/mix-list}}
-    </div>
-
-    <div class="column">
-      {{search-tracks tracks=searchTracks action="addSeedTrack"}}
-    </div>
-
-  </div>
+  {{#mix-list mix=model}}
+    {{#each model.items as |item|}}
+      {{mix-list-item
+        model=item
+      }}
+    {{/each}}
+  {{/mix-list}}
 
   <hr/>
 
