@@ -1,6 +1,6 @@
 {{wave-surfer
-  file=model.track.file
-  streamUrl=model.track.streamUrl
+  file=track.file
+  streamUrl=track.streamUrl
 
   isPlaying=isPlaying
   seekTime=audioSeekTime
@@ -8,18 +8,13 @@
   pxPerBeat=pxPerBeat
   audioBpm=audioBpm
 
-  volume=model.volume
-  pitch=model.pitch
+  volume=clip.volume
+  pitch=clip.pitch
   tempo=tempo
 
   disableMouseInteraction=disableMouseInteraction
 
-  didLoadWave='didLoadWave'
+  didLoadWave="didLoadWave"
 }}
 
-{{#each marker in visibleMarkers}}
-  {{clip-marker
-    marker=marker
-    pxPerBeat=pxPerBeat
-  }}
-{{/each}}
+{{yield visibleMarkers=visibleMarkers}}

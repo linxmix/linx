@@ -1,0 +1,15 @@
+{{#component clip.modelName
+  clip=clip
+  isPlaying=clipEvent.isPlaying
+  seekBeat=clipEvent.clipSeekBeat
+  syncBpm=clipEvent.bpm
+  pxPerBeat=pxPerBeat
+  as |clipComponent|
+}}
+  {{#each marker in visibleMarkers}}
+    {{clip-marker
+      marker=marker
+      pxPerBeat=pxPerBeat
+    }}
+  {{/each}}
+{{/component}}

@@ -28,7 +28,6 @@ export default DS.Model.extend(
   isValid: Ember.computed.reads('isValidNumBeats'),
   isReady: false,
 
-
   save() {
     console.log('save clip', this.id);
     let promise = this._super.apply(this, arguments);

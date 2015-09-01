@@ -6,9 +6,9 @@
   seekToBeat='seekToBeat'
 }}
   {{#arrangement-row}}
-    {{#each clipEvent in clipEvents}}
-      {{arrangement-item
-        clipEvent=clipEvent
+    {{#each arrangement.clips as |clip|}}
+      {{lx-clip
+        clip=clip
         metronome=metronome
         pxPerBeat=pxPerBeat
       }}

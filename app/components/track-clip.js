@@ -5,7 +5,7 @@ import { flatten, beatToTime } from 'linx/lib/utils';
 import _ from 'npm:underscore';
 
 export default Ember.Component.extend(
-  RequireAttributes('model', 'isPlaying', 'seekBeat', 'pxPerBeat'), {
+  RequireAttributes('clip', 'isPlaying', 'seekBeat', 'pxPerBeat'), {
 
   classNames: ['TrackClip'],
 
@@ -15,20 +15,23 @@ export default Ember.Component.extend(
 
   actions: {
     didLoadWave: function() {
-      this.get('model').set('isAudioLoaded', true);
+      this.get('clip').set('isAudioLoaded', true);
     }
   },
 
   startPx: function() {
-    return (this.get('model.startBeat') * this.get('pxPerBeat')) + 'px';
-  }.property('model.startBeat', 'pxPerBeat'),
+    return (this.get('clip.startBeat') * this.get('pxPerBeat')) + 'px';
+  }.property('clip.startBeat', 'pxPerBeat'),
 
-  // params
-  startTime: Ember.computed.alias('model.startTime'),
-  endTime: Ember.computed.alias('model.endTime'),
-  audioBpm: Ember.computed.alias('model.bpm'),
+  // optional params
   disableMouseInteraction: true,
   syncBpm: null,
+
+  // params
+  track: Ember.computed.reads('clip.track'),
+  startTime: Ember.computed.reads('clip.startTime'),
+  endTime: Ember.computed.reads('clip.endTime'),
+  audioBpm: Ember.computed.reads('track.bpm'),
   tempo: function() {
     var audioBpm = this.get('audioBpm');
     var syncBpm = this.get('syncBpm');
@@ -51,7 +54,7 @@ export default Ember.Component.extend(
     return startTime + seekTime;
   }.property('seekTime', 'startTime'),
 
-  markers: Ember.computed.alias('model.audioMeta.markers'),
+  markers: Ember.computed.reads('track.audioMeta.markers'),
   visibleMarkers: function() {
     var startTime = this.get('startTime');
     var endTime = this.get('endTime');

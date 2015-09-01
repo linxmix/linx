@@ -3,9 +3,8 @@ import Metronome from 'linx/lib/metronome';
 import RequireAttributes from 'linx/lib/require-attributes';
 import _ from 'npm:underscore';
 
-// sequences arrangementItems as events against metronome
-// wraps imperative behaviour to avoid overhead of realtime computed properties
-// exposes metronome, clipEvents, isPlaying, isReady and playback actions
+// exposes metronome, isPlaying, isReady and playback actions
+// pass metronome to clips for registering
 export default Ember.Mixin.create(
   RequireAttributes('arrangement'), {
 
@@ -48,18 +47,4 @@ export default Ember.Mixin.create(
     return this.get('_arrangementItems.length') === this.get('readyClips.length');
   }.property('_arrangementItems.[]', 'readyClips.[]'),
 
-  clipEvents: Ember.computed(function() { return []; }),
-
-  _arrangementItems: Ember.computed.oneWay('arrangement.items'),
-  _arrangementItemsWithEvents: Ember.computed.mapBy('clipEvents', 'arrangementItem'),
-  _arrangementItemsWithoutEvents: Ember.computed.setDiff('_arrangementItems', '_arrangementItemsWithEvents'),
-  _updateClipEvents: function() {
-    var clipEvents = this.get('clipEvents');
-    var metronome = this.get('metronome');
-
-    this.get('_arrangementItemsWithoutEvents').map((item) => {
-      var clipEvent = metronome.createClipEvent(item);
-      clipEvents.pushObject(clipEvent);
-    });
-  }.observes('_arrangementItemsWithoutEvents.[]', 'metronome', 'clipEvents').on('init'),
 });
