@@ -1,26 +1,40 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
-import Arrangement from './arrangement';
-
 import withDefaultModel from 'linx/lib/computed/with-default-model';
-import { flatten } from 'linx/lib/utils';
+import { flatten, getContent } from 'linx/lib/utils';
 import add from 'linx/lib/computed/add';
 
-export default Arrangement.extend({
+export default DS.Model.extend({
   type: 'mix',
 
   title: DS.attr('string'),
-  validEvents: Ember.computed.filterBy('events', 'isValid', true),
+  _arrangement: DS.belongsTo('arrangement', { async: true }),
+  arrangement: withDefaultModel('_arrangement', function() {
+    return this.get('store').createRecord('arrangement');
+  }),
 
-  // params
-  tracks: function() {
-    return flatten(this.get('events').mapBy('tracks'));
-  }.property('events.@each.tracks'),
-  transitions: Ember.computed.filterBy('events', 'transition.content'),
+  length: Ember.computed.reads('arrangement.clips.length'),
 
-  numTracks: Ember.computed.reads('tracks.length'),
-  numTransitions: Ember.computed.reads('transitions.length'),
+  // tracks: function() {
+  //   return flatten(this.get('arrangement.clips').mapBy('tracks') || []);
+  // }.property('arrangement.clips.@each.tracks'),
+  trackClips: Ember.computed.filterBy('arrangement.clips', 'type', 'track-clip'),
+  tracks: Ember.computed.mapBy('trackClips', 'track'),
+
+  transitionClips: Ember.computed.filterBy('arrangement.clips', 'type', 'transition-clip'),
+  transitions: Ember.computed.mapBy('transitionClips', 'transition'),
+
+  mixClips: Ember.computed.filterBy('arrangement.clips', 'type', 'mix-clip'),
+  mixes: Ember.computed.mapBy('mixClips', 'mix'),
+
+  objectAt(index) {
+    return this.get('arrangement.clips').objectAt(index);
+  },
+
+  removeObject(object) {
+    return this.get('arrangement.clips').removeObject(object);
+  },
 
   // appends model as an event, returns a promise which resolves into the event
   appendTrack: appendModelFn('track'),
@@ -71,17 +85,14 @@ export default Arrangement.extend({
   },
 });
 
-// returns a function which creates model as an event, then returns a promise which resolves into the event
-function appendModelFn(type) {
-  let modelName = `${type}-mix-event`;
+// returns a function which appends a clip with given model to the arrangement
+function appendModelFn(modelName) {
+  let clipModelName = `${modelName}-clip`;
 
   return function(model) {
-    let mixEvent = this.appendItem({ modelName });
+    let clipParams = { modelName: clipModelName };
+    clipParams[modelName] = model;
 
-    return mixEvent.save().then(() => {
-      return mixEvent.setModel(model).then(() => {
-        return mixEvent;
-      });
-    });
-  }
+    return this.get('arrangement.content').appendItem(clipParams);
+  };
 };

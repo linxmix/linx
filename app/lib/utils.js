@@ -61,3 +61,9 @@ export const asResolvedPromise = function(returnedObject, PromiseTypeConstructor
     })
   });
 };
+
+export const getContent = function(obj, prop) {
+  return obj.get(prop).then((proxy) => {
+    return proxy.get('content');
+  });
+};

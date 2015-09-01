@@ -9,6 +9,8 @@ import withDefault from 'linx/lib/computed/with-default';
 export default DS.Model.extend(
   OrderedHasManyMixin('clip', { polymorphic: true }), {
 
+  mixes: DS.hasMany('mix', { async: true }),
+
   // params
   clips: Ember.computed.alias('items'),
   validClips: Ember.computed.filterBy('clips', 'isValid', true),
