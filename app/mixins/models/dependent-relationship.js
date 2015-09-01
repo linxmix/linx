@@ -69,7 +69,6 @@ export default function(propertyPath) {
 
     saveDirtyDependentModels() {
       return Ember.RSVP.all(this.get('dirtyDependentModels').map((model) => {
-        debugger
         return model.save();
       }));
     },

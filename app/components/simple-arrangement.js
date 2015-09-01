@@ -1,27 +1,29 @@
 import Ember from 'ember';
-import BubbleActions from 'linx/lib/bubble-actions';
 import RequireAttributes from 'linx/lib/require-attributes';
-import cssStyle from 'linx/lib/computed/css-style';
+import ArrangementPlayerMixin from 'linx/mixins/arrangement-player';
 
-export default Ember.Component.extend(
-  RequireAttributes('arrangement', 'metronome', 'pxPerBeat'),
-  BubbleActions('seekToClick'), {
+export default Ember.Component.extend(ArrangementPlayerMixin,
+  RequireAttributes('arrangement'), {
 
-  classNames: ['SimpleArrangement'],
-  classNameBindings: ['isReady::SimpleArrangement--loading'],
-
-  playheadStyle: cssStyle({
-    'left': 'playheadPx'
-  }),
-
-  // on click, seekToBeat
-  click: function(e) {
-    var x = e.pageX - this.$().offset().left;
-    var beat = x / this.get('pxPerBeat');
-    this.sendAction('seekToBeat', beat);
+  actions: {
+    toggleEditing: function() {
+      this.toggleProperty('isEditing');
+    }
   },
 
-  playheadPx: function() {
-    return (this.get('metronome.tickBeat') * this.get('pxPerBeat')) + 'px';
-  }.property('metronome.tickBeat', 'pxPerBeat'),
+  isEditing: false,
+
+  // Hacky stuff to convert <input type="number"> values to numbers
+  inputBpm: Ember.computed.oneWay('metronome.bpm'),
+  inputZoom: Ember.computed.oneWay('pxPerBeat'),
+  _inputBpmDidChange: function() {
+    this.get('metronome').setBpm(parseFloat(this.get('inputBpm')));
+  }.observes('inputBpm'),
+  _inputZoomDidChange: function() {
+    this.set('pxPerBeat', parseFloat(this.get('inputZoom')));
+  }.observes('inputZoom'),
+  // /hacky stuff
+
+  classNames: ['SimpleArrangement'],
+
 });

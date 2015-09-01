@@ -1,4 +1,15 @@
-.arrangement-grid {
-  width: 100%;
+.ArrangementGrid {
+  border: 1px solid orange;
+  overflow: hidden;
+  cursor: crosshair;
+}
+
+.ArrangementGrid--loading {
+  cursor: wait;
+}
+
+.ArrangementGrid-playhead {
+  position: relative;
+  border-left: 2px solid red;
   height: 100%;
 }
