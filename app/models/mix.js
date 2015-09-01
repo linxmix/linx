@@ -1,16 +1,21 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
+import OrderedHasManyMixin from 'linx/mixins/models/ordered-has-many';
+import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
+
 import withDefaultModel from 'linx/lib/computed/with-default-model';
 import { flatten, asResolvedPromise } from 'linx/lib/utils';
 import add from 'linx/lib/computed/add';
 
-export default DS.Model.extend({
-  type: 'mix',
-
-  items: Ember.computed.alias('arrangement.items'),
+export default DS.Model.extend(
+  DependentRelationshipMixin('arrangement'),
+  OrderedHasManyMixin({ itemModelName: 'mix-item', itemsPath: 'items' }), {
 
   title: DS.attr('string'),
+  items: DS.hasMany('mix-item', { async: true, defaultValue: () => [] }),
+
+  // TODO(CLEANUP): destroy arrangement when destroying mix?
   _arrangement: DS.belongsTo('arrangement', { async: true }),
   arrangement: withDefaultModel('_arrangement', function() {
     let arrangement = this.get('store').createRecord('arrangement');
@@ -18,55 +23,19 @@ export default DS.Model.extend({
     return arrangement;
   }),
 
-  // TODO(DEPENDENTMODEL)
-  save() {
-    let promises = [
-      this._super.apply(this, arguments),
-    ];
+  trackItems: Ember.computed.filterBy('items', 'isTrack'),
+  tracks: Ember.computed.mapBy('trackItems', 'model'),
 
-    this.get('arrangement').then((arrangement) => {
-      return arrangement.save();
-    }),
+  transitionItems: Ember.computed.filterBy('items', 'isTransition'),
+  transitions: Ember.computed.mapBy('transitionItems', 'model'),
 
-    console.log('save mix', promises);
+  mixItems: Ember.computed.filterBy('items', 'isMix'),
+  mixes: Ember.computed.mapBy('mixItems', 'model'),
 
-    return Ember.RSVP.all(promises).then(() => {
-      console.log('save mix then');
-      return this;
-    });
-  },
-
-  // TODO(DEPENDENTMODEL)
-  anyDirty: function() {
-    return this._super.apply(this, arguments) || this.get('arrangement.anyDirty');
-  }.property('isDirty', 'arrangement.anyDirty'),
-
-  length: Ember.computed.reads('items.length'),
-
-  // tracks: function() {
-  //   return flatten(this.get('arrangement.clips').mapBy('tracks') || []);
-  // }.property('arrangement.clips.@each.tracks'),
-  trackItems: Ember.computed.filterBy('items', 'type', 'track-clip'),
-  tracks: Ember.computed.mapBy('trackItems', 'track'),
-
-  transitionItems: Ember.computed.filterBy('items', 'type', 'transition-clip'),
-  transitions: Ember.computed.mapBy('transitionItems', 'transition'),
-
-  mixItems: Ember.computed.filterBy('items', 'type', 'mix-clip'),
-  mixes: Ember.computed.mapBy('mixItems', 'mix'),
-
-  itemAt(index) {
-    return this.get('items').objectAt(index);
-  },
-
-  removeItem(item) {
-    return this.get('items').removeObject(item);
-  },
-
-  // appends model as an event, returns a promise which resolves into the event
-  appendTrack: appendModelFn('track'),
-  appendTransition: appendModelFn('transition'),
-  appendMix: appendModelFn('mix'),
+  // appends model as an item, returns a promise which resolves into the item
+  appendTrack: appendModelFn(),
+  appendTransition: appendModelFn(),
+  appendMix: appendModelFn(),
 
   // adds matching tracks when appending given transition
   appendTransitionWithTracks: function(transition) {
@@ -112,22 +81,8 @@ export default DS.Model.extend({
   },
 });
 
-// returns a function which appends a clip with given model to the arrangement
-function appendModelFn(modelName) {
-  let clipModelName = `${modelName}-clip`;
-
+function appendModelFn() {
   return function(model) {
-    let clipParams = { modelName: clipModelName };
-    clipParams[modelName] = model;
-
-
-    let clip = this.get('store').createRecord(clipModelName, clipParams);
-    console.log("created clip", clipParams, clip)
-
-    // clip.save().then(() => {
-      this.get('arrangement.content').appendItem(clip);
-    // });
-
-    return clip;
+    return this.createAndAppend().setModel(model);
   };
 };

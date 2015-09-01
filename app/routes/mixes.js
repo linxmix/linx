@@ -8,9 +8,7 @@ export default Ember.Route.extend({
         title: 'Mix ' + Ember.uuid(),
       });
 
-      mix.save().then(() => {
-        this.transitionTo('mix', mix);
-      });
+      this.transitionTo('mix', mix);
     }
   },
 

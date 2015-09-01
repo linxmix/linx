@@ -1,26 +1,24 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-import { default as withDefault, withDefaultProperty } from 'linx/lib/computed/with-default';
 import _ from 'npm:underscore';
 
-export default function(itemModelName, relOptions = {}) {
+import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 
-  console.log('relOptions', relOptions, _.defaults(relOptions, { async: false }))
+import withDefault from 'linx/lib/computed/with-default';
+
+export default function(options = {}) {
+  let { itemModelName, itemsPath } = options;
+  Ember.assert('Need itemModelName and itemsPath for OrderedHasManyMixin', itemModelName && itemsPath);
+
   let mixinParams = {
 
     // config
-    saveItems: false,
+    saveItems: true,
 
-    items: DS.hasMany(itemModelName, _.defaults({}, relOptions, {
-      async: false,
-      defaultValue: () => [],
-      polymorphic: true,
-    })),
-
-    dirtyItems: Ember.computed.filterBy('items', 'isDirty'),
+    dirtyItems: Ember.computed.filterBy(itemsPath, 'isDirty'),
     itemsAreDirty: Ember.computed.gt('dirtyItems.length', 0),
     anyDirty: Ember.computed.or('isDirty', 'itemsAreDirty'),
-    length: Ember.computed.alias('items.length'),
+    length: Ember.computed.alias(`${itemsPath}.length`),
 
     // creates a new item and appends it to end of list
     createAndAppend: function(params) {
@@ -32,23 +30,23 @@ export default function(itemModelName, relOptions = {}) {
     },
 
     removeItem: function(item) {
-      return this.get('items').removeObject(item);
+      return this.get(itemsPath).removeObject(item);
     },
 
     removeAt: function(index) {
-      return this.get('items').removeAt(index);
+      return this.get(itemsPath).removeAt(index);
     },
 
     insertItemAt: function(index, item) {
-      return this.get('items').insertAt(index, item);
+      return this.get(itemsPath).insertAt(index, item);
     },
 
     indexOf: function(item) {
-      return this.get('items').indexOf(item);
+      return this.get(itemsPath).indexOf(item);
     },
 
     objectAt: function(index) {
-      return this.get('items').objectAt(index);
+      return this.get(itemsPath).objectAt(index);
     },
 
     // swaps position of items
@@ -58,7 +56,7 @@ export default function(itemModelName, relOptions = {}) {
 
     // swaps position of items at two given indices
     swap: function(indexA, indexB) {
-      let items = this.get('items');
+      let items = this.get(itemsPath);
       let itemA = this.objectAt(indexA);
       let itemB = this.objectAt(indexB);
 
@@ -71,23 +69,23 @@ export default function(itemModelName, relOptions = {}) {
     // creates a new item and inserts it at given index
     createItemAt: function(index, params) {
       let item = this._createItem(params);
-      this.get('items').insertAt(index, item);
+      this.get(itemsPath).insertAt(index, item);
       return item;
     },
 
     // returns item at index, or if none, creates new item at index and returns it
     getOrCreateItemAt: function(index) {
-      return this.get('items').objectAt(index) || this.createItemAt(index);
+      return this.get(itemsPath).objectAt(index) || this.createItemAt(index);
     },
 
     // creates and returns a new item, does NOT insert into list
     _createItem: function(params = {}) {
-      return this.get('store').createRecord(params.modelName || itemModelName, params);
+      return this.get('store').createRecord(itemModelName, params);
     },
 
     // augment destroyRecord to also destroy items
     destroyRecord: function() {
-      let promises = this.get('items').map((item) => {
+      let promises = this.get(itemsPath).map((item) => {
         return item && item.destroyRecord();
       });
 
@@ -95,23 +93,12 @@ export default function(itemModelName, relOptions = {}) {
       return Ember.RSVP.all(promises);
     },
 
-    // augment save to optionally also save new items
     save: function() {
-      let promise = this._super.apply(this, arguments)
-      console.log("SAVEI TEMS")
-      // if (!this.get('saveItems')) {
-        return promise;
-      // }
-
-      // let promises = this.get('items').filterBy('isNew').map((item) => {
-        // return item && item.save();
-      // });
-
-      // promises.push(this._super.apply(this, arguments));
-      // return Ember.RSVP.all(promises);
+      console.log("ordered-has-many save")
+      return this._super.apply(this, arguments);
     },
 
   };
 
-  return Ember.Mixin.create(mixinParams);
+  return Ember.Mixin.create(DependentRelationshipMixin(itemsPath), mixinParams);
 }

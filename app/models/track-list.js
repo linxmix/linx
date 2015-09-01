@@ -2,8 +2,8 @@ import Ember from 'ember';
 import DS from 'ember-data';
 import OrderedHasManyMixin from 'linx/mixins/models/ordered-has-many';
 
-export default DS.Model.extend(
-  OrderedHasManyMixin('track-list-item'), {
+export default DS.Model.extend({
+  // OrderedHasManyMixin('track-list-item'), {
 
   tracks: Ember.computed.mapBy('items', 'track'),
 

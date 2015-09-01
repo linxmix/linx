@@ -2,15 +2,17 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import Clip from './clip';
-import TransitionableClipMixin from 'linx/mixins/models/transitionable-clip';
+import MixableClipMixin from 'linx/mixins/models/mixable-clip';
 
 import { beatToTime } from 'linx/lib/utils';
 import { withDefaultProperty } from 'linx/lib/computed/with-default';
 
-export default Clip.extend(TransitionableClipMixin, {
-  type: 'track-clip',
+export default Clip.extend(MixableClipMixin, {
+  // type: 'track-clip',
 
-  // implementing transitionableClip
+  // implementing mixableClip
+  model: DS.belongsTo('track', { async: true }),
+
   firstTrack: Ember.computed.reads('track'),
   lastTrack: Ember.computed.reads('track'),
 
@@ -26,7 +28,7 @@ export default Clip.extend(TransitionableClipMixin, {
   isReady: Ember.computed.and('isLoaded', 'isAudioLoaded', 'track.isLoaded', 'track.audioMeta.isLoaded'),
 
   // track-clip specific
-  track: DS.belongsTo('track', { async: true }),
+  track: Ember.computed.alias('model'),
   _audioStartBeat: DS.attr('number'),
   _numBeats: DS.attr('number'),
   _audioEndBeat: DS.attr('number'),

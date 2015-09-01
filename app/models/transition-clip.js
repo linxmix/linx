@@ -8,7 +8,11 @@ import equalProps from 'linx/lib/computed/equal-props';
 import subtract from 'linx/lib/computed/subtract';
 
 export default ArrangementClip.extend({
-  type: 'transition-clip',
+  // type: 'transition-clip',
+
+  // implementing mixableClip
+  model: DS.belongsTo('transition', { async: true }),
+  isTransitionable: false,
 
   // implementing Clip
   startBeat: subtract('prevClip.endBeat', 'transition.numBeats'), // overlap
@@ -19,7 +23,7 @@ export default ArrangementClip.extend({
 
   // transition-clip specific
   // TODO(TRANSITION)
-  transition: DS.belongsTo('transition', { async: true }),
+  transition: Ember.computed.alias('model'),
   fromClip: Ember.computed.reads('prevClip'),
   toClip: Ember.computed.reads('nextClip'),
 

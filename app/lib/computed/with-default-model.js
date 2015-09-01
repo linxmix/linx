@@ -1,6 +1,7 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 import { asResolvedPromise } from 'linx/lib/utils';
+import _ from 'npm:underscore';
 
 // given a path to a relationship,
 // returns a property that returns the relationship if exists, else creates a new
@@ -25,18 +26,20 @@ export default function(relPath, createModelFn) {
       }
 
       // if relationship is empty, create default
-      // TODO: make save optional
       else if (!dependentModelId) {
         console.log("WithDefaultModel - EMPTY", key, this.get('id'));
 
         return DS.PromiseObject.create({
           promise: asResolvedPromise(createModelFn.call(this)).then((model) => {
-            return model.save().then(() => {
-              this.set(relPath, model);
-              return this.save().then(() => {
-                return model;
-              });
-            });
+            this.set(relPath, model);
+            return model;
+
+            // TODO: make save optional
+            // return model.save().then(() => {
+              // return this.save().then(() => {
+                // return model;
+              // });
+            // });
           }),
         });
       }

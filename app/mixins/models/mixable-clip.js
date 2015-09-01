@@ -8,11 +8,18 @@ import subtract from 'linx/lib/computed/subtract';
 import withDefault from 'linx/lib/computed/with-default';
 
 export default Ember.Mixin.create({
-  // TODO(REQUIREPROPERTIES)
-  // RequireAttributes('clipStartBeatWithTransition', 'clipStartBeatWithoutTransition', 'clipEndBeatWithTransition', 'clipEndBeatWithoutTransition'), {
+  mixItem: DS.belongsTo('mix-item', { async: true }),
 
+  // TODO(REQUIREPROPERTIES)
+  model: null,
   fromTrack: null,
   toTrack: null,
+
+  prevItem: Ember.computed.reads('mixItem.prevItem'),
+  nextItem: Ember.computed.reads('mixItem.nextItem'),
+
+  prevClip: Ember.computed.reads('prevItem.clip'),
+  nextClip: Ember.computed.reads('nextItem.clip'),
 
   prevTransition: Ember.computed.reads('prevClip.transition'),
   nextTransition: Ember.computed.reads('nextClip.transition'),

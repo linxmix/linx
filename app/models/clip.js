@@ -29,9 +29,14 @@ export default DS.Model.extend(
   isReady: false,
 
 
-  save: function() {
+  save() {
     console.log('save clip', this.id);
     let promise = this._super.apply(this, arguments);
     return promise;
+  },
+
+  destroyRecord() {
+    console.log('destroy clip');
+    return this._super.apply(this, arguments);
   }
 });
