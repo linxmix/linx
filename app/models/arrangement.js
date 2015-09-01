@@ -9,11 +9,32 @@ export default DS.Model.extend({
   mixes: DS.hasMany('mix', { async: true }),
 
   // TODO(POLYMORPHISM)
-  clips: concat('trackClips', 'transitionClips', 'mixClips', 'automationClips'),
-  trackClips: DS.hasMany('track-clip', { async: true, defaultValue: () => [] }),
-  transitionClips: DS.hasMany('transition-clip', { async: true, defaultValue: () => [] }),
-  mixClips: DS.hasMany('mix-clip', { async: true, defaultValue: () => [] }),
-  automationClips: DS.hasMany('automation-clip', { async: true, defaultValue: () => [] }),
+  trackClips: DS.hasMany('track-clip', { async: true }),
+  transitionClips: DS.hasMany('transition-clip', { async: true }),
+  mixClips: DS.hasMany('mix-clip', { async: true }),
+  automationClips: DS.hasMany('automation-clip', { async: true }),
+
+  _hasManiesAreFulfilled: Ember.computed.and('trackClips.isFulfilled', 'transitionClips.isFulfilled', 'mixClips.isFulfilled', 'automationClips.isFulfilled'),
+
+  clips: Ember.computed(() => { return [] }),
+  updateClips: function() {
+    if (this.get('isLoaded') && this.get('_hasManiesAreFulfilled')) {
+      Ember.run.next(() => {
+        Ember.run.once(this, '_updateClips');
+      });
+    }
+  }.observes('isLoaded', '_hasManiesAreFulfilled', 'trackClips.[]', 'transitionClips.[]', 'mixClips.[]', 'automationClips.[]'),
+
+  _updateClips: function() {
+    let keys = ['trackClips', 'transitionClips', 'mixClips', 'automationClips'];
+
+    this.set('clips', keys.reduce((acc, key) => {
+      let hasMany = this.get(`${key}.content`);
+      return acc.concat(hasMany ? hasMany.toArray() : []);
+    }, []));
+
+    console.log("updateClips", this.get('clips'));
+  },
 
   // params
   validClips: Ember.computed.filterBy('clips', 'isValid', true),
@@ -33,3 +54,15 @@ export default DS.Model.extend({
     return promise;
   }
 });
+
+
+  // _updateClips = function(arrangement) {
+  //   var keys = ['trackClips', 'transitionClips', 'mixClips', 'automationClips'];
+
+  //   arrangement.set('clips', keys.reduce(function(acc, key) {
+  //     var hasMany = arrangement.get(key + '.content');
+  //     return acc.concat(hasMany ? hasMany.toArray() : []);
+  //   }, []));
+
+  //   console.log("updateClips", arrangement.get('clips'));
+  // }

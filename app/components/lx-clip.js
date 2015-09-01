@@ -18,30 +18,35 @@ export default Ember.Component.extend(
 
   updateClipEvent: function() {
     Ember.run.once(this, '_updateClipEvent');
-  }.observes('metronome', 'clip'),
+  }.observes('metronome', 'clip').on('init'),
 
   _updateClipEvent: function() {
     let clip = this.get('clip');
     let metronome = this.get('metronome');
 
     // re-sync clip and metronome
-    if (!metronome || !clip) {
+    if (!(metronome && clip)) {
       this.destroyClipEvent();
     } else {
       let clipEvent = this.get('clipEvent');
+
       if (!clipEvent) {
         clipEvent = metronome.createClipEvent(clip);
       } else {
         clipEvent.set('clip', clip);
       }
+
+      this.set('clipEvent', clipEvent);
     }
-  }.on('init'),
+  },
 
   destroyClipEvent: function() {
     let clipEvent = this.get('clipEvent');
 
     clipEvent && clipEvent.destroy();
-  }.on('didDestroyElement'),
+
+    this.set('clipEvent', undefined);
+  }.on('willDestroyElement'),
 
   startPx: function() {
     return this.beatToPx(this.get('clip.startBeat')) + 'px';

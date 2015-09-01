@@ -203,7 +203,8 @@ var ClipEvent = Ember.Object.extend(
   },
 
   destroy: function() {
-    this._unschedule();
+    this.get('_startEvent').destroy();
+    this.get('_endEvent').destroy();
     this._super.apply(this, arguments);
   }
 });

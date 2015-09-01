@@ -23,8 +23,6 @@ export default function(propertyPath) {
     _addDependentModelsProperty: function() {
       let dependentKeys = this.get('_dependentModelPaths');
 
-      console.log("add dirtyDependentModels property", dependentKeys);
-
       Ember.defineProperty(this, 'dependentModels',
         Ember.computed.apply(Ember, dependentKeys.concat([function() {
           return flatten(dependentKeys.map((key) => {

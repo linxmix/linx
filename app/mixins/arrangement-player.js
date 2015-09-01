@@ -27,7 +27,7 @@ export default Ember.Mixin.create(
   },
 
   // params
-  isPlaying: Ember.computed.alias('metronome.isPlaying'),
+  isPlaying: Ember.computed.reads('metronome.isPlaying'),
   session: Ember.inject.service(),
   pxPerBeat: 15,
 
@@ -38,13 +38,7 @@ export default Ember.Mixin.create(
     }
   }.property('session.audioContext'),
 
-  // TODO: why do computed props not work here?
   notReady: Ember.computed.not('isReady'),
-  readyClips: function() {
-    return this.getWithDefault('_arrangementItems', []).filterBy('isReady');
-  }.property('_arrangementItems.@each.isReady'),
-  isReady: function() {
-    return this.get('_arrangementItems.length') === this.get('readyClips.length');
-  }.property('_arrangementItems.[]', 'readyClips.[]'),
+  isReady: Ember.computed.reads('arrangement.isReady'),
 
 });

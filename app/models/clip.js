@@ -37,5 +37,7 @@ export default DS.Model.extend(
   destroyRecord() {
     console.log('destroy clip');
     return this._super.apply(this, arguments);
-  }
+  },
+
+  modelName: Ember.computed.reads('constructor.modelName'),
 });
