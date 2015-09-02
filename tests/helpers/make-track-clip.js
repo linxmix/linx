@@ -8,7 +8,7 @@ export default function(options = {}) {
   let track = Ember.getWithDefault(options, 'track', makeTrack.call(this, options));
 
   let trackClip = this.factory.make('track-clip', {
-    track: track,
+    model: track,
   });
 
   return {

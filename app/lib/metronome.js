@@ -158,6 +158,7 @@ var ClipEvent = Ember.Object.extend(
   }.property('metronome.seekBeat', 'startBeat'),
 
   _schedulingDidChange: function() {
+    // TODO(TRANSITION)
     Ember.run.once(this, '_updateEventTimes');
   }.observes('metronome.isPlaying', 'metronome.absSeekTime', '_seekBeat', 'bpm').on('init'),
 

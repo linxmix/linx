@@ -7,6 +7,10 @@ import _ from 'npm:underscore';
 export default Ember.Component.extend(
   RequireAttributes('clip', 'pxPerBeat'), {
 
+    logClearRender: function() {
+      console.log("willClearRender");
+    }.on('willClearRender'),
+
   // optional params
   disableMouseInteraction: true,
   syncBpm: null,
@@ -26,13 +30,13 @@ export default Ember.Component.extend(
   },
 
   startPx: function() {
-    return (this.get('clip.startBeat') * this.get('pxPerBeat')) + 'px';
-  }.property('clip.startBeat', 'pxPerBeat'),
+    return (this.get('clip.clipStartBeat') * this.get('pxPerBeat')) + 'px';
+  }.property('clip.clipStartBeat', 'pxPerBeat'),
 
   // params
   track: Ember.computed.reads('clip.track'),
-  startTime: Ember.computed.reads('clip.startTime'),
-  endTime: Ember.computed.reads('clip.endTime'),
+  audioStartTime: Ember.computed.reads('clip.audioStartTime'),
+  clipEndTime: Ember.computed.reads('clip.clipEndTime'),
   audioBpm: Ember.computed.reads('track.bpm'),
   tempo: function() {
     var audioBpm = this.get('audioBpm');
@@ -50,20 +54,19 @@ export default Ember.Component.extend(
 
   audioSeekTime: function() {
     var seekTime = this.get('seekTime');
-    var startTime = this.get('startTime');
-    console.log("audioSeekTime", seekTime + startTime);
+    var audioStartTime = this.get('audioStartTime');
 
-    return startTime + seekTime;
-  }.property('seekTime', 'startTime'),
+    return audioStartTime + seekTime;
+  }.property('seekTime', 'audioStartTime'),
 
   markers: Ember.computed.reads('track.audioMeta.markers'),
   visibleMarkers: function() {
-    var startTime = this.get('startTime');
-    var endTime = this.get('endTime');
+    var audioStartTime = this.get('audioStartTime');
+    var clipEndTime = this.get('clipEndTime');
 
     return this.getWithDefault('markers', []).filter((marker) => {
       var markerStart = marker.get('start');
-      return markerStart >= startTime && markerStart <= endTime;
+      return markerStart >= audioStartTime && markerStart <= clipEndTime;
     });
-  }.property('startTime', 'endTime', 'markers.[].start'),
+  }.property('audioStartTime', 'clipEndTime', 'markers.[].start'),
 });

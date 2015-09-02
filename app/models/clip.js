@@ -21,9 +21,6 @@ export default DS.Model.extend(
   endBeat: add('startBeat', 'numBeats'),
   numBeats: subtract('endBeat', 'startBeat'),
 
-  prevClip: Ember.computed.reads('prevItem'),
-  nextClip: Ember.computed.reads('nextItem'),
-
   isValidNumBeats: Ember.computed.gt('numBeats', 0),
   isValid: Ember.computed.reads('isValidNumBeats'),
   isReady: false,
