@@ -4,8 +4,6 @@ import DS from 'ember-data';
 import _ from 'npm:underscore';
 import { flatten } from 'linx/lib/utils';
 
-// TODO: memory leaks with observers at runtime?
-
 // Adds dependent models.
 // Supports any property path which resolves to a model, or to an array of models.
 // Supports mixing in multiple times for multiple dependentModels.
@@ -75,7 +73,8 @@ export default function(propertyPath) {
       if (this.get('hasDirtyDependentModels')) {
         console.log("saving dirty dependent models", this.constructor.modelName, this.get('dirtyDependentModels'));
         return this.saveDirtyDependentModels().then(() => {
-          return this.save();
+          // TODO: why doesnt hasDirtyAttributes not update immediately?
+          Ember.run.next(this, 'save');
         });
       } else {
         console.log("no dirty dependents, saving master model", this.constructor.modelName);

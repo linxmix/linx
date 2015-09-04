@@ -1,6 +1,7 @@
 import Ember from 'ember';
 import RequireAttributes from 'linx/lib/require-attributes';
 import cssStyle from 'linx/lib/computed/css-style';
+import add from 'linx/lib/computed/add';
 import { flatten, beatToTime } from 'linx/lib/utils';
 import _ from 'npm:underscore';
 
@@ -33,7 +34,7 @@ export default Ember.Component.extend(
   track: Ember.computed.reads('clip.track'),
   audioStartTime: Ember.computed.reads('clip.audioStartTime'),
   clipEndTime: Ember.computed.reads('clip.clipEndTime'),
-  audioBpm: Ember.computed.reads('track.bpm'),
+  audioBpm: Ember.computed.reads('track.audioMeta.bpm'),
   tempo: function() {
     var audioBpm = this.get('audioBpm');
     var syncBpm = this.get('syncBpm');
@@ -45,14 +46,21 @@ export default Ember.Component.extend(
   }.property('audioBpm', 'syncBpm'),
 
   seekTime: function() {
+    console.log('update seekTime', this.get('seekBeat'));
     return beatToTime(this.get('seekBeat'), this.get('audioBpm'));
   }.property('seekBeat', 'audioBpm'),
 
-  audioSeekTime: function() {
-    var seekTime = this.get('seekTime');
-    var audioStartTime = this.get('audioStartTime');
+  seekBeatDidChange: function() {
+    console.log("seekBeatDidChange", this.get('seekBeat'))
+    // let seekTime = beatToTime(this.get('seekBeat'), this.get('audioBpm'));
+    // this.set('audioSeekTime', seekTime + this.get('audioStartTime'));
+    // this.set('seekTime', beatToTime(this.get('seekBeat'), this.get('audioBpm')));
+  }.observes('seekBeat'),
 
-    return audioStartTime + seekTime;
+  // audioSeekTime: add('seekTime', 'audioStartTime'),
+  audioSeekTime: function() {
+    console.log('update audioSeekTime', this.get('seekTime'));
+    return this.get('seekTime') + this.get('audioStartTime');
   }.property('seekTime', 'audioStartTime'),
 
   markers: Ember.computed.reads('track.audioMeta.markers'),
