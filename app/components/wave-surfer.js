@@ -99,9 +99,10 @@ export const Wave = Ember.Object.extend(
         volume = parseFloat(volume);
       } catch(e) {}
 
-      if (typeof volume !== 'number') {
+      if (typeof volume !== 'number' || !volume) {
         volume = 0;
       }
+
       wavesurfer.setVolume(volume);
     }
   }.observes('wavesurfer', 'volume'),

@@ -33,7 +33,7 @@ export default Ember.Component.extend(
   // params
   track: Ember.computed.reads('clip.track'),
   audioStartTime: Ember.computed.reads('clip.audioStartTime'),
-  clipEndTime: Ember.computed.reads('clip.clipEndTime'),
+  audioEndTime: Ember.computed.reads('clip.audioEndTime'),
   audioBpm: Ember.computed.reads('track.audioMeta.bpm'),
   tempo: function() {
     var audioBpm = this.get('audioBpm');
@@ -48,7 +48,7 @@ export default Ember.Component.extend(
   seekTime: function() {
     console.log('update seekTime', this.get('seekBeat'));
     return beatToTime(this.get('seekBeat'), this.get('audioBpm'));
-  }.property('seekBeat', 'audioBpm'),
+  }.property('seekBeat'),
 
   seekBeatDidChange: function() {
     console.log("seekBeatDidChange", this.get('seekBeat'))
@@ -66,11 +66,11 @@ export default Ember.Component.extend(
   markers: Ember.computed.reads('track.audioMeta.markers'),
   visibleMarkers: function() {
     var audioStartTime = this.get('audioStartTime');
-    var clipEndTime = this.get('clipEndTime');
+    var audioEndTime = this.get('audioEndTime');
 
     return this.getWithDefault('markers', []).filter((marker) => {
       var markerStart = marker.get('start');
-      return markerStart >= audioStartTime && markerStart <= clipEndTime;
+      return markerStart >= audioStartTime && markerStart <= audioEndTime;
     });
-  }.property('audioStartTime', 'clipEndTime', 'markers.[].start'),
+  }.property('audioStartTime', 'audioEndTime', 'markers.[].start'),
 });

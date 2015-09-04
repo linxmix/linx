@@ -15,7 +15,6 @@ export default DS.Model.extend(
   title: DS.attr('string'),
   items: DS.hasMany('mix-item', { async: true, defaultValue: () => [] }),
 
-  // TODO(CLEANUP): destroy arrangement when destroying mix?
   _arrangement: DS.belongsTo('arrangement', { async: true }),
   arrangement: withDefaultModel('_arrangement', function() {
     let arrangement = this.get('store').createRecord('arrangement');

@@ -13,7 +13,6 @@ import makeTransition from 'linx/tests/helpers/make-transition';
 import makeMix from 'linx/tests/helpers/make-mix';
 import describeAttrs from 'linx/tests/helpers/describe-attrs';
 
-// TODO(TEST)
 describe('MixModel', function() {
   setupUnitTest();
 
