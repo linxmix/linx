@@ -15,8 +15,6 @@ import describeAttrs from 'linx/tests/helpers/describe-attrs';
 describe('TransitionClipModel', function() {
   setupUnitTest();
 
-  // TODO(TEST): test startBeat, numBeats
-
   beforeEach(function() {
     // TODO(DBSTUB)
     // this.factoryHelper.handleCreate('transition-mix-event');
@@ -27,19 +25,21 @@ describe('TransitionClipModel', function() {
     hasTransition: false,
     fromTrackIsValid: false,
     toTrackIsValid: false,
-    timesAreValid: false,
+    // timesAreValid: false,
     isValid: false,
     isValidTransition: false,
   });
 
   describe('with valid fromTrackClip and toTrackClip', function() {
-    let fromTrackClip, transitionClip, toTrackClip;
+    let fromTrackClip, transitionClip, toTrackClip, transition;
 
     beforeEach(function() {
       let results = makeTransitionClip.call(this);
       fromTrackClip = results.fromTrackClip;
       toTrackClip = results.toTrackClip;
       transitionClip = results.transitionClip;
+      transition = results.transition;
+      transition.set('numBeats', 30);
     });
 
     describeAttrs('transitionClip', {
@@ -47,9 +47,11 @@ describe('TransitionClipModel', function() {
       hasTransition: true,
       fromTrackIsValid: true,
       toTrackIsValid: true,
-      timesAreValid: true,
+      // timesAreValid: true,
       isValid: true,
       isValidTransition: true,
+      startBeat() { return toTrackClip.get('startBeat'); },
+      numBeats() { return transition.get('numBeats'); }
     });
   });
 

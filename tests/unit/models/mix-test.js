@@ -29,34 +29,38 @@ describe('MixModel', function() {
   });
 
   describe('adding a track', function() {
-    let track, trackClip;
+    let track, trackClip, trackItem;
 
     beforeEach(function() {
       track = makeTrack.call(this);
-      trackClip = mix.appendTrack(track);
+      wait(mix.appendTrack(track).then((item) => {
+        trackItem = item;
+        trackClip = trackItem.get('clip.content');
+      }));
     });
 
     describeAttrs('mix', {
       subject() { return mix; },
       length: 1,
-      'trackClips.length': 1
+      'trackItems.length': 1
     });
 
-    it('returns the trackClip', function() {
-      expect(trackClip).to.be.ok;
-      expect(mix.objectAt(0)).to.equal(trackClip);
+    it('returns the trackItem', function() {
+      expect(trackItem).to.be.ok;
+      expect(mix.objectAt(0)).to.equal(trackItem);
+      expect(trackItem.get('isTrack')).to.be.true;
     });
 
     it('trackClip has correct track', function() {
       expect(trackClip.get('track.content')).to.equal(track);
     });
 
-    it('can then remove trackClip', function() {
-      wait(mix.removeObject(trackClip));
+    it('can then remove trackItem', function() {
+      wait(mix.removeObject(trackItem));
 
       andThen(function() {
         expect(mix.get('length')).to.equal(0);
-        expect(mix.get('trackClips.length')).to.equal(0);
+        expect(mix.get('trackItems.length')).to.equal(0);
       });
     });
   });

@@ -13,7 +13,9 @@ export default DS.Model.extend(
   // TODO(POLYMORPHISM)
   clip: Ember.computed.or('trackClip', 'transitionClip', 'mixClip'),
   clipModel: Ember.computed.reads('clip.model'),
-  clipModelName: Ember.computed.reads('clip.constructor.modelName'),
+  clipModelName: function() {
+    return this.get('clip.content').constructor.modelName;
+  }.property('clip.content'),
 
   trackClip: DS.belongsTo('track-clip', { async: true }),
   transitionClip: DS.belongsTo('transition-clip', { async: true }),

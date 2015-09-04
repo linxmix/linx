@@ -6,6 +6,7 @@ import MixableClipMixin from 'linx/mixins/models/mixable-clip';
 
 import { beatToTime } from 'linx/lib/utils';
 import { withDefaultProperty } from 'linx/lib/computed/with-default';
+import add from 'linx/lib/computed/add';
 
 export default Clip.extend(MixableClipMixin, {
   // type: 'track-clip',
@@ -52,13 +53,10 @@ export default Clip.extend(MixableClipMixin, {
   }.property('audioMeta.firstBeatMarker.start', 'audioStartBeat', 'bpm'),
 
   audioLength: function() {
-    return beatToTime(this.get('numBeats', this.get('bpm')));
+    return beatToTime(this.get('numBeats'), this.get('bpm'));
   }.property('bpm', 'numBeats'),
 
-  audioEndTime: function() {
-    // TODO: why doesnt audioLength work?
-    return this.get('audioStartTime') + beatToTime(this.get('numBeats'), this.get('bpm'));
-  }.property('audioStartTime', 'numBeats', 'bpm'),
+  audioEndTime: add('audioStartTime', 'audioLength')
 });
 
 // TODO: code to copy section of audiobuffer

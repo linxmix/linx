@@ -11,10 +11,10 @@ import makeTrackClip from 'linx/tests/helpers/make-track-clip';
 import makeTransitionClip from 'linx/tests/helpers/make-transition-clip';
 import describeAttrs from 'linx/tests/helpers/describe-attrs';
 
+import asResolvedPromise from 'linx/lib/utils';
+
 describe('TrackClipModel', function() {
   setupUnitTest();
-
-  // TODO(TEST): test startBeat, numBeats
 
   let track, trackClip;
 
@@ -24,16 +24,65 @@ describe('TrackClipModel', function() {
     trackClip = results.trackClip;
   });
 
-  describe('without transitions', function() {
+  describe('persisting attributes', function() {
+    it('can persist audioStartBeat', function() {
+      Ember.run(function() {
+        trackClip.set('audioStartBeat', 3);
+        wait(trackClip.save());
+      });
+
+      // TODO(DBSTUB): make this actually check payload
+      andThen(function() {
+        expect(trackClip.get('audioStartBeat')).to.equal(3);
+      });
+    });
+
+    it('can persist numBeats', function() {
+      Ember.run(function() {
+        trackClip.set('numBeats', 3);
+        wait(trackClip.save());
+      });
+
+      // TODO(DBSTUB): make this actually check payload
+      andThen(function() {
+        expect(trackClip.get('numBeats')).to.equal(3);
+      });
+    });
+  });
+
+  // TODO: refactor into mixable clip behaviours
+  describe('without other clips', function() {
     describeAttrs('trackClip', {
       subject() { return trackClip; },
+      startBeat: 0,
+      numBeats() { return track.get('audioMeta.numBeats'); },
       clipStartBeatWithoutTransition() { return track.get('audioMeta.firstBeat'); },
       clipEndBeatWithoutTransition() { return track.get('audioMeta.lastBeat'); },
       audioStartBeat() { return trackClip.get('clipStartBeatWithoutTransition'); },
       audioEndBeat() { return trackClip.get('clipEndBeatWithoutTransition'); },
+
+      audioStartTime: 0.3190228052297187,
+      audioLength: 367.14311391752545,
+      audioEndTime: 367.4621367227552,
+    });
+  });
+
+
+  describe('with prevClip', function() {
+    let prevClip;
+
+    beforeEach(function() {
+      let results = makeTrackClip.call(this);
+      prevClip = results.trackClip;
+      trackClip.set('prevClip', prevClip);
+      prevClip.set('nextClip', trackClip);
     });
 
-    describe.skip('can persist clipStartBeat and clipEndBeat', function() {});
+    describeAttrs('trackClip', {
+      subject() { return trackClip; },
+      startBeat() { return prevClip.get('endBeat'); },
+      numBeats() { return track.get('audioMeta.numBeats'); }
+    });
   });
 
   describe('with valid prevTransition', function() {
@@ -53,6 +102,8 @@ describe('TrackClipModel', function() {
       subject() { return trackClip; },
       prevClip() { return prevClip; },
       'prevTransition.content': () => prevTransition,
+      startBeat() { return prevClip.get('startBeat'); },
+      numBeats() { return track.get('audioMeta.lastBeat') - prevTransition.get('toTrackStartBeat'); },
       clipStartBeatWithTransition() { return prevTransition.get('toTrackStartBeat'); },
       audioStartBeat() { return trackClip.get('clipStartBeatWithTransition'); },
       audioEndBeat() { return trackClip.get('clipEndBeatWithoutTransition'); },
@@ -76,6 +127,8 @@ describe('TrackClipModel', function() {
       subject() { return trackClip; },
       nextClip() { return nextClip; },
       'nextTransition.content': () => nextTransition,
+      startBeat: 0,
+      numBeats() { return nextTransition.get('fromTrackEndBeat') - track.get('audioMeta.firstBeat'); },
       clipEndBeatWithTransition() { return nextTransition.get('fromTrackEndBeat'); },
       audioStartBeat() { return trackClip.get('clipStartBeatWithoutTransition'); },
       audioEndBeat() { return trackClip.get('clipEndBeatWithTransition'); },
@@ -92,6 +145,7 @@ describe('TrackClipModel', function() {
       prevClip = prevResults.transitionClip;
       prevTransition = prevResults.transition;
       prevClip.set('nextClip', trackClip);
+      prevClip.set('startBeat', 30);
 
       // setup nextClip
       let nextResults = makeTransitionClip.call(this, { fromTrackClip: trackClip });
@@ -119,6 +173,8 @@ describe('TrackClipModel', function() {
       nextClip() { return nextClip; },
       'prevTransition.content': () => prevTransition,
       'nextTransition.content': () => nextTransition,
+      startBeat() { return prevClip.get('startBeat'); },
+      numBeats() { return nextTransition.get('fromTrackEndBeat') - prevTransition.get('toTrackStartBeat'); },
       clipStartBeatWithTransition() { return prevTransition.get('toTrackStartBeat'); },
       clipEndBeatWithTransition() { return nextTransition.get('fromTrackEndBeat'); },
       audioStartBeat() { return trackClip.get('clipStartBeatWithTransition'); },

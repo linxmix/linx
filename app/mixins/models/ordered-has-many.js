@@ -34,6 +34,10 @@ export default function(options = {}) {
       return this.get(itemsPath).removeAt(index);
     },
 
+    removeObject(object) {
+      return this.get(itemsPath).removeObject(object);
+    },
+
     insertItemAt: function(index, item) {
       return this.get(itemsPath).insertAt(index, item);
     },

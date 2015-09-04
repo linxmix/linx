@@ -28,10 +28,12 @@ export default DS.Model.extend({
   _updateClips: function() {
     let keys = ['trackClips', 'transitionClips', 'mixClips', 'automationClips'];
 
-    this.set('clips', keys.reduce((acc, key) => {
-      let hasMany = this.get(`${key}.content`);
-      return acc.concat(hasMany ? hasMany.toArray() : []);
-    }, []));
+    if (!this.get('isDestroyed')) {
+      this.set('clips', keys.reduce((acc, key) => {
+        let hasMany = this.get(`${key}.content`);
+        return acc.concat(hasMany ? hasMany.toArray() : []);
+      }, []));
+    }
 
     console.log("updateClips", this.get('clips'));
   },

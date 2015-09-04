@@ -7,10 +7,6 @@ import _ from 'npm:underscore';
 export default Ember.Component.extend(
   RequireAttributes('clip', 'pxPerBeat'), {
 
-    logClearRender: function() {
-      console.log("willClearRender");
-    }.on('willClearRender'),
-
   // optional params
   disableMouseInteraction: true,
   syncBpm: null,
