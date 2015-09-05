@@ -63,8 +63,7 @@ export const Wave = Ember.Object.extend(
       var seekTime = this.get('seekTime');
       var isPlaying = this.get('isPlaying');
 
-      // debugger
-      console.log("updatePlayTime", seekTime, currentTime);
+      // console.log("updatePlayTime", seekTime, currentTime);
 
       // if playing, only seek if seekTime and currentTime have diverged
       if (!isPlaying || Math.abs(seekTime - currentTime) >= 0.01) {
@@ -171,7 +170,6 @@ export const Wave = Ember.Object.extend(
   },
 
   initWavesurfer: function(params) {
-    console.log("initWavesurfer", params);
     // console.log('init wavesurfer', params, this.get('file'));
     var wave = this;
     var wavesurfer = Object.create(Wavesurfer);
@@ -246,8 +244,6 @@ export default Ember.Component.extend({
       container: this.$('.WaveSurfer-wave')[0],
       audioContext: this.get('session.audioContext')
     };
-
-    console.log('initWave', this);
 
     wave.initWavesurfer(params);
   }.on('didInsertElement'),

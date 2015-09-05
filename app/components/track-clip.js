@@ -46,22 +46,10 @@ export default Ember.Component.extend(
   }.property('audioBpm', 'syncBpm'),
 
   seekTime: function() {
-    console.log('update seekTime', this.get('seekBeat'));
     return beatToTime(this.get('seekBeat'), this.get('audioBpm'));
   }.property('seekBeat'),
 
-  seekBeatDidChange: function() {
-    console.log("seekBeatDidChange", this.get('seekBeat'))
-    // let seekTime = beatToTime(this.get('seekBeat'), this.get('audioBpm'));
-    // this.set('audioSeekTime', seekTime + this.get('audioStartTime'));
-    // this.set('seekTime', beatToTime(this.get('seekBeat'), this.get('audioBpm')));
-  }.observes('seekBeat'),
-
-  // audioSeekTime: add('seekTime', 'audioStartTime'),
-  audioSeekTime: function() {
-    console.log('update audioSeekTime', this.get('seekTime'));
-    return this.get('seekTime') + this.get('audioStartTime');
-  }.property('seekTime', 'audioStartTime'),
+  audioSeekTime: add('seekTime', 'audioStartTime'),
 
   markers: Ember.computed.reads('track.audioMeta.markers'),
   visibleMarkers: function() {
