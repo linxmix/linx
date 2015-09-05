@@ -84,4 +84,4 @@ export default function(propertyPath) {
   };
 
   return Ember.Mixin.create(mixinParams);
-};
+}

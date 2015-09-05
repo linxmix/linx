@@ -10,7 +10,6 @@ export default DS.FirebaseSerializer.extend({
         belongsTo = snapshot.belongsTo(key);
     key = this.keyForAttribute ? this.keyForAttribute(key, "serialize") : key;
 
-    console.log("serializePolymorphicType", key, belongsTo.modelName)
     if (!Ember.isNone(belongsTo)) {
       json[key + "Type"] = belongsTo.modelName;
     }

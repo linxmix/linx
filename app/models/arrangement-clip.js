@@ -12,5 +12,4 @@ export default Clip.extend({
 
   // arrangement-clip specific
   nestedArrangement: DS.belongsTo('arrangement', { async: true, inverse: null }),
-  isReady: Ember.computed.reads('nestedArrangement.isReady'),
 });

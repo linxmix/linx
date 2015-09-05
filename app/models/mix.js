@@ -84,4 +84,4 @@ function appendModelFn() {
   return function(model) {
     return this.createAndAppend().setModel(model);
   };
-};
+}

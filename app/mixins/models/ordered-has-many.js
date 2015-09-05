@@ -82,23 +82,7 @@ export default function(options = {}) {
     // creates and returns a new item, does NOT insert into list
     _createItem: function(params = {}) {
       return this.get('store').createRecord(itemModelName, params);
-    },
-
-    // augment destroyRecord to also destroy items
-    destroyRecord: function() {
-      let promises = this.get(itemsPath).map((item) => {
-        return item && item.destroyRecord();
-      });
-
-      promises.push(this._super.apply(this, arguments));
-      return Ember.RSVP.all(promises);
-    },
-
-    save: function() {
-      console.log("ordered-has-many save")
-      return this._super.apply(this, arguments);
-    },
-
+    }
   };
 
   return Ember.Mixin.create(DependentRelationshipMixin(itemsPath), mixinParams);

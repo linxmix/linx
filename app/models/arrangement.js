@@ -16,7 +16,7 @@ export default DS.Model.extend({
 
   _hasManiesAreFulfilled: Ember.computed.and('trackClips.isFulfilled', 'transitionClips.isFulfilled', 'mixClips.isFulfilled', 'automationClips.isFulfilled'),
 
-  clips: Ember.computed(() => { return [] }),
+  clips: Ember.computed(() => { return []; }),
   updateClips: function() {
     if (this.get('isLoaded') && this.get('_hasManiesAreFulfilled')) {
       Ember.run.next(() => {
