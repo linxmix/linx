@@ -11,18 +11,18 @@ export const Wave = Ember.Object.extend(
   // params
   wavesurfer: null,
 
-  pitch: Ember.computed.alias('component.pitch'),
-  tempo: Ember.computed.alias('component.tempo'),
-  volume: Ember.computed.alias('component.volume'),
+  pitch: Ember.computed.reads('component.pitch'),
+  tempo: Ember.computed.reads('component.tempo'),
+  volume: Ember.computed.reads('component.volume'),
 
-  audioContext: Ember.computed.alias('component.audioContext'),
-  file: Ember.computed.alias('component.file'),
-  streamUrl: Ember.computed.alias('component.streamUrl'),
-  seekTime: Ember.computed.alias('component.seekTime'),
-  pxPerBeat: Ember.computed.alias('component.pxPerBeat'),
-  audioBpm: Ember.computed.alias('component.audioBpm'),
-  isPlaying: Ember.computed.alias('component.isPlaying'),
-  disableMouseInteraction: Ember.computed.alias('component.disableMouseInteraction'),
+  audioContext: Ember.computed.reads('component.audioContext'),
+  file: Ember.computed.reads('component.file'),
+  streamUrl: Ember.computed.reads('component.streamUrl'),
+  seekTime: Ember.computed.reads('component.seekTime'),
+  pxPerBeat: Ember.computed.reads('component.pxPerBeat'),
+  audioBpm: Ember.computed.reads('component.audioBpm'),
+  isPlaying: Ember.computed.reads('component.isPlaying'),
+  disableMouseInteraction: Ember.computed.reads('component.disableMouseInteraction'),
   isLoaded: false,
   defaultParams: Ember.computed(function() {
     var colorOptions = getWaveColor();

@@ -49,7 +49,7 @@ Wavesurfer.setPitch = function(pitch) {
 
 Wavesurfer.WebAudio.setTempo = function(tempo) {
   // console.log("setting tempo", tempo);
-  if (typeof tempo !== 'number') {
+  if (typeof tempo !== 'number' || !tempo) {
     tempo = 1;
   }
 
@@ -113,6 +113,7 @@ Wavesurfer.WebAudio.play = function(start, end) {
   this.soundtouchNode.connect(this.analyser);
 
   this.setState(this.PLAYING_STATE);
+  this.fireEvent('play');
 };
 
 // 'pause' is equivalent to 'disconnect soundtouch source'

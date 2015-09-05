@@ -125,7 +125,6 @@ var ClipEvent = Ember.Object.extend(
 
     // factor in delay
     seekBeat += delayBeats;
-    console.log("update clipSeekBeat", clamp(0, seekBeat, numBeats));
 
     return clamp(0, seekBeat, numBeats);
   }.property('_seekBeat', 'numBeats', '_delayBeats'),
