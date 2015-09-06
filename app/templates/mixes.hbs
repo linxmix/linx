@@ -1,13 +1,15 @@
-<div class="mixes-page">
-  <div class="inverted green ui icon button" {{action 'createMix'}}>
+<div class="mixes">
+  <div class="inverted green ui icon button test-create-mix" {{action 'createMix'}}>
     <i class="add icon"></i>
     New Mix
   </div>
-  {{#each mix in model}}
-    <div class="mix">
-      {{#link-to 'mix' mix}}
-        {{mix.title}}
-      {{/link-to}}
-    </div>
-  {{/each}}
+
+  {{#mixes-list mixes=mixes}}
+    {{#each mixes as |mix|}}
+      {{mixes-list-item
+        mix=mix
+        select="selectMix"
+      }}
+    {{/each}}
+  {{/mixes-list}}
 </div>
