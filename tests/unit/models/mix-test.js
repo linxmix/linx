@@ -20,52 +20,27 @@ describe('MixModel', function() {
 
   beforeEach(function() {
     let results = makeMix.call(this);
-    mix = results.mix;
-    arrangement = results.arrangement;
+    mix = this.mix = results.mix;
+    arrangement = this.arrangement = results.arrangement;
 
     // TODO(DBSTUB)
     // this.factoryHelper.handleCreate('mix');
   });
 
-  describe('adding a track', function() {
-    let track, trackClip, trackItem;
-
-    beforeEach(function() {
-      track = makeTrack.call(this);
-      wait(mix.appendTrack(track).then((item) => {
-        trackItem = item;
-        trackClip = trackItem.get('clip.content');
-      }));
-    });
-
-    describeAttrs('mix', {
-      subject() { return mix; },
-      length: 1,
-      'trackItems.length': 1
-    });
-
-    it('returns the trackItem', function() {
-      expect(trackItem).to.be.ok;
-      expect(mix.objectAt(0)).to.equal(trackItem);
-      expect(trackItem.get('isTrack')).to.be.true;
-    });
-
-    it('trackClip has correct track', function() {
-      expect(trackClip.get('track.content')).to.equal(track);
-    });
-
-    it('can then remove trackItem', function() {
-      wait(mix.removeObject(trackItem));
-
-      andThen(function() {
-        expect(mix.get('length')).to.equal(0);
-        expect(mix.get('trackItems.length')).to.equal(0);
-      });
-    });
+  describeItemOperations('track', function() {
+    return makeTrack.call(this);
+  });
+  describeItemOperations('transition', function() {
+    let results = makeTransition.call(this);
+    return results.transition;
+  });
+  describeItemOperations('mix', function() {
+    let results = makeMix.call(this);
+    return results.mix;
   });
 
-  describe.skip('appendTransitionWithTracks', function() {
-    let fromTrack, transition, toTrack;
+  describe('appendTransitionWithTracks', function() {
+    let fromTrack, transition, toTrack, transitionItem;
 
     beforeEach(function() {
       let results = makeTransition.call(this);
@@ -74,55 +49,30 @@ describe('MixModel', function() {
       transition = results.transition;
       toTrack = results.toTrack;
 
-      Ember.run(function() {
-        wait(mix.appendTransitionWithTracks(transition));
+      Ember.run(() => {
+        wait(mix.appendTransitionWithTracks(transition).then((_item) => {
+          transitionItem = _item;
+        }));
       });
     });
 
     describeAttrs('mix', {
       subject() { return mix; },
-      length: 2,
-      'numTracks': 2,
-      'numTransitions': 1,
+      length: 3,
+      'trackItems.length': 2,
+      'transitionItems.length': 1,
     });
 
-    it('puts transition in correct place', function() {
-      expect(mix.transitionAt(0)).to.equal(transition);
+    it('adds fromTrack to correct place', function() {
+      expect(mix.objectAt(0).get('clipModel.content')).to.equal(fromTrack);
     });
 
-    it('adds fromTrack with transition', function() {
-      expect(mix.trackAt(0)).to.equal(fromTrack);
+    it('adds transition to correct place', function() {
+      expect(mix.objectAt(1)).to.equal(transitionItem);
     });
 
-    it('adds toTrack with transition', function() {
-      expect(mix.trackAt(1)).to.equal(toTrack);
-    });
-
-    it('adds valid transition', function() {
-      expect(mix.objectAt(0).get('hasValidTransition')).to.be.true;
-    });
-
-    describe.skip('removing transition', function() {
-      beforeEach(function() {
-        Ember.run(function() {
-          wait(mix.removeTransition(transition));
-        });
-      });
-
-      describeAttrs('mix', {
-        subject() { return mix; },
-        length: 2,
-        numTracks: 2,
-        numTransitions: 0,
-      });
-
-      it('does not remove fromTrack', function() {
-        expect(mix.trackAt(0)).to.equal(fromTrack);
-      });
-
-      it('does not remove toTrack', function() {
-        expect(mix.trackAt(1)).to.equal(toTrack);
-      });
+    it('adds toTrack to correct place', function() {
+      expect(mix.objectAt(2).get('clipModel.content')).to.equal(toTrack);
     });
   });
 
@@ -266,3 +216,46 @@ describe('MixModel', function() {
     });
   });
 });
+
+function describeItemOperations(modelName, createModelFn) {
+  let capitalizedModelName = Ember.String.capitalize(modelName);
+
+  describe(`adding ${modelName}Item`, function() {
+    let model, item, clip;
+
+    beforeEach(function() {
+      model = createModelFn.call(this);
+
+      Ember.run(() => {
+        wait(this.mix[`append${capitalizedModelName}`](model).then((_item) => {
+          item = _item;
+          clip = _item.get('clip.content');
+        }));
+      });
+    });
+
+    it('added to mix', function() {
+      expect(this.mix.get('length')).to.equal(1);
+      expect(this.mix.get(`${modelName}Items.length`)).to.equal(1);
+    });
+
+    it('returns the item', function() {
+      expect(Ember.isNone(item)).to.be.false;
+      expect(this.mix.objectAt(0)).to.equal(item);
+      expect(item.get(`is${capitalizedModelName}`)).to.be.true;
+    });
+
+    it('clip has correct model', function() {
+      expect(clip.get(`${modelName}.content`)).to.equal(model);
+    });
+
+    it('can then remove item', function() {
+      wait(this.mix.removeObject(item));
+
+      andThen(() => {
+        expect(this.mix.get('length')).to.equal(0);
+        expect(this.mix.get(`${modelName}Items.length`)).to.equal(0);
+      });
+    });
+  });
+}

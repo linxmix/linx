@@ -8,7 +8,34 @@ import withDefaultModel from 'linx/lib/computed/with-default-model';
 import { flatten, asResolvedPromise } from 'linx/lib/utils';
 import add from 'linx/lib/computed/add';
 
+const MixItemFunctionsMixin = function(...modelNames) {
+  return Ember.Mixin.create(modelNames.reduce((mixinParams, modelName) => {
+    let capitalizedModelName = Ember.String.capitalize(modelName);
+
+    // insertItemAt
+    let insertAtFnKey = `insert${capitalizedModelName}At`;
+    mixinParams[insertAtFnKey] = function(index, model) {
+      return this.createItemAt(index).setModel(model);
+    };
+
+    // appendItem
+    mixinParams[`append${capitalizedModelName}`] = function(model) {
+      return this[insertAtFnKey](this.get('index'), model);
+    };
+
+    // items
+    let itemsKey = `${modelName}Items`;
+    mixinParams[itemsKey] = Ember.computed.filterBy('items', `is${capitalizedModelName}`);
+
+    // models
+    mixinParams[`${modelName}s`] = Ember.computed.mapBy(itemsKey, 'model');
+
+    return mixinParams;
+  }, {}));
+}
+
 export default DS.Model.extend(
+  MixItemFunctionsMixin('track', 'transition', 'mix'), // TODO(POLYMORPHISM)
   DependentRelationshipMixin('arrangement'),
   OrderedHasManyMixin({ itemModelName: 'mix-item', itemsPath: 'items' }), {
 
@@ -22,66 +49,57 @@ export default DS.Model.extend(
     return arrangement;
   }),
 
-  trackItems: Ember.computed.filterBy('items', 'isTrack'),
-  tracks: Ember.computed.mapBy('trackItems', 'model'),
-
-  transitionItems: Ember.computed.filterBy('items', 'isTransition'),
-  transitions: Ember.computed.mapBy('transitionItems', 'model'),
-
-  mixItems: Ember.computed.filterBy('items', 'isMix'),
-  mixes: Ember.computed.mapBy('mixItems', 'model'),
-
-  // appends model as an item, returns a promise which resolves into the item
-  appendTrack: appendModelFn(),
-  appendTransition: appendModelFn(),
-  appendMix: appendModelFn(),
-
   // adds matching tracks when appending given transition
-  appendTransitionWithTracks: function(transition) {
-    return this.appendTransition(transition).then((transitionMixEvent) => {
-      let promises = [];
+  appendTransitionWithTracks(transition) {
+    return this.insertTransitionAtWithTracks(this.get('length'), transition);
+  },
 
-      // append tracks if not already present
-      // TODO(TRANSITION)
-      if (!transitionMixEvent.get('fromTrackIsValid')) {
-        // promises.append(this.appendTrack())
-      }
+  // adds matching tracks when inserting given transition
+  insertTransitionAtWithTracks(index, transition) {
+    let prevItem = this.objectAt(index - 1);
+    let nextItem = this.objectAt(index);
 
-      if (!transitionMixEvent.get('toTrackIsValid')) {
-        // promises.append(this.appendTrack())
-      }
+    let expectedFromTrack, actualFromTrack, expectedToTrack, actualToTrack;
 
-      return Ember.RSVP.all(promises).then(() => {
-        return transitionMixEvent;
+    // first make sure all necessary async models are loaded
+    let expectedFromTrackPromise = transition.get('fromTrack').then((track) => {
+      expectedFromTrack = track;
+    });
+    let expectedToTrackPromise = transition.get('toTrack').then((track) => {
+      expectedToTrack = track;
+    });
+    let actualFromTrackPromise = prevItem && prevItem.get('clip').then((clip) => {
+      return clip && clip.get('model').then((model) => {
+        actualFromTrack = model;
+      });
+    });
+    let actualToTrackPromise = nextItem && nextItem.get('clip').then((clip) => {
+      return clip && clip.get('model').then((model) => {
+        actualToTrack = model;
       });
     });
 
-    var index = this.get('length');
-    var prevEvent = this.trackAt(index - 1);
-    var promises = [];
+    console.log("insertTransitionAtWithTracks", index)
 
-    var fromTrack = transition.get('fromTrack');
-    var toTrack = transition.get('toTrack');
+    // handle actual insertions
+    return Ember.RSVP.all([expectedFromTrackPromise, expectedToTrackPromise, actualFromTrackPromise, actualToTrackPromise]).then(() => {
 
-    // if prevTrack matches fromTrack, use it
-    if (prevTrack && prevTrack.get('id') === fromTrack.get('id')) {
-      index -= 1;
+      // insert fromTrack if not already present
+      if (!actualFromTrack || actualFromTrack !== expectedFromTrack) {
+        return this.insertTrackAt(index, expectedFromTrack).then(() => {
+          return this.insertTransitionAtWithTracks(index + 1, transition);
+        });
+      }
 
-    // otherwise, just add fromTrack
-    } else {
-      promises.push(this.insertTrackAt(index, fromTrack));
-    }
+      // insert toTrack if not already present
+      if (!actualToTrack || actualToTrack !== expectedToTrack) {
+        return this.insertTrackAt(index, expectedToTrack).then(() => {
+          return this.insertTransitionAtWithTracks(index, transition);
+        });
+      }
 
-    // then add transition and toTrack
-    promises.push(this.insertTransitionAt(index, transition));
-    promises.push(this.insertTrackAt(index + 1, toTrack));
-
-    return Ember.RSVP.all(promises);
+      // insert transition
+      return this.insertTransitionAt(index, transition);
+    });
   },
 });
-
-function appendModelFn() {
-  return function(model) {
-    return this.createAndAppend().setModel(model);
-  };
-}

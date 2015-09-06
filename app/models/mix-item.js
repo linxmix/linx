@@ -11,10 +11,19 @@ export default DS.Model.extend(
   mix: DS.belongsTo('mix', { async: true }),
 
   // TODO(POLYMORPHISM)
-  clip: Ember.computed.or('trackClip', 'transitionClip', 'mixClip'),
+  clip: function() {
+    if (this.get('trackClip.content')) {
+      return this.get('trackClip');
+    } else if (this.get('transitionClip.content')) {
+      return this.get('transitionClip');
+    } else {
+      return this.get('mixClip');
+    }
+  }.property('trackClip.content', 'transitionClip.content', 'mixClip.content'),
   clipModel: Ember.computed.reads('clip.model'),
   clipModelName: function() {
-    return this.get('clip.content').constructor.modelName;
+    let content = this.get('clip.content');
+    return content && content.constructor.modelName;
   }.property('clip.content'),
 
   trackClip: DS.belongsTo('track-clip', { async: true }),
@@ -34,7 +43,7 @@ export default DS.Model.extend(
   setModel(model) {
     return this.destroyClip().then(() => {
       return this.get('mix.arrangement').then((arrangement) => {
-        let modelName = model.get('constructor.modelName');
+        let modelName = model.constructor.modelName;
         let clipModelName = `${modelName}-clip`;
         let clipModelPath = Ember.String.camelize(clipModelName);
 

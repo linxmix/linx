@@ -100,6 +100,9 @@ describe('Acceptance: MixPage', function() {
         expect(deleteStub.calledOnce).to.be.true;
       });
     });
+  });
+
+  describe.skip('adding items', function() {
 
   });
 
@@ -125,14 +128,27 @@ describe('Acceptance: MixPage', function() {
       expect($('.MixListItem')).to.have.length(mix.get('length'));
     });
 
-    it.skip('shows items in order');
+    it('shows items in correct order', function() {
+      expect($('.MixListItem:nth(0)').text()).to.contain('1');
+      expect($('.MixListItem:nth(1)').text()).to.contain('2');
+      expect($('.MixListItem:nth(2)').text()).to.contain('3');
+    });
 
-    it.skip('can navigate to items', function() {
-      click('.MixesListItem:first');
+    it('can navigate to track items', function() {
+      click('.MixListItem:nth(0) a');
 
       andThen(function() {
-        expect(currentPath()).to.equal('mix.index');
-        expect(currentURL().match(mix.get('firstObject.id'))).to.be.ok;
+        expect(currentPath()).to.match(/track/);
+        expect(currentURL().match(mix.objectAt(0).get('model.id'))).to.be.ok;
+      });
+    });
+
+    it('can navigate to transition items', function() {
+      click('.MixListItem:nth(1) a');
+
+      andThen(function() {
+        expect(currentPath()).to.match(/transition/);
+        expect(currentURL().match(mix.objectAt(1).get('model.id'))).to.be.ok;
       });
     });
   });
