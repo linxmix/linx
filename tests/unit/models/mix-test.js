@@ -7,14 +7,14 @@ import {
 } from 'mocha';
 import { expect } from 'chai';
 
-import setupUnitTest from 'linx/tests/helpers/setup-unit-test';
+import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 import makeTrack from 'linx/tests/helpers/make-track';
 import makeTransition from 'linx/tests/helpers/make-transition';
 import makeMix from 'linx/tests/helpers/make-mix';
 import describeAttrs from 'linx/tests/helpers/describe-attrs';
 
 describe('MixModel', function() {
-  setupUnitTest();
+  setupTestEnvironment();
 
   let mix, arrangement;
 

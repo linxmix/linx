@@ -6,11 +6,11 @@ import {
 import { expect } from 'chai';
 
 import makeTrackClip from 'linx/tests/helpers/make-track-clip';
-import setupUnitTest from 'linx/tests/helpers/setup-unit-test';
+import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 import describeAttrs from 'linx/tests/helpers/describe-attrs';
 
 describe('TrackClipComponent', function() {
-  setupUnitTest();
+  setupTestEnvironment();
 
   let track, trackClip, pxPerBeat, syncBpm, seekBeat, component;
 

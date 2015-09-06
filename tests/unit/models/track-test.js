@@ -5,10 +5,10 @@ import {
 } from 'mocha';
 import { expect } from 'chai';
 
-import setupUnitTest from 'linx/tests/helpers/setup-unit-test';
+import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 
 describe('TrackModel', function() {
-  setupUnitTest();
+  setupTestEnvironment();
 
   let track;
 

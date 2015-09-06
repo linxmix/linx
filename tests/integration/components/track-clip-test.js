@@ -8,7 +8,7 @@ import { beforeEach, describe } from 'mocha';
 import hbs from 'htmlbars-inline-precompile';
 
 import makeTrackClip from 'linx/tests/helpers/make-track-clip';
-import setupUnitTest from 'linx/tests/helpers/setup-unit-test';
+import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 
 describeComponent(
   'track-clip',
@@ -17,7 +17,7 @@ describeComponent(
     integration: true
   },
   function() {
-    setupUnitTest();
+    setupTestEnvironment();
 
     let track, trackClip, pxPerBeat, syncBpm, seekBeat;
 

@@ -4,7 +4,7 @@ import {
   it
 } from 'mocha';
 import { expect } from 'chai';
-import setupUnitTest from 'linx/tests/helpers/setup-unit-test';
+import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 
 import {
   BEAT_MARKER_TYPE,
@@ -16,7 +16,7 @@ import {
 } from 'linx/models/marker';
 
 describe('AudioMeta', function() {
-  setupUnitTest();
+  setupTestEnvironment();
 
   let audioMeta;
 

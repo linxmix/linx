@@ -5,7 +5,7 @@ import {
   it
 } from 'mocha';
 import { expect } from 'chai';
-import setupUnitTest from 'linx/tests/helpers/setup-unit-test';
+import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 
 import makeTrackClip from 'linx/tests/helpers/make-track-clip';
 import makeTransitionClip from 'linx/tests/helpers/make-transition-clip';
@@ -14,7 +14,7 @@ import describeAttrs from 'linx/tests/helpers/describe-attrs';
 import asResolvedPromise from 'linx/lib/utils';
 
 describe('TrackClipModel', function() {
-  setupUnitTest();
+  setupTestEnvironment();
 
   let track, trackClip;
 
