@@ -105,7 +105,7 @@ describe('OrderedHasManyMixin', function() {
   });
 
 
-  describe('saving list with saveItems enabled', function() {
+  describe('saving list', function() {
     beforeEach(function() {
       list.set('saveItems', true);
     });
@@ -213,42 +213,6 @@ describe('OrderedHasManyMixin', function() {
       it('preserves item ordering', function() {
         expect(itemA.get('index')).to.equal(1);
         expect(itemB.get('index')).to.equal(0);
-      });
-    });
-  });
-
-  describe('saving list with saveItems disabled', function() {
-    beforeEach(function() {
-      list.set('saveItems', false);
-    });
-
-    describe('with one new item', function() {
-      let item;
-
-      beforeEach(function(done) {
-        item = list.createAndAppend();
-        saveList(list, done);
-      });
-
-      it('new item is not saved', function() {
-        expect(item.get('isNew')).to.be.true;
-      });
-    });
-
-    describe('with one saved item', function() {
-      let item;
-
-      beforeEach(function(done) {
-        item = list.createAndAppend();
-
-        item.save().then(() => {
-          this.sinon.stub(item, 'save', asResolvedPromise);
-          saveList(list, done);
-        });
-      });
-
-      it('does not save item', function() {
-        expect(item.save.called).to.be.false;
       });
     });
   });

@@ -134,7 +134,7 @@ function saveRecord(model) {
   let promise;
 
   Ember.run(() => {
-    promise = model.save()
+    promise = model.save();
   });
 
   return promise;
@@ -144,7 +144,7 @@ function destroyRecord(model) {
   let promise;
 
   Ember.run(() => {
-    promise = model.destroyRecord()
+    promise = model.destroyRecord();
   });
 
   return promise;

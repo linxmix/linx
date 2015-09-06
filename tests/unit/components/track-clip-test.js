@@ -9,6 +9,8 @@ import makeTrackClip from 'linx/tests/helpers/make-track-clip';
 import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 import describeAttrs from 'linx/tests/helpers/describe-attrs';
 
+import TrackClipComponent from 'linx/components/track-clip';
+
 describe('TrackClipComponent', function() {
   setupTestEnvironment();
 
@@ -22,8 +24,7 @@ describe('TrackClipComponent', function() {
     pxPerBeat = 15; syncBpm = 100; seekBeat = 10;
 
     // setup component
-    component = this.container.lookup('component:track-clip');
-    component.setProperties({
+    component = TrackClipComponent.create({
       clip: trackClip,
       pxPerBeat,
       syncBpm,

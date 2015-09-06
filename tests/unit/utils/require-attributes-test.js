@@ -1,3 +1,4 @@
+/* jshint newcap: false */
 import Ember from 'ember';
 import {
   describe,
