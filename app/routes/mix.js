@@ -7,7 +7,7 @@ export default Ember.Route.extend({
       mix.save();
     },
 
-    deleteMix: function() {
+    deleteMix() {
       var mix = this.get('controller.model');
 
       if (window.confirm("Are you sure you want to delete this mix? It cannot be restored once deleted.")) {
@@ -16,7 +16,7 @@ export default Ember.Route.extend({
       }
     },
 
-    onPageDrop: function(files) {
+    onPageDrop(files) {
       console.log("page drop", files);
 
       var store = this.get('store');
@@ -31,7 +31,7 @@ export default Ember.Route.extend({
       });
     },
 
-    appendTrack: function(track) {
+    appendTrack(track) {
       var mix = this.get('controller.model');
       mix.appendTrack(track);
     },

@@ -8,7 +8,7 @@ import { expect } from 'chai';
 import Ember from 'ember';
 import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 
-describe('Acceptance: Mixes', function() {
+describe('Acceptance: MixesPage', function() {
   setupTestEnvironment();
 
   let mixes;

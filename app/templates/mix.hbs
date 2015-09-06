@@ -3,11 +3,11 @@
   {{page-drop action="onPageDrop"}}
 
   <div>{{model.title}}</div>
-  <div class="inverted green ui icon button {{if model.anyDirty '' 'basic disabled'}}" {{action 'saveMix'}}>
+  <div class="inverted green ui icon button test-save-mix {{if model.anyDirty '' 'basic disabled'}}" {{action 'saveMix'}}>
     <i class="cloud upload icon"></i>
     Save Mix
   </div>
-  <div class="inverted red ui icon button" {{action 'deleteMix'}}>
+  <div class="inverted red ui icon button test-delete-mix" {{action 'deleteMix'}}>
     <i class="remove icon"></i>
     Delete Mix
   </div>

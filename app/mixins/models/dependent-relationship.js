@@ -57,10 +57,10 @@ export default function(propertyPath) {
 
     destroyRecord() {
       console.log("destroy master model", this.constructor.modelName);
-      return Ember.RSVP.all([
-        this._super.apply(this, arguments),
-        this.destroyDependentModels(),
-      ]);
+      return this.destroyDependentModels().then(() => {
+        this.deleteRecord();
+        return this.save();
+      });
     },
 
     saveDirtyDependentModels() {
@@ -74,7 +74,11 @@ export default function(propertyPath) {
         console.log("saving dirty dependent models", this.constructor.modelName, this.get('dirtyDependentModels'));
         return this.saveDirtyDependentModels().then(() => {
           // TODO: why doesnt hasDirtyAttributes not update immediately?
-          Ember.run.next(this, 'save');
+          return new Ember.RSVP.Promise((resolve, reject) => {
+            Ember.run.next(() => {
+              this.save().then(resolve, reject);
+            });
+          });
         });
       } else {
         console.log("no dirty dependents, saving master model", this.constructor.modelName);

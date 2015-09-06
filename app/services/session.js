@@ -13,6 +13,11 @@ export default Ember.Service.extend({
     return this.get('audioContext').currentTime;
   },
 
+  willDestroy() {
+    this.get('audioContext').close();
+    return this._super.apply(this, arguments);
+  },
+
   /***
     Queue Functions
   ***/
