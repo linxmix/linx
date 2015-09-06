@@ -42,7 +42,7 @@ describe('Acceptance: MixPage', function() {
 
     describe('with dirty mix', function() {
       beforeEach(function() {
-        Ember.run(() => { mix.set('title', 'test title') });
+        Ember.run(() => { mix.set('title', 'test title'); });
       });
 
       it('save is enabled', function() {
