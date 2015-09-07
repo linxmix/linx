@@ -1,6 +1,9 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
+import ReadinessMixin from 'linx/mixins/readiness';
+import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
+
 import withDefaultModel from 'linx/lib/computed/with-default-model';
 import { isNumber } from 'linx/lib/utils';
 import {
@@ -8,9 +11,16 @@ import {
   TRANSITION_OUT_MARKER_TYPE,
 } from './marker';
 
-export default DS.Model.extend({
+export default DS.Model.extend(
+  DependentRelationshipMixin('fromTrackMarker'),
+  DependentRelationshipMixin('toTrackMarker'),
+  DependentRelationshipMixin('arrangement'),
+  ReadinessMixin('isTransitionReady'), {
+
   title: DS.attr('string'),
   isTemplate: DS.attr('boolean'),
+
+  isTransitionReady: Ember.computed.and('fromTrack.isReady', 'toTrack.isReady'),
 
   _fromTrackMarker: DS.belongsTo('marker', { async: true }),
   fromTrackMarker: withDefaultModel('_fromTrackMarker', function() {
@@ -45,15 +55,19 @@ export default DS.Model.extend({
   setFromTrackEnd: function(time) {
     Ember.assert('Transition.setFromTrackEnd requires a valid number', isNumber(time));
 
-    var marker = this.get('fromTrackMarker');
-    marker.set('start', time);
+    return this.get('fromTrackMarker').then((marker) => {
+      marker.set('start', time);
+      return marker.save();
+    });
   },
 
   // sets toTrackMarker to given time in toTrack
   setToTrackStart: function(time) {
     Ember.assert('Transition.setToTrackStart requires a valid number', isNumber(time));
 
-    var marker = this.get('toTrackMarker');
-    marker.set('start', time);
+    return this.get('toTrackMarker').then((marker) => {
+      marker.set('start', time);
+      return marker.save();
+    });
   },
 });

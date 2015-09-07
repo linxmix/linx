@@ -17,12 +17,18 @@
     action="appendTrack"
   }}
 
+  {{search-transitions
+    transitions=searchTransitions
+    action="appendTransitionWithTracks"
+  }}
+
   <hr/>
 
   {{#mix-list mix=model}}
     {{#each model.items as |item|}}
       {{mix-list-item
         model=item
+        remove="removeItem"
       }}
     {{/each}}
   {{/mix-list}}

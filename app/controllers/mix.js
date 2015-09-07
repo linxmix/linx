@@ -4,4 +4,5 @@ export default Ember.Controller.extend({
   // expected params
   model: null,
   searchTracks: Ember.computed(() => { return []; }),
+  searchTransitions: Ember.computed(() => { return []; }),
 });

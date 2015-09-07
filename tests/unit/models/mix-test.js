@@ -250,7 +250,9 @@ function describeItemOperations(modelName, createModelFn) {
     });
 
     it('can then remove item', function() {
-      wait(this.mix.removeObject(item));
+      Ember.run(() => {
+        wait(this.mix.removeObject(item));
+      });
 
       andThen(() => {
         expect(this.mix.get('length')).to.equal(0);

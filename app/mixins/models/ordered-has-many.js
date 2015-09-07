@@ -2,7 +2,8 @@ import Ember from 'ember';
 import DS from 'ember-data';
 import _ from 'npm:underscore';
 
-import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
+import DependentRelationshipMixin from './dependent-relationship';
+import ReadinessMixin from '../readiness';
 
 import withDefault from 'linx/lib/computed/with-default';
 
@@ -85,5 +86,12 @@ export default function(options = {}) {
     }
   };
 
-  return Ember.Mixin.create(DependentRelationshipMixin(itemsPath), mixinParams);
+  // implement readiness mixin
+  let readinessKey = `${itemsPath}_isReady`;
+  mixinParams[readinessKey] = Ember.computed(`${itemsPath}.@each.isReady`, function() {
+    return this.get(itemsPath).isEvery('isReady', true);
+  });
+
+  return Ember.Mixin.create(DependentRelationshipMixin(itemsPath), ReadinessMixin(readinessKey), mixinParams);
+  // return Ember.Mixin.create(DependentRelationshipMixin(itemsPath), mixinParams);
 }

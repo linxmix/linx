@@ -1,5 +1,5 @@
 import Ember from 'ember';
-// import Migrate from 'linx/lib/migrations/linx-meteor';
+import Migrate from 'linx/lib/migrations/linx-meteor';
 
 export default Ember.Route.extend({
   setupController: function(controller, models) {

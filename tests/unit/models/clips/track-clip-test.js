@@ -140,23 +140,24 @@ describe('TrackClipModel', function() {
 
     beforeEach(function() {
 
-      // setup prevClip
-      let prevResults = makeTransitionClip.call(this, { toTrackClip: trackClip });
-      prevClip = prevResults.transitionClip;
-      prevTransition = prevResults.transition;
-      prevClip.set('nextClip', trackClip);
-      prevClip.set('startBeat', 30);
+      Ember.run(() => {
+        // setup prevClip
+        let prevResults = makeTransitionClip.call(this, { toTrackClip: trackClip });
+        prevClip = prevResults.transitionClip;
+        prevTransition = prevResults.transition;
+        prevClip.set('startBeat', 30);
 
-      // setup nextClip
-      let nextResults = makeTransitionClip.call(this, { fromTrackClip: trackClip });
-      nextClip = nextResults.transitionClip;
-      nextTransition = nextResults.transition;
-      nextClip.set('prevClip', trackClip);
+        // setup nextClip
+        let nextResults = makeTransitionClip.call(this, { fromTrackClip: trackClip });
+        nextClip = nextResults.transitionClip;
+        nextTransition = nextResults.transition;
+        nextClip.set('prevClip', trackClip);
 
-      // setup transition
-      prevTransition.set('toTrack', track);
-      nextTransition.set('fromTrack', track);
-      trackClip.setProperties({ prevClip, nextClip });
+        // setup transition
+        prevTransition.set('toTrack', track);
+        nextTransition.set('fromTrack', track);
+        trackClip.setProperties({ prevClip, nextClip });
+      });
     });
 
     it('prevClip is valid transition', function() {

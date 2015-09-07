@@ -36,7 +36,7 @@ describe('Acceptance: MixPage', function() {
     });
 
     it('save is disabled with clean mix', function() {
-      expect(mix.get('hasDirtyAttributes')).to.be.false;
+      expect(mix.get('anyDirty')).to.be.false;
       expect($('.test-save-mix').hasClass('disabled')).to.be.true;
     });
 

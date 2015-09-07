@@ -26,6 +26,7 @@ export default ArrangementClip.extend(MixableClipMixin, {
 
   // mix-clip specific
   mix: Ember.computed.alias('model'),
+  // TODO
   firstTrackClip: Ember.computed.reads('nestedArrangement.validClips.firstObject'),
   lastTrackClip: Ember.computed.reads('nestedArrangement.validClips.lastObject'),
   _endBeatDelta: subtract('lastTrackClip.endBeat', 'nextTransition.fromTrackEndBeat'),

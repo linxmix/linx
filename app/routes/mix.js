@@ -35,12 +35,25 @@ export default Ember.Route.extend({
       var mix = this.get('controller.model');
       mix.appendTrack(track);
     },
+
+    appendTransitionWithTracks(transition) {
+      var mix = this.get('controller.model');
+      mix.appendTransitionWithTracks(transition);
+    },
+
+    removeItem(mixItem) {
+      var mix = this.get('controller.model');
+      mix.removeObject(mixItem);
+    },
   },
 
   setupController: function(controller, model) {
     // TODO(AFTERPROMISE): just use promise array
     this.get('store').findAll('track').then((tracks) => {
       controller.set('searchTracks', tracks);
+    });
+    this.get('store').findAll('transition').then((transitions) => {
+      controller.set('searchTransitions', transitions);
     });
 
     this._super.apply(this, arguments);

@@ -2,13 +2,19 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import RequireAttributes from 'linx/lib/require-attributes';
+import ReadinessMixin from '../readiness';
 
 import { variableTernary } from 'linx/lib/computed/ternary';
 import subtract from 'linx/lib/computed/subtract';
 import withDefault from 'linx/lib/computed/with-default';
 
-export default Ember.Mixin.create({
+export default Ember.Mixin.create(
+  ReadinessMixin('isMixableClipReady'), {
+
   mixItem: DS.belongsTo('mix-item', { async: true }),
+
+  // implement readiness mixin
+  isMixableClipReady: Ember.computed.bool('model.isFulfilled'),
 
   // TODO(REQUIREPROPERTIES)
   model: null,
@@ -19,7 +25,8 @@ export default Ember.Mixin.create({
   nextItem: Ember.computed.reads('mixItem.nextItem'),
 
   prevClip: Ember.computed.reads('prevItem.clip'),
-  nextClip: Ember.computed.reads('nextItem.clip'),
+  // nextClip: Ember.computed.reads('nextItem.clip'),
+  nextClip: null,
 
   prevTransition: Ember.computed.reads('prevClip.transition'),
   nextTransition: Ember.computed.reads('nextClip.transition'),

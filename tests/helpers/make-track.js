@@ -26,15 +26,7 @@ export default function(options = {}) {
     start: lastBeatStart
   });
 
-  var track = this.factory.make('track');
-
-  // make withDefaultModel think track has audioMeta
-  track.set('_data', {
-    _audioMeta: 1
-  });
-
   var audioMeta = this.factory.make('audio-meta', {
-    track: track,
     duration: 367.47320,
     bpm: 127.961,
     timeSignature: 4,
@@ -42,6 +34,10 @@ export default function(options = {}) {
     mode: 0,
     loudness: -4.804,
     markers: [firstBeatMarker, lastBeatMarker]
+  });
+
+  var track = this.factory.make('track', {
+    _audioMeta: audioMeta
   });
 
   return track;

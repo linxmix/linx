@@ -1,6 +1,8 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
+import ReadinessMixin from '../readiness';
+
 import withDefault from 'linx/lib/computed/with-default';
 
 export default function(listPropertyPath) {
@@ -49,5 +51,11 @@ export default function(listPropertyPath) {
     },
   };
 
-  return Ember.Mixin.create(mixinParams);
+  // implement readiness mixin
+  let readinessKey = `${listPropertyPath}_isReady`;
+  mixinParams[readinessKey] = Ember.computed(`${listPropertyPath}.isFulfilled`, function() {
+    return this.get(`${listPropertyPath}.isFulfilled`) === true;
+  });
+
+  return Ember.Mixin.create(ReadinessMixin(readinessKey), mixinParams);
 }

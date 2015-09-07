@@ -32,7 +32,7 @@ const MixItemFunctionsMixin = function(...modelNames) {
 
     return mixinParams;
   }, {}));
-}
+};
 
 export default DS.Model.extend(
   MixItemFunctionsMixin('track', 'transition', 'mix'), // TODO(POLYMORPHISM)
@@ -49,6 +49,18 @@ export default DS.Model.extend(
     return arrangement;
   }),
 
+  // adds transition when appending given track
+  appendTrackWithTransition(track) {
+    return this.insertTrackAtWithTransitions(this.get('length'), track);
+  },
+
+  // adds transitions when inserting given track
+  insertTrackAtWithTransitions(index, track) {
+    let prevItem = this.objectAt(index - 1);
+    let nextItem = this.objectAt(index);
+    // TODO(TRANSITION)
+  },
+
   // adds matching tracks when appending given transition
   appendTransitionWithTracks(transition) {
     return this.insertTransitionAtWithTracks(this.get('length'), transition);
@@ -59,30 +71,11 @@ export default DS.Model.extend(
     let prevItem = this.objectAt(index - 1);
     let nextItem = this.objectAt(index);
 
-    let expectedFromTrack, actualFromTrack, expectedToTrack, actualToTrack;
-
-    // first make sure all necessary async models are loaded
-    let expectedFromTrackPromise = transition.get('fromTrack').then((track) => {
-      expectedFromTrack = track;
-    });
-    let expectedToTrackPromise = transition.get('toTrack').then((track) => {
-      expectedToTrack = track;
-    });
-    let actualFromTrackPromise = prevItem && prevItem.get('clip').then((clip) => {
-      return clip && clip.get('model').then((model) => {
-        actualFromTrack = model;
-      });
-    });
-    let actualToTrackPromise = nextItem && nextItem.get('clip').then((clip) => {
-      return clip && clip.get('model').then((model) => {
-        actualToTrack = model;
-      });
-    });
-
-    console.log("insertTransitionAtWithTracks", index)
-
-    // handle actual insertions
-    return Ember.RSVP.all([expectedFromTrackPromise, expectedToTrackPromise, actualFromTrackPromise, actualToTrackPromise]).then(() => {
+    return this.get('readyPromise').then(() => {
+      let expectedFromTrack = transition.get('fromTrack.content');
+      let expectedToTrack = transition.get('toTrack.content');
+      let actualFromTrack = prevItem && prevItem.get('clipModel.content');
+      let actualToTrack = nextItem && nextItem.get('clipModel.content');
 
       // insert fromTrack if not already present
       if (!actualFromTrack || actualFromTrack !== expectedFromTrack) {

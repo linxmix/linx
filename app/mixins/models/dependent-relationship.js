@@ -1,8 +1,11 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
+import ReadinessMixin from '../readiness';
+
 import _ from 'npm:underscore';
 import { flatten } from 'linx/lib/utils';
+import isEvery from 'linx/lib/computed/is-every';
 
 // Adds dependent models.
 // Supports any property path which resolves to a model, or to an array of models.
@@ -40,7 +43,7 @@ export default function(propertyPath) {
 
     // handle async and sync models
     _dirtyDependentModels: Ember.computed.uniq('dependentModelsWithDirtyAttributes', 'dependentModelsWithDirtyDependentModels'),
-    dirtyDependentModels: Ember.computed('_dirtyDependentModels.[].content', function() {
+    dirtyDependentModels: Ember.computed('_dirtyDependentModels.@each.content', function() {
       return this.get('_dirtyDependentModels').map((model) => {
         return model.get('content') || model;
       });
@@ -84,8 +87,11 @@ export default function(propertyPath) {
         console.log("no dirty dependents, saving master model", this.constructor.modelName);
         return this._super.apply(this, arguments);
       }
-    }
+    },
+
+    // implement readiness mixin
+    _areDependentModelsReady: isEvery('dependentModels', 'isLoaded', true),
   };
 
-  return Ember.Mixin.create(mixinParams);
+  return Ember.Mixin.create(ReadinessMixin('_areDependentModelsReady'), mixinParams);
 }

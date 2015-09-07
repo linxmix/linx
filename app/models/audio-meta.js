@@ -32,17 +32,17 @@ export default DS.Model.extend({
   sortedBarMarkers: Ember.computed.filterBy('sortedMarkers', 'type', BAR_MARKER_TYPE),
   sortedSectionMarkers: Ember.computed.filterBy('sortedMarkers', 'type', SECTION_MARKER_TYPE),
 
-  firstBeatMarker: Ember.computed.alias('sortedBeatMarkers.firstObject'),
-  lastBeatMarker: Ember.computed.alias('sortedBeatMarkers.lastObject'),
+  firstBeatMarker: Ember.computed.reads('sortedBeatMarkers.firstObject'),
+  lastBeatMarker: Ember.computed.reads('sortedBeatMarkers.lastObject'),
 
-  firstBeat: Ember.computed.alias('firstBeatMarker.startBeat'),
-  lastBeat: Ember.computed.alias('lastBeatMarker.startBeat'),
+  firstBeat: Ember.computed.reads('firstBeatMarker.startBeat'),
+  lastBeat: Ember.computed.reads('lastBeatMarker.startBeat'),
 
   fadeInMarkers: Ember.computed.filterBy('sortedMarkers', 'type', FADE_IN_MARKER_TYPE),
-  fadeInMarker: Ember.computed.alias('fadeInMarkers.firstObject'),
+  fadeInMarker: Ember.computed.reads('fadeInMarkers.firstObject'),
 
   fadeOutMarkers: Ember.computed.filterBy('sortedMarkers', 'type', FADE_OUT_MARKER_TYPE),
-  fadeOutMarker: Ember.computed.alias('fadeOutMarkers.firstObject'),
+  fadeOutMarker: Ember.computed.reads('fadeOutMarkers.firstObject'),
 
   numBeats: function() {
     return ~~(timeToBeat(this.get('lastBeatMarker.start') - this.get('firstBeatMarker.start'), this.get('bpm')));

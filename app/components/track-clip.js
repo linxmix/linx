@@ -60,5 +60,5 @@ export default Ember.Component.extend(
       var markerStart = marker.get('start');
       return markerStart >= audioStartTime && markerStart <= audioEndTime;
     });
-  }.property('audioStartTime', 'audioEndTime', 'markers.[].start'),
+  }.property('audioStartTime', 'audioEndTime', 'markers.@each.start'),
 });

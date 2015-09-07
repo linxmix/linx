@@ -28,7 +28,9 @@ describe('OrderedHasManyMixin', function() {
     let item;
 
     beforeEach(function() {
-      item = list.createAndAppend();
+      Ember.run(() => {
+        item = list.createAndAppend();
+      });
     });
 
     it('list is new', function() {
@@ -66,10 +68,12 @@ describe('OrderedHasManyMixin', function() {
     let itemA, itemB;
 
     beforeEach(function() {
-      itemA = list.createAndAppend();
-      itemB = list.createAndAppend();
+      Ember.run(() => {
+        itemA = list.createAndAppend();
+        itemB = list.createAndAppend();
 
-      wait(itemA.save());
+        wait(itemA.save());
+      });
     });
 
     it('has correct length', function() {
@@ -107,7 +111,9 @@ describe('OrderedHasManyMixin', function() {
 
   describe('saving list', function() {
     beforeEach(function() {
-      list.set('saveItems', true);
+      Ember.run(() => {
+        list.set('saveItems', true);
+      });
     });
 
     describe('when empty', function() {
@@ -131,8 +137,10 @@ describe('OrderedHasManyMixin', function() {
       let item;
 
       beforeEach(function(done) {
-        item = list.createAndAppend();
-        saveList(list, done);
+        Ember.run(() => {
+          item = list.createAndAppend();
+          saveList(list, done);
+        });
       });
 
       it('new item is saved', function() {
@@ -165,11 +173,13 @@ describe('OrderedHasManyMixin', function() {
       let item;
 
       beforeEach(function(done) {
-        item = list.createAndAppend();
+        Ember.run(() => {
+          item = list.createAndAppend();
 
-        item.save().then(() => {
-          this.sinon.stub(item, 'save', asResolvedPromise);
-          saveList(list, done);
+          item.save().then(() => {
+            this.sinon.stub(item, 'save', asResolvedPromise);
+            saveList(list, done);
+          });
         });
       });
 
@@ -182,10 +192,12 @@ describe('OrderedHasManyMixin', function() {
       let itemA, itemB;
 
       beforeEach(function(done) {
-        itemA = list.createAndAppend();
-        itemB = list.createAndAppend();
+        Ember.run(() => {
+          itemA = list.createAndAppend();
+          itemB = list.createAndAppend();
 
-        saveList(list, done);
+          saveList(list, done);
+        });
       });
 
       it('saves both items', function() {
@@ -203,11 +215,13 @@ describe('OrderedHasManyMixin', function() {
       let itemA, itemB;
 
       beforeEach(function(done) {
-        itemA = list.createAndAppend();
-        itemB = list.createAndAppend();
-        list.swapItems(itemA, itemB);
+        Ember.run(() => {
+          itemA = list.createAndAppend();
+          itemB = list.createAndAppend();
+          list.swapItems(itemA, itemB);
 
-        saveList(list, done);
+          saveList(list, done);
+        });
       });
 
       it('preserves item ordering', function() {

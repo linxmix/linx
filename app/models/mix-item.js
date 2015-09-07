@@ -63,14 +63,4 @@ export default DS.Model.extend(
       });
     });
   },
-
-  save() {
-    console.log('save mix item');
-    return this._super.apply(this, arguments);
-  },
-
-  destroyRecord() {
-    console.log('destroy mix item');
-    return this._super.apply(this, arguments);
-  }
 });

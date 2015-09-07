@@ -1,14 +1,18 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-import Clip from './clip';
 
-export default Clip.extend({
-  type: 'arrangement-clip',
+import Clip from './clip';
+import ReadinessMixin from 'linx/mixins/readiness';
+
+export default Clip.extend(
+  ReadinessMixin('isArrangementClipReady'), {
+  // type: 'arrangement-clip',
+
+  // implementing readiness mixin
+  isArrangementClipReady: Ember.computed.reads('nestedArrangement.isReady'),
 
   // implementing Clip
-  isValid: Ember.computed.and('nestedArrangement.content', 'isValidNumBeats'),
   numBeats: Ember.computed.reads('nestedArrangement.numBeats'),
-  isReady: Ember.computed.reads('nestedArrangement.isReady'),
 
   // arrangement-clip specific
   nestedArrangement: DS.belongsTo('arrangement', { async: true, inverse: null }),
