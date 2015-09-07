@@ -39,6 +39,7 @@ export default DS.Model.extend(
   isTrack: Ember.computed.equal('clipModelName', 'track-clip'),
   isTransition: Ember.computed.equal('clipModelName', 'transition-clip'),
   isMix: Ember.computed.equal('clipModelName', 'mix-clip'),
+  type: Ember.computed.reads('clipModelName'),
 
   setModel(model) {
     return this.destroyClip().then(() => {

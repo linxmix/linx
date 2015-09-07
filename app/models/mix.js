@@ -8,6 +8,7 @@ import withDefaultModel from 'linx/lib/computed/with-default-model';
 import { flatten, asResolvedPromise } from 'linx/lib/utils';
 import add from 'linx/lib/computed/add';
 
+// TODO: move to insertModelAt, appendModel?
 const MixItemFunctionsMixin = function(...modelNames) {
   return Ember.Mixin.create(modelNames.reduce((mixinParams, modelName) => {
     let capitalizedModelName = Ember.String.capitalize(modelName);

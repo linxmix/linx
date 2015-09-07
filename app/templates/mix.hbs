@@ -19,14 +19,22 @@
 
   <hr/>
 
-  {{#mix-list mix=model}}
+  {{#mix-card-grid mix=model}}
+    {{#each model.items as |item|}}
+      {{mix-card-item
+        mixItem=item
+      }}
+    {{/each}}
+  {{/mix-card-grid}}
+
+  {{!-- {{#mix-list mix=model}}
     {{#each model.items as |item|}}
       {{mix-list-item
         model=item
       }}
     {{/each}}
   {{/mix-list}}
-
+ --}}
   <hr/>
 
   {{simple-arrangement
