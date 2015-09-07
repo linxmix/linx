@@ -3,6 +3,7 @@ import DS from 'ember-data';
 
 import OrderedHasManyMixin from 'linx/mixins/models/ordered-has-many';
 import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
+import ReadinessMixin from 'linx/mixins/readiness';
 
 import withDefaultModel from 'linx/lib/computed/with-default-model';
 import { flatten, asResolvedPromise } from 'linx/lib/utils';
@@ -35,6 +36,7 @@ const MixItemFunctionsMixin = function(...modelNames) {
 };
 
 export default DS.Model.extend(
+  ReadinessMixin('isMixReady'),
   MixItemFunctionsMixin('track', 'transition', 'mix'), // TODO(POLYMORPHISM)
   DependentRelationshipMixin('arrangement'),
   OrderedHasManyMixin({ itemModelName: 'mix-item', itemsPath: 'items' }), {
@@ -45,9 +47,11 @@ export default DS.Model.extend(
   _arrangement: DS.belongsTo('arrangement', { async: true }),
   arrangement: withDefaultModel('_arrangement', function() {
     let arrangement = this.get('store').createRecord('arrangement');
-    arrangement.get('mixes').addObject(this);
     return arrangement;
   }),
+
+  // implement readiness mixin
+  isMixReady: Ember.computed.bool('arrangement.isReady'),
 
   // adds transition when appending given track
   appendTrackWithTransition(track) {

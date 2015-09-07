@@ -39,18 +39,9 @@ export default DS.Model.extend(
     return isNumber(numBeats) && numBeats > 0;
   }.property('numBeats'),
 
-  isClipReady: Ember.computed.and('isValidStartBeat', 'isValidEndBeat', 'isValidNumBeats'),
-
-  save() {
-    console.log('save clip', this.id);
-    let promise = this._super.apply(this, arguments);
-    return promise;
-  },
-
-  destroyRecord() {
-    console.log('destroy clip');
-    return this._super.apply(this, arguments);
-  },
+  // TODO(CLEANUP)
+  // isClipReady: Ember.computed.and('isValidStartBeat', 'isValidEndBeat', 'isValidNumBeats'),
+  isClipReady: Ember.computed(function() { return true; } ),
 
   modelName: Ember.computed.reads('constructor.modelName'),
 });

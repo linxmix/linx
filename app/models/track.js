@@ -48,7 +48,9 @@ export default DS.Model.extend(
   fetchEchonestTrack() {
     return this.get('echonest').fetchTrack(this)
       .then((echonestTrack) => {
-        return echonestTrack;
+        return this.save().then(() => {
+          return echonestTrack;
+        });
       });
   },
 
@@ -61,7 +63,9 @@ export default DS.Model.extend(
         });
 
         return audioMeta.processAnalysis(analysis).then(() => {
-          return audioMeta.save();
+          return this.save().then(() => {
+            return audioMeta;
+          });
         });
       });
     });

@@ -14,7 +14,7 @@ export default Ember.Mixin.create(
   mixItem: DS.belongsTo('mix-item', { async: true }),
 
   // implement readiness mixin
-  isMixableClipReady: Ember.computed.bool('model.isFulfilled'),
+  isMixableClipReady: Ember.computed.bool('model.isLoaded'),
 
   // TODO(REQUIREPROPERTIES)
   model: null,
@@ -25,8 +25,7 @@ export default Ember.Mixin.create(
   nextItem: Ember.computed.reads('mixItem.nextItem'),
 
   prevClip: Ember.computed.reads('prevItem.clip'),
-  // nextClip: Ember.computed.reads('nextItem.clip'),
-  nextClip: null,
+  nextClip: Ember.computed.reads('nextItem.clip'),
 
   prevTransition: Ember.computed.reads('prevClip.transition'),
   nextTransition: Ember.computed.reads('nextClip.transition'),

@@ -53,8 +53,8 @@ export default function(listPropertyPath) {
 
   // implement readiness mixin
   let readinessKey = `${listPropertyPath}_isReady`;
-  mixinParams[readinessKey] = Ember.computed(`${listPropertyPath}.isFulfilled`, function() {
-    return this.get(`${listPropertyPath}.isFulfilled`) === true;
+  mixinParams[readinessKey] = Ember.computed(`${listPropertyPath}.isLoaded`, function() {
+    return this.get(`${listPropertyPath}.isLoaded`) === true;
   });
 
   return Ember.Mixin.create(ReadinessMixin(readinessKey), mixinParams);

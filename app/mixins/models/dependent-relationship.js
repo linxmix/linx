@@ -24,14 +24,16 @@ export default function(propertyPath) {
     _addDependentModelsProperty: function() {
       let dependentKeys = this.get('_dependentModelPaths');
 
-      Ember.defineProperty(this, 'dependentModels',
-        Ember.computed.apply(Ember, dependentKeys.concat([function() {
-          return flatten(dependentKeys.map((key) => {
-            return this.get(key);
-          }));
-        }]))
-      );
-    }.on('init'),
+      if (!this.dependentModels) {
+        Ember.defineProperty(this, 'dependentModels',
+          Ember.computed.apply(Ember, dependentKeys.concat([function() {
+            return flatten(dependentKeys.map((key) => {
+              return this.get(key);
+            }));
+          }]))
+        );
+      }
+    }.on('init', 'ready'),
 
     dependentModels: null,
 
@@ -54,7 +56,8 @@ export default function(propertyPath) {
 
     destroyDependentModels() {
       return Ember.RSVP.all(this.get('dependentModels').toArray().map((model) => {
-        return model.destroyRecord();
+        // TODO(CLEANUP)
+        return model.destroyRecord && model.destroyRecord();
       }));
     },
 

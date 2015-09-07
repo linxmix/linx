@@ -18,15 +18,17 @@ export default function(propertyPath) {
       let readinessKeys = this.get('_readinessPaths');
 
       // isReady if all readinessKeys are ready
-      Ember.defineProperty(this, 'isReady',
-        Ember.computed.apply(Ember, readinessKeys.concat([function() {
-          // console.log("IS READY", this.constructor.toString(), readinessKeys);
-          return readinessKeys.every((key) => {
-            // console.log("key", key);
-            return this.get(key) === true;
-          });
-        }]))
-      );
+      if (!this.isReady) {
+        Ember.defineProperty(this, 'isReady',
+          Ember.computed.apply(Ember, readinessKeys.concat([function() {
+            // console.log("IS READY", this.constructor.toString(), readinessKeys);
+            return readinessKeys.every((key) => {
+              // console.log("key", key);
+              return this.get(key) === true;
+            });
+          }]))
+        );
+      }
     }.on('init', 'ready'),
 
     isReady: false,
@@ -35,7 +37,7 @@ export default function(propertyPath) {
       if (this.get('isReady')) {
         this.trigger('didBecomeReady');
       }
-    }.on('init', 'ready').observes('isReady'),
+    }.observes('isReady'),
 
     readyPromise: Ember.computed(function() {
       return new Ember.RSVP.Promise((resolve, reject) => {

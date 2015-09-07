@@ -110,14 +110,15 @@ export default DS.Model.extend({
     var track = this.get('track');
     var markers = markerParams.map((params) => {
       return store.createRecord('marker', _.defaults(params, {
-        track: track,
+        audioMeta: this,
       }));
     });
 
     var markerSavePromises = markers.map((marker) => { return marker.save(); });
 
     return Ember.RSVP.all(markerSavePromises).then(() => {
-      return this.destroyAnalysisMarkers().then(() => {
+      // TODO(CLEANUP)
+      // return this.destroyAnalysisMarkers().then(() => {
         this.get('markers').pushObjects(markers);
 
         this.setProperties({
@@ -130,7 +131,7 @@ export default DS.Model.extend({
         });
 
         return this.save();
-      });
+    // });
     });
 
   }
