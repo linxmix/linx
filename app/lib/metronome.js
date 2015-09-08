@@ -117,6 +117,7 @@ var ClipEvent = Ember.Object.extend(
   numBeats: Ember.computed.reads('clip.numBeats'),
   bpm: Ember.computed.reads('metronome.bpm'),
   isPlaying: false,
+  isFinished: false,
 
   clipSeekBeat: function() {
     var seekBeat = this.get('_seekBeat');
@@ -149,7 +150,7 @@ var ClipEvent = Ember.Object.extend(
     });
   }),
 
-  // current metronome seekBeat from clipevent's frame of reference
+  // current metronome seekBeat from clipEvent's frame of reference
   _seekBeat: function() {
     var metronomeSeekBeat = this.get('metronome.seekBeat');
     var startBeat = this.get('startBeat');
@@ -165,7 +166,7 @@ var ClipEvent = Ember.Object.extend(
   _updateEventTimes: function() {
     var metronome = this.get('metronome');
     var seekTime = beatToTime(this.get('_seekBeat'), this.get('bpm'));
-    var lengthTime = beatToTime(this.get('length'), this.get('bpm'));
+    var lengthTime = beatToTime(this.get('numBeats'), this.get('bpm'));
     var metronomeIsPlaying = metronome.get('isPlaying');
 
     // if metronome is paused or jumped back, pause this
@@ -191,16 +192,20 @@ var ClipEvent = Ember.Object.extend(
   },
 
   _executeStart: function(delay) {
-    console.log("execute start", this.get('clip.track.title'), delay);
+    console.log("execute start", this.get('clip.model.title'));
     this.setProperties({
       _delayTime: delay,
       isPlaying: true,
+      isFinished: false,
     });
   },
 
   _executeEnd: function(delay) {
-    console.log("execute end", this.get('clip.track.title'));
-    this.set('isPlaying', false);
+    console.log("execute end", this.get('clip.model.title'));
+    this.setProperties({
+      isPlaying: false,
+      isFinished: true,
+    });
   },
 
   destroy: function() {

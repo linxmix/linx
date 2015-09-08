@@ -29,7 +29,7 @@ export default Ember.Mixin.create(
   // params
   isPlaying: Ember.computed.reads('metronome.isPlaying'),
   session: Ember.inject.service(),
-  pxPerBeat: 15,
+  pxPerBeat: 5,
 
   metronome: function() {
     var audioContext = this.get('session.audioContext');

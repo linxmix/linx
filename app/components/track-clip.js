@@ -21,9 +21,9 @@ export default Ember.Component.extend(
   }),
 
   actions: {
-    didLoadWave: function() {
+    waveDidLoad: function() {
       this.get('clip').set('isAudioLoaded', true);
-    }
+    },
   },
 
   startPx: function() {
@@ -46,8 +46,12 @@ export default Ember.Component.extend(
   }.property('audioBpm', 'syncBpm'),
 
   seekTime: function() {
-    return beatToTime(this.get('seekBeat'), this.get('audioBpm'));
-  }.property('seekBeat'),
+    if (this.get('isFinished')) {
+      return this.get('audioEndTime');
+    } else {
+      return beatToTime(this.get('seekBeat'), this.get('audioBpm'));
+    }
+  }.property('seekBeat', 'isFinished', 'audioEndTime'),
 
   audioSeekTime: add('seekTime', 'audioStartTime'),
 

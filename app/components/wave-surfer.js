@@ -198,7 +198,8 @@ export const Wave = Ember.Object.extend(
     });
 
     wavesurfer.on('finish', function() {
-      wave.onFinish();
+      wavesurfer.pause();
+      // wave.onFinish();
     });
 
     this.set('wavesurfer', wavesurfer);
@@ -233,9 +234,13 @@ export default Ember.Component.extend({
 
   onWaveLoad: function() {
     if (this.get('wave.isLoaded')) {
-      this.sendAction('didLoadWave');
+      this.sendAction('waveDidLoad');
     }
   }.observes('wave.isLoaded').on('init'),
+
+  onWaveFinish() {
+    this.sendAction('waveDidFinish');
+  },
 
   initWave: function() {
     var wave = this.get('wave');
