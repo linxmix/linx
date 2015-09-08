@@ -15,9 +15,12 @@ export default Ember.Component.extend(
   }),
 
   // on click, seekToBeat
-  click: function(e) {
-    var x = e.pageX - this.$().offset().left;
-    var beat = x / this.get('pxPerBeat');
+  click(e) {
+    let $el = this.$();
+    let offsetX = e.pageX - ($el.offset().left);
+    let scrollLeft = ($el.scrollLeft());
+    let x = offsetX + scrollLeft;
+    let beat = x / this.get('pxPerBeat');
     this.sendAction('seekToBeat', beat);
   },
 

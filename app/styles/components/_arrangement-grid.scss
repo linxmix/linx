@@ -1,7 +1,8 @@
 .ArrangementGrid {
   border: 1px solid orange;
-  overflow: hidden;
   cursor: crosshair;
+  overflow-y: hidden;
+  overflow-x: auto;
 }
 
 .ArrangementGrid--loading {
