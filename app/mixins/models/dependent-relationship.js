@@ -75,19 +75,14 @@ export default function(propertyPath) {
       }));
     },
 
-    save() {
-      if (this.get('hasDirtyDependentModels')) {
-        console.log("saving dirty dependent models", this.constructor.modelName, this.get('dirtyDependentModels'));
+    save(skipDependents = false) {
+      if (!skipDependents) {
         return this.saveDirtyDependentModels().then(() => {
-          // TODO: why doesnt hasDirtyAttributes not update immediately?
           return new Ember.RSVP.Promise((resolve, reject) => {
-            Ember.run.next(() => {
-              this.save().then(resolve, reject);
-            });
+            this.save(true).then(resolve, reject);
           });
         });
       } else {
-        console.log("no dirty dependents, saving master model", this.constructor.modelName);
         return this._super.apply(this, arguments);
       }
     },

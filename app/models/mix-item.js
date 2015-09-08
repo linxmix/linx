@@ -25,6 +25,7 @@ export default DS.Model.extend(
     let content = this.get('clip.content');
     return content && content.constructor.modelName;
   }.property('clip.content'),
+  clipIsReady: Ember.computed.reads('clip.isReady'),
 
   trackClip: DS.belongsTo('track-clip', { async: true }),
   transitionClip: DS.belongsTo('transition-clip', { async: true }),
