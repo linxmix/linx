@@ -62,8 +62,21 @@ export default function(options = {}) {
       let itemA = this.objectAt(indexA);
       let itemB = this.objectAt(indexB);
 
-      items.replace(indexA, 1, [itemB]);
-      items.replace(indexB, 1, [itemA]);
+      Ember.assert('Items must be present to swap.', Ember.isPresent(itemA) && Ember.isPresent(itemB));
+      Ember.assert('Must provide different indexes to swap.', indexA !== indexB);
+
+      items.removeObjects([itemA, itemB]);
+
+      // items.replace(indexA, 1, [itemB]);
+      // items.replace(indexB, 1, [itemA]);
+
+      if (indexA < indexB) {
+        items.insertAt(indexA, itemB);
+        items.insertAt(indexB, itemA);
+      } else {
+        items.insertAt(indexB, itemA);
+        items.insertAt(indexA, itemB);
+      }
 
       return items;
     },

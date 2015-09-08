@@ -64,7 +64,7 @@ describe('OrderedHasManyMixin', function() {
     });
   });
 
-  describe('with multiple items', function() {
+  describe('with two items', function() {
     let itemA, itemB;
 
     beforeEach(function() {
@@ -105,6 +105,39 @@ describe('OrderedHasManyMixin', function() {
       list.swap(0, 1);
       expect(itemA.get('index')).to.equal(1);
       expect(itemB.get('index')).to.equal(0);
+    });
+  });
+
+  describe('swapping with three items', function() {
+    let itemA, itemB, itemC;
+
+    beforeEach(function() {
+      Ember.run(() => {
+        itemA = list.createAndAppend();
+        itemB = list.createAndAppend();
+        itemC = list.createAndAppend();
+      });
+    });
+
+    it('swap first two items does not affect third', function() {
+      list.swap(0, 1);
+      expect(itemA.get('index')).to.equal(1);
+      expect(itemB.get('index')).to.equal(0);
+      expect(itemC.get('index')).to.equal(2);
+    });
+
+    it('swap middle two items does not affect third', function() {
+      list.swap(1, 2);
+      expect(itemA.get('index')).to.equal(0);
+      expect(itemB.get('index')).to.equal(2);
+      expect(itemC.get('index')).to.equal(1);
+    });
+
+    it('swap last two items does not affect third', function() {
+      list.swap(2, 0);
+      expect(itemA.get('index')).to.equal(2);
+      expect(itemB.get('index')).to.equal(1);
+      expect(itemC.get('index')).to.equal(0);
     });
   });
 
