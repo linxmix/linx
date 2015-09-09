@@ -49,6 +49,16 @@ export const clamp = function(min, n, max) {
   }
 };
 
+export const copyInPlace = function(target, copy) {
+  // remove old items
+  target.removeObjects(target.filter((item) => {
+    return !copy.contains(item);
+  }));
+
+  // add new items
+  target.addObjects(copy);
+};
+
 export const asResolvedPromise = function(returnedObject, PromiseTypeConstructor = DS.PromiseObject) {
 
   if (_.isArray(returnedObject)) {

@@ -6,6 +6,7 @@ import ReadinessMixin from 'linx/mixins/readiness';
 import isEvery from 'linx/lib/computed/is-every';
 import withDefault from 'linx/lib/computed/with-default';
 import concat from 'linx/lib/computed/concat';
+import { copyInPlace } from 'linx/lib/utils';
 
 export default DS.Model.extend(
   ReadinessMixin('isArrangementReady'), {
@@ -21,7 +22,7 @@ export default DS.Model.extend(
   _clipsAreReady: isEvery('clips', 'isReady', true),
   _hasManiesAreFulfilled: Ember.computed.and('trackClips.isFulfilled', 'transitionClips.isFulfilled', 'mixClips.isFulfilled', 'automationClips.isFulfilled'),
 
-  clips: Ember.computed(() => { return []; }),
+  clips: Ember.computed(() => { return [] }),
   updateClips: function() {
     if (this.get('_hasManiesAreFulfilled')) {
       Ember.run.next(() => {
@@ -34,13 +35,19 @@ export default DS.Model.extend(
     let keys = ['trackClips', 'transitionClips', 'mixClips', 'automationClips'];
 
     if (!this.get('isDestroyed')) {
-      this.set('clips', keys.reduce((acc, key) => {
-        let hasMany = this.get(`${key}.content`);
-        return acc.concat(hasMany ? hasMany.toArray() : []);
-      }, []));
-    }
+      let clips = this.get('clips');
 
-    console.log("updateClips", this.get('clips'));
+      // figure out what clips should look like
+      let newClips = keys.reduce((acc, key) => {
+        let hasMany = this.get(`${key}.content`);
+        hasMany = hasMany ? hasMany.toArray() : [];
+
+        return acc.concat(hasMany);
+      }, []);
+
+      console.log("updateClips", clips, newClips);
+      copyInPlace(clips, newClips);
+    }
   },
 
   // params
