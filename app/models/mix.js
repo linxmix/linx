@@ -73,7 +73,7 @@ export default DS.Model.extend(
   // asserts transitions are present and valid around given item
   assertTransitionsForItem(item, options) {
     Ember.assert('Cannot assertTransitionsForItem without item', Ember.isPresent(item));
-    Ember.assert('Cannot assertTransitionsForItem when item isTransition', item.get('isTransition'));
+    Ember.assert('Cannot assertTransitionsForItem when item isTransition', !item.get('isTransition'));
 
     return this.generateTransitionItemAt(item.get('index') - 1, options).then((prevTransitionItem) => {
       return this.generateTransitionItemAt(item.get('index') + 1, options).then((nextTransitionItem) => {
@@ -85,20 +85,18 @@ export default DS.Model.extend(
   // generates valid transition item at given index, if possible
   generateTransitionItemAt(index, options) {
     return this.get('readyPromise').then(() => {
-      let item = this.objectAt(index);
+      let prevItem = this.objectAt(index - 1);
+      let nextItem = this.objectAt(index);
 
-      // if item already is valid transition, return it
-      if (item.get('isValidTransition')) {
-        return item;
+      // cannot make transition without prevItem and nextItem
+      if (!(prevItem && nextItem)) {
+        return;
+
+      // if nextItem already is valid transition, return it
+      } else if (nextItem && nextItem.get('isValidTransition')) {
+        return nextItem;
+
       } else {
-        let prevItem = this.objectAt(index - 1);
-        let nextItem = this.objectAt(index);
-
-        // cannot make transition without prevItem and nextItem
-        if (!(prevItem && nextItem)) {
-          return;
-        }
-
         // make sure prevItem is not a transition
         if (prevItem && prevItem.get('isTransition')) {
           this.removeObject(prevItem);
