@@ -14,13 +14,21 @@
 
   {{search-tracks
     tracks=searchTracks
-    action="appendTrack"
+    action="selectTrack"
   }}
 
-  {{search-transitions
+  <div>
+    <span>Insert Tracks With Transitions</span>
+    {{input
+      type="checkbox"
+      checked=insertTracksWithTransitions
+    }}
+  </div>
+
+  {{!-- {{search-transitions
     transitions=searchTransitions
     action="appendTransitionWithTracks"
-  }}
+  }} --}}
 
   <hr/>
 

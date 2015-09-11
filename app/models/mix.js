@@ -1,6 +1,8 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
+import _ from 'npm:underscore';
+
 import OrderedHasManyMixin from 'linx/mixins/models/ordered-has-many';
 import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 import ReadinessMixin from 'linx/mixins/readiness';
@@ -53,29 +55,119 @@ export default DS.Model.extend(
   // implement readiness mixin
   isMixReady: Ember.computed.bool('arrangement.isReady'),
 
-  // adds transition when appending given track
   appendTrackWithTransition(track) {
     return this.insertTrackAtWithTransitions(this.get('length'), track);
   },
 
-  // adds transitions when inserting given track
-  insertTrackAtWithTransitions(index, track) {
-    let prevItem = this.objectAt(index - 1);
-    let nextItem = this.objectAt(index);
-    // TODO(TRANSITION)
+  // may override existing transitions
+  insertTrackAtWithTransitions(index, track, options) {
+    return this.get('readyPromise').then(() => {
+      return this.insertTrackAt(index, track).then((trackItem) => {
+        return this.assertTransitionsForItem(trackItem, options).then(() => {
+          return trackItem;
+        });
+      });
+    });
   },
 
-  // adds matching tracks when appending given transition
+  // asserts transitions are present and valid around given item
+  assertTransitionsForItem(item, options) {
+    Ember.assert('Cannot assertTransitionsForItem without item', Ember.isPresent(item));
+    Ember.assert('Cannot assertTransitionsForItem when item isTransition', item.get('isTransition'));
+
+    return this.generateTransitionItemAt(item.get('index') - 1, options).then((prevTransitionItem) => {
+      return this.generateTransitionItemAt(item.get('index') + 1, options).then((nextTransitionItem) => {
+        return { prevTransitionItem, nextTransitionItem };
+      });
+    });
+  },
+
+  // generates valid transition item at given index, if possible
+  generateTransitionItemAt(index, options) {
+    return this.get('readyPromise').then(() => {
+      let item = this.objectAt(index);
+
+      // if item already is valid transition, return it
+      if (item.get('isValidTransition')) {
+        return item;
+      } else {
+        let prevItem = this.objectAt(index - 1);
+        let nextItem = this.objectAt(index);
+
+        // cannot make transition without prevItem and nextItem
+        if (!(prevItem && nextItem)) {
+          return;
+        }
+
+        // make sure prevItem is not a transition
+        if (prevItem && prevItem.get('isTransition')) {
+          this.removeObject(prevItem);
+          return this.generateTransitionItemAt(index - 1);
+        }
+
+        // make sure nextItem is not a transition
+        if (nextItem && nextItem.get('isTransition')) {
+          this.removeObject(nextItem);
+          return this.generateTransitionItemAt(index);
+        }
+
+        // all is well - proceed with transition generation
+        return this.generateTransitionFromClips(prevItem.get('clip'), nextItem.get('clip'), options).then((transition) => {
+          return this.insertTransitionAt(index, transition);
+        });
+      }
+    });
+  },
+
+  // returns a new transition model between two given clips, with options
+  generateTransitionFromClips(fromClip, toClip, options = {}) {
+    Ember.assert('Must have fromClip and toClip to generateTransitionFromClips', Ember.isPresent(fromClip) && Ember.isPresent(toClip));
+
+    return this.get('readyPromise').then(() => {
+      let {
+        lastTrack: fromTrack,
+        clipEndBeat: minFromTrackEndBeat
+      } = fromClip.getProperties('lastTrack', 'clipEndBeat');
+
+      let {
+        firstTrack: toTrack,
+        clipStartBeat: maxToTrackStartBeat
+      } = toClip.getProperties('firstTrack', 'clipStartBeat');
+
+      return this.generateTransitionFromTracks(fromTrack, toTrack, _.defaults({}, options, {
+        minFromTrackEndBeat,
+        maxToTrackStartBeat
+      }));
+    });
+  },
+
+  // returns a new transition model between two given tracks, with options
+  generateTransitionFromTracks(fromTrack, toTrack, options = {}) {
+    Ember.assert('Must have fromTrack and toTrack to generateTransitionFromTracks', Ember.isPresent(fromTrack) && Ember.isPresent(toTrack));
+
+    let {
+      preset,
+      minFromTrackEndBeat,
+      maxToTrackStartBeat,
+      fromTrackEnd,
+      toTrackStart,
+    } = options;
+
+    // TODO
+  },
+
+  optimizeMix() {
+    // TODO
+  },
+
   appendTransitionWithTracks(transition) {
     return this.insertTransitionAtWithTracks(this.get('length'), transition);
   },
 
-  // adds matching tracks when inserting given transition
   insertTransitionAtWithTracks(index, transition) {
-    let prevItem = this.objectAt(index - 1);
-    let nextItem = this.objectAt(index);
-
     return this.get('readyPromise').then(() => {
+      let prevItem = this.objectAt(index - 1);
+      let nextItem = this.objectAt(index);
       let expectedFromTrack = transition.get('fromTrack.content');
       let expectedToTrack = transition.get('toTrack.content');
       let actualFromTrack = prevItem && prevItem.get('clipModel.content');

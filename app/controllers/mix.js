@@ -5,4 +5,7 @@ export default Ember.Controller.extend({
   model: null,
   searchTracks: Ember.computed(() => { return []; }),
   searchTransitions: Ember.computed(() => { return []; }),
+
+  // controlled by checkbox
+  insertTracksWithTransitions: false,
 });

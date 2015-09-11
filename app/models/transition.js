@@ -47,7 +47,12 @@ export default DS.Model.extend(
 
   fromTrack: DS.belongsTo('track', { async: true }),
   toTrack: DS.belongsTo('track', { async: true }),
-  arrangement: DS.belongsTo('arrangement', { async: true }),
+
+  _arrangement: DS.belongsTo('arrangement', { async: true }),
+  arrangement: withDefaultModel('_arrangement', function() {
+    let arrangement = this.get('store').createRecord('arrangement');
+    return arrangement;
+  }),
 
   numBeats: Ember.computed.reads('arrangement.numBeats'),
 

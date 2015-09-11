@@ -18,8 +18,8 @@ export default Ember.Mixin.create(
 
   // TODO(REQUIREPROPERTIES)
   model: null,
-  fromTrack: null,
-  toTrack: null,
+  firstTrack: null,
+  lastTrack: null,
 
   prevItem: Ember.computed.reads('mixItem.prevItem'),
   nextItem: Ember.computed.reads('mixItem.nextItem'),
@@ -30,7 +30,7 @@ export default Ember.Mixin.create(
   prevTransition: Ember.computed.reads('prevClip.transition'),
   nextTransition: Ember.computed.reads('nextClip.transition'),
 
-  isTransitionable: true,
+  isMixable: true,
 
   clipStartBeat: variableTernary(
     'prevClip.isValidTransition',
