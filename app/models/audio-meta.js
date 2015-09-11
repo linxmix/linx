@@ -39,8 +39,10 @@ export default DS.Model.extend({
   lastBeatMarker: Ember.computed.reads('sortedBeatMarkers.lastObject'),
 
   // HACK: start a bit before the beat
-  firstBeat: add('firstBeatMarker.startBeat', -BEAT_LEAD_TIME),
-  lastBeat: add('lastBeatMarker.startBeat', -BEAT_LEAD_TIME),
+  // firstBeat: add('firstBeatMarker.startBeat', 0),
+  // lastBeat: add('lastBeatMarker.startBeat', 0),
+  firstBeat: add('firstBeatMarker.startBeat'),
+  lastBeat: add('lastBeatMarker.startBeat'),
 
   fadeInMarkers: Ember.computed.filterBy('sortedMarkers', 'type', FADE_IN_MARKER_TYPE),
   fadeInMarker: Ember.computed.reads('fadeInMarkers.firstObject'),
