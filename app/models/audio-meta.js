@@ -3,6 +3,7 @@ import DS from 'ember-data';
 import _ from 'npm:underscore';
 
 import { timeToBeat } from 'linx/lib/utils';
+import add from 'linx/lib/computed/add';
 import {
   BEAT_MARKER_TYPE,
   BAR_MARKER_TYPE,
@@ -11,6 +12,8 @@ import {
   FADE_OUT_MARKER_TYPE,
   USER_MARKER_TYPE,
 } from './marker';
+
+export const BEAT_LEAD_TIME = 0.5;
 
 export default DS.Model.extend({
   duration: DS.attr('number'),
@@ -35,8 +38,9 @@ export default DS.Model.extend({
   firstBeatMarker: Ember.computed.reads('sortedBeatMarkers.firstObject'),
   lastBeatMarker: Ember.computed.reads('sortedBeatMarkers.lastObject'),
 
-  firstBeat: Ember.computed.reads('firstBeatMarker.startBeat'),
-  lastBeat: Ember.computed.reads('lastBeatMarker.startBeat'),
+  // HACK: start a bit before the beat
+  firstBeat: add('firstBeatMarker.startBeat', -BEAT_LEAD_TIME),
+  lastBeat: add('lastBeatMarker.startBeat', -BEAT_LEAD_TIME),
 
   fadeInMarkers: Ember.computed.filterBy('sortedMarkers', 'type', FADE_IN_MARKER_TYPE),
   fadeInMarker: Ember.computed.reads('fadeInMarkers.firstObject'),

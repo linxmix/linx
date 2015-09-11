@@ -83,3 +83,11 @@ export const getContent = function(obj, prop) {
     return proxy.get('content');
   });
 };
+
+export const arraySum = function(arr) {
+  return arr.reduce((sum, el) => {
+    let val = isString(el) ? this.get(el) : el;
+
+    return sum + val;
+  }, 0);
+};
