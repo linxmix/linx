@@ -145,15 +145,28 @@ export default DS.Model.extend(
   generateTransitionFromTracks(fromTrack, toTrack, options = {}) {
     Ember.assert('Must have fromTrack and toTrack to generateTransitionFromTracks', Ember.isPresent(fromTrack) && Ember.isPresent(toTrack));
 
-    let {
-      preset,
-      minFromTrackEndBeat,
-      maxToTrackStartBeat,
-      fromTrackEnd,
-      toTrackStart,
-    } = options;
+    return this.get('readyPromise').then(() => {
+      let {
+        preset,
+        minFromTrackEndBeat,
+        maxToTrackStartBeat,
+        fromTrackEnd,
+        toTrackStart,
+      } = options;
 
-    // TODO
+      // TODO(TRANSITION): improve this algorithm, add options and presets
+      let transition = this.get('store').createRecord('transition', {
+        fromTrack,
+        toTrack,
+      });
+
+      return Ember.RSVP.all([
+        transition.setFromTrackEnd(fromTrack.get('audioMeta.lastBeat')),
+        transition.setToTrackStart(toTrack.get('audioMeta.firstBeat')),
+      ]).then(() => {
+        return transition;
+      });
+    });
   },
 
   optimizeMix() {

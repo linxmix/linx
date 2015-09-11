@@ -39,7 +39,7 @@ describe('MixModel', function() {
     return results.mix;
   });
 
-  describe('appendTransitionWithTracks', function() {
+  describe('#appendTransitionWithTracks', function() {
     let fromTrack, transition, toTrack, transitionItem;
 
     beforeEach(function() {
@@ -73,6 +73,33 @@ describe('MixModel', function() {
 
     it('adds toTrack to correct place', function() {
       expect(mix.objectAt(2).get('clipModel.content')).to.equal(toTrack);
+    });
+  });
+
+  describe('#generateTransitionFromTracks', function() {
+    let fromTrack, toTrack, transition;
+
+    beforeEach(function() {
+      fromTrack = makeTrack.call(this);
+      toTrack = makeTrack.call(this);
+    });
+
+    describe('without options', function() {
+      beforeEach(function() {
+        Ember.run(() => {
+          wait(mix.generateTransitionFromTracks(fromTrack, toTrack).then((_transition) => {
+            transition = _transition;
+          }));
+        });
+      });
+
+      describeAttrs('transition', {
+        subject() { return transition; },
+        'fromTrack.content': () => fromTrack,
+        'toTrack.content': () => toTrack,
+        fromTrackEndBeat() { return fromTrack.get('audioMeta.lastBeat'); },
+        toTrackStartBeat() { return toTrack.get('audioMeta.firstBeat'); },
+      });
     });
   });
 

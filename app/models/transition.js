@@ -38,12 +38,8 @@ export default DS.Model.extend(
     });
   }),
 
-  fromTrackEndBeat: Ember.computed('numBeats', 'fromTrackMarker.startBeat', function() {
-    return this.get('fromTrackMarker.startBeat') + this.get('numBeats');
-  }),
-  toTrackStartBeat: Ember.computed('toTrackMarker.startBeat', function() {
-    return this.get('toTrackMarker.startBeat');
-  }),
+  fromTrackEndBeat: Ember.computed.reads('fromTrackMarker.startBeat'),
+  toTrackStartBeat: Ember.computed.reads('toTrackMarker.startBeat'),
 
   fromTrack: DS.belongsTo('track', { async: true }),
   toTrack: DS.belongsTo('track', { async: true }),
