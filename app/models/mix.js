@@ -161,8 +161,8 @@ export default DS.Model.extend(
       });
 
       return Ember.RSVP.all([
-        transition.setFromTrackEnd(fromTrack.get('audioMeta.lastBeat')),
-        transition.setToTrackStart(toTrack.get('audioMeta.firstBeat')),
+        transition.setFromTrackEnd(fromTrack.get('audioMeta.lastBeatMarker.start')),
+        transition.setToTrackStart(toTrack.get('audioMeta.firstBeatMarker.start')),
       ]).then(() => {
         return transition;
       });

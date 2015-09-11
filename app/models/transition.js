@@ -41,6 +41,9 @@ export default DS.Model.extend(
   fromTrackEndBeat: Ember.computed.reads('fromTrackMarker.startBeat'),
   toTrackStartBeat: Ember.computed.reads('toTrackMarker.startBeat'),
 
+  fromTrackEnd: Ember.computed.reads('fromTrackMarker.start'),
+  toTrackStart: Ember.computed.reads('toTrackMarker.start'),
+
   fromTrack: DS.belongsTo('track', { async: true }),
   toTrack: DS.belongsTo('track', { async: true }),
 
@@ -58,7 +61,7 @@ export default DS.Model.extend(
 
     return this.get('fromTrackMarker').then((marker) => {
       marker.set('start', time);
-      return marker.save();
+      return marker;
     });
   },
 
@@ -68,7 +71,7 @@ export default DS.Model.extend(
 
     return this.get('toTrackMarker').then((marker) => {
       marker.set('start', time);
-      return marker.save();
+      return marker;
     });
   },
 });

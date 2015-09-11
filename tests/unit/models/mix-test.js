@@ -9,6 +9,7 @@ import { expect } from 'chai';
 
 import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 import makeTrack from 'linx/tests/helpers/make-track';
+import makeTrackClip from 'linx/tests/helpers/make-track-clip';
 import makeTransition from 'linx/tests/helpers/make-transition';
 import makeMix from 'linx/tests/helpers/make-mix';
 import describeAttrs from 'linx/tests/helpers/describe-attrs';
@@ -97,9 +98,48 @@ describe('MixModel', function() {
         subject() { return transition; },
         'fromTrack.content': () => fromTrack,
         'toTrack.content': () => toTrack,
-        fromTrackEndBeat() { return fromTrack.get('audioMeta.lastBeat'); },
-        toTrackStartBeat() { return toTrack.get('audioMeta.firstBeat'); },
+        fromTrackEnd() { return fromTrack.get('audioMeta.lastBeatMarker.start'); },
+        toTrackStart() { return toTrack.get('audioMeta.firstBeatMarker.start'); },
       });
+    });
+  });
+
+  describe('#generateTransitionFromClips', function() {
+    let fromTrackClip, toTrackClip;
+    let generateTransitionFromTracksStub, options;
+
+    beforeEach(function() {
+      let fromResults = makeTrackClip.call(this);
+      fromTrackClip = fromResults.trackClip;
+
+      let toResults = makeTrackClip.call(this);
+      toTrackClip = toResults.trackClip;
+
+      generateTransitionFromTracksStub = this.sinon.stub(mix, 'generateTransitionFromTracks');
+
+      options = {
+        preset: 'preset',
+      };
+
+      Ember.run(() => {
+        mix.generateTransitionFromClips(fromTrackClip, toTrackClip, options);
+      });
+    });
+
+    it('calls generateTransitionFromTracks', function() {
+      expect(generateTransitionFromTracksStub.calledOnce).to.be.true;
+    });
+
+    it('calls generateTransitionFromTracks with correct tracks', function() {
+      expect(generateTransitionFromTracksStub.calledWith(fromTrackClip.get('model'), toTrackClip.get('model'))).to.be.true;
+    });
+
+    it('calls generateTransitionFromTracks with correct options', function() {
+      let optionsArg = generateTransitionFromTracksStub.args[0][2];
+
+      expect(optionsArg.preset).to.equal(options.preset);
+      expect(optionsArg.minFromTrackEndBeat).to.equal(fromTrackClip.get('clipEndBeat'));
+      expect(optionsArg.maxToTrackStartBeat).to.equal(toTrackClip.get('clipStartBeat'));
     });
   });
 
@@ -213,33 +253,6 @@ describe('MixModel', function() {
       length: 0,
       'numTracks': 0,
       'numTransitions': 0,
-    });
-  });
-
-  describe.skip('insertTransitionAt with track', function() {
-    let track, transition, result;
-
-    beforeEach(function() {
-      let track = makeTrack.call(this);
-
-      let results = makeTransition.call(this);
-      transition = results.transition;
-
-      Ember.run(function() {
-        wait(mix.insertTrackAt(0, track));
-        wait(result = mix.insertTransitionAt(0, transition));
-      });
-    });
-
-    it('returns promise', function() {
-      expect(result.constructor).to.equal(DS.PromiseObject);
-    });
-
-    describeAttrs('mix', {
-      subject() { return mix; },
-      length: 1,
-      'numTracks': 1,
-      'numTransitions': 1,
     });
   });
 });
