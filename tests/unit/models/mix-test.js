@@ -64,6 +64,9 @@ function describeItemOperations(modelName, createModelFn) {
     it('returns the item', function() {
       expect(Ember.isNone(item)).to.be.false;
       expect(this.mix.objectAt(0)).to.equal(item);
+    });
+
+    it('item is correct type based on model', function() {
       expect(item.get(`is${capitalizedModelName}`)).to.be.true;
     });
 
@@ -73,13 +76,37 @@ function describeItemOperations(modelName, createModelFn) {
 
     it('can then remove item', function() {
       Ember.run(() => {
-        wait(this.mix.removeObject(item));
+        wait(this.mix.removeItem(item));
       });
 
       andThen(() => {
         expect(this.mix.get('length')).to.equal(0);
         expect(this.mix.get(`${modelName}Items.length`)).to.equal(0);
       });
+    });
+  });
+
+  let insertItemsAtFnKey = `insert${capitalizedModelName}sAt`;
+
+  describe(`Mix#${insertItemsAtFnKey}`, function() {
+    let model0, model1;
+
+    beforeEach(function() {
+      model0 = createModelFn.call(this);
+      model1 = createModelFn.call(this);
+
+      Ember.run(() => {
+        wait(this.mix[insertItemsAtFnKey](0, [model0, model1]));
+      });
+    });
+
+    it('adds items to mix', function() {
+      expect(this.mix.get('length')).to.equal(2);
+    });
+
+    it('adds models in order', function() {
+      expect(this.mix.itemAt(0).get('model.content')).to.equal(model0);
+      expect(this.mix.itemAt(1).get('model.content')).to.equal(model1);
     });
   });
 }

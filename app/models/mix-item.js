@@ -20,11 +20,11 @@ export default DS.Model.extend(
       return this.get('mixClip');
     }
   }.property('trackClip.content', 'transitionClip.content', 'mixClip.content'),
-  clipModel: Ember.computed.reads('clip.model'),
-  clipModelName: function() {
-    let content = this.get('clip.content');
+  model: Ember.computed.reads('clip.model'),
+  modelName: function() {
+    let content = this.get('model.content');
     return content && content.constructor.modelName;
-  }.property('clip.content'),
+  }.property('model.content'),
   clipIsReady: Ember.computed.reads('clip.isReady'),
 
   trackClip: DS.belongsTo('track-clip', { async: true }),
@@ -37,10 +37,10 @@ export default DS.Model.extend(
     });
   },
 
-  isTrack: Ember.computed.equal('clipModelName', 'track-clip'),
-  isTransition: Ember.computed.equal('clipModelName', 'transition-clip'),
+  isTrack: Ember.computed.equal('modelName', 'track'),
+  isTransition: Ember.computed.equal('modelName', 'transition'),
   isValidTransition: Ember.computed.and('isTransition', 'clip.isValidTransition'),
-  isMix: Ember.computed.equal('clipModelName', 'mix-clip'),
+  isMix: Ember.computed.equal('modelName', 'mix'),
 
   setModel(model) {
     return this.destroyClip().then(() => {

@@ -50,7 +50,7 @@ describe('MixModel#insertTransitionAtWithTracks', function() {
     });
 
     it('adds fromTrack to correct place', function() {
-      expect(mix.objectAt(0).get('clipModel.content')).to.equal(fromTrack);
+      expect(mix.objectAt(0).get('model.content')).to.equal(fromTrack);
     });
 
     it('adds transition to correct place', function() {
@@ -58,7 +58,7 @@ describe('MixModel#insertTransitionAtWithTracks', function() {
     });
 
     it('adds toTrack to correct place', function() {
-      expect(mix.objectAt(2).get('clipModel.content')).to.equal(toTrack);
+      expect(mix.objectAt(2).get('model.content')).to.equal(toTrack);
     });
   });
 

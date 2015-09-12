@@ -24,23 +24,31 @@ export default function(options = {}) {
     },
 
     appendItem: function(item) {
-      this.insertItemAt(this.get('length'), item);
+      return this.insertItemAt(this.get('length'), item);
+    },
+
+    appendItems: function(items) {
+      return this.insertItemsAt(this.get('length'), items);
     },
 
     removeItem: function(item) {
       return this.get(itemsPath).removeObject(item);
     },
 
+    removeItems: function(items) {
+      return this.get(itemsPath).removeObjects(items);
+    },
+
     removeAt: function(index) {
       return this.get(itemsPath).removeAt(index);
     },
 
-    removeObject(object) {
-      return this.get(itemsPath).removeObject(object);
-    },
-
     insertItemAt: function(index, item) {
       return this.get(itemsPath).insertAt(index, item);
+    },
+
+    insertItemsAt: function(index, items) {
+      return this.get(itemsPath).replace(index, 0, items);
     },
 
     indexOf: function(item) {
@@ -48,6 +56,10 @@ export default function(options = {}) {
     },
 
     objectAt: function(index) {
+      return this.get(itemsPath).objectAt(index);
+    },
+
+    itemAt: function(index) {
       return this.get(itemsPath).objectAt(index);
     },
 

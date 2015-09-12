@@ -16,14 +16,32 @@ const MixItemFunctionsMixin = function(...modelNames) {
     let capitalizedModelName = Ember.String.capitalize(modelName);
 
     // insertItemAt
-    let insertAtFnKey = `insert${capitalizedModelName}At`;
-    mixinParams[insertAtFnKey] = function(index, model) {
+    let insertItemAtFnKey = `insert${capitalizedModelName}At`;
+    mixinParams[insertItemAtFnKey] = function(index, model) {
       return this.createItemAt(index).setModel(model);
+    };
+
+    // insertItemsAt
+    let insertItemsAtFnKey = `insert${capitalizedModelName}sAt`;
+    mixinParams[insertItemsAtFnKey] = function(index, models) {
+      let promises = [];
+
+      // synchronous for loop to ensure insertion order
+      for (let i = 0; i < models.get('length'); i++) {
+        promises.push(this[insertItemAtFnKey](index + i, models[i]));
+      }
+
+      return Ember.RSVP.all(promises);
     };
 
     // appendItem
     mixinParams[`append${capitalizedModelName}`] = function(model) {
-      return this[insertAtFnKey](this.get('index'), model);
+      return this[insertItemAtFnKey](this.get('index'), model);
+    };
+
+    // appendItems
+    mixinParams[`append${capitalizedModelName}s`] = function(model) {
+      return this[insertItemsAtFnKey](this.get('index'), model);
     };
 
     // items
@@ -75,15 +93,15 @@ export default DS.Model.extend(
     Ember.assert('Cannot assertTransitionsForItem without item', Ember.isPresent(item));
     Ember.assert('Cannot assertTransitionsForItem when item isTransition', !item.get('isTransition'));
 
-    return this.generateTransitionItemAt(item.get('index') - 1, options).then((prevTransitionItem) => {
-      return this.generateTransitionItemAt(item.get('index') + 1, options).then((nextTransitionItem) => {
+    return this.generateTransitionAt(item.get('index') - 1, options).then((prevTransitionItem) => {
+      return this.generateTransitionAt(item.get('index') + 1, options).then((nextTransitionItem) => {
         return { prevTransitionItem, nextTransitionItem };
       });
     });
   },
 
-  // generates valid transition item at given index, if possible
-  generateTransitionItemAt(index, options) {
+  // generates and returns valid transition item at given index, if possible
+  generateTransitionAt(index, options) {
     return this.get('readyPromise').then(() => {
       let prevItem = this.objectAt(index - 1);
       let nextItem = this.objectAt(index);
@@ -99,14 +117,14 @@ export default DS.Model.extend(
       } else {
         // make sure prevItem is not a transition
         if (prevItem && prevItem.get('isTransition')) {
-          this.removeObject(prevItem);
-          return this.generateTransitionItemAt(index - 1);
+          this.removeItem(prevItem);
+          return this.generateTransitionAt(index - 1);
         }
 
         // make sure nextItem is not a transition
         if (nextItem && nextItem.get('isTransition')) {
-          this.removeObject(nextItem);
-          return this.generateTransitionItemAt(index);
+          this.removeItem(nextItem);
+          return this.generateTransitionAt(index);
         }
 
         // all is well - proceed with transition generation
@@ -181,8 +199,8 @@ export default DS.Model.extend(
       let nextItem = this.objectAt(index);
       let expectedFromTrack = transition.get('fromTrack.content');
       let expectedToTrack = transition.get('toTrack.content');
-      let actualFromTrack = prevItem && prevItem.get('clipModel.content');
-      let actualToTrack = nextItem && nextItem.get('clipModel.content');
+      let actualFromTrack = prevItem && prevItem.get('model.content');
+      let actualToTrack = nextItem && nextItem.get('model.content');
 
       // insert fromTrack if not already present
       if (!actualFromTrack || actualFromTrack !== expectedFromTrack) {
