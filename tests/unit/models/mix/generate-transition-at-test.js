@@ -34,7 +34,7 @@ describe('MixModel#generateTransitionAt', function() {
 
     andThen(() => {
       expect(result).not.to.be.ok;
-    })
+    });
   });
 
   describe('with one mixable', function() {

@@ -11,6 +11,9 @@ import { copyInPlace } from 'linx/lib/utils';
 export default DS.Model.extend(
   ReadinessMixin('isArrangementReady'), {
 
+  // fake title to make sure arrangement saves
+  title: DS.attr('string', { defaultValue: 'placeholder title' }),
+
   // TODO(POLYMORPHISM)
   trackClips: DS.hasMany('track-clip', { async: true }),
   transitionClips: DS.hasMany('transition-clip', { async: true }),

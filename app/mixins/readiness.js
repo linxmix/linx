@@ -34,12 +34,14 @@ export default function(propertyPath) {
     isReady: false,
 
     _didBecomeReady: function() {
-      if (this.get('isReady')) {
-        this.trigger('didBecomeReady');
-      }
+      Ember.run.once(() => {
+        if (this.get('isReady')) {
+          this.trigger('didBecomeReady');
+        }
+      });
     }.observes('isReady'),
 
-    readyPromise: Ember.computed(function() {
+    readyPromise: Ember.computed('isReady', function() {
       return new Ember.RSVP.Promise((resolve, reject) => {
         if (this.get('isReady')) {
           resolve(this);

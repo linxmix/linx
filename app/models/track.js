@@ -3,8 +3,10 @@ import DS from 'ember-data';
 import withDefaultModel from 'linx/lib/computed/with-default-model';
 
 import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
+import ReadinessMixin from 'linx/mixins/readiness';
 
 export default DS.Model.extend(
+  ReadinessMixin('isTrackReady'),
   DependentRelationshipMixin('audioMeta'), {
 
   title: DS.attr('string'),
@@ -23,6 +25,9 @@ export default DS.Model.extend(
   audioMeta: withDefaultModel('_audioMeta', function() {
     return this.fetchAudioMeta();
   }),
+
+  // implement readiness
+  isTrackReady: Ember.computed.reads('audioMeta.isReady'),
 
   // injected by app
   echonest: null,

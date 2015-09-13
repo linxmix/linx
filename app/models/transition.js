@@ -18,7 +18,6 @@ export default DS.Model.extend(
   ReadinessMixin('isTransitionReady'), {
 
   title: DS.attr('string'),
-  isTemplate: DS.attr('boolean'),
 
   isTransitionReady: Ember.computed.and('fromTrack.isReady', 'toTrack.isReady'),
 
@@ -49,7 +48,9 @@ export default DS.Model.extend(
 
   _arrangement: DS.belongsTo('arrangement', { async: true }),
   arrangement: withDefaultModel('_arrangement', function() {
-    let arrangement = this.get('store').createRecord('arrangement');
+    let arrangement = this.get('store').createRecord('arrangement', {
+      title: 'test title'
+    });
     return arrangement;
   }),
 

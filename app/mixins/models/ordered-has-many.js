@@ -122,5 +122,4 @@ export default function(options = {}) {
   });
 
   return Ember.Mixin.create(DependentRelationshipMixin(itemsPath), ReadinessMixin(readinessKey), mixinParams);
-  // return Ember.Mixin.create(DependentRelationshipMixin(itemsPath), mixinParams);
 }

@@ -14,4 +14,3 @@ export default Clip.extend(
   // params
   foo: 'bar',
 });
-

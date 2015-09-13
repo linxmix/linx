@@ -1,6 +1,10 @@
 import Ember from 'ember';
 import DS from 'ember-data';
+
 import _ from 'npm:underscore';
+
+import ReadinessMixin from 'linx/mixins/readiness';
+import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 
 import { timeToBeat } from 'linx/lib/utils';
 import add from 'linx/lib/computed/add';
@@ -15,7 +19,10 @@ import {
 
 export const BEAT_LEAD_TIME = 0.5;
 
-export default DS.Model.extend({
+export default DS.Model.extend(
+  ReadinessMixin('isAudioMetaReady'),
+  DependentRelationshipMixin('markers'), {
+
   duration: DS.attr('number'),
   bpm: DS.attr('number'),
   timeSignature: DS.attr('number'),
@@ -70,9 +77,15 @@ export default DS.Model.extend({
     });
   },
 
+  // implement readiness
+  isAudioMetaReady: Ember.computed.not('isProcessingAnalysis'),
+
   // Updates audio-meta based on the given EchonestTrack.Analysis
   // Returns a promise which resolves into this model
+  isProcessingAnalysis: false,
   processAnalysis: function(analysis) {
+    this.set('isProcessingAnalysis', true);
+
     var markerParams = [];
 
     // add start and end beat markers
@@ -136,7 +149,10 @@ export default DS.Model.extend({
           loudness: analysis.get('loudness'),
         });
 
-        return this.save();
+        return this.save().then(() => {
+          this.set('isProcessingAnalysis', false);
+          return this;
+        });
     // });
     });
 

@@ -106,7 +106,6 @@ export default DS.Model.extend(
 
   // generates and returns valid transition item at given index, if possible
   generateTransitionAt(index, options) {
-    console.log("generateTransitionAt", index);
     return this.get('readyPromise').then(() => {
       let prevItem = this.itemAt(index - 1);
       let nextItem = this.itemAt(index);
@@ -134,7 +133,9 @@ export default DS.Model.extend(
 
         // all is well - proceed with transition generation
         return this.generateTransitionFromClips(prevItem.get('clip'), nextItem.get('clip'), options).then((transition) => {
-          return this.insertTransitionAt(index, transition);
+          return transition.save().then(() => {
+            return this.insertTransitionAt(index, transition);
+          });
         });
       }
     });
@@ -166,7 +167,14 @@ export default DS.Model.extend(
   generateTransitionFromTracks(fromTrack, toTrack, options = {}) {
     Ember.assert('Must have fromTrack and toTrack to generateTransitionFromTracks', Ember.isPresent(fromTrack) && Ember.isPresent(toTrack));
 
-    return this.get('readyPromise').then(() => {
+    console.log("generateTransitionFromTracks", fromTrack, toTrack);
+
+    return Ember.RSVP.all([
+      this.get('readyPromise'),
+      fromTrack.get('readyPromise'),
+      toTrack.get('readyPromise'),
+    ]).then(() => {
+
       let {
         preset,
         minFromTrackEndBeat,

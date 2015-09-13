@@ -83,6 +83,7 @@ export default function(propertyPath) {
           });
         });
       } else {
+        console.log("save master model", this.constructor.modelName);
         return this._super.apply(this, arguments);
       }
     },
