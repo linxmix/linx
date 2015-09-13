@@ -63,6 +63,10 @@ export default function(options = {}) {
       return this.get(itemsPath).objectAt(index);
     },
 
+    containsItem: function(item) {
+      return this.get(itemsPath).contains(item);
+    },
+
     // swaps position of items
     swapItems: function(itemA, itemB) {
       return this.swap(this.indexOf(itemA), this.indexOf(itemB));

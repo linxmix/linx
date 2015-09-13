@@ -71,7 +71,7 @@ export default DS.Model.extend(
   }),
 
   // implement readiness mixin
-  isMixReady: Ember.computed.bool('arrangement.isReady'),
+  isMixReady: Ember.computed.bool('arrangement.content'),
 
   appendTrackWithTransition(track) {
     return this.insertTrackAtWithTransitions(this.get('length'), track);
@@ -103,8 +103,8 @@ export default DS.Model.extend(
   // generates and returns valid transition item at given index, if possible
   generateTransitionAt(index, options) {
     return this.get('readyPromise').then(() => {
-      let prevItem = this.objectAt(index - 1);
-      let nextItem = this.objectAt(index);
+      let prevItem = this.itemAt(index - 1);
+      let nextItem = this.itemAt(index);
 
       // cannot make transition without prevItem and nextItem
       if (!(prevItem && nextItem)) {
@@ -195,8 +195,8 @@ export default DS.Model.extend(
 
   insertTransitionAtWithTracks(index, transition) {
     return this.get('readyPromise').then(() => {
-      let prevItem = this.objectAt(index - 1);
-      let nextItem = this.objectAt(index);
+      let prevItem = this.itemAt(index - 1);
+      let nextItem = this.itemAt(index);
       let expectedFromTrack = transition.get('fromTrack.content');
       let expectedToTrack = transition.get('toTrack.content');
       let actualFromTrack = prevItem && prevItem.get('model.content');

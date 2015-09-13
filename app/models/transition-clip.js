@@ -2,12 +2,14 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import ArrangementClip from './arrangement-clip';
+import MixableClipMixin from 'linx/mixins/models/mixable-clip';
 
 import { isNumber } from 'linx/lib/utils';
 import equalProps from 'linx/lib/computed/equal-props';
 import subtract from 'linx/lib/computed/subtract';
 
-export default ArrangementClip.extend({
+export default ArrangementClip.extend(
+  MixableClipMixin, {
   // type: 'transition-clip',
 
   // implementing Clip
@@ -18,9 +20,12 @@ export default ArrangementClip.extend({
   // implementing arrangementClip
   nestedArrangement: Ember.computed.reads('transition.arrangement'),
 
+  // implementing mixable clip
+  model: DS.belongsTo('transition', { async: true }),
+  isMixable: false,
+
   // transition-clip specific
   // TODO(TRANSITION)
-  model: DS.belongsTo('transition', { async: true }),
   transition: Ember.computed.alias('model'),
   fromClip: Ember.computed.reads('prevClip'),
   toClip: Ember.computed.reads('nextClip'),

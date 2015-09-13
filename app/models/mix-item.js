@@ -39,7 +39,7 @@ export default DS.Model.extend(
 
   isTrack: Ember.computed.equal('modelName', 'track'),
   isTransition: Ember.computed.equal('modelName', 'transition'),
-  isValidTransition: Ember.computed.and('isTransition', 'clip.isValidTransition'),
+  isValidTransition: Ember.computed.and('isTransition', 'clip.isValid'),
   isMix: Ember.computed.equal('modelName', 'mix'),
 
   setModel(model) {
