@@ -70,6 +70,10 @@ export default DS.Model.extend(
     return arrangement;
   }),
 
+  modelAt(index) {
+    return this.itemAt(index).get('model.content');
+  },
+
   // implement readiness mixin
   isMixReady: Ember.computed.bool('arrangement.content'),
 

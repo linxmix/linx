@@ -62,93 +62,65 @@ describe('MixModel#insertTransitionAtWithTracks', function() {
     });
   });
 
-  describe.skip('appendTransitionWithTracks when matches fromTrack', function() {
-    let fromTrack, transition, toTrack;
+  describe('when matches fromTrack', function() {
+    let trackItem;
 
     beforeEach(function() {
-      fromTrack = makeTrack.call(this);
-
-      let results = makeTransition.call(this, {
-        fromTrack: fromTrack
-      });
-
-      transition = results.transition;
-      toTrack = results.toTrack;
-
-      Ember.run(function() {
-        wait(mix.appendTrack(fromTrack));
-        wait(mix.appendTransitionWithTracks(transition));
-      });
-    });
-
-    describeAttrs('mix', {
-      subject() { return mix; },
-      length: 2,
-      'numTracks': 2,
-      'numTransitions': 1,
-    });
-
-    it('puts transition in correct place', function() {
-      expect(mix.transitionAt(0)).to.equal(transition);
-    });
-
-    it('retains current fromTrack', function() {
-      expect(mix.trackAt(0)).to.equal(fromTrack);
-    });
-
-    it('adds toTrack', function() {
-      expect(mix.trackAt(1)).to.equal(toTrack);
-    });
-
-    it('added valid transition', function() {
-      expect(mix.objectAt(0).get('hasValidTransition')).to.be.true;
-    });
-  });
-
-  describe.skip('appendTransitionWithTracks when does not match fromTrack', function() {
-    let track, fromTrack, transition, toTrack;
-
-    beforeEach(function() {
-      track = makeTrack.call(this);
-
-      let results = makeTransition.call(this);
-      fromTrack = results.fromTrack;
-      transition = results.transition;
-      toTrack = results.toTrack;
-
-      Ember.run(function() {
-        wait(mix.appendTrack(track));
-        wait(mix.appendTransitionWithTracks(transition));
+      Ember.run(() => {
+        wait(mix.appendTrack(fromTrack).then((_trackItem) => {
+          trackItem = _trackItem;
+          return mix.insertTransitionAtWithTracks(1, transition);
+        }));
       });
     });
 
     describeAttrs('mix', {
       subject() { return mix; },
       length: 3,
-      'numTracks': 3,
-      'numTransitions': 1,
+      'trackItems.length': 2,
+      'transitionItems.length': 1,
     });
 
-    it('puts transition in correct place', function() {
-      expect(mix.transitionAt(1)).to.equal(transition);
-    });
-
-    it('retains track', function() {
-      expect(mix.trackAt(0)).to.equal(track);
-      expect(track).not.to.equal(fromTrack);
-    });
-
-    it('adds fromTrack', function() {
-      expect(mix.trackAt(1)).to.equal(fromTrack);
-    });
-
-    it('adds toTrack', function() {
-      expect(mix.trackAt(2)).to.equal(toTrack);
-    });
-
-    it('added valid transition', function() {
-      expect(mix.objectAt(1).get('hasValidTransition')).to.be.true;
+    it('retains existing trackItem', function() {
+      expect(mix.itemAt(0)).to.equal(trackItem);
     });
   });
 
+  describe('when does not match fromTrack', function() {
+    let otherTrack, otherTrackItem;
+
+    beforeEach(function() {
+      otherTrack = makeTrack.call(this);
+
+      Ember.run(() => {
+        wait(mix.appendTrack(otherTrack).then((_otherTrackItem) => {
+          otherTrackItem = _otherTrackItem;
+          return mix.insertTransitionAtWithTracks(1, transition);
+        }));
+      });
+    });
+
+    describeAttrs('mix', {
+      subject() { return mix; },
+      length: 4,
+      'trackItems.length': 3,
+      'transitionItems.length': 1,
+    });
+
+    it('retains existing otherTrackItem', function() {
+      expect(mix.itemAt(0)).to.equal(otherTrackItem);
+    });
+
+    it('adds fromTrack to correct place', function() {
+      expect(mix.modelAt(1)).to.equal(fromTrack);
+    });
+
+    it('adds transition to correct place', function() {
+      expect(mix.modelAt(2)).to.equal(transition);
+    });
+
+    it('adds toTrack to correct place', function() {
+      expect(mix.modelAt(3)).to.equal(toTrack);
+    });
+  });
 });
