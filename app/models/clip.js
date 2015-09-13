@@ -43,5 +43,7 @@ export default DS.Model.extend(
   // isClipReady: Ember.computed.and('isValidStartBeat', 'isValidEndBeat', 'isValidNumBeats'),
   isClipReady: Ember.computed(function() { return true; } ),
 
-  modelName: Ember.computed.reads('constructor.modelName'),
+  modelName: function() {
+    return this.constructor.modelName;
+  }.property()
 });

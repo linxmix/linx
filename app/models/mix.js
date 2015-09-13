@@ -98,7 +98,7 @@ export default DS.Model.extend(
     Ember.assert('Cannot assertTransitionsForItem when item isTransition', !item.get('isTransition'));
 
     return this.generateTransitionAt(item.get('index') - 1, options).then((prevTransitionItem) => {
-      return this.generateTransitionAt(item.get('index') + 1, options).then((nextTransitionItem) => {
+      return this.generateTransitionAt(item.get('index'), options).then((nextTransitionItem) => {
         return { prevTransitionItem, nextTransitionItem };
       });
     });
@@ -106,6 +106,7 @@ export default DS.Model.extend(
 
   // generates and returns valid transition item at given index, if possible
   generateTransitionAt(index, options) {
+    console.log("generateTransitionAt", index);
     return this.get('readyPromise').then(() => {
       let prevItem = this.itemAt(index - 1);
       let nextItem = this.itemAt(index);
