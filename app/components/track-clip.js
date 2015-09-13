@@ -1,18 +1,23 @@
 import Ember from 'ember';
+
+import _ from 'npm:underscore';
+
 import RequireAttributes from 'linx/lib/require-attributes';
+import Clip from './clip';
+
 import cssStyle from 'linx/lib/computed/css-style';
 import add from 'linx/lib/computed/add';
 import { flatten, beatToTime } from 'linx/lib/utils';
-import _ from 'npm:underscore';
 
-export default Ember.Component.extend(
-  RequireAttributes('clip', 'pxPerBeat'), {
+export default Clip.extend({
+  actions: {
+    waveDidLoad: function() {
+      this.get('clip').set('isAudioLoaded', true);
+    },
+  },
 
   // optional params
   disableMouseInteraction: true,
-  syncBpm: null,
-  isPlaying: false,
-  seekBeat: 0,
 
   classNames: ['TrackClip'],
 
@@ -20,18 +25,12 @@ export default Ember.Component.extend(
     'left': 'startPx',
   }),
 
-  actions: {
-    waveDidLoad: function() {
-      this.get('clip').set('isAudioLoaded', true);
-    },
-  },
-
   startPx: function() {
     return (this.get('clip.clipStartBeat') * this.get('pxPerBeat')) + 'px';
   }.property('clip.clipStartBeat', 'pxPerBeat'),
 
   // params
-  track: Ember.computed.reads('clip.track'),
+  track: Ember.computed.reads('model'),
   audioStartTime: Ember.computed.reads('clip.audioStartTime'),
   audioEndTime: Ember.computed.reads('clip.audioEndTime'),
   audioBpm: Ember.computed.reads('track.audioMeta.bpm'),

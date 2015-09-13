@@ -9,8 +9,6 @@ $site-nav-height: 35px;
 
 @import 'components/arrangement-grid';
 @import 'components/arrangement-row';
-@import 'components/lx-clip';
-@import 'components/track-clip';
 @import 'components/simple-arrangement';
 
 @import 'components/track-full';
@@ -23,3 +21,7 @@ $site-nav-height: 35px;
 @import 'components/mix-list-item';
 @import 'components/mixes-list';
 @import 'components/mixes-list-item';
+@import 'components/lx-clip';
+@import 'components/clip';
+@import 'components/track-clip';
+@import 'components/transition-clip';
