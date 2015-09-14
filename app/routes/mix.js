@@ -52,18 +52,6 @@ export default Ember.Route.extend({
     },
   },
 
-  setupController: function(controller, model) {
-    // TODO(AFTERPROMISE): just use promise array
-    this.get('store').findAll('track').then((tracks) => {
-      controller.set('searchTracks', tracks);
-    });
-    this.get('store').findAll('transition').then((transitions) => {
-      controller.set('searchTransitions', transitions);
-    });
-
-    this._super.apply(this, arguments);
-  },
-
   model: function(params) {
     return this.get('store').find('mix', params.id).then((mix) => {
       return mix;

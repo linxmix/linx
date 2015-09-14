@@ -1,37 +1,44 @@
 import Ember from 'ember';
 
-export default Ember.Component.extend({
+import RequireAttributes from 'linx/lib/require-attributes';
+
+export default Ember.Component.extend(
+  RequireAttributes('tracksPromise'), {
 
   classNames: ['SearchTracks'],
 
   // expected params
-  tracks: null,
+  tracksPromise: null,
 
   // params
-  isReady: Ember.computed.bool('tracks'),
+  isReady: Ember.computed.not('tracksPromise.isPending'),
 
   initSearch: function() {
-    var tracks = this.get('tracks');
+    let tracksPromise = this.get('tracksPromise');
 
-    if (!tracks) { return; }
+    tracksPromise.then((tracks) => {
+      let source = tracks.map((track) => {
+        return {
+          title: track.get('title'),
+          description: track.get('artist'),
+          track: track
+        };
+      });
+      let searchFields = ['title', 'artist'];
+      let $search = this.$('.search');
 
-    var source = tracks.map(function(track) {
-      return {
-        title: track.get('title'),
-        description: track.get('artist'),
-        track: track
-      };
+      // destroy prev search
+      $search.search('destroy');
+
+      // setup semantic search module
+      // TODO: make this use API?
+      $search.search({
+        source: source,
+        searchFields: searchFields,
+        onSelect: (trackWrapper) => {
+          this.sendAction('action', trackWrapper.track);
+        }
+      });
     });
-    var searchFields = ['title', 'artist'];
-
-    // setup semantic search module
-    // TODO: make this use API?
-    this.$('.search').search({
-      source: source,
-      searchFields: searchFields,
-      onSelect: (trackWrapper) => {
-        this.sendAction('action', trackWrapper.track);
-      }
-    });
-  }.on('didInsertElement').observes('tracks.[]'),
+  }.on('didInsertElement').observes('tracksPromise.[]'),
 });
