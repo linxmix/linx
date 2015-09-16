@@ -22,14 +22,14 @@ export const OrderedHasManyProxy = Ember.ArrayProxy.extend(
   // updating item orders appropriately
   replaceContent(index, amount, objectsToAdd) {
     if (index > Ember.get(this, 'content.length')) {
-      throw new EmberError(OUT_OF_RANGE_EXCEPTION);
+      throw new Ember.Error(OUT_OF_RANGE_EXCEPTION);
     }
 
     let hasManyContent = this.get('hasMany.content');
 
-    // first remove objects based on sortedContent
+    // remove objects based on sortedContent
     let sortedContent = this.get('content');
-    let objectsToRemove = sortedContent.slice(index, amount);
+    let objectsToRemove = sortedContent.slice(index, index + amount);
     hasManyContent.removeObjects(objectsToRemove);
 
     // then update object orders

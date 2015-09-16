@@ -82,7 +82,7 @@ describe('MixModel#insertTransitionAtWithTracks', function() {
     });
 
     it('retains existing trackItem', function() {
-      expect(mix.itemAt(0)).to.equal(trackItem);
+      expect(mix.objectAt(0)).to.equal(trackItem);
     });
   });
 
@@ -108,7 +108,7 @@ describe('MixModel#insertTransitionAtWithTracks', function() {
     });
 
     it('retains existing otherTrackItem', function() {
-      expect(mix.itemAt(0)).to.equal(otherTrackItem);
+      expect(mix.objectAt(0)).to.equal(otherTrackItem);
     });
 
     it('adds fromTrack to correct place', function() {

@@ -105,8 +105,8 @@ function describeItemOperations(modelName, createModelFn) {
     });
 
     it('adds models in order', function() {
-      expect(this.mix.itemAt(0).get('model.content')).to.equal(model0);
-      expect(this.mix.itemAt(1).get('model.content')).to.equal(model1);
+      expect(this.mix.modelAt(0)).to.equal(model0);
+      expect(this.mix.modelAt(1)).to.equal(model1);
     });
   });
 }

@@ -94,35 +94,47 @@ describe('OrderedHasManyMixin', function() {
       });
     });
 
-    it('has correct length', function() {
+    it.skip('has correct length', function() {
       expect(list.get('length')).to.equal(2);
     });
 
-    it('items have correct indices', function() {
+    it.skip('items have correct indices', function() {
       expect(itemA.get('index')).to.equal(0);
       expect(itemB.get('index')).to.equal(1);
     });
 
-    it('items have correct prevItem', function() {
+    it.skip('items have correct prevItem', function() {
       expect(itemA.get('prevItem')).to.not.be.ok;
       expect(itemB.get('prevItem')).to.equal(itemA);
     });
 
-    it('items have correct nextItem', function() {
+    it.skip('items have correct nextItem', function() {
       expect(itemA.get('nextItem')).to.equal(itemB);
       expect(itemB.get('nextItem')).to.not.be.ok;
     });
 
-    it('can swap items', function() {
+    it.skip('can swap items', function() {
       list.swap(itemA, itemB);
       expect(itemA.get('index')).to.equal(1);
       expect(itemB.get('index')).to.equal(0);
     });
 
-    it('can swap items by index', function() {
+    it.skip('can swap items by index', function() {
       list.swapIndices(0, 1);
       expect(itemA.get('index')).to.equal(1);
       expect(itemB.get('index')).to.equal(0);
+    });
+
+    it('can remove second item', function() {
+      Ember.run(() => {
+        wait(list.removeAt(1));
+      });
+
+      andThen(() => {
+        expect(list.get('length')).to.equal(1);
+        expect(list.contains(itemA)).to.be.true;
+        expect(list.contains(itemB)).to.be.false;
+      });
     });
   });
 
@@ -132,11 +144,8 @@ describe('OrderedHasManyMixin', function() {
     beforeEach(function() {
       Ember.run(() => {
         itemA = list.createAndAppend();
-        console.log("appended a", itemA.get('order'));
         itemB = list.createAndAppend();
-        console.log("appended b", itemB.get('order'));
         itemC = list.createAndAppend();
-        console.log("appended c", itemC.get('order'));
       });
     });
 

@@ -33,7 +33,7 @@
   <hr/>
 
   {{#mix-list mix=model}}
-    {{#each model.sortedItems as |item|}}
+    {{#each model.items as |item|}}
       {{mix-list-item
         item=item
         remove="removeItem"

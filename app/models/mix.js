@@ -71,7 +71,7 @@ export default DS.Model.extend(
   }),
 
   modelAt(index) {
-    return this.itemAt(index).get('model.content');
+    return this.objectAt(index).get('model.content');
   },
 
   // implement readiness mixin
@@ -107,8 +107,8 @@ export default DS.Model.extend(
   // generates and returns valid transition item at given index, if possible
   generateTransitionAt(index, options) {
     return this.get('readyPromise').then(() => {
-      let prevItem = this.itemAt(index - 1);
-      let nextItem = this.itemAt(index);
+      let prevItem = this.objectAt(index - 1);
+      let nextItem = this.objectAt(index);
 
       // cannot make transition without prevItem and nextItem
       if (!(prevItem && nextItem)) {
@@ -208,8 +208,8 @@ export default DS.Model.extend(
 
   insertTransitionAtWithTracks(index, transition) {
     return this.get('readyPromise').then(() => {
-      let prevItem = this.itemAt(index - 1);
-      let nextItem = this.itemAt(index);
+      let prevItem = this.objectAt(index - 1);
+      let nextItem = this.objectAt(index);
       let expectedFromTrack = transition.get('fromTrack.content');
       let expectedToTrack = transition.get('toTrack.content');
       let actualFromTrack = prevItem && prevItem.get('model.content');

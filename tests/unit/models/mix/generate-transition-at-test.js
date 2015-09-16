@@ -53,7 +53,7 @@ describe('MixModel#generateTransitionAt', function() {
 
       andThen(() => {
         expect(mix.get('length')).to.equal(1);
-        expect(mix.itemAt(0).get('model.content')).to.equal(track);
+        expect(mix.modelAt(0)).to.equal(track);
       });
     });
 
@@ -62,7 +62,7 @@ describe('MixModel#generateTransitionAt', function() {
 
       andThen(() => {
         expect(mix.get('length')).to.equal(1);
-        expect(mix.itemAt(0).get('model.content')).to.equal(track);
+        expect(mix.modelAt(0)).to.equal(track);
       });
     });
   });
@@ -92,15 +92,15 @@ describe('MixModel#generateTransitionAt', function() {
     });
 
     it('inserts transitionItem between the mixables', function() {
-      expect(mix.itemAt(1)).to.equal(transitionItem);
+      expect(mix.objectAt(1)).to.equal(transitionItem);
     });
 
     it('fromTrack is in correct place', function() {
-      expect(mix.itemAt(0).get('model.content')).to.equal(fromTrack);
+      expect(mix.modelAt(0)).to.equal(fromTrack);
     });
 
     it('toTrack is in correct place', function() {
-      expect(mix.itemAt(2).get('model.content')).to.equal(toTrack);
+      expect(mix.modelAt(2)).to.equal(toTrack);
     });
 
     it('mix has correct length', function() {
@@ -151,11 +151,11 @@ describe('MixModel#generateTransitionAt', function() {
     });
 
     it('removes invalid prevItem', function() {
-      expect(mix.containsItem(invalidPrevItem)).to.be.false;
+      expect(mix.contains(invalidPrevItem)).to.be.false;
     });
 
     it('removes invalid nextItem', function() {
-      expect(mix.containsItem(invalidNextItem)).to.be.false;
+      expect(mix.contains(invalidNextItem)).to.be.false;
     });
   });
 });
