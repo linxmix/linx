@@ -9,6 +9,8 @@ export default function(listPropertyPath) {
   let mixinParams = {
     _items: withDefault(`${listPropertyPath}.items`, []),
 
+    order: DS.attr('number'),
+
     index: function() {
       let items = this.get('_items');
       return items.indexOf(this);
@@ -43,7 +45,7 @@ export default function(listPropertyPath) {
     destroyRecord: function() {
       // remove from list before destroying
       try {
-        this.get('_items').removeAt(this.get('index'));
+        this.get(listPropertyPath).removeObject(this);
       } catch (e) {
       }
 

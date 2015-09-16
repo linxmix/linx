@@ -3,8 +3,8 @@ import OrderedHasManyMixin from 'linx/mixins/models/ordered-has-many';
 
 // Model exists solely for testing
 export default DS.Model.extend(
-  OrderedHasManyMixin({ itemModelName: 'ordered-has-many-item', itemsPath: 'items' }), {
+  OrderedHasManyMixin('orderedHasManyItems', 'ordered-has-many-item'), {
 
   title: DS.attr('string'),
-  items: DS.hasMany('ordered-has-many-item', { async: true }),
+  orderedHasManyItems: DS.hasMany('ordered-has-many-item', { async: true }),
 });

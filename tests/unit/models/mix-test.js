@@ -76,7 +76,7 @@ function describeItemOperations(modelName, createModelFn) {
 
     it('can then remove item', function() {
       Ember.run(() => {
-        wait(this.mix.removeItem(item));
+        wait(this.mix.removeObject(item));
       });
 
       andThen(() => {

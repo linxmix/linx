@@ -18,7 +18,7 @@ const MixItemFunctionsMixin = function(...modelNames) {
     // insertItemAt
     let insertItemAtFnKey = `insert${capitalizedModelName}At`;
     mixinParams[insertItemAtFnKey] = function(index, model) {
-      return this.createItemAt(index).setModel(model);
+      return this.createAt(index).setModel(model);
     };
 
     // insertItemsAt
@@ -59,10 +59,10 @@ export default DS.Model.extend(
   ReadinessMixin('isMixReady'),
   MixItemFunctionsMixin('track', 'transition', 'mix'), // TODO(POLYMORPHISM)
   DependentRelationshipMixin('arrangement'),
-  OrderedHasManyMixin({ itemModelName: 'mix-item', itemsPath: 'items' }), {
+  OrderedHasManyMixin('mixItems', 'mix-item'), {
 
   title: DS.attr('string'),
-  items: DS.hasMany('mix-item', { async: true, defaultValue: () => [] }),
+  mixItems: DS.hasMany('mix-item', { async: true, defaultValue: () => [] }),
 
   _arrangement: DS.belongsTo('arrangement', { async: true }),
   arrangement: withDefaultModel('_arrangement', function() {
@@ -121,13 +121,13 @@ export default DS.Model.extend(
       } else {
         // make sure prevItem is not a transition
         if (prevItem && prevItem.get('isTransition')) {
-          this.removeItem(prevItem);
+          this.removeObject(prevItem);
           return this.generateTransitionAt(index - 1);
         }
 
         // make sure nextItem is not a transition
         if (nextItem && nextItem.get('isTransition')) {
-          this.removeItem(nextItem);
+          this.removeObject(nextItem);
           return this.generateTransitionAt(index);
         }
 

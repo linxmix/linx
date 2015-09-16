@@ -20,6 +20,7 @@ export default function() {
   beforeEach(function(done) {
     // TODO(DBSTUB)
     // reset firebase
+    this.timeout(5000);
     this.container.lookup('service:firebase').remove(done);
   });
 }

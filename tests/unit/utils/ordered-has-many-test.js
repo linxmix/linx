@@ -24,6 +24,24 @@ describe('OrderedHasManyMixin', function() {
     });
   });
 
+  describe('list.items#_getOrder', function() {
+    it('returns correct order with no prevOrder or nextOrder', function() {
+      expect(list.get('items')._getOrder()).to.equal(1);
+    });
+
+    it('returns correct order with prevOrder', function() {
+      expect(list.get('items')._getOrder(1)).to.equal(2);
+    });
+
+    it('returns correct order with nextOrder', function() {
+      expect(list.get('items')._getOrder(null, 2)).to.equal(1);
+    });
+
+    it('returns correct order with prevOrder and nextOrder', function() {
+      expect(list.get('items')._getOrder(1, 2)).to.equal(1.5);
+    });
+  });
+
   describe('operations with one item', function() {
     let item;
 
@@ -37,6 +55,10 @@ describe('OrderedHasManyMixin', function() {
       expect(list.get('isNew')).to.be.true;
     });
 
+    it('list has correct length', function() {
+      expect(list.get('length')).to.equal(1);
+    });
+
     it('can add item', function() {
       expect(list.objectAt(0)).to.equal(item);
     });
@@ -45,20 +67,16 @@ describe('OrderedHasManyMixin', function() {
       expect(item.get('isNew')).to.be.true;
     });
 
-    it('item has correct index', function() {
-      expect(item.get('index')).to.equal(0);
-    });
-
     it('item has reference to list', function() {
       expect(item.get('list.content')).to.equal(list);
     });
 
-    it('has correct length', function() {
-      expect(list.get('length')).to.equal(1);
+    it('item has correct index', function() {
+      expect(item.get('index')).to.equal(0);
     });
 
     it('can remove item', function() {
-      list.removeItem(item);
+      list.removeObject(item);
       expect(list.get('length')).to.equal(0);
       expect(list.objectAt(0)).not.to.equal(item);
     });
@@ -96,13 +114,13 @@ describe('OrderedHasManyMixin', function() {
     });
 
     it('can swap items', function() {
-      list.swapItems(itemA, itemB);
+      list.swap(itemA, itemB);
       expect(itemA.get('index')).to.equal(1);
       expect(itemB.get('index')).to.equal(0);
     });
 
     it('can swap items by index', function() {
-      list.swap(0, 1);
+      list.swapIndices(0, 1);
       expect(itemA.get('index')).to.equal(1);
       expect(itemB.get('index')).to.equal(0);
     });
@@ -114,27 +132,30 @@ describe('OrderedHasManyMixin', function() {
     beforeEach(function() {
       Ember.run(() => {
         itemA = list.createAndAppend();
+        console.log("appended a", itemA.get('order'));
         itemB = list.createAndAppend();
+        console.log("appended b", itemB.get('order'));
         itemC = list.createAndAppend();
+        console.log("appended c", itemC.get('order'));
       });
     });
 
     it('swap first two items does not affect third', function() {
-      list.swap(0, 1);
+      list.swapIndices(0, 1);
       expect(itemA.get('index')).to.equal(1);
       expect(itemB.get('index')).to.equal(0);
       expect(itemC.get('index')).to.equal(2);
     });
 
     it('swap middle two items does not affect third', function() {
-      list.swap(1, 2);
+      list.swapIndices(1, 2);
       expect(itemA.get('index')).to.equal(0);
       expect(itemB.get('index')).to.equal(2);
       expect(itemC.get('index')).to.equal(1);
     });
 
     it('swap last two items does not affect third', function() {
-      list.swap(2, 0);
+      list.swapIndices(2, 0);
       expect(itemA.get('index')).to.equal(2);
       expect(itemB.get('index')).to.equal(1);
       expect(itemC.get('index')).to.equal(0);
@@ -251,7 +272,7 @@ describe('OrderedHasManyMixin', function() {
         Ember.run(() => {
           itemA = list.createAndAppend();
           itemB = list.createAndAppend();
-          list.swapItems(itemA, itemB);
+          list.swap(itemA, itemB);
 
           saveList(list, done);
         });

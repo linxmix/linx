@@ -48,7 +48,7 @@ export default Ember.Route.extend({
 
     removeItem(mixItem) {
       var mix = this.get('controller.model');
-      mix.removeItem(mixItem);
+      mix.removeObject(mixItem);
     },
   },
 
