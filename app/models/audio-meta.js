@@ -99,20 +99,20 @@ export default DS.Model.extend(
     });
 
     // add bar markers
-    // markerParams = markerParams.concat(analysis.get('confidentBars').map((bar) => {
-    //   return {
-    //     type: BAR_MARKER_TYPE,
-    //     start: bar.get('start'),
-    //   };
-    // }));
+    markerParams = markerParams.concat(analysis.get('confidentBars').map((bar) => {
+      return {
+        type: BAR_MARKER_TYPE,
+        start: bar.get('start'),
+      };
+    }));
 
     // add section markers
-    // markerParams = markerParams.concat(analysis.get('confidentSections').map((section) => {
-    //   return {
-    //     type: SECTION_MARKER_TYPE,
-    //     start: section.get('start'),
-    //   };
-    // }));
+    markerParams = markerParams.concat(analysis.get('confidentSections').map((section) => {
+      return {
+        type: SECTION_MARKER_TYPE,
+        start: section.get('start'),
+      };
+    }));
 
     // add fadeIn and fadeOut markers
     markerParams.push({

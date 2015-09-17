@@ -64,4 +64,10 @@ export default Clip.extend({
       return markerStart >= audioStartTime && markerStart <= audioEndTime;
     });
   }.property('audioStartTime', 'audioEndTime', 'markers.@each.start'),
+
+  markerOptions: Ember.computed('visibleMarkers', function() {
+    return {
+      visibleMarkers: this.get('visibleMarkers')
+    };
+  }),
 });

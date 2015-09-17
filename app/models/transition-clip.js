@@ -10,11 +10,10 @@ import subtract from 'linx/lib/computed/subtract';
 
 export default ArrangementClip.extend(
   MixableClipMixin, {
-  // type: 'transition-clip',
 
   // implementing Clip
   startBeat: subtract('prevClip.endBeat', 'numBeats'), // overlap
-  numBeats: 8,
+  numBeats: 16,
   // numBeats: Ember.computed.reads('transition.numBeats'), // TODO(TRANSITION)
   isValid: Ember.computed.and('hasTransition', 'timesAreValid', 'fromTrackIsValid', 'toTrackIsValid'),
 
