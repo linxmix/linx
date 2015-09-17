@@ -133,8 +133,10 @@ export default DS.Model.extend(
 
         // all is well - proceed with transition generation
         return this.generateTransitionFromClips(prevItem.get('clip'), nextItem.get('clip'), options).then((transition) => {
-          return transition.save().then(() => {
-            return this.insertTransitionAt(index, transition);
+          return transition.get('readyPromise').then(() => {
+            transition.save().then(() => {
+              return this.insertTransitionAt(index, transition);
+            });
           });
         });
       }

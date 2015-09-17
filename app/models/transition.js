@@ -75,4 +75,17 @@ export default DS.Model.extend(
       return marker;
     });
   },
+
+  // create partial mix with fromTrack, transition, toTrack
+  generateMix() {
+    return DS.PromiseObject.create({
+      promise: this.get('readyPromise').then(() => {
+        let mix = this.get('store').createRecord('mix');
+
+        return mix.appendTransitionWithTracks(this).then(() => {
+          return mix;
+        });
+      }),
+    });
+  },
 });
