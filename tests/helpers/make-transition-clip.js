@@ -36,8 +36,6 @@ export default function(options = {}) {
     nextClip: toTrackClip,
   });
 
-  // debugger
-
   fromTrackClip.set('nextClip', transitionClip);
   toTrackClip.set('prevClip', transitionClip);
 

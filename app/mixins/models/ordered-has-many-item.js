@@ -10,6 +10,7 @@ export default function(listPropertyPath) {
     _items: withDefault(`${listPropertyPath}.items`, []),
 
     order: DS.attr('number'),
+    isRemoved: DS.attr('boolean', { defaultValue: false }),
 
     index: function() {
       let items = this.get('_items');

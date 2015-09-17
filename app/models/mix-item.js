@@ -20,6 +20,7 @@ export default DS.Model.extend(
       return this.get('mixClip');
     }
   }.property('trackClip.content', 'transitionClip.content', 'mixClip.content'),
+  hasClip: Ember.computed.bool('clip.content'),
   model: Ember.computed.reads('clip.model'),
   modelName: function() {
     let content = this.get('model.content');
@@ -31,12 +32,6 @@ export default DS.Model.extend(
   transitionClip: DS.belongsTo('transition-clip', { async: true }),
   mixClip: DS.belongsTo('mix-clip', { async: true }),
 
-  destroyClip() {
-    return this.get('clip').then((clip) => {
-      return clip && clip.destroyRecord();
-    });
-  },
-
   isTrack: Ember.computed.equal('modelName', 'track'),
   isTransition: Ember.computed.equal('modelName', 'transition'),
   isValidTransition: Ember.computed.and('isTransition', 'clip.isValid'),
@@ -44,25 +39,48 @@ export default DS.Model.extend(
 
   setModel(model) {
     return this.destroyClip().then(() => {
-      return this.get('mix.arrangement').then((arrangement) => {
-        let modelName = model.constructor.modelName;
-        let clipModelName = `${modelName}-clip`;
-        let clipModelPath = Ember.String.camelize(clipModelName);
-
-        let clip = this.get('store').createRecord(clipModelName, {
-          mixItem: this,
-          model,
-          arrangement
-        });
-
-        // add clip to item
-        this.set(clipModelPath, clip);
-
-        // add clip to arrangement
-        arrangement.get(`${clipModelPath}s`).addObject(clip);
-
-        return this;
-      });
+      return this.createClip(model);
     });
+  },
+
+  createClip(model) {
+    return this.get('mix.arrangement').then((arrangement) => {
+      let modelName = model.constructor.modelName;
+      let clipModelName = `${modelName}-clip`;
+      let clipModelPath = Ember.String.camelize(clipModelName);
+
+      let clip = this.get('store').createRecord(clipModelName, {
+        mixItem: this,
+        model,
+        arrangement
+      });
+
+      // add clip to item
+      this.set(clipModelPath, clip);
+
+      // add clip to arrangement
+      arrangement.get(`${clipModelPath}s`).addObject(clip);
+
+      return this;
+    });
+  },
+
+  destroyClip() {
+    return this.get('clip').then((clip) => {
+      return clip && clip.destroyRecord();
+    });
+  },
+
+  destroyRecord(options = {}) {
+    let { skipClip } = options;
+
+    if (!skipClip) {
+      return this.destroyClip().then(() => {
+        options.skipClip = true;
+        return this.destroyRecord(options);
+      });
+    } else {
+      return this._super.apply(this, arguments);
+    }
   },
 });

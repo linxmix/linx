@@ -75,11 +75,63 @@ describe('OrderedHasManyMixin', function() {
       expect(item.get('index')).to.equal(0);
     });
 
-    it('can remove item', function() {
-      list.removeObject(item);
-      expect(list.get('length')).to.equal(0);
-      expect(list.objectAt(0)).not.to.equal(item);
+    describe('removing item', function() {
+      beforeEach(function() {
+        list.removeObject(item);
+      });
+
+      it('item was removed', function() {
+        expect(list.get('length')).to.equal(0);
+      });
+
+      it('item.isRemoved is true', function() {
+        expect(item.get('isRemoved')).to.be.true;
+      });
+
+      it('list.removedObjects contains item', function() {
+        expect(list.get('removedObjects').contains(item)).to.be.true;
+      });
+
+      it('after adding item back, isRemoved is false', function() {
+        Ember.run(() => {
+          list.addObject(item);
+        });
+
+        expect(item.get('isRemoved')).to.be.false;
+      });
+
+      it('after adding item back, item is not in list.removedObjects', function() {
+        Ember.run(() => {
+          list.addObject(item);
+        });
+
+        expect(list.get('removedObjects').contains(item)).to.be.false;
+      });
+
+      it('saving list destroys item', function() {
+        Ember.run(() => {
+          wait(list.save());
+        });
+
+        andThen(() => {
+          expect(item.get('isDeleted')).to.be.true;
+          expect(item.get('isSaving')).to.be.false;
+          expect(item.get('hasDirtyAttributes')).to.be.false;
+        });
+      });
+
+      it('saving list removes item from hasMany', function() {
+        Ember.run(() => {
+          wait(list.save());
+        });
+
+        andThen(() => {
+          expect(list.get('removedObjects.length')).to.equal(0);
+          expect(list.get('items.length')).to.equal(0);
+        });
+      });
     });
+
   });
 
   describe('with two items', function() {
@@ -94,32 +146,32 @@ describe('OrderedHasManyMixin', function() {
       });
     });
 
-    it.skip('has correct length', function() {
+    it('has correct length', function() {
       expect(list.get('length')).to.equal(2);
     });
 
-    it.skip('items have correct indices', function() {
+    it('items have correct indices', function() {
       expect(itemA.get('index')).to.equal(0);
       expect(itemB.get('index')).to.equal(1);
     });
 
-    it.skip('items have correct prevItem', function() {
+    it('items have correct prevItem', function() {
       expect(itemA.get('prevItem')).to.not.be.ok;
       expect(itemB.get('prevItem')).to.equal(itemA);
     });
 
-    it.skip('items have correct nextItem', function() {
+    it('items have correct nextItem', function() {
       expect(itemA.get('nextItem')).to.equal(itemB);
       expect(itemB.get('nextItem')).to.not.be.ok;
     });
 
-    it.skip('can swap items', function() {
+    it('can swap items', function() {
       list.swap(itemA, itemB);
       expect(itemA.get('index')).to.equal(1);
       expect(itemB.get('index')).to.equal(0);
     });
 
-    it.skip('can swap items by index', function() {
+    it('can swap items by index', function() {
       list.swapIndices(0, 1);
       expect(itemA.get('index')).to.equal(1);
       expect(itemB.get('index')).to.equal(0);

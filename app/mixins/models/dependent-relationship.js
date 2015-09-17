@@ -75,11 +75,14 @@ export default function(propertyPath) {
       }));
     },
 
-    save(skipDependents = false) {
+    save(options = {}) {
+      let { skipDependents } = options;
+
       if (!skipDependents) {
         return this.saveDirtyDependentModels().then(() => {
           return new Ember.RSVP.Promise((resolve, reject) => {
-            this.save(true).then(resolve, reject);
+            options.skipDependents = true;
+            this.save(options).then(resolve, reject);
           });
         });
       } else {

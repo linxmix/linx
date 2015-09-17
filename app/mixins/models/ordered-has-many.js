@@ -27,12 +27,12 @@ export const OrderedHasManyProxy = Ember.ArrayProxy.extend(
 
     let hasManyContent = this.get('hasMany.content');
 
-    // remove objects based on sortedContent
-    let sortedContent = this.get('content');
-    let objectsToRemove = sortedContent.slice(index, index + amount);
-    hasManyContent.removeObjects(objectsToRemove);
+    // mark removed objects
+    let content = this.get('content');
+    let objectsToRemove = content.slice(index, index + amount);
+    objectsToRemove.forEach((object) => { object.set('isRemoved', true); });
 
-    // then update object orders
+    // update object orders
     let prevOrder = this._getIndexOrder(index - 1);
     let nextOrder = this._getIndexOrder(index);
 
@@ -44,8 +44,9 @@ export const OrderedHasManyProxy = Ember.ArrayProxy.extend(
       prevOrder = objectOrder;
     }
 
-    // then add objects
+    // add objects
     hasManyContent.addObjects(objectsToAdd);
+    objectsToAdd.forEach((object) => { object.set('isRemoved', false); });
   },
 
   // augments insertAt to support multiple objects
@@ -83,7 +84,9 @@ export const OrderedHasManyProxy = Ember.ArrayProxy.extend(
   },
 
   // TODO: this will create new array... somehow maintain old?
-  content: Ember.computed.sort('hasMany.content', 'hasManySort'),
+  content: Ember.computed.filterBy('_sortedContent', 'isRemoved', false),
+  removedContent: Ember.computed.filterBy('_sortedContent', 'isRemoved'),
+  _sortedContent: Ember.computed.sort('hasMany.content', 'hasManySort'),
   hasManySort: ['order:asc'],
 });
 
@@ -94,9 +97,9 @@ export default function(hasManyPath, itemModelName) {
 
   let mixinParams = {
     items: Ember.computed(hasManyPath, function() {
-      console.log("recompute orderedItems", this.constructor.modelName);
       return OrderedHasManyProxy.create({ hasMany: this.get(hasManyPath) });
     }),
+    removedObjects: Ember.computed.reads('items.removedContent'),
 
     // creates a new item and appends it to end of list
     createAndAppend: function(params) {
@@ -146,6 +149,33 @@ export default function(hasManyPath, itemModelName) {
         this.insertAt(indexA, itemB);
       }
     },
+
+    destroyRemovedObjects() {
+      let removedObjects = this.get('removedObjects');
+
+      return Ember.RSVP.all(removedObjects.map((item) => {
+        return item.destroyRecord();
+      })).then((results) => {
+        return this.get(hasManyPath).then((hasManyContent) => {
+          hasManyContent.removeObjects(removedObjects);
+          return results;
+        });
+      });
+    },
+
+    // augment save to destroy removed items
+    save(options = {}) {
+      let { skipRemoved } = options;
+
+      if (!skipRemoved) {
+        return this.destroyRemovedObjects().then(() => {
+          options.skipRemoved = true;
+          return this.save(options);
+        });
+      } else {
+        return this._super.apply(this, arguments);
+      }
+    },
   };
 
   // implement readiness mixin
@@ -155,7 +185,7 @@ export default function(hasManyPath, itemModelName) {
   });
 
   // this is how ordered-has-many implements Ember.MutableArray
-  // note we cannot extend Ember.MutableArray explicitly for a model
+  // note we cannot mixin Ember.MutableArray explicitly for a model (it causes errors)
   let itemsMethodAliases = ['addArrayObserver', 'addObject', 'addObjects', 'arrayContentDidChange', 'arrayContentWillChange', 'clear', 'compact', 'contains', 'every', 'filter', 'filterBy', 'find', 'findBy', 'forEach', 'getEach', 'indexOf', 'insertAt', 'isEvery', 'lastIndexOf', 'map', 'mapBy', 'objectAt', 'objectsAt', 'popObject', 'pushObject', 'pushObjects', 'reject', 'rejectBy', 'removeArrayObserver', 'removeAt', 'removeObject', 'removeObjects', 'replace', 'reverseObjects', 'setEach', 'setObjects', 'shiftObject', 'slice', 'sortBy', 'unshiftObject', 'unshiftObjects', 'without'];
 
   let itemsPropertyAliases = ['@each', '[]', 'firstObject', 'hasArrayObservers', 'lastObject', 'length'];
