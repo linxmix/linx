@@ -1,20 +1,22 @@
-{{wave-surfer
-  file=track.file
-  streamUrl=track.streamUrl
+{{!-- <div class="TrackClip-Wave-Wrapper" {{bind-attr style="waveSurferStyle"}}> --}}
+  {{wave-surfer
+    file=track.file
+    streamUrl=track.streamUrl
 
-  isPlaying=isPlaying
-  seekTime=audioSeekTime
+    isPlaying=isPlaying
+    seekTime=audioSeekTime
 
-  pxPerBeat=pxPerBeat
-  audioBpm=audioBpm
+    pxPerBeat=pxPerBeat
+    audioBpm=audioBpm
 
-  volume=clip.volume
-  pitch=clip.pitch
-  tempo=tempo
+    volume=clip.volume
+    pitch=clip.pitch
+    tempo=tempo
 
-  disableMouseInteraction=disableMouseInteraction
+    disableMouseInteraction=disableMouseInteraction
 
-  waveDidLoad="waveDidLoad"
-}}
+    waveDidLoad="waveDidLoad"
+  }}
+{{!-- </div> --}}
 
 {{yield markerOptions}}

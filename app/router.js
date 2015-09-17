@@ -9,14 +9,14 @@ Router.map(function() {
   this.route('tracks');
   this.route('track', { path: 'tracks/:id' });
 
+  this.route('transitions');
+  this.route('transition', { path: 'transitions/:id' });
+
   this.route('mixes');
-  this.route('mix', { path: 'mixes/:id' }, function() {
-    this.route('transition', { path: 'transitions/:transition_id' });
-  });
+  this.route('mix', { path: 'mixes/:id' });
 
   // TODO - delete fakes
   this.route('upload');
-
 });
 
 export default Router;

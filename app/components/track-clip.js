@@ -26,8 +26,8 @@ export default Clip.extend({
   }),
 
   startPx: function() {
-    return (this.get('clip.clipStartBeat') * this.get('pxPerBeat')) + 'px';
-  }.property('clip.clipStartBeat', 'pxPerBeat'),
+    return (-1 * this.get('clip.audioStartBeat') * this.get('pxPerBeat')) + 'px';
+  }.property('clip.audioStartBeat', 'pxPerBeat'),
 
   // params
   track: Ember.computed.reads('model'),

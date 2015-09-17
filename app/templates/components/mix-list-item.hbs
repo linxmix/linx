@@ -1,7 +1,7 @@
 <div class="content">
-  {{!-- {{#link-to null item.model}} --}}
+  {{#link-to modelLinkTo item.model}}
     {{position}} &middot; {{item.modelName}} &middot; {{item.model.title}}
-  {{!-- {{/link-to}} --}}
+  {{/link-to}}
   <div class='tiny inverted basic circular red ui icon button' {{action "remove" item}}>
     <i class='remove icon'></i>
   </div>

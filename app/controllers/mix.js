@@ -5,7 +5,7 @@ export default Ember.Controller.extend({
   model: null,
 
   searchTracks: Ember.computed(function() {
-    return this.get('store').find('track');
+    return this.get('store').findAll('track');
   }),
 
   // controlled by checkbox

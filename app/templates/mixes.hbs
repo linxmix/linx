@@ -6,10 +6,12 @@
 
   {{#mixes-list mixes=mixes}}
     {{#each mixes as |mix|}}
-      {{mixes-list-item
-        mix=mix
-        select="selectMix"
-      }}
+      {{#link-to 'mix' mix}}
+        {{mixes-list-item
+          mix=mix
+          select="selectMix"
+        }}
+      {{/link-to}}
     {{/each}}
   {{/mixes-list}}
 </div>

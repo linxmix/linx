@@ -10,7 +10,7 @@ export default Ember.Component.extend(
   classNameBindings: [],
 
   click() {
-    this.sendAction('select', this.get('mix'));
+    // this.sendAction('select', this.get('mix'));
   },
 
   // params

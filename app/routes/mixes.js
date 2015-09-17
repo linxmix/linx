@@ -10,10 +10,6 @@ export default Ember.Route.extend({
 
       this.transitionTo('mix', mix);
     },
-
-    selectMix(mix) {
-      this.transitionTo('mix', mix);
-    }
   },
 
   setupController(controller, models) {
