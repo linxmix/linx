@@ -195,7 +195,7 @@ export default DS.Model.extend(
         transition.get('arrangement').then((arrangement) => {
           let automationClip = this.get('store').createRecord('automation-clip', {
             numBeats: 16,
-          })
+          });
           arrangement.get('automationClips').addObject(automationClip);
           return arrangement.save().then(() => {
             return automationClip.save();

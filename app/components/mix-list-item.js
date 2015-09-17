@@ -9,7 +9,7 @@ export const MODEL_LINK_TOS = {
   track: 'track',
   transition: 'transition',
   mix: 'mix',
-}
+};
 
 export default Ember.Component.extend(
   BubbleActions('remove'), RequireAttributes('item'), {
