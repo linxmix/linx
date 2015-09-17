@@ -3,8 +3,8 @@
 <div>{{track.artist}}</div>
 
 <div class="TrackFull-clip">
-  {{audio-clip
-    model=clip
+  {{track-clip
+    clip=clip
     isPlaying=isPlaying
     seekBeat=seekBeat
     pxPerBeat=pxPerBeat
@@ -20,6 +20,7 @@
 }}
 
 <div class="inverted purple ui button" {{action "queueTrack" track}}>Queue</div>
+<div class="inverted orange ui button" {{action "analyzeTrack" track}}>Reset Analysis</div>
 
 <hr/>
 

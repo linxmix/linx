@@ -63,13 +63,17 @@ export default DS.Model.extend(
   fetchAudioMeta() {
     return this.get('echonestTrack').then((echonestTrack) => {
       return echonestTrack.get('analysis').then((analysis) => {
-        let audioMeta = this.get('store').createRecord('audio-meta', {
-          track: this
-        });
+        return this.get('audioMeta').then((audioMeta) => {
+          if (!audioMeta) {
+            audioMeta = this.get('store').createRecord('audio-meta', {
+              track: this
+            });
+          }
 
-        return audioMeta.processAnalysis(analysis).then(() => {
-          return this.save().then(() => {
-            return audioMeta;
+          return audioMeta.processAnalysis(analysis).then(() => {
+            return this.save().then(() => {
+              return audioMeta;
+            });
           });
         });
       });

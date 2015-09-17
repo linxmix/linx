@@ -6,7 +6,7 @@ export default Ember.Route.extend(PreventDirtyTransitionMixin, {
   // TODO: remove hack
   setupController: function(controller, model) {
     this._super.apply(this, arguments);
-    controller.set('clip', this.get('store').createRecord('audio-clip', {
+    controller.set('clip', this.get('store').createRecord('track-clip', {
       track: model,
       startBeat: 0,
       length: 10000,

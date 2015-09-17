@@ -8,8 +8,8 @@ export default Ember.Component.extend(
 
   classNames: ['TrackFull'],
 
-  echonestTrack: Ember.computed.alias('track.echonestTrack'),
-  analysis: Ember.computed.alias('echonestTrack.analysis'),
+  echonestTrack: Ember.computed.reads('track.echonestTrack'),
+  analysis: Ember.computed.reads('echonestTrack.analysis'),
 
   actions: {
     playpause: function() {
@@ -18,6 +18,10 @@ export default Ember.Component.extend(
 
     queueTrack(track) {
       this.get('session').queueTrack(track);
+    },
+
+    analyzeTrack(track) {
+      track.fetchAudioMeta();
     }
   },
 

@@ -34,7 +34,7 @@ export default DS.Model.extend(
 
   markers: DS.hasMany('marker', { async: true }),
   userMarkers: Ember.computed.filterBy('markers', 'type', USER_MARKER_TYPE),
-  analysisMarkers: Ember.computed.setDiff('markers', 'userMarkers'),
+  analysisMarkers: Ember.computed.uniq('sortedBeatMarkers', 'sortedBarMarkers', 'sortedSectionMarkers'),
 
   markerSorting: ['start'],
   sortedMarkers: Ember.computed.sort('markers', 'markerSorting'),
@@ -137,7 +137,7 @@ export default DS.Model.extend(
 
     return Ember.RSVP.all(markerSavePromises).then(() => {
       // TODO(CLEANUP)
-      // return this.destroyAnalysisMarkers().then(() => {
+      return this.destroyAnalysisMarkers().then(() => {
         this.get('markers').pushObjects(markers);
 
         this.setProperties({
@@ -153,7 +153,7 @@ export default DS.Model.extend(
           this.set('isProcessingAnalysis', false);
           return this;
         });
-    // });
+    });
     });
 
   }
