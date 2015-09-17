@@ -62,8 +62,11 @@ export default DS.Model.extend(
   // analyze echonest track, then parse into new audio meta
   fetchAudioMeta() {
     return this.get('echonestTrack').then((echonestTrack) => {
+        // console.log("got echonest track");
       return echonestTrack.get('analysis').then((analysis) => {
-        return this.get('audioMeta').then((audioMeta) => {
+        // console.log("got analysis");
+        return this.get('_audioMeta').then((audioMeta) => {
+          // console.log("got audioMeta");
           if (!audioMeta) {
             audioMeta = this.get('store').createRecord('audio-meta', {
               track: this
@@ -71,7 +74,9 @@ export default DS.Model.extend(
           }
 
           return audioMeta.processAnalysis(analysis).then(() => {
+            // console.log("process analysis");
             return this.save().then(() => {
+              // console.log("process save track");
               return audioMeta;
             });
           });

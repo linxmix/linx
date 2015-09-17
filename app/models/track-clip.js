@@ -12,7 +12,6 @@ import add from 'linx/lib/computed/add';
 export default Clip.extend(
   ReadinessMixin('isTrackClipReady'),
   MixableClipMixin, {
-  // type: 'track-clip',
 
   // implementing mixableClip
   model: DS.belongsTo('track', { async: true }),
@@ -20,8 +19,8 @@ export default Clip.extend(
   firstTrack: Ember.computed.reads('track'),
   lastTrack: Ember.computed.reads('track'),
 
-  clipStartBeatWithoutTransition: Ember.computed.reads('track.audioMeta.firstBeat'),
-  clipEndBeatWithoutTransition: Ember.computed.reads('track.audioMeta.lastBeat'),
+  clipStartBeatWithoutTransition: Ember.computed.reads('audioStartBeat'),
+  clipEndBeatWithoutTransition: Ember.computed.reads('audioEndBeat'),
 
   clipStartBeatWithTransition: Ember.computed.reads('prevTransition.toTrackStartBeat'),
   clipEndBeatWithTransition: Ember.computed.reads('nextTransition.fromTrackEndBeat'),
@@ -36,8 +35,8 @@ export default Clip.extend(
   _numBeats: DS.attr('number'),
   _audioEndBeat: DS.attr('number'),
 
-  audioStartBeat: withDefaultProperty('_audioStartBeat', 'clipStartBeat'),
-  audioEndBeat: withDefaultProperty('_audioEndBeat', 'clipEndBeat'),
+  audioStartBeat: withDefaultProperty('_audioStartBeat', 'track.audioMeta.firstBeat'),
+  audioEndBeat: withDefaultProperty('_audioEndBeat', 'track.audioMeta.lastBeat'),
 
   // TODO: move isAudioLoaded into ex track.audio.isLoaded?
   isAudioLoaded: false,
@@ -50,9 +49,8 @@ export default Clip.extend(
   bpm: Ember.computed.reads('audioMeta.bpm'),
 
   audioStartTime: function() {
-    return this.get('audioMeta.firstBeatMarker.start') +
-      beatToTime(this.get('audioStartBeat'), this.get('bpm'));
-  }.property('audioMeta.firstBeatMarker.start', 'audioStartBeat', 'bpm'),
+    return beatToTime(this.get('audioStartBeat'), this.get('bpm'));
+  }.property('audioStartBeat', 'bpm'),
 
   audioLength: function() {
     return beatToTime(this.get('numBeats'), this.get('bpm'));

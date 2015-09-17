@@ -11,7 +11,7 @@ export default Ember.Component.extend(ArrangementPlayerMixin,
     }
   },
 
-  isEditing: false,
+  isEditing: true,
 
   // Hacky stuff to convert <input type="number"> values to numbers
   inputBpm: Ember.computed.oneWay('metronome.bpm'),
@@ -20,6 +20,7 @@ export default Ember.Component.extend(ArrangementPlayerMixin,
     this.get('metronome').setBpm(parseFloat(this.get('inputBpm')));
   }.observes('inputBpm'),
   _inputZoomDidChange: function() {
+    // update pxPerBeat
     this.set('pxPerBeat', parseFloat(this.get('inputZoom')));
   }.observes('inputZoom'),
   // /hacky stuff

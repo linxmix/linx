@@ -21,16 +21,25 @@ export default Clip.extend({
 
   classNames: ['TrackClip'],
 
-  waveSurferStyle: cssStyle({
+  attributeBindings: ['componentStyle:style'],
+
+  componentStyle: cssStyle({
     'left': 'startPx',
   }),
 
   startPx: function() {
-    return (-1 * this.get('clip.audioStartBeat') * this.get('pxPerBeat')) + 'px';
-  }.property('clip.audioStartBeat', 'pxPerBeat'),
+    let { pxPerBeat, audioStartBeat } = this.getProperties('pxPerBeat', 'audioStartBeat');
+
+    let startPx = (-1.0 * audioStartBeat * pxPerBeat);
+
+    console.log("auiodStartBeat", audioStartBeat);
+
+    return `${startPx}px`;
+  }.property('audioStartBeat', 'pxPerBeat'),
 
   // params
   track: Ember.computed.reads('model'),
+  audioStartBeat: Ember.computed.reads('clip.audioStartBeat'),
   audioStartTime: Ember.computed.reads('clip.audioStartTime'),
   audioEndTime: Ember.computed.reads('clip.audioEndTime'),
   audioBpm: Ember.computed.reads('track.audioMeta.bpm'),

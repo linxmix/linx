@@ -89,6 +89,8 @@ export default DS.Model.extend(
     var markerParams = [];
 
     // add start and end beat markers
+    console.log("add start marker", analysis.get('firstBeatStart'))
+    console.log("add end marker", analysis.get('lastBeatStart'))
     markerParams.push({
       type: BEAT_MARKER_TYPE,
       start: analysis.get('firstBeatStart'),
@@ -127,17 +129,16 @@ export default DS.Model.extend(
     // create and save all markers, then set properties and save track
     var store = this.get('store');
     var track = this.get('track');
-    var markers = markerParams.map((params) => {
-      return store.createRecord('marker', _.defaults(params, {
-        audioMeta: this,
-      }));
-    });
 
-    var markerSavePromises = markers.map((marker) => { return marker.save(); });
+    return this.destroyAnalysisMarkers().then(() => {
+      let markers = markerParams.map((params) => {
+        return store.createRecord('marker', _.defaults(params, {
+          audioMeta: this,
+        }));
+      });
+      let markerSavePromises = markers.map((marker) => { return marker.save(); });
 
-    return Ember.RSVP.all(markerSavePromises).then(() => {
-      // TODO(CLEANUP)
-      return this.destroyAnalysisMarkers().then(() => {
+      return Ember.RSVP.all(markerSavePromises).then(() => {
         this.get('markers').pushObjects(markers);
 
         this.setProperties({
@@ -153,7 +154,7 @@ export default DS.Model.extend(
           this.set('isProcessingAnalysis', false);
           return this;
         });
-    });
+      });
     });
 
   }
