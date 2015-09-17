@@ -9,7 +9,7 @@ import _ from 'npm:underscore';
 // returns a PromiseObject
 // createModelFn can return a promise
 export default function(relPath, createModelFn) {
-  return Ember.computed({
+  return Ember.computed('isLoaded', {
     get: function(key) {
       var dependentModelId = this.get(`_internalModel._relationships.initializedRelationships.${relPath}.inverseRecord.id`);
 

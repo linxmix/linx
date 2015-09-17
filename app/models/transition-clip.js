@@ -13,8 +13,7 @@ export default ArrangementClip.extend(
 
   // implementing Clip
   startBeat: subtract('prevClip.endBeat', 'numBeats'), // overlap
-  numBeats: 16,
-  // numBeats: Ember.computed.reads('transition.numBeats'), // TODO(TRANSITION)
+  numBeats: Ember.computed.reads('transition.numBeats'),
   isValid: Ember.computed.and('hasTransition', 'timesAreValid', 'fromTrackIsValid', 'toTrackIsValid'),
 
   // implementing arrangementClip

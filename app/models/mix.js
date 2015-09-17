@@ -192,6 +192,16 @@ export default DS.Model.extend(
       return Ember.RSVP.all([
         transition.setFromTrackEnd(fromTrack.get('audioMeta.lastBeatMarker.start')),
         transition.setToTrackStart(toTrack.get('audioMeta.firstBeatMarker.start')),
+        transition.get('arrangement').then((arrangement) => {
+          let automationClip = this.get('store').createRecord('automation-clip', {
+            numBeats: 16,
+          })
+          console.log("created automation clip", automationClip);
+          arrangement.get('automationClips').addObject(automationClip);
+          return arrangement.save().then(() => {
+            return automationClip.save();
+          });
+        })
       ]).then(() => {
         return transition;
       });
