@@ -1,5 +1,6 @@
 import DS from 'ember-data';
-import { timeToBeat } from 'linx/lib/utils';
+
+import { timeToBeat, beatToTime, isNumber } from 'linx/lib/utils';
 
 export const BEAT_MARKER_TYPE = 'beat';
 export const BAR_MARKER_TYPE = 'bar';
@@ -19,7 +20,21 @@ export default DS.Model.extend({
   audioMeta: DS.belongsTo('audio-meta', { async: true }),
 
   // params
-  startBeat: function() {
-    return timeToBeat(this.get('start'), this.get('audioMeta.bpm'));
-  }.property('audioMeta.bpm', 'start'),
+  bpm: Ember.computed.reads('audioMeta.bpm'),
+
+  startBeat: Ember.computed('bpm', 'start', {
+    get(key) {
+      return timeToBeat(this.get('start'), this.get('bpm'));
+    },
+
+    set(key, value) {
+      let bpm = this.get('bpm');
+
+      Ember.assert('Can only set marker startBeat to a valid number', isNumber(value));
+      Ember.assert('Can only set marker startBeat with valid numeric BPM', isNumber(bpm));
+
+      this.set('start', beatToTime(value, bpm));
+      return value;
+    }
+  }),
 });

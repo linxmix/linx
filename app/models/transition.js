@@ -66,12 +66,32 @@ export default DS.Model.extend(
     });
   },
 
+  // sets fromTrackMarker to given beat in fromTrack
+  setFromTrackEndBeat: function(beat) {
+    Ember.assert('Transition.setFromTrackEndBeat requires a valid number', isNumber(beat));
+
+    return this.get('fromTrackMarker').then((marker) => {
+      marker.set('startBeat', beat);
+      return marker;
+    });
+  },
+
   // sets toTrackMarker to given time in toTrack
   setToTrackStart: function(time) {
     Ember.assert('Transition.setToTrackStart requires a valid number', isNumber(time));
 
     return this.get('toTrackMarker').then((marker) => {
       marker.set('start', time);
+      return marker;
+    });
+  },
+
+  // sets toTrackMarker to given beat in toTrack
+  setToTrackStartBeat: function(beat) {
+    Ember.assert('Transition.setToTrackStartBeat requires a valid number', isNumber(beat));
+
+    return this.get('toTrackMarker').then((marker) => {
+      marker.set('startBeat', beat);
       return marker;
     });
   },

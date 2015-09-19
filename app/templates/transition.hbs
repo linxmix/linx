@@ -1,6 +1,6 @@
 <div>TRANSITION</div>
 <div>{{model.fromTrack.title}}&nbsp;&nbsp;-&nbsp;&nbsp;{{model.toTrack.title}}</div>
-<div class="inverted orange ui icon button {{if model.isDirty '' 'basic disabled'}}" {{action 'saveTransition'}}>
+<div class="inverted orange ui icon button {{if model.anyDirty '' 'basic disabled'}}" {{action 'saveTransition'}}>
   <i class="cloud upload icon"></i>
   Save Transition
 </div>
@@ -11,4 +11,12 @@
 
 <hr/>
 
-{{simple-arrangement arrangement=mix.arrangement}}
+{{#if mix.arrangement}}
+  {{simple-arrangement arrangement=mix.arrangement}}
+{{/if}}
+
+<hr/>
+
+<div>FromTrackEndBeat: {{input type="number" value=inputFromTrackEndBeat}}</div>
+<div>ToTrackStartBeat: {{input type="number" value=inputToTrackStartBeat}}</div>
+<div>Transition Length: {{input type="number" value=inputTransitionLength}}</div>
