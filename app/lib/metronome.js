@@ -161,7 +161,7 @@ var ClipEvent = Ember.Object.extend(
   _schedulingDidChange: function() {
     // TODO(TRANSITION)
     Ember.run.once(this, '_updateEventTimes');
-  }.observes('metronome.isPlaying', 'metronome.absSeekTime', '_seekBeat', 'bpm').on('init'),
+  }.observes('metronome.isPlaying', 'metronome.absSeekTime', '_seekBeat', 'bpm', 'endBeat', 'numBeats').on('init'),
 
   _updateEventTimes: function() {
     var metronome = this.get('metronome');
@@ -172,6 +172,13 @@ var ClipEvent = Ember.Object.extend(
     // if metronome is paused or jumped back, pause this
     if (!(metronomeIsPlaying && seekTime >= 0)) {
       this.set('isPlaying', false);
+    }
+
+    // if seeking before clip end, set isFinished to false
+    let currentMetronomeBeat = metronome.getCurrentBeat();
+    let endBeat = this.get('endBeat');
+    if (currentMetronomeBeat <= endBeat) {
+      this.set('isFinished', false);
     }
 
     // update events
