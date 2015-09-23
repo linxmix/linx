@@ -49,8 +49,8 @@ export default Clip.extend(
   bpm: Ember.computed.reads('audioMeta.bpm'),
 
   audioStartTime: function() {
-    return beatToTime(this.get('audioStartBeat'), this.get('bpm'));
-  }.property('audioStartBeat', 'bpm'),
+    return beatToTime(this.get('clipStartBeat'), this.get('bpm'));
+  }.property('clipStartBeat', 'bpm'),
 
   audioLength: function() {
     return beatToTime(this.get('numBeats'), this.get('bpm'));

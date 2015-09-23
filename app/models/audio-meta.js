@@ -89,8 +89,6 @@ export default DS.Model.extend(
     var markerParams = [];
 
     // add start and end beat markers
-    console.log("add start marker", analysis.get('firstBeatStart'))
-    console.log("add end marker", analysis.get('lastBeatStart'))
     markerParams.push({
       type: BEAT_MARKER_TYPE,
       start: analysis.get('firstBeatStart'),

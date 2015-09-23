@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import DS from 'ember-data';
 
 import { timeToBeat, beatToTime, isNumber } from 'linx/lib/utils';

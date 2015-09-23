@@ -91,6 +91,7 @@ export default DS.Model.extend(
     Ember.assert('Transition.setToTrackStartBeat requires a valid number', isNumber(beat));
 
     return this.get('toTrackMarker').then((marker) => {
+      console.log("setToTrackStart", beat);
       marker.set('startBeat', beat);
       return marker;
     });

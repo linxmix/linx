@@ -161,7 +161,7 @@ var ClipEvent = Ember.Object.extend(
   _schedulingDidChange: function() {
     // TODO(TRANSITION)
     Ember.run.once(this, '_updateEventTimes');
-  }.observes('metronome.isPlaying', 'metronome.absSeekTime', '_seekBeat', 'bpm', 'endBeat', 'numBeats').on('init'),
+  }.observes('metronome.isPlaying', 'metronome.absSeekTime', 'startBeat', 'bpm', 'endBeat', 'numBeats').on('init'),
 
   _updateEventTimes: function() {
     var metronome = this.get('metronome');

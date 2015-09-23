@@ -30,7 +30,7 @@ function getOrCreateModel(key, relPath, createModelFn) {
     console.log("WithDefaultModel - NORMAL", key);
     return this.get(relPath);
   }
-};
+}
 
 // given a path to a relationship,
 // returns a property that returns the relationship if exists, else creates a new
@@ -51,7 +51,7 @@ export default function(relPath, createModelFn) {
           }),
         });
       } else {
-        return getOrCreateModel.call(this, key, relPath, createModelFn)
+        return getOrCreateModel.call(this, key, relPath, createModelFn);
       }
     },
 
