@@ -1,9 +1,10 @@
 import Ember from 'ember';
 import DS from 'ember-data';
-import withDefaultModel from 'linx/lib/computed/with-default-model';
 
 import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 import ReadinessMixin from 'linx/mixins/readiness';
+
+import withDefaultModel from 'linx/lib/computed/with-default-model';
 
 export default DS.Model.extend(
   ReadinessMixin('isTrackReady'),
@@ -33,14 +34,16 @@ export default DS.Model.extend(
   echonest: null,
 
   // TODO: abstract into audio-source?
-  streamUrl: Ember.computed.or('s3StreamUrl', 'scStreamUrl'),
+  streamUrl: Ember.computed.reads('s3StreamUrl'),
   s3StreamUrl: function() {
     if (!Ember.isNone(this.get('s3Url'))) {
-      // TODO: move to config
+      // TODO: move to s3 service
       return "http://s3-us-west-2.amazonaws.com/linx-music/" + this.get('s3Url');
     }
   }.property('s3Url'),
   scStreamUrl: function() {
+      var clientId = Config.clientId_Soundcloud;
+      return soundcloud.stream_url + '?client_id=' + clientId;
     return null;
   }.property(),
   // /TODO

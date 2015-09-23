@@ -24,7 +24,7 @@ module.exports = function(environment) {
       // allow firebase
       'connect-src': "'self' wss://*.firebaseio.com http://developer.echonest.com http://*.amazonaws.com",
       'frame-src': "'self' https://*.firebaseio.com",
-      'script-src': "'self' 'unsafe-eval' 'unsafe-inline' https://*.firebaseio.com",
+      'script-src': "'self' 'unsafe-eval' 'unsafe-inline' https://*.firebaseio.com http://connect.soundcloud.com",
 
       // allow semantic-ui fonts and style
       'font-src': "'self' https://fonts.gstatic.com data:",
@@ -32,8 +32,7 @@ module.exports = function(environment) {
     },
 
     APP: {
-      // Here you can pass flags/options to your application instance
-      // when it is created
+      SC_REDIRECT_UI: 'assets/soundcloud/callback.html'
     }
   };
 
