@@ -24,7 +24,6 @@ export default ArrangementClip.extend(
   isMixable: false,
 
   // transition-clip specific
-  // TODO(TRANSITION)
   transition: Ember.computed.alias('model'),
   fromClip: Ember.computed.reads('prevClip'),
   toClip: Ember.computed.reads('nextClip'),
