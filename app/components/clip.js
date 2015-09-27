@@ -11,6 +11,7 @@ export default Ember.Component.extend(
   seekBeat: 0,
   syncBpm: null,
   visibleMarkers: null,
+  clipEvent: null,
 
   classNames: ['Clip'],
 

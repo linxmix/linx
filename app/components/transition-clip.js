@@ -18,15 +18,10 @@ export default Clip.extend(
   toClip: Ember.computed.reads('clip.toClip'),
   numBeats: Ember.computed.reads('clip.numBeats'),
 
-  _updateClipVolumes: function() {
+  // called with x in range [0, 1]
+  // expected to update automatables
+  updateValue(x) {
     let { fromClip, toClip } = this.getProperties('fromClip', 'toClip');
-
-    if (!this.get('isPlaying')) {
-      return;
-    }
-
-    let x = this.get('tickBeat') / this.get('numBeats');
-
 
     // CONSTANT POWER SLOW FADE
     // cos((4 / π)((2x−1)^(2n+1)+1))
@@ -41,10 +36,22 @@ export default Clip.extend(
     // LOGARITHMIC FADE
     // y = b*c^x
 
-    console.log('_updateClipVolumes', fromClipVolume, toClipVolume, fromClip, toClip);
+    // console.log('_updateClipVolumes', fromClipVolume, toClipVolume, fromClip, toClip);
 
+    // TODO(AUTOMATION): clamped computed property
     fromClip && fromClip.set('volume', clamp(0, fromClipVolume, 1));
     toClip && toClip.set('volume', clamp(0, toClipVolume, 1));
+  },
 
-  }.observes('tickBeat', 'fromClip', 'toClip', 'numBeats'),
+  _updateClipVolumes: function() {
+    let { clipEvent, numBeats, isFinished } = this.getProperties('clipEvent', 'numBeats', 'isFinished');
+    let currentBeat = clipEvent.getCurrentBeat();
+
+    let x = isFinished ? 1 : currentBeat / numBeats;
+    this.updateValue(x);
+  },
+
+  _automationDidTick: function() {
+    Ember.run.once(this, '_updateClipVolumes');
+  }.observes('numBeats', 'clipEvent.tick', 'isFinished', 'isPlaying', 'seekBeat'),
 });

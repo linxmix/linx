@@ -36,7 +36,7 @@ export default Ember.Component.extend(
         clipEvent.set('clip', clip);
       }
 
-      // TODO(AUTOMATIONSPIKE): pass clipEvent down, let ex automation-clip handle this
+      // TODO(AUTOMATION): let child component automation-clip handle this?
       clipEvent.set('repeatInterval', clipRepeatInterval);
       this.set('clipEvent', clipEvent);
     }
@@ -46,7 +46,7 @@ export default Ember.Component.extend(
   clipRepeatInterval: Ember.computed('clip', function() {
     let clipModelName = this.get('clip.modelName');
 
-    // TODO(AUTOMATIONSPIKE)
+    // TODO(AUTOMATION)
     if (clipModelName === 'transition-clip') {
       return 0.05;
     }

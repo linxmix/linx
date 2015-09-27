@@ -23,7 +23,7 @@ augment('zoom', function(pxPerSec) {
 
   this.drawBuffer();
 
-  console.log("wavesurfer seekToTime", this.getCurrentTime());
+  // console.log("wavesurfer seekToTime", this.getCurrentTime());
   this.seekAndCenter(this.getCurrentTime() / this.getDuration());
 }),
 
