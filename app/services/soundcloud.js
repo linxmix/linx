@@ -16,9 +16,7 @@ export default Ember.Service.extend(
   isSdkAuthenticated: false,
   isAuthenticated: Ember.computed.reads('isSdkAuthenticated'),
   sdk: Ember.computed(function() {
-    return this._loadSdk().then((sdk) => {
-      return sdk;
-    });
+    return this._loadSdk();
   }),
 
   // when ready, execute given rest verb on the sdk
@@ -72,9 +70,15 @@ export default Ember.Service.extend(
       return new Ember.RSVP.Promise((resolve, reject) => {
         let checkForLoad = () => {
           Ember.run.later(() => {
-            if (window.SC) {
+            let sdk = window.SC;
+            if (sdk) {
+              sdk.initialize({
+                client_id: ENV.SC_KEY,
+                redirect_ui: ENV.APP.SC_REDIRECT_UI,
+              });
+
               this.set('isSdkLoaded', true);
-              resolve(window.SC);
+              resolve(sdk);
             } else {
               checkForLoad();
             }

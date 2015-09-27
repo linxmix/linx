@@ -15,7 +15,6 @@ import ajax from 'ic-ajax';
 */
 
 export default DS.RESTAdapter.extend({
-  defaultSerializer: 'soundcloud',
   soundcloud: Ember.inject.service(),
 
   /**
@@ -28,17 +27,16 @@ export default DS.RESTAdapter.extend({
   */
 
   pathForType: function (type) {
-    var splitType = type.split('soundcloud-');
+    let splitType = type.split('soundcloud-');
     if (splitType.length > 1) {
-      return splitType[1].toLowerCase();
+      splitType = splitType[1].toLowerCase();
     }
 
-    return type;
+    return Ember.String.pluralize(splitType);
   },
 
   /**
-    Overrides DS.RESTAdapter.findRecord to call 'soundcloud.getAjax' with a url and query containing
-    the required record's ID
+    Overrides DS.RESTAdapter.findRecord to call 'soundcloud.getAjax' with a url
 
     @method findRecord
     @param {DS.Store} store
@@ -48,21 +46,21 @@ export default DS.RESTAdapter.extend({
   */
 
   findRecord: function(store, type, id) {
-    return this.get('soundcloud').getAjax(`${type}s/${id}`);
+    return this.get('soundcloud').getAjax(this.buildURL(type.modelName, id));
   },
 
   /**
-    Overrides DS.RESTAdapter.findQuery to call 'soundcloud.get' with a url and query
+    Overrides DS.RESTAdapter.query to call 'soundcloud.getAjax' with a url and query
 
-    @method findQuery
+    @method query
     @param {DS.Store} store
     @param {subclass of DS.Model} type
     @param {object} query
     @return {Promise} promise
   */
 
-  findQuery: function(store, type, query) {
-    return this.soundcloud.get(type, [this.buildURL(type.modelName), 'search'].join('/'), query);
+  query: function(store, type, query) {
+    return this.get('soundcloud').getAjax(this.buildURL(type.modelName), query);
   },
 
   /**
