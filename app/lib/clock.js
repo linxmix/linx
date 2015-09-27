@@ -49,7 +49,7 @@ export const ClockEvent = Ember.Object.extend(
   _event: null,
   _schedulingDidChange: function() {
     Ember.run.once(this, '_schedule');
-  }.observes('clock', 'deadline', 'isScheduled', 'repeatInterval').on('init'),
+  }.observes('clock', 'deadline', 'isScheduled', 'repeatInterval', 'isRepeatingEvent').on('init'),
 
   _schedule: function() {
     var prevEvent = this.get('_event');
@@ -72,8 +72,12 @@ export const ClockEvent = Ember.Object.extend(
           Ember.run(this, '_execute', deadline);
         }, deadline);
 
+        // TODO(PERFORMANCE): should repeatInterval (and possibly others) be handled separately?
         if (isRepeatingEvent) {
           event.repeat(this.get('repeatInterval'));
+        } else {
+          // clears repeat
+          event.repeat(null);
         }
 
         this.set('_event', event);

@@ -28,7 +28,7 @@ export default Ember.Component.extend(
     if (!(metronome && clip)) {
       this.destroyClipEvent();
     } else {
-      let clipEvent = this.get('clipEvent');
+      let { clipEvent, clipRepeatInterval } = this.getProperties('clipEvent', 'clipRepeatInterval');
 
       if (!clipEvent) {
         clipEvent = metronome.createClipEvent(clip);
@@ -36,9 +36,21 @@ export default Ember.Component.extend(
         clipEvent.set('clip', clip);
       }
 
+      // TODO(AUTOMATIONSPIKE): pass clipEvent down, let ex automation-clip handle this
+      clipEvent.set('repeatInterval', clipRepeatInterval);
       this.set('clipEvent', clipEvent);
     }
   },
+
+  // for clips that need to have 'ticks'
+  clipRepeatInterval: Ember.computed('clip', function() {
+    let clipModelName = this.get('clip.modelName');
+
+    // TODO(AUTOMATIONSPIKE)
+    if (clipModelName === 'transition-clip') {
+      return 0.05;
+    }
+  }),
 
   destroyClipEvent: function() {
     let clipEvent = this.get('clipEvent');

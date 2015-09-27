@@ -118,6 +118,10 @@ var ClipEvent = Ember.Object.extend(
   bpm: Ember.computed.reads('metronome.bpm'),
   isPlaying: false,
   isFinished: false,
+  tickBeat: null,
+
+  // optional params
+  repeatInterval: null,
 
   clipSeekBeat: function() {
     var seekBeat = this.get('_seekBeat');
@@ -159,9 +163,8 @@ var ClipEvent = Ember.Object.extend(
   }.property('metronome.seekBeat', 'startBeat'),
 
   _schedulingDidChange: function() {
-    // TODO(TRANSITION)
     Ember.run.once(this, '_updateEventTimes');
-  }.observes('metronome.isPlaying', 'metronome.absSeekTime', 'startBeat', 'bpm', 'endBeat', 'numBeats').on('init'),
+  }.observes('metronome.isPlaying', 'metronome.absSeekTime', 'startBeat', 'bpm', 'endBeat', 'numBeats', 'repeatInterval').on('init'),
 
   _updateEventTimes: function() {
     var metronome = this.get('metronome');
@@ -189,7 +192,10 @@ var ClipEvent = Ember.Object.extend(
 
     startEvent.setProperties({
       deadline: absStartTime,
-      isScheduled: metronomeIsPlaying
+      isScheduled: metronomeIsPlaying,
+
+      // TODO(PERFORMANCE): should this (and possibly others) be handled separately?
+      repeatInterval: this.get('repeatInterval'),
     });
 
     endEvent.setProperties({
@@ -199,19 +205,50 @@ var ClipEvent = Ember.Object.extend(
   },
 
   _executeStart: function(delay) {
-    console.log("execute start", this.get('clip.model.title'));
-    this.setProperties({
-      _delayTime: delay,
-      isPlaying: true,
-      isFinished: false,
-    });
+    // console.log("execute start", this.get('clip.model.title'), this.get('isPlaying'));
+
+    // TODO(AUTOMATIONSPIKE): this will not update when seeking into clip that is already playing
+    if (!this.get('isFinished')) {
+      this.setProperties({
+        _delayTime: delay,
+        isPlaying: true,
+        isFinished: false,
+        tickBeat: 0,
+      });
+    }
+
+    // TODO(AUTOMATIONSPIKE): move into explicit tick event?
+    if (this.get('repeatInterval')) {
+      this._executeTick(delay);
+    }
+  },
+
+  _getCurrentBeat() {
+    let currentClipBeat = this.get('metronome').getCurrentBeat() - this.get('startBeat');
+    console.log("_getCurrentBeat", currentClipBeat);
+    return currentClipBeat;
+
+    // TODO(AUTOMATIONSPIKE): account for delay at automationclip level by passing clipEvent and exposing getCurrentBeat, tick?
+    // TODO(AUTOMATIONSPIKE): tickBeat: observes 'tick', 'seekBeat' => return clipEvent.getCurrentBeat
+
+    // let beatWithoutDelay = this.get('metronome').getCurrentBeat() - this.get('startBeat');
+    // let delayBeats = timeToBeat(delay, this.get('bpm'));
+    // console.log("_getCurrentBeat", beatWithoutDelay, delayBeats);
+    // return beatWithoutDelay + delayBeats;
+  },
+
+  _executeTick: function(delay) {
+    // console.log("execute tick", this.get('clip.model.title'), this.get('isFinished'));
+    this.set('tickBeat', this._getCurrentBeat());
   },
 
   _executeEnd: function(delay) {
-    console.log("execute end", this.get('clip.model.title'));
+    // console.log("execute end", this.get('clip.model.title'));
+    this.get('_startEvent').cancelRepeat();
     this.setProperties({
       isPlaying: false,
       isFinished: true,
+      tickBeat: this.get('numBeat'),
     });
   },
 
