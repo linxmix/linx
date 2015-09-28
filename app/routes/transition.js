@@ -4,12 +4,12 @@ import PreventDirtyTransitionMixin from 'linx/mixins/routes/prevent-dirty-transi
 export default Ember.Route.extend(PreventDirtyTransitionMixin, {
   actions: {
     saveTransition() {
-      let transition = this.get('controller.transition');
+      let transition = this.get('transition');
       transition.save();
     },
 
     deleteTransition() {
-      let transition = this.get('controller.transition');
+      let transition = this.get('transition');
 
       if (window.confirm("Are you sure you want to delete this transition? It cannot be restored once deleted.")) {
         // clean up relationships on parent very manually

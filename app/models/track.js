@@ -16,11 +16,14 @@ export default DS.Model.extend(
 
   md5: DS.attr('string'),
   s3Url: DS.attr('string'),
+  scStreamUrl: DS.attr('string'),
 
   _echonestTrack: DS.belongsTo('echonest-track', { async: true }),
   echonestTrack: withDefaultModel('_echonestTrack', function() {
     return this.fetchEchonestTrack();
   }),
+
+  soundcloudTrack: DS.belongsTo('soundcloud-track', { async: true }),
 
   _audioMeta: DS.belongsTo('audio-meta', { async: true }),
   audioMeta: withDefaultModel('_audioMeta', function() {
@@ -34,18 +37,13 @@ export default DS.Model.extend(
   echonest: null,
 
   // TODO: abstract into audio-source?
-  streamUrl: Ember.computed.reads('s3StreamUrl'),
+  streamUrl: Ember.computed.or('s3StreamUrl', 'scStreamUrl', 'soundcloudTrack.streamUrl'),
   s3StreamUrl: function() {
     if (!Ember.isNone(this.get('s3Url'))) {
       // TODO: move to s3 service
       return "http://s3-us-west-2.amazonaws.com/linx-music/" + this.get('s3Url');
     }
   }.property('s3Url'),
-  scStreamUrl: function() {
-      var clientId = Config.clientId_Soundcloud;
-      return soundcloud.stream_url + '?client_id=' + clientId;
-    return null;
-  }.property(),
   // /TODO
 
   // TODO: fill out with identify linx md5 tracks, dedupe, etc

@@ -22,7 +22,7 @@ module.exports = function(environment) {
       'default-src': "'self'",
 
       // allow firebase
-      'connect-src': "'self' http://api.soundcloud.com wss://*.firebaseio.com http://developer.echonest.com http://*.amazonaws.com",
+      'connect-src': "'self' http://api.soundcloud.com https://api.soundcloud.com https://*.sndcdn.com wss://*.firebaseio.com http://developer.echonest.com http://*.amazonaws.com",
       'frame-src': "'self' https://*.firebaseio.com",
       'script-src': "'self' 'unsafe-eval' 'unsafe-inline' https://*.firebaseio.com http://connect.soundcloud.com",
 

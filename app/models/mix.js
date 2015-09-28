@@ -36,12 +36,12 @@ const MixItemFunctionsMixin = function(...modelNames) {
 
     // appendItem
     mixinParams[`append${capitalizedModelName}`] = function(model) {
-      return this[insertItemAtFnKey](this.get('index'), model);
+      return this[insertItemAtFnKey](this.get('length'), model);
     };
 
     // appendItems
     mixinParams[`append${capitalizedModelName}s`] = function(model) {
-      return this[insertItemsAtFnKey](this.get('index'), model);
+      return this[insertItemsAtFnKey](this.get('length'), model);
     };
 
     // items
