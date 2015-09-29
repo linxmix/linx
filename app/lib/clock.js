@@ -1,5 +1,8 @@
 import Ember from 'ember';
 import WaaClock from 'npm:waaclock';
+
+import _ from 'npm:underscore';
+
 import RequireAttributes from 'linx/lib/require-attributes';
 
 const TICK_INTERVAL = 0.2; // [s] Time between clock ticks
@@ -42,7 +45,7 @@ export const ClockEvent = Ember.Object.extend(
   },
 
   cancelRepeat: function() {
-    return this.set('repeatInterval', null);
+    this.set('repeatInterval', null);
   },
 
   // internal params
@@ -111,6 +114,12 @@ export const ClockEvent = Ember.Object.extend(
 export default Ember.Object.extend(
   RequireAttributes('audioContext'), {
 
+  createEvent(params) {
+    return ClockEvent.create(_.extend({
+      clock: this,
+    }, params));
+  },
+
   // params
   tickTime: 0,
   isStarted: false,
@@ -126,6 +135,10 @@ export default Ember.Object.extend(
       this.get('_clock').stop();
       this.set('isStarted', false);
     }
+  },
+
+  tick: function() {
+    this.get('_clock')._tick();
   },
 
   getCurrentTime: function() {
