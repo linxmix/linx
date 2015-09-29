@@ -6,7 +6,7 @@ import {
 } from 'mocha';
 import { expect } from 'chai';
 
-import lookup from 'lib/computed/lookup';
+import lookup from 'linx/lib/computed/lookup';
 
 const MODELS = {
   honda: 'accord',

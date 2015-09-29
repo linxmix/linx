@@ -58,12 +58,12 @@ describe('TrackClipModel', function() {
       numBeats() { return track.get('audioMeta.numBeats'); },
       clipStartBeatWithoutTransition() { return track.get('audioMeta.firstBeat'); },
       clipEndBeatWithoutTransition() { return track.get('audioMeta.lastBeat'); },
-      audioStartBeat() { return trackClip.get('clipStartBeatWithoutTransition'); },
-      audioEndBeat() { return trackClip.get('clipEndBeatWithoutTransition'); },
+      clipStartBeat() { return trackClip.get('clipStartBeatWithoutTransition'); },
+      clipEndBeat() { return trackClip.get('clipEndBeatWithoutTransition'); },
 
-      audioStartTime: 0.3190228052297187,
+      audioStartTime: 0.15951140261485935,
       audioLength: 367.14311391752545,
-      audioEndTime: 367.4621367227552,
+      audioEndTime: 367.3026253201403,
     });
   });
 
@@ -105,8 +105,8 @@ describe('TrackClipModel', function() {
       startBeat() { return prevClip.get('startBeat'); },
       numBeats() { return track.get('audioMeta.lastBeat') - prevTransition.get('toTrackStartBeat'); },
       clipStartBeatWithTransition() { return prevTransition.get('toTrackStartBeat'); },
-      audioStartBeat() { return trackClip.get('clipStartBeatWithTransition'); },
-      audioEndBeat() { return trackClip.get('clipEndBeatWithoutTransition'); },
+      clipStartBeat() { return trackClip.get('clipStartBeatWithTransition'); },
+      clipEndBeat() { return trackClip.get('clipEndBeatWithoutTransition'); },
     });
   });
 
@@ -130,8 +130,8 @@ describe('TrackClipModel', function() {
       startBeat: 0,
       numBeats() { return nextTransition.get('fromTrackEndBeat') - track.get('audioMeta.firstBeat'); },
       clipEndBeatWithTransition() { return nextTransition.get('fromTrackEndBeat'); },
-      audioStartBeat() { return trackClip.get('clipStartBeatWithoutTransition'); },
-      audioEndBeat() { return trackClip.get('clipEndBeatWithTransition'); },
+      clipStartBeat() { return trackClip.get('clipStartBeatWithoutTransition'); },
+      clipEndBeat() { return trackClip.get('clipEndBeatWithTransition'); },
     });
   });
 
@@ -178,8 +178,8 @@ describe('TrackClipModel', function() {
       numBeats() { return nextTransition.get('fromTrackEndBeat') - prevTransition.get('toTrackStartBeat'); },
       clipStartBeatWithTransition() { return prevTransition.get('toTrackStartBeat'); },
       clipEndBeatWithTransition() { return nextTransition.get('fromTrackEndBeat'); },
-      audioStartBeat() { return trackClip.get('clipStartBeatWithTransition'); },
-      audioEndBeat() { return trackClip.get('clipEndBeatWithTransition'); },
+      clipStartBeat() { return trackClip.get('clipStartBeatWithTransition'); },
+      clipEndBeat() { return trackClip.get('clipEndBeatWithTransition'); },
     });
   });
 });

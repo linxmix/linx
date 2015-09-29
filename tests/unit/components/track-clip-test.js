@@ -34,9 +34,9 @@ describe('TrackClipComponent', function() {
 
   describeAttrs('track-clip component', {
     subject() { return component; },
-    startPx: '5.102809647500005px',
+    startPx: '-5.102809647500005px',
     seekTime: 4.688928657950469,
-    audioSeekTime: 5.007951463180188,
+    audioSeekTime: 4.848440060565328,
     tempo: 0.7814881096584115,
   });
 
@@ -51,7 +51,7 @@ describe('TrackClipComponent', function() {
     describeAttrs('track-clip component', {
       subject() { return component; },
       seekTime: 9.377857315900938,
-      audioSeekTime: 9.696880121130656,
+      audioSeekTime: 9.537368718515797,
     });
   });
 
@@ -66,7 +66,7 @@ describe('TrackClipComponent', function() {
     describeAttrs('track-clip component', {
       subject() { return component; },
       seekTime: 4.688928657950469,
-      audioSeekTime: 5.007951463180188,
+      audioSeekTime: 4.848440060565328,
       tempo: 1.1722321644876172,
     });
   });
@@ -81,7 +81,7 @@ describe('TrackClipComponent', function() {
 
     describeAttrs('track-clip component', {
       subject() { return component; },
-      startPx: '7.6542144712500075px',
+      startPx: '-7.6542144712500075px',
     });
   });
 });

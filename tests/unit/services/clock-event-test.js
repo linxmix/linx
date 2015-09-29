@@ -27,7 +27,7 @@ describe('ClockEvent', function() {
     // TODO: need a good way to stub this
     // stub Clock._clock with manually ticking clock
     clock = Clock.create({ audioContext: dummyContext });
-    waaClock = new WAAClock(dummyContext, { tickMethod: 'manual' });
+    waaClock = new WaaClock(dummyContext, { tickMethod: 'manual' });
     clock.set('_clock', waaClock);
     waaClock.start();
 
@@ -37,7 +37,7 @@ describe('ClockEvent', function() {
       }
 
       clock.tick();
-    }
+    };
   });
 
   describe('with simple deadline', function() {

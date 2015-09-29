@@ -59,10 +59,10 @@ export default DS.Model.extend(
   ReadinessMixin('isMixReady'),
   MixItemFunctionsMixin('track', 'transition', 'mix'), // TODO(POLYMORPHISM)
   DependentRelationshipMixin('arrangement'),
-  OrderedHasManyMixin('mixItems', 'mix-item'), {
+  OrderedHasManyMixin('_mixItems', 'mix-item'), {
 
   title: DS.attr('string'),
-  mixItems: DS.hasMany('mix-item', { async: true, defaultValue: () => [] }),
+  _mixItems: DS.hasMany('mix-item', { async: true, defaultValue: () => [] }),
 
   _arrangement: DS.belongsTo('arrangement', { async: true }),
   arrangement: withDefaultModel('_arrangement', function() {
