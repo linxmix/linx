@@ -38,18 +38,19 @@ export default Clip.extend(
 
     // console.log('_updateClipVolumes', fromClipVolume, toClipVolume, fromClip, toClip);
 
-    // TODO(AUTOMATION): clamped computed property
+    // TODO(AUTOMATION): clamped computed property?
     fromClip && fromClip.set('volume', clamp(0, fromClipVolume, 1));
     toClip && toClip.set('volume', clamp(0, toClipVolume, 1));
   },
 
+  // TODO(AUTOMATION): first check this is the closest automation
   _updateClipVolumes: function() {
-    let { clipEvent, numBeats, isFinished } = this.getProperties('clipEvent', 'numBeats', 'isFinished');
+    let { clipEvent, numBeats } = this.getProperties('clipEvent', 'numBeats');
 
     if (clipEvent) {
       let currentBeat = clipEvent.getCurrentBeat();
+      let x = Math.max(currentBeat / numBeats);
 
-      let x = isFinished ? 1 : currentBeat / numBeats;
       this.updateValue(x);
     }
   },

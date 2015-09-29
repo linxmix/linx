@@ -137,7 +137,7 @@ var ClipEvent = Ember.Object.extend(
   // returns current clipBeat
   getCurrentBeat() {
     let currentClipBeat = this.get('metronome').getCurrentBeat() - this.get('startBeat');
-    return currentClipBeat;
+    return clamp(0, currentClipBeat, this.get('numBeats'));
   },
 
   // internal params
@@ -192,8 +192,8 @@ var ClipEvent = Ember.Object.extend(
 
     // if seeking before clip end, set isFinished to false
     let currentMetronomeBeat = metronome.getCurrentBeat();
-    let endBeat = this.get('endBeat');
-    if (currentMetronomeBeat <= endBeat) {
+    let isFinished = currentMetronomeBeat >= this.get('endBeat');
+    if (!isFinished) {
       this.set('isFinished', false);
     }
 
@@ -206,12 +206,12 @@ var ClipEvent = Ember.Object.extend(
 
     startEvent.setProperties({
       deadline: absStartTime,
-      isScheduled: metronomeIsPlaying,
+      isScheduled: !isFinished && metronomeIsPlaying,
     });
 
     tickEvent.setProperties({
       deadline: absStartTime,
-      isScheduled: metronomeIsPlaying,
+      isScheduled: !isFinished && metronomeIsPlaying,
     });
 
     endEvent.setProperties({
@@ -221,7 +221,7 @@ var ClipEvent = Ember.Object.extend(
   },
 
   _executeStart(delay) {
-    console.log("_executeStart", this.get('clip.model.title'));
+    // console.log("_executeStart", this.get('clip.model.title'), delay);
     // TODO(PERFORMANCE): will this miss a few ticks when run loop is behind?
     this.get('_tickEvent').set('repeatInterval', this.get('repeatInterval'));
 
@@ -238,6 +238,7 @@ var ClipEvent = Ember.Object.extend(
   },
 
   _executeEnd(delay) {
+    // console.log("_executeEnd", this.get('clip.model.title'), delay);
     this.get('_tickEvent').cancelRepeat();
 
     this.setProperties({
