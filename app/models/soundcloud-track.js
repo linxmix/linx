@@ -7,8 +7,28 @@ export default DS.Model.extend({
   description: DS.attr('string'),
   duration: DS.attr('number'),
 
+  isStreamable: Ember.computed.reads('streamable'),
   streamable: DS.attr('boolean'),
   streamUrl: DS.attr('string'),
+
+  streamPromise: Ember.computed('streamUrl', 'isStreamable', function() {
+    let streamUrl = this.get('streamUrl');
+
+    if (!(this.get('isStreamable') && streamUrl)) {
+      return;
+    }
+
+    return DS.PromiseObject.create({
+      // TODO: convert to normal xhr because jquery doesn't support this :(
+      promise: Ember.$.get(streamUrl, {
+        xhrFields: {
+          responseType: 'arraybuffer'
+        },
+      }),
+    });
+  }),
+
+  audioArrayBuffer: Ember.computed.reads('streamPromise.content')
 
   // streamUrl: Ember.computed.or('s3StreamUrl', 'stream_url'),
 

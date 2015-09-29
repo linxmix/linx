@@ -6,6 +6,10 @@ import ReadinessMixin from 'linx/mixins/readiness';
 
 import withDefaultModel from 'linx/lib/computed/with-default-model';
 
+export const AudioSource = Ember.Object.extend({
+
+});
+
 export default DS.Model.extend(
   ReadinessMixin('isTrackReady'),
   DependentRelationshipMixin('audioMeta'), {
@@ -23,6 +27,7 @@ export default DS.Model.extend(
     return this.fetchEchonestTrack();
   }),
 
+
   soundcloudTrack: DS.belongsTo('soundcloud-track', { async: true }),
 
   _audioMeta: DS.belongsTo('audio-meta', { async: true }),
@@ -36,19 +41,25 @@ export default DS.Model.extend(
   // injected by app
   echonest: null,
 
-  // TODO: abstract into audio-source?
+  // params
+  file: null,
+
+  audioSource: Ember.computed('streamUrl', 'file', function() {
+    return AudioSource.create({
+      streamUrl: this.get('streamUrl'),
+      // arrayBuffer: this.get('soundcloudTrack.audioArrayBuffer'),
+      file: this.get('file'),
+    });
+  }),
+
   streamUrl: Ember.computed.or('s3StreamUrl', 'scStreamUrl', 'soundcloudTrack.streamUrl'),
+
   s3StreamUrl: function() {
     if (!Ember.isNone(this.get('s3Url'))) {
       // TODO: move to s3 service
       return "http://s3-us-west-2.amazonaws.com/linx-music/" + this.get('s3Url');
     }
   }.property('s3Url'),
-  // /TODO
-
-  // TODO: fill out with identify linx md5 tracks, dedupe, etc
-  identify: function() {
-  },
 
   // figure out which track this is in echonest
   fetchEchonestTrack() {

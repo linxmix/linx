@@ -48,7 +48,6 @@ export default DS.Model.extend(
         return acc.concat(hasMany);
       }, []);
 
-      console.log("updateClips", clips, newClips);
       copyInPlace(clips, newClips);
     }
   },

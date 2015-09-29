@@ -70,7 +70,7 @@ export default Ember.Object.extend(
   },
 
   createClipEvent: function(clip) {
-    console.log('createClipEvent', clip);
+    // console.log('createClipEvent', clip);
     return ClipEvent.create({
       clip,
       metronome: this,
@@ -233,7 +233,7 @@ var ClipEvent = Ember.Object.extend(
   },
 
   _executeTick(delay) {
-    console.log("_executeTick", this.get('clip.model.title'));
+    // console.log("_executeTick", this.get('clip.model.title'));
     this.incrementProperty('tick');
   },
 

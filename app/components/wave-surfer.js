@@ -16,8 +16,12 @@ export const Wave = Ember.Object.extend(
   volume: Ember.computed.reads('component.volume'),
 
   audioContext: Ember.computed.reads('component.audioContext'),
+
   file: Ember.computed.reads('component.file'),
   streamUrl: Ember.computed.reads('component.streamUrl'),
+  arrayBuffer: Ember.computed.reads('component.arrayBuffer'),
+  decodedBuffer: Ember.computed.reads('component.decodedBuffer'),
+
   seekTime: Ember.computed.reads('component.seekTime'),
   pxPerBeat: Ember.computed.reads('component.pxPerBeat'),
   audioBpm: Ember.computed.reads('component.audioBpm'),
@@ -127,6 +131,26 @@ export const Wave = Ember.Object.extend(
     }
   }.observes('wavesurfer', 'file'),
 
+  loadArrayBuffer: function() {
+    var arrayBuffer = this.get('arrayBuffer');
+    var wavesurfer = this.get('wavesurfer');
+    // console.log("load audioFile", wavesurfer, arrayBuffer);
+
+    if (arrayBuffer && wavesurfer) {
+      wavesurfer.loadArrayBuffer(arrayBuffer);
+    }
+  }.observes('wavesurfer', 'arrayBuffer'),
+
+  loadDecodedBuffer: function() {
+    var decodedBuffer = this.get('decodedBuffer');
+    var wavesurfer = this.get('wavesurfer');
+    // console.log("load audioFile", wavesurfer, decodedBuffer);
+
+    if (decodedBuffer && wavesurfer) {
+      wavesurfer.loadDecodedBuffer(decodedBuffer);
+    }
+  }.observes('wavesurfer', 'decodedBuffer'),
+
   loadStream: function() {
     var streamUrl = this.get('streamUrl');
     var wavesurfer = this.get('wavesurfer');
@@ -208,12 +232,15 @@ export const Wave = Ember.Object.extend(
 });
 
 
-export default Ember.Component.extend({
+export default Ember.Component.extend(
+  RequireAttributes('audioSource'), {
+
   classNames: ['WaveSurfer'],
 
-  // expected one of these two params
-  file: null,
-  streamUrl: null,
+  file: Ember.computed.reads('audioSource.file'),
+  streamUrl: Ember.computed.reads('audioSource.streamUrl'),
+  arrayBuffer: Ember.computed.reads('audioSource.arrayBuffer'),
+  decodedBuffer: Ember.computed.reads('audioSource.decodedBuffer'),
 
   // optional params
   audioBpm: null,

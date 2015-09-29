@@ -45,10 +45,13 @@ export default Clip.extend(
 
   _updateClipVolumes: function() {
     let { clipEvent, numBeats, isFinished } = this.getProperties('clipEvent', 'numBeats', 'isFinished');
-    let currentBeat = clipEvent.getCurrentBeat();
 
-    let x = isFinished ? 1 : currentBeat / numBeats;
-    this.updateValue(x);
+    if (clipEvent) {
+      let currentBeat = clipEvent.getCurrentBeat();
+
+      let x = isFinished ? 1 : currentBeat / numBeats;
+      this.updateValue(x);
+    }
   },
 
   _automationDidTick: function() {
