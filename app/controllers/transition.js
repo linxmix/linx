@@ -1,6 +1,7 @@
 import Ember from 'ember';
 
 import subtract from 'linx/lib/computed/subtract';
+import { isNumber } from 'linx/lib/utils';
 
 export default Ember.Controller.extend({
   // expected params
@@ -26,6 +27,10 @@ export default Ember.Controller.extend({
   _inputFromTrackEndBeat: function() {
     let value = parseFloat(this.get('inputFromTrackEndBeat'));
 
+    if (value === NaN) {
+      return;
+    }
+
     this.get('model.readyPromise').then((transition) => {
       transition.setFromTrackEndBeat(value + this.get('fromTrackFirstBeat'));
     });
@@ -33,12 +38,20 @@ export default Ember.Controller.extend({
   _inputToTrackStartBeat: function() {
     let value = parseFloat(this.get('inputToTrackStartBeat'));
 
+    if (value === NaN) {
+      return;
+    }
+
     this.get('model.readyPromise').then((transition) => {
       transition.setToTrackStartBeat(value + this.get('toTrackFirstBeat'));
     });
   }.observes('inputToTrackStartBeat'),
   _inputTransitionLength: function() {
     let value = parseFloat(this.get('inputTransitionLength'));
+
+    if (value === NaN) {
+      return;
+    }
 
     this.get('model.readyPromise').then((transition) => {
       transition.get('arrangement.clips.firstObject').set('numBeats', value);

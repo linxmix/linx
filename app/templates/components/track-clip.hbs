@@ -1,19 +1,21 @@
-{{wave-surfer
-  audioSource=track.audioSource
+{{#if track.audioSource}}
+  {{wave-surfer
+    audioSource=track.audioSource
 
-  isPlaying=isPlaying
-  seekTime=audioSeekTime
+    isPlaying=isPlaying
+    seekTime=audioSeekTime
 
-  pxPerBeat=pxPerBeat
-  audioBpm=audioBpm
+    pxPerBeat=pxPerBeat
+    audioBpm=audioBpm
 
-  volume=clip.volume
-  pitch=clip.pitch
-  tempo=tempo
+    volume=clip.volume
+    pitch=clip.pitch
+    tempo=tempo
 
-  disableMouseInteraction=disableMouseInteraction
+    disableMouseInteraction=disableMouseInteraction
 
-  waveDidLoad="waveDidLoad"
-}}
+    waveDidLoad="waveDidLoad"
+  }}
+{{/if}}
 
 {{!-- {{yield markerOptions}} --}}
