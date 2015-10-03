@@ -28,23 +28,51 @@ export default Ember.Component.extend(
     this.sendAction('seekToBeat', beat);
   },
 
-  // _prevPxPerBeat: 0,
-  // _recenterOnZoom: function() {
-  //   let { pxPerBeat, _prevPxPerBeat } = this.getProperties('pxPerBeat', '_prevPxPerBeat');
-  //   let $this = this.$();
+  _scrollHandler: null,
+  _setupScrollHandler: function() {
+    let scrollHandler = (e) => {
+      this.set('_prevScroll', this.$().scrollLeft());
+    };
 
-  //   // calculate prev position
-  //   let prevX = $this.scrollLeft();
-  //   let prevPosition = prevX /
+    this.$().on('scroll', scrollHandler);
 
-  //   // calculate desired position
+    this.set('_scrollHandler', scrollHandler);
+  }.on('didInsertElement'),
 
-  //   console.log("recenter", 0, x, maxScroll);
+  _teardownScrollHandler: function() {
+    this.$().off('scroll', this.get('_scrollHandler'));
+  }.on('willDestroyElement'),
 
-  //   // scroll to desired position
-  //   let maxScroll = $this[0].scrollWidth - $this.innerWidth();
-  //   $this.scrollLeft = clamp(0, x, maxScroll);
-  // }.observes('pxPerBeat'),
+  _prevScroll: 0,
+  _prevPxPerBeat: Ember.computed.reads('pxPerBeat'),
+  _recenterOnZoom: function() {
+    let { pxPerBeat, _prevPxPerBeat: prevPxPerBeat, _prevScroll: prevScroll } = this.getProperties('pxPerBeat', '_prevPxPerBeat', '_prevScroll');
+
+    this.set('_prevPxPerBeat', pxPerBeat);
+    if (prevPxPerBeat <= 0) {
+      return;
+    }
+
+    // calculate the beat that was at the center, then scroll to it
+    let beat = (prevScroll + this.getHalfWidth()) / prevPxPerBeat;
+    this.scrollToBeat(beat);
+  }.observes('pxPerBeat'),
+
+  getHalfWidth() {
+    return this.$().innerWidth() / 2.0;
+  },
+
+  scrollToBeat(beat) {
+    let pxPerBeat = this.get('pxPerBeat');
+    let $this = this.$();
+
+    // since we are setting scrollLeft, adjust halfway
+    let beatPx = (pxPerBeat * beat) - this.getHalfWidth();
+    let maxScroll = $this[0].scrollWidth - $this.innerWidth();
+
+    console.log("scrollToBeat", beat);
+    $this.scrollLeft(clamp(0, beatPx, maxScroll));
+  },
 
   playheadPx: function() {
     return (this.get('metronome.tickBeat') * this.get('pxPerBeat')) + 'px';
