@@ -31,7 +31,7 @@ export default Ember.Component.extend(
   _scrollHandler: null,
   _setupScrollHandler: function() {
     let scrollHandler = (e) => {
-      this.set('_prevScroll', this.$().scrollLeft());
+      this._updateCenterBeat();
     };
 
     this.$().on('scroll', scrollHandler);
@@ -43,19 +43,13 @@ export default Ember.Component.extend(
     this.$().off('scroll', this.get('_scrollHandler'));
   }.on('willDestroyElement'),
 
-  _prevScroll: 0,
-  _prevPxPerBeat: Ember.computed.reads('pxPerBeat'),
+  _updateCenterBeat() {
+    let centerBeat = (this.$().scrollLeft() + this.getHalfWidth()) / this.get('pxPerBeat');
+    this.set('centerBeat', centerBeat);
+  },
+
   _recenterOnZoom: function() {
-    let { pxPerBeat, _prevPxPerBeat: prevPxPerBeat, _prevScroll: prevScroll } = this.getProperties('pxPerBeat', '_prevPxPerBeat', '_prevScroll');
-
-    this.set('_prevPxPerBeat', pxPerBeat);
-    if (prevPxPerBeat <= 0) {
-      return;
-    }
-
-    // calculate the beat that was at the center, then scroll to it
-    let beat = (prevScroll + this.getHalfWidth()) / prevPxPerBeat;
-    this.scrollToBeat(beat);
+    this.scrollToBeat(this.get('centerBeat'));
   }.observes('pxPerBeat'),
 
   getHalfWidth() {
@@ -70,7 +64,7 @@ export default Ember.Component.extend(
     let beatPx = (pxPerBeat * beat) - this.getHalfWidth();
     let maxScroll = $this[0].scrollWidth - $this.innerWidth();
 
-    console.log("scrollToBeat", beat);
+    // console.log("scrollToBeat", beat);
     $this.scrollLeft(clamp(0, beatPx, maxScroll));
   },
 
