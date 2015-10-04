@@ -59,12 +59,9 @@ export default Ember.Mixin.create({
     willTransition: function(transition) {
       var model = this.modelForDirtyTransition();
 
-      if (model.get('isDirty') && !confirm(this.get('dirtyTransitionOkCancelMessage'))) {
+      if ((model.get('hasDirtyAttributes') || model.get('anyDirty')) && !confirm(this.get('dirtyTransitionOkCancelMessage'))) {
         transition.abort();
       } else {
-        transition.followRedirects().then(function() {
-          model.rollback();
-        });
         return true;
       }
     }
