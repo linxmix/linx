@@ -3,6 +3,11 @@
   cursor: crosshair;
   overflow-y: hidden;
   overflow-x: auto;
+
+  // TODO(D3)
+  .data-visual {
+    background-color: white;
+  }
 }
 
 .ArrangementGrid--loading {

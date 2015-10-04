@@ -85,4 +85,22 @@ export default Ember.Component.extend(
   playheadPx: function() {
     return (this.get('metronome.tickBeat') * this.get('pxPerBeat')) + 'px';
   }.property('metronome.tickBeat', 'pxPerBeat'),
+
+  //
+  // TODO(D3): figure this out
+  //
+  dataSource: Ember.inject.service('dimensional-data-source'),
+
+  data: Ember.computed.alias('dataSource.data'),
+  series: [ 'dogs', 'cats' ],
+  key: 'state',
+
+  dimensionalData: Ember.computed('data', 'series', 'key', {
+    get() {
+      return DimensionalDataModel.create(this.getProperties('data', 'series', 'key'));
+    }
+  }),
 });
+
+// TODO(D3)
+import DimensionalDataModel from 'linx/lib/dimensional';
