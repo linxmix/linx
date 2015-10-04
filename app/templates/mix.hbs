@@ -42,6 +42,8 @@
       {{mix-list-item
         item=item
         remove="removeItem"
+        view="viewItem"
+        preview="previewItem"
       }}
     {{/each}}
   {{/mix-list}}
@@ -50,6 +52,7 @@
 
   {{simple-arrangement
     arrangement=model.arrangement
+    scrollCenterBeat=scrollCenterBeat
   }}
 
   <hr/>

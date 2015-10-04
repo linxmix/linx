@@ -12,6 +12,7 @@ export default Ember.Component.extend(ArrangementPlayerMixin,
   },
 
   isEditing: true,
+  scrollCenterBeat: 0,
 
   // Hacky stuff to convert <input type="number"> values to numbers
   inputBpm: Ember.computed.oneWay('metronome.bpm'),

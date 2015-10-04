@@ -13,6 +13,16 @@ export default Ember.Controller.extend({
     return transition && transition.generateMix();
   }),
 
+  transitionItem: Ember.computed.reads('mix.transitionItems.firstObject'),
+  transitionClip: Ember.computed.reads('transitionItem.clip'),
+
+  // scroll to center of transitionClip
+  scrollCenterBeat: Ember.computed('transitionClip.isReady', function() {
+    if (this.get('transitionClip.isReady')) {
+      return this.get('transitionClip.centerBeat');
+    }
+  }),
+
   fromTrackEndBeat: Ember.computed.reads('model.fromTrackEndBeat'),
   fromTrackFirstBeat: Ember.computed.reads('model.fromTrack.audioMeta.firstBeat'),
 

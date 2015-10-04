@@ -12,7 +12,7 @@ export const MODEL_LINK_TOS = {
 };
 
 export default Ember.Component.extend(
-  BubbleActions('remove'), RequireAttributes('item'), {
+  BubbleActions('remove', 'view', 'preview'), RequireAttributes('item'), {
 
   actions: {},
   classNames: ['MixListItem', 'item'],

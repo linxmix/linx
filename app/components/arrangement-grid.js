@@ -4,11 +4,15 @@ import BubbleActions from 'linx/lib/bubble-actions';
 import RequireAttributes from 'linx/lib/require-attributes';
 
 import cssStyle from 'linx/lib/computed/css-style';
-import { clamp } from 'linx/lib/utils';
+import { clamp, isNumber } from 'linx/lib/utils';
 
 export default Ember.Component.extend(
   RequireAttributes('arrangement', 'metronome', 'pxPerBeat'),
   BubbleActions('seekToClick'), {
+
+  // optional params
+  scrollCenterBeat: null,
+  centerBeat: 0,
 
   classNames: ['ArrangementGrid'],
   classNameBindings: ['isReady::ArrangementGrid--loading'],
@@ -27,6 +31,16 @@ export default Ember.Component.extend(
 
     this.sendAction('seekToBeat', beat);
   },
+
+  _scrollToCenterBeat: function() {
+    if (this.get('arrangement.isReady')) {
+      let scrollCenterBeat = this.get('scrollCenterBeat');
+
+      if (isNumber(scrollCenterBeat)) {
+        this.scrollToBeat(scrollCenterBeat);
+      }
+    }
+  }.observes('scrollCenterBeat', 'arrangement.isReady'),
 
   _scrollHandler: null,
   _setupScrollHandler: function() {
@@ -64,7 +78,7 @@ export default Ember.Component.extend(
     let beatPx = (pxPerBeat * beat) - this.getHalfWidth();
     let maxScroll = $this[0].scrollWidth - $this.innerWidth();
 
-    // console.log("scrollToBeat", beat);
+    console.log("scrollToBeat", beat);
     $this.scrollLeft(clamp(0, beatPx, maxScroll));
   },
 

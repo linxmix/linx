@@ -221,7 +221,7 @@ var ClipEvent = Ember.Object.extend(
   },
 
   _executeStart(delay) {
-    // console.log("_executeStart", this.get('clip.model.title'), delay);
+    console.log("_executeStart", this.get('clip.model.title'), delay);
     // TODO(PERFORMANCE): will this miss a few ticks when run loop is behind?
     this.get('_tickEvent').set('repeatInterval', this.get('repeatInterval'));
 
