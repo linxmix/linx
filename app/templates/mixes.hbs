@@ -3,6 +3,10 @@
     <i class="add icon"></i>
     New Mix
   </div>
+  <div class="inverted orange ui icon button" {{action 'createCategoryMix'}}>
+    <i class="add icon"></i>
+    New Category Mix
+  </div>
 
   {{#mixes-list mixes=mixes}}
     {{#each mixes as |mix|}}

@@ -151,12 +151,17 @@ export const Wave = Ember.Object.extend(
     }
   }.observes('wavesurfer', 'decodedBuffer'),
 
-  loadStream: function() {
+  loadStreamUrl: function() {
     var streamUrl = this.get('streamUrl');
     var wavesurfer = this.get('wavesurfer');
-    // console.log("load streamUrl", wavesurfer, streamUrl);
 
     if (streamUrl && wavesurfer) {
+      // TODO(HACK): need to go directly to proxy
+      // because Wavesurfer.Util.Ajax bypasses the ember proxy server
+
+      streamUrl = `http://localhost:4004/${streamUrl}`;
+
+      console.log("load streamUrl", wavesurfer, streamUrl);
       wavesurfer.load(streamUrl);
     }
   }.observes('wavesurfer', 'streamUrl'),

@@ -7,6 +7,8 @@ import CamelCaseAttributesMixin from 'linx/mixins/serializers/camel-case-attribu
 export default DS.JSONSerializer.extend(CamelCaseAttributesMixin, {
   normalize(typeClass, hash) {
 
+    console.log("SOUND CLOUDT TRACK SERIALIZER", hash)
+
     // add client_id to stream_url
     if (hash.stream_url) {
       hash.stream_url += `?client_id=${ENV.SC_KEY}`;

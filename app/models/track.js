@@ -27,8 +27,15 @@ export default DS.Model.extend(
     return this.fetchEchonestTrack();
   }),
 
-
   soundcloudTrack: DS.belongsTo('soundcloud-track', { async: true }),
+
+  createFromSoundcloudTrack(soundcloudTrack) {
+    this.setProperties({
+      soundcloudTrack,
+      title: soundcloudTrack.get('title'),
+      scStreamUrl: soundcloudTrack.get('streamUrl'),
+    });
+  },
 
   _audioMeta: DS.belongsTo('audio-meta', { async: true }),
   audioMeta: withDefaultModel('_audioMeta', function() {
@@ -44,15 +51,19 @@ export default DS.Model.extend(
   // params
   file: null,
 
-  audioSource: Ember.computed('streamUrl', 'file', function() {
+  audioSource: Ember.computed('streamUrl', 'proxyStreamUrl', 'file', function() {
     return AudioSource.create({
       streamUrl: this.get('streamUrl'),
+      proxyStreamUrl: this.get('proxyStreamUrl'),
       // arrayBuffer: this.get('soundcloudTrack.audioArrayBuffer'),
       file: this.get('file'),
     });
   }),
 
   streamUrl: Ember.computed.or('s3StreamUrl', 'scStreamUrl', 'soundcloudTrack.streamUrl'),
+  proxyStreamUrl: Ember.computed('streamUrl', function() {
+    return `/${this.get('_streamUrl')}`;
+  }),
 
   s3StreamUrl: function() {
     if (!Ember.isNone(this.get('s3Url'))) {
