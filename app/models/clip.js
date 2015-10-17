@@ -28,6 +28,10 @@ export default DS.Model.extend(
   }),
   centerBeat: add('startBeat', 'halfNumBeats'),
 
+  numBars: Ember.computed('numBeats', function() {
+    return this.get('numBeats') / 4.0;
+  }),
+
   isValidStartBeat: function() {
     let startBeat = this.get('startBeat');
     return isNumber(startBeat);

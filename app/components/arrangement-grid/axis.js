@@ -54,6 +54,10 @@ export default Ember.Component.extend(
   }),
 
   _getParentWidth() {
-    return this.get('parentView').$().width();
+    let parentView = this.get('parentView');
+
+    if (parentView.get('isInDom')) {
+      return parentView.$().width();
+    }
   },
 });
