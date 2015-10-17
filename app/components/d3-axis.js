@@ -9,15 +9,15 @@ export default Ember.Component.extend(GraphicSupport, {
   transform: null,
 
   ticks: null,
-  tickSize: 6,
+  tickSize: null,
   tickFormat: null,
   tickPadding: null,
 
   scale: null,
 
-  axis: Ember.computed('scale', 'orient', 'tickCount', 'tickSize', 'tickFormat', 'tickPadding', {
+  axis: Ember.computed('scale', 'orient', 'ticks', 'tickSize', 'tickFormat', 'tickPadding', {
     get() {
-      var props = this.getProperties('scale', 'orient', 'tickSize', 'tickFormat', 'tickPadding', 'ticks');
+      var props = this.getProperties('scale', 'orient', 'ticks', 'tickSize', 'tickFormat', 'tickPadding');
 
       return props.scale && assign(d3.svg.axis(), props);
     }

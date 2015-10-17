@@ -1,32 +1,6 @@
-{{!-- TODO
-{{beat-grid
-  class="ArrangementGrid-beatgrid"
-  width=arrangementWidth
-  scale=exported
+{{arrangement-grid/axis
+  arrangement=arrangement
+  pxPerBeat=pxPerBeat
 }}
- --}}
-
-<div class="ArrangementGrid-beatgrid" {{bind-attr style="beatgridStyle"}}>
-  {{#if arrangementWidth}}
-    {{#data-visual
-      as |svg width height|
-    }}
-        {{!-- onhover=(action "track") --}}
-          {{!-- {{cart-tracker select=svg.chart.tracker model=tracked
-          xScale=xScale yScale=yScale width=width height=height
-        }} --}}
-      {{arrangement-grid-axis
-        select=(svg-transition svg.x-axis)
-        transform=(svg-translate 0 34)
-        scale=xScale
-        orient="top"
-        tickSize=20
-        ticks=ticks
-      }}
-    {{/data-visual}}
-  {{/if}}
-</div>
 
 {{yield}}
-
-<div class="SimpleArrangement-playhead" {{bind-attr style=playheadStyle}}></div>

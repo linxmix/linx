@@ -1,0 +1,29 @@
+.ArrangementGridAxis {
+  height: 30px;
+  color: white;
+  stroke: white;
+  shape-rendering: crispEdges;
+
+  text {
+    text-anchor: left;
+  }
+
+  .data-visual {
+    width: 100%;
+    height: 100%;
+  }
+
+  .tick line {
+    stroke-width: 1;
+  }
+
+  .domain {
+    fill: none;
+  }
+}
+
+.ArrangementGrid-playhead {
+  position: relative;
+  border-left: 2px solid red;
+  height: 100%;
+}

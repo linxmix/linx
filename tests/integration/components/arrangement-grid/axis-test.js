@@ -7,7 +7,7 @@ import {
 import hbs from 'htmlbars-inline-precompile';
 
 describeComponent(
-  'arrangement-grid-axis',
+  'arrangement-grid/axis',
   'Integration: ArrangementGridAxisComponent',
   {
     integration: true
@@ -18,12 +18,12 @@ describeComponent(
       // Handle any actions with this.on('myAction', function(val) { ... });
       // Template block usage:
       // this.render(hbs`
-      //   {{#arrangement-grid-axis}}
+      //   {{#arrangement-grid/axis}}
       //     template content
-      //   {{/arrangement-grid-axis}}
+      //   {{/arrangement-grid/axis}}
       // `);
 
-      this.render(hbs`{{arrangement-grid-axis}}`);
+      this.render(hbs`{{arrangement-grid/axis}}`);
       expect(this.$()).to.have.length(1);
     });
   }

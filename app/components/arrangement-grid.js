@@ -17,10 +17,6 @@ export default Ember.Component.extend(
   classNames: ['ArrangementGrid'],
   classNameBindings: ['isReady::ArrangementGrid--loading'],
 
-  playheadStyle: cssStyle({
-    'left': 'playheadPx'
-  }),
-
   // on click, seekToBeat
   click(e) {
     let $el = this.$();
@@ -89,47 +85,4 @@ export default Ember.Component.extend(
 
     this._updateCenterBeat();
   },
-
-  playheadPx: function() {
-    return (this.get('metronome.tickBeat') * this.get('pxPerBeat')) + 'px';
-  }.property('metronome.tickBeat', 'pxPerBeat'),
-
-  arrangementWidth: function() {
-    return this.get('arrangement.numBeats') * this.get('pxPerBeat');
-  }.property('arrangement.numBeats', 'pxPerBeat'),
-
-  //
-  // TODO(D3): figure this out
-  //
-
-  arrangementWidthStyle: Ember.computed('arrangementWidth', function() {
-    return `${this.get('arrangementWidth')}px`;
-  }),
-
-  beatgridStyle: cssStyle({
-    width: 'arrangementWidthStyle'
-  }),
-
-  tickHeight: 25,
-  padding: 50,
-
-  numBeats: Ember.computed.reads('arrangement.numBeats'),
-  numBars: Ember.computed.reads('arrangement.numBars'),
-  xScale: Ember.computed('arrangementWidth', 'numBars', function () {
-    let rangeMax = this.get('arrangementWidth');
-    let domainMax = this.get('numBars');
-
-    return d3.scale.linear().domain([1, domainMax + 1]).range([0, rangeMax]);
-  }).readOnly(),
-
-  // scale ticks based on zoom
-  ticksOnScreen: 10,
-  ticks: Ember.computed('arrangementWidth', 'ticksOnScreen', function() {
-    let ticksOnScreen = this.get('ticksOnScreen');
-    let width = this.$().width();
-    let arrangementWidth = this.get('arrangementWidth');
-
-    let ticks = ticksOnScreen * (arrangementWidth / width);
-    return ticks;
-  }),
 });

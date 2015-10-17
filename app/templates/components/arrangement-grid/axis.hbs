@@ -1,0 +1,16 @@
+{{#if arrangementWidth}}
+  {{#data-visual
+    as |svg width height|
+  }}
+    {{d3-axis
+      select=(svg-transition svg.arrangement-axis)
+      transform=(svg-translate 0 34)
+      scale=barScale
+      orient="top"
+      tickSize=20
+      ticks=barTicks
+    }}
+  {{/data-visual}}
+{{/if}}
+
+<div class="ArrangementAxis-playhead" {{bind-attr style=playheadStyle}}></div>

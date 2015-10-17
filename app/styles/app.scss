@@ -27,5 +27,6 @@ $site-nav-height: 35px;
 @import 'components/transition-clip';
 @import 'components/bezier-curve';
 @import 'components/lx-canvas';
-@import 'components/arrangement-grid-axis';
+@import 'components/d3-axis';
 @import 'components/arrangement-grid-lines';
+@import 'components/_arrangement-grid/axis';
