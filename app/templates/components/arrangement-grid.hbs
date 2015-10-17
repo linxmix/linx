@@ -17,11 +17,11 @@
         }} --}}
       {{arrangement-grid-axis
         select=(svg-transition svg.x-axis)
-        scale=exportedXScale
-        orient="bottom"
-        tickSize=(negative-number height)
-        ticks=8
-        tickPadding=6
+        transform=(svg-translate 0 34)
+        scale=xScale
+        orient="top"
+        tickSize=20
+        ticks=ticks
       }}
     {{/data-visual}}
   {{/if}}

@@ -60,5 +60,9 @@ export default DS.Model.extend(
   endBeat: Ember.computed.reads('sortedClips.lastObject.endBeat'),
   numBeats: withDefault('endBeat', 0),
 
+  numBars: Ember.computed('numBeats', function() {
+    return this.get('numBeats') / 4.0;
+  }),
+
   // TODO(CLEANUP): destroy clips when destroying arrangement?
 });

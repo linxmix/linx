@@ -63,23 +63,30 @@ export default Ember.Component.extend(
   },
 
   _recenterOnZoom: function() {
-    this.scrollToBeat(this.get('centerBeat'));
+    this.scrollToBeat(this.get('centerBeat'), false);
   }.observes('pxPerBeat'),
 
   getHalfWidth() {
     return this.$().innerWidth() / 2.0;
   },
 
-  scrollToBeat(beat) {
+  scrollToBeat(beat, doAnimate = true) {
     let pxPerBeat = this.get('pxPerBeat');
     let $this = this.$();
 
     // since we are setting scrollLeft, adjust halfway
     let beatPx = (pxPerBeat * beat) - this.getHalfWidth();
     let maxScroll = $this[0].scrollWidth - $this.innerWidth();
+    let scrollLeft = clamp(0, beatPx, maxScroll);
 
-    console.log("scrollToBeat", beat);
-    $this.scrollLeft(clamp(0, beatPx, maxScroll));
+    if (doAnimate) {
+      $this.animate({
+        scrollLeft: scrollLeft
+      });
+    } else {
+      $this.scrollLeft(scrollLeft);
+    }
+
     this._updateCenterBeat();
   },
 
@@ -91,6 +98,10 @@ export default Ember.Component.extend(
     return this.get('arrangement.numBeats') * this.get('pxPerBeat');
   }.property('arrangement.numBeats', 'pxPerBeat'),
 
+  //
+  // TODO(D3): figure this out
+  //
+
   arrangementWidthStyle: Ember.computed('arrangementWidth', function() {
     return `${this.get('arrangementWidth')}px`;
   }),
@@ -99,15 +110,26 @@ export default Ember.Component.extend(
     width: 'arrangementWidthStyle'
   }),
 
-  //
-  // TODO(D3): figure this out
-  //
-  exportedXScale: Ember.computed.reads('computedXScale'),
-  computedXScale: Ember.computed('arrangementWidth', function () {
-    let width = this.get('arrangementWidth');
-    let scale = d3.scale.linear();
+  tickHeight: 25,
+  padding: 50,
 
-    return scale.range([ 0, width ]);
+  numBeats: Ember.computed.reads('arrangement.numBeats'),
+  numBars: Ember.computed.reads('arrangement.numBars'),
+  xScale: Ember.computed('arrangementWidth', 'numBars', function () {
+    let rangeMax = this.get('arrangementWidth');
+    let domainMax = this.get('numBars');
+
+    return d3.scale.linear().domain([1, domainMax + 1]).range([0, rangeMax]);
   }).readOnly(),
 
+  // scale ticks based on zoom
+  ticksOnScreen: 10,
+  ticks: Ember.computed('arrangementWidth', 'ticksOnScreen', function() {
+    let ticksOnScreen = this.get('ticksOnScreen');
+    let width = this.$().width();
+    let arrangementWidth = this.get('arrangementWidth');
+
+    let ticks = ticksOnScreen * (arrangementWidth / width);
+    return ticks;
+  }),
 });

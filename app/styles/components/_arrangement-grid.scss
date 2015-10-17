@@ -17,9 +17,14 @@
 
 // TODO(D3)
 .ArrangementGrid-beatgrid {
-  height: 100px;
+  height: 30px;
   color: white;
   stroke: white;
+  shape-rendering: crispEdges;
+
+  text {
+    text-anchor: left;
+  }
 
   .data-visual {
     width: 100%;
@@ -28,5 +33,10 @@
 
   .tick line {
     stroke-width: 1;
+  }
+
+  .domain {
+    fill: none;
+    stroke: #000;
   }
 }
