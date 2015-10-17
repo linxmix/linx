@@ -80,6 +80,7 @@ export default Ember.Component.extend(
 
     console.log("scrollToBeat", beat);
     $this.scrollLeft(clamp(0, beatPx, maxScroll));
+    this._updateCenterBeat();
   },
 
   playheadPx: function() {
@@ -89,11 +90,21 @@ export default Ember.Component.extend(
   //
   // TODO(D3): figure this out
   //
+  visual: null,
+
   dataSource: Ember.inject.service('dimensional-data-source'),
 
-  data: Ember.computed.alias('dataSource.data'),
+  data: Ember.computed('dataSource.data', {
+    get() {
+      return this
+        .get('dataSource.data')
+        .sort((valueA, valueB) => valueA.timestamp - valueB.timestamp);
+    }
+  }),
   series: [ 'dogs', 'cats' ],
-  key: 'state',
+  key: 'timestamp',
+
+  tracked: null,
 
   dimensionalData: Ember.computed('data', 'series', 'key', {
     get() {

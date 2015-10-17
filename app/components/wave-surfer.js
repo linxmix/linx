@@ -161,7 +161,6 @@ export const Wave = Ember.Object.extend(
 
       streamUrl = `http://localhost:4004/${streamUrl}`;
 
-      console.log("load streamUrl", wavesurfer, streamUrl);
       wavesurfer.load(streamUrl);
     }
   }.observes('wavesurfer', 'streamUrl'),
