@@ -1,39 +1,31 @@
-{{#data-visual as |svg width height|}}
-  {{#arrangement-grid-lines
-    select=(svg-transition svg.chart)
-    model=dimensionalData
-    width=width
-    height=height
-    margin="10 30 25 65"
-    stroke=(color-scale "category10")
-    as |selection xScale yScale width height|
-  }}
+{{!-- TODO
+{{beat-grid
+  class="ArrangementGrid-beatgrid"
+  width=arrangementWidth
+  scale=exported
+}}
+ --}}
 
-    {{!-- onhover=(action "track") --}}
-      {{!-- {{cart-tracker select=svg.chart.tracker model=tracked
-      xScale=xScale yScale=yScale width=width height=height
-    }} --}}
-
-    {{arrangement-grid-axis
-      select=(svg-transition svg.chart.x-axis)
-      scale=xScale
-      orient="bottom"
-      tickSize=(negative-number height)
-      ticks=8
-      tickPadding=6
+<div class="ArrangementGrid-beatgrid" {{bind-attr style="beatgridStyle"}}>
+  {{#if arrangementWidth}}
+    {{#data-visual
+      as |svg width height|
     }}
-
-    {{arrangement-grid-axis
-      select=(svg-transition svg.chart.y-axis)
-      scale=yScale
-      orient="left"
-      tickSize=(negative-number width)
-      tickPadding=6
-    }}
-
-  {{/arrangement-grid-lines}}
-{{/data-visual}}
-
+        {{!-- onhover=(action "track") --}}
+          {{!-- {{cart-tracker select=svg.chart.tracker model=tracked
+          xScale=xScale yScale=yScale width=width height=height
+        }} --}}
+      {{arrangement-grid-axis
+        select=(svg-transition svg.x-axis)
+        scale=exportedXScale
+        orient="bottom"
+        tickSize=(negative-number height)
+        ticks=8
+        tickPadding=6
+      }}
+    {{/data-visual}}
+  {{/if}}
+</div>
 
 {{yield}}
 

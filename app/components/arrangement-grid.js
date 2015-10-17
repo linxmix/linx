@@ -87,31 +87,27 @@ export default Ember.Component.extend(
     return (this.get('metronome.tickBeat') * this.get('pxPerBeat')) + 'px';
   }.property('metronome.tickBeat', 'pxPerBeat'),
 
+  arrangementWidth: function() {
+    return this.get('arrangement.numBeats') * this.get('pxPerBeat');
+  }.property('arrangement.numBeats', 'pxPerBeat'),
+
+  arrangementWidthStyle: Ember.computed('arrangementWidth', function() {
+    return `${this.get('arrangementWidth')}px`;
+  }),
+
+  beatgridStyle: cssStyle({
+    width: 'arrangementWidthStyle'
+  }),
+
   //
   // TODO(D3): figure this out
   //
-  visual: null,
+  exportedXScale: Ember.computed.reads('computedXScale'),
+  computedXScale: Ember.computed('arrangementWidth', function () {
+    let width = this.get('arrangementWidth');
+    let scale = d3.scale.linear();
 
-  dataSource: Ember.inject.service('dimensional-data-source'),
+    return scale.range([ 0, width ]);
+  }).readOnly(),
 
-  data: Ember.computed('dataSource.data', {
-    get() {
-      return this
-        .get('dataSource.data')
-        .sort((valueA, valueB) => valueA.timestamp - valueB.timestamp);
-    }
-  }),
-  series: [ 'dogs', 'cats' ],
-  key: 'timestamp',
-
-  tracked: null,
-
-  dimensionalData: Ember.computed('data', 'series', 'key', {
-    get() {
-      return DimensionalDataModel.create(this.getProperties('data', 'series', 'key'));
-    }
-  }),
 });
-
-// TODO(D3)
-import DimensionalDataModel from 'linx/lib/dimensional';

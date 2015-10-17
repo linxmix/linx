@@ -74,5 +74,5 @@ export default Ember.Component.extend(
 
   beatToPx: function(beat) {
     return beat * this.get('pxPerBeat'); // beat * (px / beat) = px
-  }
+  },
 });

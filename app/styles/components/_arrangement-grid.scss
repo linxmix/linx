@@ -3,11 +3,6 @@
   cursor: crosshair;
   overflow-y: hidden;
   overflow-x: auto;
-
-  // TODO(D3)
-  .data-visual {
-    background-color: white;
-  }
 }
 
 .ArrangementGrid--loading {
@@ -18,4 +13,20 @@
   position: relative;
   border-left: 2px solid red;
   height: 100%;
+}
+
+// TODO(D3)
+.ArrangementGrid-beatgrid {
+  height: 100px;
+  color: white;
+  stroke: white;
+
+  .data-visual {
+    width: 100%;
+    height: 100%;
+  }
+
+  .tick line {
+    stroke-width: 1;
+  }
 }
