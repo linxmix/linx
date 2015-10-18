@@ -89,24 +89,27 @@ function describeItemOperations(modelName, createModelFn) {
   let insertItemsAtFnKey = `insert${capitalizedModelName}sAt`;
 
   describe(`Mix#${insertItemsAtFnKey}`, function() {
-    let model0, model1;
+    let models;
 
     beforeEach(function() {
-      model0 = createModelFn.call(this);
-      model1 = createModelFn.call(this);
+      models = [];
+      for (let i = 0; i < 10; i++) {
+        models.push(createModelFn.call(this));
+      }
 
       Ember.run(() => {
-        wait(this.mix[insertItemsAtFnKey](0, [model0, model1]));
+        wait(this.mix[insertItemsAtFnKey](0, models));
       });
     });
 
     it('adds items to mix', function() {
-      expect(this.mix.get('length')).to.equal(2);
+      expect(this.mix.get('length')).to.equal(models.length);
     });
 
     it('adds models in order', function() {
-      expect(this.mix.modelAt(0)).to.equal(model0);
-      expect(this.mix.modelAt(1)).to.equal(model1);
+      models.forEach((model, i) => {
+        expect(this.mix.modelAt(i)).to.equal(model);
+      });
     });
   });
 }

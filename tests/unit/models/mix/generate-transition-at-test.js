@@ -67,47 +67,6 @@ describe('MixModel#generateTransitionAt', function() {
     });
   });
 
-  describe('between two mixables', function() {
-    let fromTrack, toTrack, transitionItem;
-
-    beforeEach(function() {
-      fromTrack = makeTrack.call(this);
-      toTrack = makeTrack.call(this);
-
-      Ember.run(() => {
-        wait(mix.insertTracksAt(0, [fromTrack, toTrack]).then(() => {
-          return mix.generateTransitionAt(1).then((_transitionItem) => {
-            transitionItem = _transitionItem;
-          });
-        }));
-      });
-    });
-
-    it('returns new transitionItem', function() {
-      expect(transitionItem).to.be.ok;
-    });
-
-    it('transitionItem isValidTransition', function() {
-      expect(transitionItem.get('isValidTransition')).to.be.true;
-    });
-
-    it('inserts transitionItem between the mixables', function() {
-      expect(mix.objectAt(1)).to.equal(transitionItem);
-    });
-
-    it('fromTrack is in correct place', function() {
-      expect(mix.modelAt(0)).to.equal(fromTrack);
-    });
-
-    it('toTrack is in correct place', function() {
-      expect(mix.modelAt(2)).to.equal(toTrack);
-    });
-
-    it('mix has correct length', function() {
-      expect(mix.get('length')).to.equal(3);
-    });
-  });
-
   describe('in place of valid transition', function() {
     let transition, existingItem, resultItem;
 
@@ -156,6 +115,92 @@ describe('MixModel#generateTransitionAt', function() {
 
     it('removes invalid nextItem', function() {
       expect(mix.contains(invalidNextItem)).to.be.false;
+    });
+  });
+
+  describe('between two mixables', function() {
+    let fromTrack, toTrack, transitionItem;
+
+    beforeEach(function() {
+      fromTrack = makeTrack.call(this);
+      toTrack = makeTrack.call(this);
+
+      Ember.run(() => {
+        wait(mix.insertTracksAt(0, [fromTrack, toTrack]).then(() => {
+          return mix.generateTransitionAt(1).then((_transitionItem) => {
+            transitionItem = _transitionItem;
+          });
+        }));
+      });
+    });
+
+    it('returns new transitionItem', function() {
+      expect(transitionItem).to.be.ok;
+    });
+
+    it('transitionItem isValidTransition', function() {
+      expect(transitionItem.get('isValidTransition')).to.be.true;
+    });
+
+    it('inserts transitionItem between the mixables', function() {
+      expect(mix.objectAt(1)).to.equal(transitionItem);
+    });
+
+    it('fromTrack is in correct place', function() {
+      expect(mix.modelAt(0)).to.equal(fromTrack);
+    });
+
+    it('toTrack is in correct place', function() {
+      expect(mix.modelAt(2)).to.equal(toTrack);
+    });
+
+    it('mix has correct length', function() {
+      expect(mix.get('length')).to.equal(3);
+    });
+  });
+
+  describe('between two mixables within long mix', function() {
+    let tracks, otherTracks, fromTrack, toTrack, transitionItem;
+
+    beforeEach(function() {
+      fromTrack = makeTrack.call(this);
+      toTrack = makeTrack.call(this);
+
+      otherTracks = [];
+      for (let i = 0; i < 10; i++) {
+        otherTracks.push(makeTrack.call(this));
+      }
+
+      tracks = otherTracks.concat([fromTrack, toTrack]);
+
+      Ember.run(() => {
+        console.log('tracks', tracks.length);
+        wait(mix.appendTracks(tracks).then(() => {
+          console.log('appended tracks', tracks.length);
+          return mix.generateTransitionAt(mix.get('length') - 1).then((_transitionItem) => {
+            console.log('generated transition', tracks.length);
+            transitionItem = _transitionItem;
+          });
+        }));
+      });
+    });
+
+    it('inserts transitionItem between the mixables', function() {
+      let expectedIndex = mix.get('length') - 2;
+
+      expect(mix.objectAt(expectedIndex)).to.equal(transitionItem);
+    });
+
+    it('fromTrack is in correct place', function() {
+      let expectedIndex = mix.get('length') - 3;
+
+      expect(mix.modelAt(expectedIndex)).to.equal(fromTrack);
+    });
+
+    it('toTrack is in correct place', function() {
+      let expectedIndex = mix.get('length') - 1;
+
+      expect(mix.modelAt(expectedIndex)).to.equal(toTrack);
     });
   });
 });
