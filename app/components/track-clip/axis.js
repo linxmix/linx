@@ -10,7 +10,7 @@ import { clamp } from 'linx/lib/utils';
 const MAX_BEATS_ON_SCREEN = 100;
 
 export default Ember.Component.extend(
-  BubbleActions(), RequireAttributes('clip', 'pxPerBeat'), {
+  BubbleActions(), RequireAttributes('clip', 'pxPerBeat', 'beatgridOffset'), {
 
   actions: {},
   classNames: ['TrackClipAxis'],
@@ -38,8 +38,13 @@ export default Ember.Component.extend(
     return `${this.get('clipWidth')}px`;
   }),
 
+  beatgridOffsetStyle: function() {
+    return `${this.get('beatgridOffset')}px`;
+  }.property('beatgridOffset'),
+
   componentStyle: cssStyle({
-    width: 'clipWidthStyle'
+    width: 'clipWidthStyle',
+    right: 'beatgridOffsetStyle'
   }),
 
   numBeats: Ember.computed.reads('clip.numBeats'),

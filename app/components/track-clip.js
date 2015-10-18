@@ -24,16 +24,18 @@ export default Clip.extend({
   attributeBindings: ['componentStyle:style'],
 
   componentStyle: cssStyle({
-    'left': 'startPx',
+    'left': 'beatgridOffsetStyle',
   }),
 
-  startPx: function() {
+  beatgridOffset: function() {
     let { pxPerBeat, clipStartBeat } = this.getProperties('pxPerBeat', 'clipStartBeat');
 
-    let startPx = (-1.0 * clipStartBeat * pxPerBeat);
-
-    return `${startPx}px`;
+    return (-1.0 * clipStartBeat * pxPerBeat);
   }.property('clipStartBeat', 'pxPerBeat'),
+
+  beatgridOffsetStyle: function() {
+    return `${this.get('beatgridOffset')}px`;
+  }.property('beatgridOffset'),
 
   // params
   track: Ember.computed.reads('model'),
