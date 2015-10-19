@@ -72,6 +72,12 @@ export const asResolvedPromise = function(returnedObject, PromiseTypeConstructor
   });
 };
 
+export const executePromisesInSeries = function(generators) {
+  return generators.reduce((curr, next) => {
+    return curr.then(next);
+  }, RSVP.resolve());
+};
+
 export const assertPromise = function(obj) {
   return new Ember.RSVP.Promise(function (resolve, reject) {
     resolve(obj);

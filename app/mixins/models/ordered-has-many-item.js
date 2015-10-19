@@ -9,6 +9,8 @@ export default function(listPropertyPath) {
   let mixinParams = {
     _items: withDefault(`${listPropertyPath}.items`, []),
 
+    listReadyPromise: Ember.computed.reads(`${listPropertyPath}.readyPromise`),
+
     order: DS.attr('number'),
     isRemoved: DS.attr('boolean', { defaultValue: false }),
 

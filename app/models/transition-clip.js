@@ -28,7 +28,7 @@ export default ArrangementClip.extend(
   fromClip: Ember.computed.reads('prevClip'),
   toClip: Ember.computed.reads('nextClip'),
 
-  isValidTransition: Ember.computed.reads('isValid'),
+  hasValidTransition: Ember.computed.reads('isValid'),
   hasTransition: Ember.computed.bool('transition.content'),
 
   expectedFromTrack: Ember.computed.reads('transition.fromTrack'),

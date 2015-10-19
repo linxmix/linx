@@ -29,7 +29,7 @@ describe.skip('MixClipModel', function() {
     toTrackIsValid: false,
     timesAreValid: false,
     isValid: false,
-    isValidTransition: false,
+    hasValidTransition: false,
   });
 
   describe('with valid fromTrackClip and toTrackClip', function() {
@@ -49,7 +49,7 @@ describe.skip('MixClipModel', function() {
       toTrackIsValid: true,
       timesAreValid: true,
       isValid: true,
-      isValidTransition: true,
+      hasValidTransition: true,
     });
   });
 

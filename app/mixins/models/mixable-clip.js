@@ -33,13 +33,13 @@ export default Ember.Mixin.create(
   isMixable: true,
 
   clipStartBeat: variableTernary(
-    'prevClip.isValidTransition',
+    'prevClip.hasValidTransition',
     'clipStartBeatWithTransition',
     'clipStartBeatWithoutTransition'
   ),
 
   clipEndBeat: variableTernary(
-    'nextClip.isValidTransition',
+    'nextClip.hasValidTransition',
     'clipEndBeatWithTransition',
     'clipEndBeatWithoutTransition'
   ),
@@ -48,5 +48,5 @@ export default Ember.Mixin.create(
 
   // overlap with prevClip if is transition
   _startBeat: withDefault('prevClip.endBeat', 0),
-  startBeat: variableTernary('prevClip.isValidTransition', 'prevClip.startBeat', '_startBeat'),
+  startBeat: variableTernary('prevClip.hasValidTransition', 'prevClip.startBeat', '_startBeat'),
 });

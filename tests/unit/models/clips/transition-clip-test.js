@@ -27,7 +27,7 @@ describe('TransitionClipModel', function() {
     toTrackIsValid: false,
     // timesAreValid: false,
     isValid: false,
-    isValidTransition: false,
+    hasValidTransition: false,
   });
 
   describe('with valid fromTrackClip and toTrackClip', function() {
@@ -49,7 +49,7 @@ describe('TransitionClipModel', function() {
       toTrackIsValid: true,
       // timesAreValid: true,
       isValid: true,
-      isValidTransition: true,
+      hasValidTransition: true,
       startBeat() { return toTrackClip.get('startBeat'); },
       numBeats() { return transition.get('numBeats'); }
     });

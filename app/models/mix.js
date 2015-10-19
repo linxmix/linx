@@ -8,56 +8,11 @@ import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationshi
 import ReadinessMixin from 'linx/mixins/readiness';
 
 import withDefaultModel from 'linx/lib/computed/with-default-model';
-import { flatten, asResolvedPromise } from 'linx/lib/utils';
+import { flatten, asResolvedPromise, executePromisesInSeries } from 'linx/lib/utils';
 import add from 'linx/lib/computed/add';
-
-const MixItemFunctionsMixin = function(...modelNames) {
-  return Ember.Mixin.create(modelNames.reduce((mixinParams, modelName) => {
-    let capitalizedModelName = Ember.String.capitalize(modelName);
-
-    // insertItemAt
-    let insertItemAtFnKey = `insert${capitalizedModelName}At`;
-    mixinParams[insertItemAtFnKey] = function(index, model) {
-      return this.createAt(index).setModel(model);
-    };
-
-    // insertItemsAt
-    let insertItemsAtFnKey = `insert${capitalizedModelName}sAt`;
-    mixinParams[insertItemsAtFnKey] = function(index, models) {
-      let promises = [];
-
-      // synchronous for loop to ensure insertion order
-      for (let i = 0; i < models.get('length'); i++) {
-        promises.push(this[insertItemAtFnKey](index + i, models[i]));
-      }
-
-      return Ember.RSVP.all(promises);
-    };
-
-    // appendItem
-    mixinParams[`append${capitalizedModelName}`] = function(model) {
-      return this[insertItemAtFnKey](this.get('length'), model);
-    };
-
-    // appendItems
-    mixinParams[`append${capitalizedModelName}s`] = function(model) {
-      return this[insertItemsAtFnKey](this.get('length'), model);
-    };
-
-    // items
-    let itemsKey = `${modelName}Items`;
-    mixinParams[itemsKey] = Ember.computed.filterBy('items', `is${capitalizedModelName}`);
-
-    // models
-    mixinParams[`${modelName}s`] = Ember.computed.mapBy(itemsKey, 'model');
-
-    return mixinParams;
-  }, {}));
-};
 
 export default DS.Model.extend(
   ReadinessMixin('isMixReady'),
-  MixItemFunctionsMixin('track', 'transition', 'mix'), // TODO(POLYMORPHISM)
   DependentRelationshipMixin('arrangement'),
   OrderedHasManyMixin('_mixItems', 'mix-item'), {
 
@@ -70,8 +25,39 @@ export default DS.Model.extend(
     return arrangement;
   }),
 
+  models: Ember.computed.mapBy('items', 'model'),
+  transitions: Ember.computed.mapBy('items', 'transition'),
+
   modelAt(index) {
     return this.objectAt(index).get('model.content');
+  },
+
+  transitionAt(index) {
+    return this.objectAt(index).get('transition.content');
+  },
+
+  insertModelAt(index, model) {
+    return this.createAt(index).setModel(model);
+  },
+
+  insertTransitionAt(index, transition) {
+    let item = this.objectAt(index);
+
+    Ember.assert('Must have item at index to insertTransitionAt', item);
+
+    return item && item.setTransition(transition);
+  },
+
+  appendModel(model) {
+    return this.insertModelAt(this.get('length'), model);
+  },
+
+  appendModels(models) {
+    return this.insertModelsAt(this.get('length'), models);
+  },
+
+  insertModelsAt(models) {
+    return executePromisesInSeries(models.map((model) => model.save));
   },
 
   // implement readiness mixin
@@ -84,129 +70,32 @@ export default DS.Model.extend(
   // may override existing transitions
   insertTrackAtWithTransitions(index, track, options) {
     return this.get('readyPromise').then(() => {
-      return this.insertTrackAt(index, track).then((trackItem) => {
-        return this.assertTransitionsForItem(trackItem, options).then(() => {
+      return this.insertModelAt(index, track).then((trackItem) => {
+        return this.assertTransitionsAt(index, options).then(() => {
           return trackItem;
         });
       });
     });
   },
 
-  // asserts transitions are present and valid around given item
-  assertTransitionsForItem(item, options) {
-    Ember.assert('Cannot assertTransitionsForItem without item', Ember.isPresent(item));
-    Ember.assert('Cannot assertTransitionsForItem when item isTransition', !item.get('isTransition'));
-
-    return this.generateTransitionAt(item.get('index') - 1, options).then((prevTransitionItem) => {
-      return this.generateTransitionAt(item.get('index'), options).then((nextTransitionItem) => {
-        return { prevTransitionItem, nextTransitionItem };
-      });
-    });
-  },
-
-  // generates and returns valid transition item at given index, if possible
-  generateTransitionAt(index, options) {
-    return this.get('readyPromise').then(() => {
-      let prevItem = this.objectAt(index - 1);
-      let nextItem = this.objectAt(index);
-
-      // cannot make transition without prevItem and nextItem
-      if (!(prevItem && nextItem)) {
-        return;
-
-      // if nextItem already is valid transition, return it
-      } else if (nextItem && nextItem.get('isValidTransition')) {
-        return nextItem;
-
-      } else {
-        // make sure prevItem is not a transition
-        if (prevItem && prevItem.get('isTransition')) {
-          this.removeObject(prevItem);
-          return this.generateTransitionAt(index - 1);
-        }
-
-        // make sure nextItem is not a transition
-        if (nextItem && nextItem.get('isTransition')) {
-          this.removeObject(nextItem);
-          return this.generateTransitionAt(index);
-        }
-
-        // all is well - proceed with transition generation
-        return this.generateTransitionFromClips(prevItem.get('clip'), nextItem.get('clip'), options).then((transition) => {
-          return transition.get('readyPromise').then(() => {
-            transition.save().then(() => {
-              return this.insertTransitionAt(index, transition);
-            });
-          });
-        });
-      }
-    });
-  },
-
-  // returns a new transition model between two given clips, with options
-  generateTransitionFromClips(fromClip, toClip, options = {}) {
-    Ember.assert('Must have fromClip and toClip to generateTransitionFromClips', Ember.isPresent(fromClip) && Ember.isPresent(toClip));
-
-    return this.get('readyPromise').then(() => {
-      let {
-        lastTrack: fromTrack,
-        clipEndBeat: minFromTrackEndBeat
-      } = fromClip.getProperties('lastTrack', 'clipEndBeat');
-
-      let {
-        firstTrack: toTrack,
-        clipStartBeat: maxToTrackStartBeat
-      } = toClip.getProperties('firstTrack', 'clipStartBeat');
-
-      return this.generateTransitionFromTracks(fromTrack, toTrack, _.defaults({}, options, {
-        minFromTrackEndBeat,
-        maxToTrackStartBeat
-      }));
-    });
-  },
-
-  // returns a new transition model between two given tracks, with options
-  generateTransitionFromTracks(fromTrack, toTrack, options = {}) {
-    Ember.assert('Must have fromTrack and toTrack to generateTransitionFromTracks', Ember.isPresent(fromTrack) && Ember.isPresent(toTrack));
-
-    console.log("generateTransitionFromTracks", fromTrack, toTrack);
-
+  // asserts transitions are present and valid around given item, if possible
+  assertTransitionsAt(index) {
     return Ember.RSVP.all([
-      this.get('readyPromise'),
-      fromTrack.get('readyPromise'),
-      toTrack.get('readyPromise'),
-    ]).then(() => {
+      this.assertTransitionAt(index - 1),
+      this.assertTransitionAt(index),
+    ]);
+  },
 
-      let {
-        preset,
-        minFromTrackEndBeat,
-        maxToTrackStartBeat,
-        fromTrackEnd,
-        toTrackStart,
-      } = options;
+  assertTransitionAt(index, options) {
+    let item = this.objectAt(index);
 
-      // TODO(TRANSITION): improve this algorithm, add options and presets
-      let transition = this.get('store').createRecord('transition', {
-        fromTrack,
-        toTrack,
-      });
-
-      return Ember.RSVP.all([
-        transition.setFromTrackEnd(fromTrack.get('audioMeta.lastBeatMarker.start')),
-        transition.setToTrackStart(toTrack.get('audioMeta.firstBeatMarker.start')),
-        transition.get('arrangement').then((arrangement) => {
-          let automationClip = this.get('store').createRecord('automation-clip', {
-            numBeats: 16,
-          });
-          arrangement.get('automationClips').addObject(automationClip);
-          return arrangement.save().then(() => {
-            return automationClip.save();
-          });
-        })
-      ]).then(() => {
-        return transition;
-      });
-    });
+    if (!item) {
+      return;
+    } else if (item.get('hasValidTransition')) {
+      return item.get('transition');
+    } else {
+      return item.generateTransition();
+    }
   },
 
   optimizeMix() {
@@ -217,31 +106,33 @@ export default DS.Model.extend(
     return this.insertTransitionAtWithTracks(this.get('length'), transition);
   },
 
+  // TODO: this will break when transitions conflict
   insertTransitionAtWithTracks(index, transition) {
-    return this.get('readyPromise').then(() => {
-      let prevItem = this.objectAt(index - 1);
-      let nextItem = this.objectAt(index);
+    return Ember.RSVP.all([this.get('readyPromise'), transition.get('readyPromise')]).then(() => {
+      let item = this.getOrCreateAt(index);
+      let nextItem = this.getOrCreateAt(index + 1);
+
       let expectedFromTrack = transition.get('fromTrack.content');
       let expectedToTrack = transition.get('toTrack.content');
-      let actualFromTrack = prevItem && prevItem.get('model.content');
-      let actualToTrack = nextItem && nextItem.get('model.content');
 
+      let actualFromTrack = prevItem.get('model.content');
+      let actualToTrack = nextItem.get('model.content');
+
+      let fromTrackPromise, toTrackPromise, transitionPromise;
       // insert fromTrack if not already present
       if (!actualFromTrack || actualFromTrack !== expectedFromTrack) {
-        return this.insertTrackAt(index, expectedFromTrack).then(() => {
-          return this.insertTransitionAtWithTracks(index + 1, transition);
-        });
+        fromTrackPromise = item.setModel(fromTrack);
       }
 
       // insert toTrack if not already present
       if (!actualToTrack || actualToTrack !== expectedToTrack) {
-        return this.insertTrackAt(index, expectedToTrack).then(() => {
-          return this.insertTransitionAtWithTracks(index, transition);
-        });
+        toTrackPromise = nextItem.setModel(toTrack);
       }
 
       // insert transition
-      return this.insertTransitionAt(index, transition);
+      transitionPromise = item.setTransition(transition);
+
+      return Ember.RSVP.all([fromTrackPromise, toTrackPromise, transitionPromise]);
     });
   },
 });

@@ -95,7 +95,7 @@ describe('TrackClipModel', function() {
     });
 
     it('prevClip is valid transition', function() {
-      expect(prevClip.get('isValidTransition')).to.be.true;
+      expect(prevClip.get('hasValidTransition')).to.be.true;
     });
 
     describeAttrs('trackClip', {
@@ -120,7 +120,7 @@ describe('TrackClipModel', function() {
     });
 
     it('nextClip is valid transition', function() {
-      expect(nextClip.get('isValidTransition')).to.be.true;
+      expect(nextClip.get('hasValidTransition')).to.be.true;
     });
 
     describeAttrs('trackClip', {
@@ -161,11 +161,11 @@ describe('TrackClipModel', function() {
     });
 
     it('prevClip is valid transition', function() {
-      expect(prevClip.get('isValidTransition')).to.be.true;
+      expect(prevClip.get('hasValidTransition')).to.be.true;
     });
 
     it('nextClip is valid transition', function() {
-      expect(nextClip.get('isValidTransition')).to.be.true;
+      expect(nextClip.get('hasValidTransition')).to.be.true;
     });
 
     describeAttrs('trackClip', {

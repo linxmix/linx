@@ -138,8 +138,8 @@ describe('MixModel#generateTransitionAt', function() {
       expect(transitionItem).to.be.ok;
     });
 
-    it('transitionItem isValidTransition', function() {
-      expect(transitionItem.get('isValidTransition')).to.be.true;
+    it('transitionItem hasValidTransition', function() {
+      expect(transitionItem.get('hasValidTransition')).to.be.true;
     });
 
     it('inserts transitionItem between the mixables', function() {
