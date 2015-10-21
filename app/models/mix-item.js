@@ -1,6 +1,8 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
+import _ from 'npm:underscore';
+
 import OrderedHasManyItemMixin from 'linx/mixins/models/ordered-has-many-item';
 import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 
@@ -9,6 +11,7 @@ export default DS.Model.extend(
   DependentRelationshipMixin('clip'), {
 
   mix: DS.belongsTo('mix', { async: true }),
+  transition: DS.belongsTo('transition', { async: true }),
 
   // TODO(POLYMORPHISM)
   clip: function() {
@@ -46,6 +49,8 @@ export default DS.Model.extend(
 
   setTransition(transition) {
     return this.destroyClip('transitionClip').then(() => {
+      this.set('transition', transition);
+
       return this.createClipForModel(transition);
     });
   },
@@ -101,6 +106,14 @@ export default DS.Model.extend(
   // Transition generation
   //
 
+  assertTransition(options) {
+    if (this.get('hasValidTransition')) {
+      return this.get('transition');
+    } else {
+      return this.generateTransition(options);
+    }
+  },
+
   // generates and returns valid transition, if possible
   generateTransition(options) {
     return this.get('listReadyPromise').then(() => {
@@ -108,10 +121,12 @@ export default DS.Model.extend(
       let nextItem = this.get('nextItem')
       let nextModel = nextItem && nextItem.get('model.content');
 
-      Ember.assert('Cannot make transition without model and nextModel', model && nextModel);
+      if (!(model && nextModel)) {
+        console.log('generateTransition: cannot make transition without model and nextModel', model, nextModel);
+      }
 
       if (this.get('hasValidTransition')) {
-        console.log("generateTransition: replacing a valid transition");
+        console.log("generateTransition: replacing a valid transition", this.get('transition'));
       }
 
       return this.generateTransitionFromClips(this.get('clip'), nextItem.get('clip'), options).then((transition) => {

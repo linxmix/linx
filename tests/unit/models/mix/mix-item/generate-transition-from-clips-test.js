@@ -10,20 +10,17 @@ import { expect } from 'chai';
 import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 import makeTrack from 'linx/tests/helpers/make-track';
 import makeTrackClip from 'linx/tests/helpers/make-track-clip';
-import makeMix from 'linx/tests/helpers/make-mix';
 import describeAttrs from 'linx/tests/helpers/describe-attrs';
 
-describe('MixModel#generateTransitionFromClips', function() {
+describe('MixItemModel#generateTransitionFromClips', function() {
   setupTestEnvironment();
 
-  let mix, arrangement;
+  let mixItem;
   let fromTrackClip, toTrackClip;
   let generateTransitionFromTracksStub, options;
 
   beforeEach(function() {
-    let results = makeMix.call(this);
-    mix = this.mix = results.mix;
-    arrangement = this.arrangement = results.arrangement;
+    mixItem = this.factory.make('mix-item');
 
     let fromResults = makeTrackClip.call(this);
     fromTrackClip = fromResults.trackClip;
@@ -31,14 +28,15 @@ describe('MixModel#generateTransitionFromClips', function() {
     let toResults = makeTrackClip.call(this);
     toTrackClip = toResults.trackClip;
 
-    generateTransitionFromTracksStub = this.sinon.stub(mix, 'generateTransitionFromTracks');
+    generateTransitionFromTracksStub = this.sinon.stub(mixItem, 'generateTransitionFromTracks');
 
     options = {
       preset: 'preset',
     };
 
     Ember.run(() => {
-      mix.generateTransitionFromClips(fromTrackClip, toTrackClip, options);
+      mixItem.set('isReady', true);
+      wait(mixItem.generateTransitionFromClips(fromTrackClip, toTrackClip, options));
     });
   });
 

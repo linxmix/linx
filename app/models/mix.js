@@ -56,8 +56,12 @@ export default DS.Model.extend(
     return this.insertModelsAt(this.get('length'), models);
   },
 
-  insertModelsAt(models) {
-    return executePromisesInSeries(models.map((model) => model.save));
+  insertModelsAt(index, models) {
+    return executePromisesInSeries(models.map((model, i) => {
+      return () => {
+        return this.insertModelAt(index + i, model);
+      };
+    }));
   },
 
   // implement readiness mixin
@@ -89,17 +93,13 @@ export default DS.Model.extend(
   assertTransitionAt(index, options) {
     let item = this.objectAt(index);
 
-    if (!item) {
-      return;
-    } else if (item.get('hasValidTransition')) {
-      return item.get('transition');
-    } else {
-      return item.generateTransition();
-    }
+    return item && item.assertTransition(options);
   },
 
-  optimizeMix() {
-    // TODO
+  generateTransitionAt(index, options) {
+    let item = this.objectAt(index);
+
+    return item && item.generateTransition(options);
   },
 
   appendTransitionWithTracks(transition) {
@@ -115,18 +115,18 @@ export default DS.Model.extend(
       let expectedFromTrack = transition.get('fromTrack.content');
       let expectedToTrack = transition.get('toTrack.content');
 
-      let actualFromTrack = prevItem.get('model.content');
+      let actualFromTrack = item.get('model.content');
       let actualToTrack = nextItem.get('model.content');
 
       let fromTrackPromise, toTrackPromise, transitionPromise;
       // insert fromTrack if not already present
       if (!actualFromTrack || actualFromTrack !== expectedFromTrack) {
-        fromTrackPromise = item.setModel(fromTrack);
+        fromTrackPromise = item.setModel(expectedFromTrack);
       }
 
       // insert toTrack if not already present
       if (!actualToTrack || actualToTrack !== expectedToTrack) {
-        toTrackPromise = nextItem.setModel(toTrack);
+        toTrackPromise = nextItem.setModel(expectedToTrack);
       }
 
       // insert transition

@@ -19,97 +19,75 @@ describe('MixModel', function() {
 
   beforeEach(function() {
     let results = makeMix.call(this);
-    mix = this.mix = results.mix;
+    mix = results.mix;
     arrangement = this.arrangement = results.arrangement;
 
     // TODO(DBSTUB)
     // this.factoryHelper.handleCreate('mix');
   });
 
-  describeItemOperations('track', function() {
-    return makeTrack.call(this);
-  });
-  describeItemOperations('transition', function() {
-    let results = makeTransition.call(this);
-    return results.transition;
-  });
-  describeItemOperations('mix', function() {
-    let results = makeMix.call(this);
-    return results.mix;
+  describe('model item operations', function() {
+    describe('adding model', function() {
+      let model, item, clip;
+
+      beforeEach(function() {
+        model = makeTrack.call(this);
+
+        Ember.run(() => {
+          wait(mix.appendModel(model).then((_item) => {
+            item = _item;
+            clip = _item.get('clip.content');
+          }));
+        });
+      });
+
+      it('added to mix', function() {
+        expect(mix.get('length')).to.equal(1);
+      });
+
+      it('returns the item', function() {
+        expect(Ember.isNone(item)).to.be.false;
+        expect(mix.objectAt(0)).to.equal(item);
+      });
+
+      it('clip has correct model', function() {
+        expect(clip.get('model.content')).to.equal(model);
+      });
+
+      it('can then remove item', function() {
+        Ember.run(() => {
+          wait(mix.removeObject(item));
+        });
+
+        andThen(() => {
+          expect(mix.get('length')).to.equal(0);
+        });
+      });
+    });
+
+    describe('adding many models', function() {
+      let models;
+
+      beforeEach(function() {
+        models = [];
+        for (let i = 0; i < 10; i++) {
+          models.push(makeTrack.call(this));
+        }
+
+        Ember.run(() => {
+          wait(mix.appendModels(models));
+        });
+      });
+
+      it('adds items to mix', function() {
+        expect(mix.get('length')).to.equal(models.length);
+      });
+
+      it('adds models in order', function() {
+        models.forEach((model, i) => {
+          expect(mix.modelAt(i)).to.equal(model);
+        });
+      });
+    });
   });
 });
-
-function describeItemOperations(modelName, createModelFn) {
-  let capitalizedModelName = Ember.String.capitalize(modelName);
-
-  describe(`adding ${modelName}Item`, function() {
-    let model, item, clip;
-
-    beforeEach(function() {
-      model = createModelFn.call(this);
-
-      Ember.run(() => {
-        wait(this.mix[`append${capitalizedModelName}`](model).then((_item) => {
-          item = _item;
-          clip = _item.get('clip.content');
-        }));
-      });
-    });
-
-    it('added to mix', function() {
-      expect(this.mix.get('length')).to.equal(1);
-      expect(this.mix.get(`${modelName}Items.length`)).to.equal(1);
-    });
-
-    it('returns the item', function() {
-      expect(Ember.isNone(item)).to.be.false;
-      expect(this.mix.objectAt(0)).to.equal(item);
-    });
-
-    it('item is correct type based on model', function() {
-      expect(item.get(`is${capitalizedModelName}`)).to.be.true;
-    });
-
-    it('clip has correct model', function() {
-      expect(clip.get(`${modelName}.content`)).to.equal(model);
-    });
-
-    it('can then remove item', function() {
-      Ember.run(() => {
-        wait(this.mix.removeObject(item));
-      });
-
-      andThen(() => {
-        expect(this.mix.get('length')).to.equal(0);
-        expect(this.mix.get(`${modelName}Items.length`)).to.equal(0);
-      });
-    });
-  });
-
-  let insertItemsAtFnKey = `insert${capitalizedModelName}sAt`;
-
-  describe(`Mix#${insertItemsAtFnKey}`, function() {
-    let models;
-
-    beforeEach(function() {
-      models = [];
-      for (let i = 0; i < 10; i++) {
-        models.push(createModelFn.call(this));
-      }
-
-      Ember.run(() => {
-        wait(this.mix[insertItemsAtFnKey](0, models));
-      });
-    });
-
-    it('adds items to mix', function() {
-      expect(this.mix.get('length')).to.equal(models.length);
-    });
-
-    it('adds models in order', function() {
-      models.forEach((model, i) => {
-        expect(this.mix.modelAt(i)).to.equal(model);
-      });
-    });
-  });
-}

@@ -32,33 +32,27 @@ describe('MixModel#insertTransitionAtWithTracks', function() {
   });
 
   describe('into empty mix', function() {
-    let transitionItem;
-
     beforeEach(function() {
       Ember.run(() => {
-        wait(mix.insertTransitionAtWithTracks(0, transition).then((_item) => {
-          transitionItem = _item;
-        }));
+        wait(mix.insertTransitionAtWithTracks(0, transition).then());
       });
     });
 
     describeAttrs('mix', {
       subject() { return mix; },
-      length: 3,
-      'trackItems.length': 2,
-      'transitionItems.length': 1,
+      length: 2,
     });
 
     it('adds fromTrack to correct place', function() {
-      expect(mix.objectAt(0).get('model.content')).to.equal(fromTrack);
+      expect(mix.modelAt(0)).to.equal(fromTrack);
     });
 
     it('adds transition to correct place', function() {
-      expect(mix.objectAt(1)).to.equal(transitionItem);
+      expect(mix.transitionAt(0)).to.equal(transition);
     });
 
     it('adds toTrack to correct place', function() {
-      expect(mix.objectAt(2).get('model.content')).to.equal(toTrack);
+      expect(mix.modelAt(1)).to.equal(toTrack);
     });
   });
 
@@ -67,22 +61,24 @@ describe('MixModel#insertTransitionAtWithTracks', function() {
 
     beforeEach(function() {
       Ember.run(() => {
-        wait(mix.appendTrack(fromTrack).then((_trackItem) => {
+        wait(mix.appendModel(fromTrack).then((_trackItem) => {
           trackItem = _trackItem;
-          return mix.insertTransitionAtWithTracks(1, transition);
+          return mix.insertTransitionAtWithTracks(0, transition);
         }));
       });
     });
 
     describeAttrs('mix', {
       subject() { return mix; },
-      length: 3,
-      'trackItems.length': 2,
-      'transitionItems.length': 1,
+      length: 2,
     });
 
     it('retains existing trackItem', function() {
       expect(mix.objectAt(0)).to.equal(trackItem);
+    });
+
+    it('adds transition to correct place', function() {
+      expect(mix.transitionAt(0)).to.equal(transition);
     });
   });
 
@@ -93,7 +89,7 @@ describe('MixModel#insertTransitionAtWithTracks', function() {
       otherTrack = makeTrack.call(this);
 
       Ember.run(() => {
-        wait(mix.appendTrack(otherTrack).then((_otherTrackItem) => {
+        wait(mix.appendModel(otherTrack).then((_otherTrackItem) => {
           otherTrackItem = _otherTrackItem;
           return mix.insertTransitionAtWithTracks(1, transition);
         }));
@@ -102,9 +98,7 @@ describe('MixModel#insertTransitionAtWithTracks', function() {
 
     describeAttrs('mix', {
       subject() { return mix; },
-      length: 4,
-      'trackItems.length': 3,
-      'transitionItems.length': 1,
+      length: 3,
     });
 
     it('retains existing otherTrackItem', function() {
@@ -116,11 +110,11 @@ describe('MixModel#insertTransitionAtWithTracks', function() {
     });
 
     it('adds transition to correct place', function() {
-      expect(mix.modelAt(2)).to.equal(transition);
+      expect(mix.transitionAt(1)).to.equal(transition);
     });
 
     it('adds toTrack to correct place', function() {
-      expect(mix.modelAt(3)).to.equal(toTrack);
+      expect(mix.modelAt(2)).to.equal(toTrack);
     });
   });
 });

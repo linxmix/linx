@@ -9,28 +9,29 @@ import { expect } from 'chai';
 
 import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 import makeTrack from 'linx/tests/helpers/make-track';
-import makeMix from 'linx/tests/helpers/make-mix';
 import describeAttrs from 'linx/tests/helpers/describe-attrs';
 
-describe('MixModel#generateTransitionFromTracks', function() {
+describe('MixItemModel#generateTransitionFromTracks', function() {
   setupTestEnvironment();
 
-  let mix, arrangement;
+  let mixItem;
   let fromTrack, toTrack, transition;
 
   beforeEach(function() {
-    let results = makeMix.call(this);
-    mix = this.mix = results.mix;
-    arrangement = this.arrangement = results.arrangement;
+    mixItem = this.factory.make('mix-item');
 
     fromTrack = makeTrack.call(this);
     toTrack = makeTrack.call(this);
+
+    Ember.run(() => {
+      mixItem.set('isReady', true);
+    });
   });
 
   describe('without options', function() {
     beforeEach(function() {
       Ember.run(() => {
-        wait(mix.generateTransitionFromTracks(fromTrack, toTrack).then((_transition) => {
+        wait(mixItem.generateTransitionFromTracks(fromTrack, toTrack).then((_transition) => {
           transition = _transition;
         }));
       });
