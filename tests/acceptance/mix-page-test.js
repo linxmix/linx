@@ -27,7 +27,7 @@ describe('Acceptance: MixPage', function() {
   });
 
   it('has correct path', function() {
-    expect(currentPath()).to.equal('mix.index');
+    expect(currentPath()).to.equal('mix');
   });
 
   describe('saving mix', function() {

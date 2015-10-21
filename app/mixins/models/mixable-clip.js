@@ -24,22 +24,26 @@ export default Ember.Mixin.create(
   prevItem: Ember.computed.reads('mixItem.prevItem'),
   nextItem: Ember.computed.reads('mixItem.nextItem'),
 
+  prevTransition: Ember.computed.reads('prevItem.transition'),
+  nextTransition: Ember.computed.reads('item.transition'),
+
   prevClip: Ember.computed.reads('prevItem.clip'),
   nextClip: Ember.computed.reads('nextItem.clip'),
 
-  prevTransition: Ember.computed.reads('prevClip.transition'),
-  nextTransition: Ember.computed.reads('nextClip.transition'),
+  prevTransitionClip: Ember.computed.reads('prevItem.clip'),
+  nextTransitionClip: Ember.computed.reads('item.clip'),
 
-  isMixable: true,
+  prevTransitionIsValid: Ember.computed.reads('prevTransitionClip.isValid'),
+  nextTransitionIsValid: Ember.computed.reads('nextTransitionClip.isValid'),
 
   clipStartBeat: variableTernary(
-    'prevClip.hasValidTransition',
+    'prevTransitionIsValid',
     'clipStartBeatWithTransition',
     'clipStartBeatWithoutTransition'
   ),
 
   clipEndBeat: variableTernary(
-    'nextClip.hasValidTransition',
+    'nextTransitionIsValid',
     'clipEndBeatWithTransition',
     'clipEndBeatWithoutTransition'
   ),
@@ -48,5 +52,5 @@ export default Ember.Mixin.create(
 
   // overlap with prevClip if is transition
   _startBeat: withDefault('prevClip.endBeat', 0),
-  startBeat: variableTernary('prevClip.hasValidTransition', 'prevClip.startBeat', '_startBeat'),
+  startBeat: variableTernary('prevTransitionIsValid', 'prevTransitionClip.startBeat', '_startBeat'),
 });

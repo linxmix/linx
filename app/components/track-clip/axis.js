@@ -58,7 +58,7 @@ export default Ember.Component.extend(
   _getArrangementViewWidth() {
     let arrangementView = this.get('parentView.parentView.parentView');
 
-    if (arrangementView.get('isInDom')) {
+    if (arrangementView && arrangementView.get('isInDom')) {
       return arrangementView.$().width();
     }
   },

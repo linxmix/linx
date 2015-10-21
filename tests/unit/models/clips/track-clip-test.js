@@ -90,18 +90,21 @@ describe('TrackClipModel', function() {
 
     beforeEach(function() {
       let results = makeTransitionClip.call(this, { toTrackClip: trackClip });
-      prevClip = results.transitionClip;
+      prevClip = results.fromTrackClip;
       prevTransition = results.transition;
-    });
 
-    it('prevClip is valid transition', function() {
-      expect(prevClip.get('hasValidTransition')).to.be.true;
+      Ember.run(() => {
+        trackClip.setProperties({
+          prevTransition,
+          prevTransitionIsValid: true
+        });
+      });
+      debugger
     });
 
     describeAttrs('trackClip', {
       subject() { return trackClip; },
       prevClip() { return prevClip; },
-      'prevTransition.content': () => prevTransition,
       startBeat() { return prevClip.get('startBeat'); },
       numBeats() { return track.get('audioMeta.lastBeat') - prevTransition.get('toTrackStartBeat'); },
       clipStartBeatWithTransition() { return prevTransition.get('toTrackStartBeat'); },
@@ -117,16 +120,17 @@ describe('TrackClipModel', function() {
       let results = makeTransitionClip.call(this, { fromTrackClip: trackClip });
       nextClip = results.transitionClip;
       nextTransition = results.transition;
-    });
 
-    it('nextClip is valid transition', function() {
-      expect(nextClip.get('hasValidTransition')).to.be.true;
+      Ember.run(() => {
+        trackClip.setProperties({
+          nextTransition,
+          nextTransitionIsValid: true
+        });
+      });
     });
 
     describeAttrs('trackClip', {
       subject() { return trackClip; },
-      nextClip() { return nextClip; },
-      'nextTransition.content': () => nextTransition,
       startBeat: 0,
       numBeats() { return nextTransition.get('fromTrackEndBeat') - track.get('audioMeta.firstBeat'); },
       clipEndBeatWithTransition() { return nextTransition.get('fromTrackEndBeat'); },
@@ -156,24 +160,21 @@ describe('TrackClipModel', function() {
         // setup transition
         prevTransition.set('toTrack', track);
         nextTransition.set('fromTrack', track);
-        trackClip.setProperties({ prevClip, nextClip });
+        trackClip.setProperties({
+          prevClip,
+          nextClip,
+          prevTransition,
+          prevTransitionIsValid: true,
+          nextTransition,
+          nextTransitionIsValid: true,
+        });
       });
-    });
-
-    it('prevClip is valid transition', function() {
-      expect(prevClip.get('hasValidTransition')).to.be.true;
-    });
-
-    it('nextClip is valid transition', function() {
-      expect(nextClip.get('hasValidTransition')).to.be.true;
     });
 
     describeAttrs('trackClip', {
       subject() { return trackClip; },
       prevClip() { return prevClip; },
       nextClip() { return nextClip; },
-      'prevTransition.content': () => prevTransition,
-      'nextTransition.content': () => nextTransition,
       startBeat() { return prevClip.get('startBeat'); },
       numBeats() { return nextTransition.get('fromTrackEndBeat') - prevTransition.get('toTrackStartBeat'); },
       clipStartBeatWithTransition() { return prevTransition.get('toTrackStartBeat'); },

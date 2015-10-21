@@ -6,6 +6,8 @@ import _ from 'npm:underscore';
 import OrderedHasManyItemMixin from 'linx/mixins/models/ordered-has-many-item';
 import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 
+import { asResolvedPromise } from 'linx/lib/utils';
+
 export default DS.Model.extend(
   OrderedHasManyItemMixin('mix'),
   DependentRelationshipMixin('clip'), {
@@ -123,6 +125,7 @@ export default DS.Model.extend(
 
       if (!(model && nextModel)) {
         console.log('generateTransition: cannot make transition without model and nextModel', model, nextModel);
+        return asResolvedPromise();
       }
 
       if (this.get('hasValidTransition')) {
@@ -130,7 +133,7 @@ export default DS.Model.extend(
       }
 
       return this.generateTransitionFromClips(this.get('clip'), nextItem.get('clip'), options).then((transition) => {
-        return this.createClip(transition).then(() => {
+        return this.createClipForModel(transition).then(() => {
           return transition;
         })
       });

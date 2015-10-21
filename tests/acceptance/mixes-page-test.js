@@ -31,7 +31,7 @@ describe('Acceptance: MixesPage', function() {
     click('.MixesListItem:first');
 
     andThen(function() {
-      expect(currentPath()).to.equal('mix.index');
+      expect(currentPath()).to.equal('mix');
       expect(currentURL().match(mixes.get('firstObject.id'))).to.be.ok;
     });
   });

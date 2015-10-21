@@ -27,7 +27,6 @@ describe('TransitionClipModel', function() {
     toTrackIsValid: false,
     // timesAreValid: false,
     isValid: false,
-    hasValidTransition: false,
   });
 
   describe('with valid fromTrackClip and toTrackClip', function() {
@@ -39,7 +38,10 @@ describe('TransitionClipModel', function() {
       toTrackClip = results.toTrackClip;
       transitionClip = results.transitionClip;
       transition = results.transition;
-      transition.set('numBeats', 30);
+
+      Ember.run(() => {
+        transition.set('numBeats', 30);
+      });
     });
 
     describeAttrs('transitionClip', {
@@ -49,7 +51,6 @@ describe('TransitionClipModel', function() {
       toTrackIsValid: true,
       // timesAreValid: true,
       isValid: true,
-      hasValidTransition: true,
       startBeat() { return toTrackClip.get('startBeat'); },
       numBeats() { return transition.get('numBeats'); }
     });
