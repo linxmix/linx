@@ -1,6 +1,8 @@
 import Ember from 'ember';
 import ENV from 'linx/config/environment';
 
+import { executePromisesInSeries } from 'linx/lib/utils';
+
 export default Ember.Route.extend({
   actions: {
     createMix() {
@@ -46,8 +48,12 @@ export default Ember.Route.extend({
         });
 
         mix.save().then(() => {
-          mix.appendTracks(tracks);
-          this.transitionTo('mix', mix);
+          // TODO: appendTracksWithTransitions
+          executePromisesInSeries(tracks.map((track) => {
+            mix.appendTrackWithTransition(track);
+          })).then(() => {
+            this.transitionTo('mix', mix);
+          });
         });
       });
 

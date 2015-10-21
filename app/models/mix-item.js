@@ -13,7 +13,6 @@ export default DS.Model.extend(
   DependentRelationshipMixin('clip'), {
 
   mix: DS.belongsTo('mix', { async: true }),
-  transition: DS.belongsTo('transition', { async: true }),
 
   // TODO(POLYMORPHISM)
   clip: function() {
@@ -26,6 +25,7 @@ export default DS.Model.extend(
 
   hasClip: Ember.computed.bool('clip.content'),
   model: Ember.computed.reads('clip.model'),
+  transition: Ember.computed.reads('transitionClip.model'),
   isTrack: Ember.computed.equal('modelName', 'track'),
   isMix: Ember.computed.equal('modelName', 'mix'),
 
@@ -51,8 +51,6 @@ export default DS.Model.extend(
 
   setTransition(transition) {
     return this.destroyClip('transitionClip').then(() => {
-      this.set('transition', transition);
-
       return this.createClipForModel(transition);
     });
   },
@@ -75,7 +73,7 @@ export default DS.Model.extend(
       // add clip to arrangement
       arrangement.get(`${clipModelPath}s`).addObject(clip);
 
-      return this;
+      return clip;
     });
   },
 
@@ -133,7 +131,7 @@ export default DS.Model.extend(
       }
 
       return this.generateTransitionFromClips(this.get('clip'), nextItem.get('clip'), options).then((transition) => {
-        return this.createClipForModel(transition).then(() => {
+        return this.setTransition(transition).then(() => {
           return transition;
         })
       });

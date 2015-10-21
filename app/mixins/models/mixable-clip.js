@@ -30,8 +30,8 @@ export default Ember.Mixin.create(
   prevClip: Ember.computed.reads('prevItem.clip'),
   nextClip: Ember.computed.reads('nextItem.clip'),
 
-  prevTransitionClip: Ember.computed.reads('prevItem.clip'),
-  nextTransitionClip: Ember.computed.reads('item.clip'),
+  prevTransitionClip: Ember.computed.reads('prevItem.transitionClip'),
+  nextTransitionClip: Ember.computed.reads('item.transitionClip'),
 
   prevTransitionIsValid: Ember.computed.reads('prevTransitionClip.isValid'),
   nextTransitionIsValid: Ember.computed.reads('nextTransitionClip.isValid'),

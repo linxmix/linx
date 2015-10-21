@@ -11,4 +11,12 @@
   <div class='tiny inverted basic circular red ui icon button' {{action "remove" item}}>
     <i class='remove icon'></i>
   </div>
+
+  {{#if item.transition}}
+    <div>
+    {{#link-to 'transition' item.transition}}
+      transition &middot; {{item.transition.id}}
+    {{/link-to}}
+    </div>
+  {{/if}}
 </div>
