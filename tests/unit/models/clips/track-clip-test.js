@@ -99,13 +99,12 @@ describe('TrackClipModel', function() {
           prevTransitionIsValid: true
         });
       });
-      debugger
     });
 
     describeAttrs('trackClip', {
       subject() { return trackClip; },
       prevClip() { return prevClip; },
-      startBeat() { return prevClip.get('startBeat'); },
+      startBeat() { return prevClip.get('endBeat') - prevTransition.get('numBeats'); },
       numBeats() { return track.get('audioMeta.lastBeat') - prevTransition.get('toTrackStartBeat'); },
       clipStartBeatWithTransition() { return prevTransition.get('toTrackStartBeat'); },
       clipStartBeat() { return trackClip.get('clipStartBeatWithTransition'); },
@@ -147,27 +146,13 @@ describe('TrackClipModel', function() {
       Ember.run(() => {
         // setup prevClip
         let prevResults = makeTransitionClip.call(this, { toTrackClip: trackClip });
-        prevClip = prevResults.transitionClip;
+        prevClip = prevResults.fromTrackClip;
         prevTransition = prevResults.transition;
-        prevClip.set('startBeat', 30);
 
         // setup nextClip
         let nextResults = makeTransitionClip.call(this, { fromTrackClip: trackClip });
-        nextClip = nextResults.transitionClip;
+        nextClip = nextResults.toTrackClip;
         nextTransition = nextResults.transition;
-        nextClip.set('prevClip', trackClip);
-
-        // setup transition
-        prevTransition.set('toTrack', track);
-        nextTransition.set('fromTrack', track);
-        trackClip.setProperties({
-          prevClip,
-          nextClip,
-          prevTransition,
-          prevTransitionIsValid: true,
-          nextTransition,
-          nextTransitionIsValid: true,
-        });
       });
     });
 
@@ -175,7 +160,7 @@ describe('TrackClipModel', function() {
       subject() { return trackClip; },
       prevClip() { return prevClip; },
       nextClip() { return nextClip; },
-      startBeat() { return prevClip.get('startBeat'); },
+      startBeat() { return prevClip.get('endBeat') - prevTransition.get('numBeats'); },
       numBeats() { return nextTransition.get('fromTrackEndBeat') - prevTransition.get('toTrackStartBeat'); },
       clipStartBeatWithTransition() { return prevTransition.get('toTrackStartBeat'); },
       clipEndBeatWithTransition() { return nextTransition.get('fromTrackEndBeat'); },

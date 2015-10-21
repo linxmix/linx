@@ -38,10 +38,12 @@ export default function(options = {}) {
 
   fromTrackClip.setProperties({
     nextClip: toTrackClip,
+    nextTransition: transition,
     nextTransitionClip: transitionClip
   });
   toTrackClip.setProperties({
     prevClip: fromTrackClip,
+    prevTransition: transition,
     prevTransitionClip: transitionClip
   });
 

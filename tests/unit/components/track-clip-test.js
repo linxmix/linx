@@ -34,7 +34,7 @@ describe('TrackClipComponent', function() {
 
   describeAttrs('track-clip component', {
     subject() { return component; },
-    startPx: '-5.102809647500005px',
+    beatgridOffset: -5.102809647500005,
     seekTime: 4.688928657950469,
     audioSeekTime: 4.848440060565328,
     tempo: 0.7814881096584115,
@@ -81,7 +81,7 @@ describe('TrackClipComponent', function() {
 
     describeAttrs('track-clip component', {
       subject() { return component; },
-      startPx: '-7.6542144712500075px',
+      beatgridOffset: -7.6542144712500075,
     });
   });
 });
