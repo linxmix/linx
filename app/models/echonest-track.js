@@ -101,6 +101,7 @@ export default DS.Model.extend({
     return DS.PromiseObject.create({
       // TODO(findQuery)
       promise: this.get('store').findAll('track').then((records) => {
+        // TODO: is _data._echonestTrack still correct?
         return records.filterBy('_data._echonestTrack', this.get('id')).get('firstObject');
       }),
     });

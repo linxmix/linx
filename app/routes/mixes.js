@@ -50,7 +50,7 @@ export default Ember.Route.extend({
         mix.save().then(() => {
           // TODO: appendTracksWithTransitions
           executePromisesInSeries(tracks.map((track) => {
-            mix.appendTrackWithTransition(track);
+            mix.appendModelWithTransition(track);
           })).then(() => {
             this.transitionTo('mix', mix);
           });

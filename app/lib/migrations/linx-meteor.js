@@ -29,54 +29,54 @@ export default function(store) {
         md5: song.md5,
       });
 
-      track.save();
+      track.save({ skipDependents: true });
     });
 
     // populate transitions
-    transitions.forEach((transition) => {
-      console.log("transition", transition.dj);
+    // transitions.forEach((transition) => {
+    //   console.log("transition", transition.dj);
 
-      let fromTrack = store.find('track', transition.startSong);
-      let toTrack = store.find('track', transition.endSong);
+    //   let fromTrack = store.find('track', transition.startSong);
+    //   let toTrack = store.find('track', transition.endSong);
 
-      // turn legacy transition file into track in transition's arrangement
-      let arrangement = store.createRecord('arrangement');
+    //   // turn legacy transition file into track in transition's arrangement
+    //   let arrangement = store.createRecord('arrangement');
 
-      let transitionTrack = store.createRecord('track', {
-        id: transition._id + '_transition_track',
-        s3Url: 'transitions/' + transition._id + '.' + transition.fileType,
-      });
+    //   let transitionTrack = store.createRecord('track', {
+    //     id: transition._id + '_transition_track',
+    //     s3Url: 'transitions/' + transition._id + '.' + transition.fileType,
+    //   });
 
-      let transitionTrackClip = store.createRecord('track-clip', {
-        model: transitionTrack,
-        // TODO: convert to beats
-        _audioStartBeat: transition.startTime,
-        _audioEndBeat: transition.endTime,
-      });
+    //   let transitionTrackClip = store.createRecord('track-clip', {
+    //     model: transitionTrack,
+    //     // TODO: convert to beats
+    //     _audioStartBeat: transition.startTime,
+    //     _audioEndBeat: transition.endTime,
+    //   });
 
-      arrangement.get('trackClips').addObject(transitionTrackClip);
+    //   arrangement.get('trackClips').addObject(transitionTrackClip);
 
-      // create transition
-      let transitionModel = store.createRecord('track', {
-        id: transition._id,
-        title: transition.dj,
-        fromTrack,
-        toTrack,
-        // TODO: convert to beats
-        numBeats: transition.endTime - transition.startTime
-      });
+    //   // create transition
+    //   let transitionModel = store.createRecord('track', {
+    //     id: transition._id,
+    //     title: transition.dj,
+    //     fromTrack,
+    //     toTrack,
+    //     // TODO: convert to beats
+    //     numBeats: transition.endTime - transition.startTime
+    //   });
 
-      transitionTrack.save().then(() => {
-        transitionTrackClip.save().then(() => {
-          arrangement.save().then(() => {
-            transitionModel.save().then(() => {
-              transitionModel.setFromTrackEnd(transition.startSongEnd);
-              transitionModel.setToTrackStart(transition.endSongStart);
-            });
-          });
-        });
-      });
-    });
+    //   transitionTrack.save().then(() => {
+    //     transitionTrackClip.save().then(() => {
+    //       arrangement.save().then(() => {
+    //         transitionModel.save().then(() => {
+    //           transitionModel.setFromTrackEnd(transition.startSongEnd);
+    //           transitionModel.setToTrackStart(transition.endSongStart);
+    //         });
+    //       });
+    //     });
+    //   });
+    // });
   });
 
 }

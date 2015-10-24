@@ -35,9 +35,9 @@ export default Ember.Route.extend({
       let mix = this.get('controller.model');
 
       if (this.get('controller.insertTracksWithTransitions')) {
-        mix.appendTrackWithTransition(track);
+        mix.appendModelWithTransition(track);
       } else {
-        mix.appendTrack(track);
+        mix.appendModel(track);
       }
     },
 

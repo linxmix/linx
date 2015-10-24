@@ -18,30 +18,28 @@ import {
 describe('AudioMeta', function() {
   setupTestEnvironment();
 
-  let audioMeta;
+  let audioMeta, echonestTrack, analysis;
 
   beforeEach(function() {
     audioMeta = this.factory.make('audio-meta');
-  });
+    echonestTrack = this.factory.make('echonest-track-giveitupforlove');
 
-  describe('processing analysis', function() {
-    let echonestTrack, analysis;
+    // TODO(DBSTUB)
+    // this.factoryHelper.handleCreate('marker');
+    // this.factoryHelper.handleUpdate(audioMeta, { id: audioMeta.get('id') });
 
-    beforeEach(function() {
-      this.timeout(10000); // give the hardware ample time to process the analysis
-
-      echonestTrack = this.factory.make('echonest-track-giveitupforlove');
-
-      // TODO(DBSTUB)
-      // this.factoryHelper.handleCreate('marker');
-      // this.factoryHelper.handleUpdate(audioMeta, { id: audioMeta.get('id') });
-
+    // only fetch analysis once
+    if (!analysis) {
       wait(echonestTrack.get('analysis').then((result) => {
         analysis = result;
         return audioMeta.processAnalysis(analysis);
       }));
-    });
+    } else {
+      wait(audioMeta.processAnalysis(analysis));
+    }
+  });
 
+  describe('processing analysis', function() {
     it('saves after processing echonest analysis', function() {
       expect(audioMeta.get('isNew')).to.be.false;
     });
@@ -73,14 +71,36 @@ describe('AudioMeta', function() {
       expect(firstBeatMarker.get('type')).to.equal(BEAT_MARKER_TYPE);
     });
 
-    it('has correct last beat marker', function() {
-      let lastBeatMarker = audioMeta.get('lastBeatMarker');
-      expect(lastBeatMarker.get('start')).to.equal(analysis.get('lastBeatStart'));
-      expect(lastBeatMarker.get('type')).to.equal(BEAT_MARKER_TYPE);
-    });
-
     it('has correct numBeats', function() {
       expect(audioMeta.get('numBeats')).to.equal(783);
+    });
+  });
+
+  describe('#getNearestBeat', function() {
+    it('does not go beyond start of track', function() {
+      expect(audioMeta.getNearestBeat(-300)).to.equal(0);
+    });
+
+    it('does not go beyond end of track', function() {
+      expect(audioMeta.getNearestBeat(30000)).to.equal(audioMeta.get('numBeats'));
+    });
+
+    it('rounds correctly', function() {
+      expect(audioMeta.getNearestBeat(300.23)).to.equal(640);
+    });
+  });
+
+  describe('#getNearestBar', function() {
+    it('does not go beyond start of track', function() {
+      expect(audioMeta.getNearestBar(-300)).to.equal(0);
+    });
+
+    it('does not go beyond end of track', function() {
+      expect(audioMeta.getNearestBar(30000)).to.equal(audioMeta.get('numBeats') - 3);
+    });
+
+    it('rounds correctly', function() {
+      expect(audioMeta.getNearestBar(305.23)).to.equal(652);
     });
   });
 });

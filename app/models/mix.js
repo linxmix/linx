@@ -67,12 +67,12 @@ export default DS.Model.extend(
   // implement readiness mixin
   isMixReady: Ember.computed.bool('arrangement.content'),
 
-  appendTrackWithTransition(track) {
-    return this.insertTrackAtWithTransitions(this.get('length'), track);
+  appendModelWithTransition(track) {
+    return this.insertModelAtWithTransitions(this.get('length'), track);
   },
 
   // may override existing transitions
-  insertTrackAtWithTransitions(index, track, options) {
+  insertModelAtWithTransitions(index, track, options) {
     return this.get('readyPromise').then(() => {
       return this.insertModelAt(index, track).then((trackItem) => {
         return this.assertTransitionsAt(index, options).then(() => {
@@ -107,6 +107,7 @@ export default DS.Model.extend(
   },
 
   // TODO: this will break when transitions conflict
+  // TODO: update for mixes too
   insertTransitionAtWithTracks(index, transition) {
     return Ember.RSVP.all([this.get('readyPromise'), transition.get('readyPromise')]).then(() => {
       let item = this.getOrCreateAt(index);

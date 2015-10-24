@@ -97,3 +97,13 @@ export const arraySum = function(arr) {
     return sum + val;
   }, 0);
 };
+
+export const roundTo = function(x, n) {
+  let rest = x % n;
+
+  if (rest <= (n / 2)) {
+    return x - rest;
+  } else {
+    return x + n - rest;
+  }
+};

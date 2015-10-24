@@ -6,7 +6,7 @@ import _ from 'npm:underscore';
 import ReadinessMixin from 'linx/mixins/readiness';
 import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 
-import { timeToBeat } from 'linx/lib/utils';
+import { timeToBeat, roundTo, clamp } from 'linx/lib/utils';
 import add from 'linx/lib/computed/add';
 import {
   BEAT_MARKER_TYPE,
@@ -31,6 +31,21 @@ export default DS.Model.extend(
   loudness: DS.attr('number'),
 
   track: DS.belongsTo('track', { async: true }),
+
+  getNearestBeat(time) {
+    return clamp(0, Math.round(timeToBeat(time, this.get('bpm'))), this.get('numBeats'));
+  },
+
+  getNearestBar(time) {
+    let beat = this.getNearestBeat(time);
+    let bar = roundTo(beat, 4);
+
+    if (bar > this.get('numBeats')) {
+      return bar - 4;
+    }
+
+    return bar;
+  },
 
   markers: DS.hasMany('marker', { async: true }),
   userMarkers: Ember.computed.filterBy('markers', 'type', USER_MARKER_TYPE),

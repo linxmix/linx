@@ -35,8 +35,6 @@ export default Clip.extend(
   _numBeats: DS.attr('number'),
   _audioEndBeat: DS.attr('number'),
 
-  audioStartBeat: withDefaultProperty('_audioStartBeat', 'track.audioMeta.firstBeat'),
-  audioEndBeat: withDefaultProperty('_audioEndBeat', 'track.audioMeta.lastBeat'),
 
   // TODO: move isAudioLoaded into ex track.audio.isLoaded?
   isAudioLoaded: false,
@@ -47,6 +45,10 @@ export default Clip.extend(
 
   audioMeta: Ember.computed.reads('track.audioMeta'),
   bpm: Ember.computed.reads('audioMeta.bpm'),
+
+  // TODO: figure out why beats and times are calculated differently
+  audioStartBeat: withDefaultProperty('_audioStartBeat', 'track.audioMeta.firstBeat'),
+  audioEndBeat: withDefaultProperty('_audioEndBeat', 'track.audioMeta.numBeats'),
 
   audioStartTime: function() {
     return beatToTime(this.get('clipStartBeat'), this.get('bpm'));
