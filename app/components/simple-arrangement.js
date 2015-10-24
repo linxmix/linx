@@ -6,8 +6,13 @@ export default Ember.Component.extend(ArrangementPlayerMixin,
   RequireAttributes('arrangement'), {
 
   actions: {
-    toggleEditing: function() {
+    toggleEditing() {
       this.toggleProperty('isEditing');
+    },
+
+    seekToBeat(beat) {
+      // TODO: round to beat, round to bar, no round. based on config + UI control
+      this.get('metronome').seekToBeat(Math.round(beat));
     }
   },
 

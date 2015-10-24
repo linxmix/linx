@@ -18,6 +18,9 @@ export default Ember.Component.extend(
   attributeBindings: ['componentStyle:style'],
 
   track: Ember.computed.reads('clip.track'),
+  numBeats: Ember.computed.reads('clip.numBeats'),
+  clipStartBeat: Ember.computed.reads('clip.clipStartBeat'),
+  clipEndBeat: Ember.computed.reads('clip.clipEndBeat'),
 
   showBeatGrid: Ember.computed.and('clipWidth', 'numBeatsOnScreenIsValid'),
   numBeatsOnScreenIsValid: Ember.computed.lte('numBeatsOnScreen', MAX_BEATS_ON_SCREEN),
@@ -31,8 +34,8 @@ export default Ember.Component.extend(
   }),
 
   clipWidth: function() {
-    return this.get('clip.numBeats') * this.get('pxPerBeat');
-  }.property('clip.numBeats', 'pxPerBeat'),
+    return this.get('numBeats') * this.get('pxPerBeat');
+  }.property('numBeats', 'pxPerBeat'),
 
   clipWidthStyle: Ember.computed('clipWidth', function() {
     return `${this.get('clipWidth')}px`;
@@ -47,12 +50,12 @@ export default Ember.Component.extend(
     right: 'beatgridOffsetStyle'
   }),
 
-  numBeats: Ember.computed.reads('clip.numBeats'),
-  beatScale: Ember.computed('clipWidth', 'numBeats', function () {
+  beatScale: Ember.computed('clipWidth', 'clipStartBeat', 'clipEndBeat', function () {
     let rangeMax = this.get('clipWidth');
-    let domainMax = this.get('numBeats');
+    let domainMin = this.get('clipStartBeat');
+    let domainMax = this.get('clipEndBeat');
 
-    return d3.scale.linear().domain([1, domainMax + 1]).range([0, rangeMax]);
+    return d3.scale.linear().domain([domainMin, domainMax]).range([0, rangeMax]);
   }).readOnly(),
 
   _getArrangementViewWidth() {

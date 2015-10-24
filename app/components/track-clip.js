@@ -75,16 +75,16 @@ export default Clip.extend({
   }.property('audioStartTime', 'audioEndTime', 'markers.@each.start'),
 
   firstBeatMarker: Ember.computed.reads('track.audioMeta.firstBeatMarker'),
-  markerOptions: Ember.computed('firstBeatMarker', function() {
-    let firstBeatMarker = this.get('firstBeatMarker');
+  // markerOptions: Ember.computed('firstBeatMarker', function() {
+  //   let firstBeatMarker = this.get('firstBeatMarker');
 
-    return {
-      visibleMarkers: firstBeatMarker ? [firstBeatMarker] : []
-    };
-  }),
-  // markerOptions: Ember.computed('visibleMarkers', function() {
   //   return {
-  //     visibleMarkers: this.get('visibleMarkers')
+  //     visibleMarkers: firstBeatMarker ? [firstBeatMarker] : []
   //   };
   // }),
+  markerOptions: Ember.computed('visibleMarkers', function() {
+    return {
+      visibleMarkers: this.get('visibleMarkers')
+    };
+  }),
 });

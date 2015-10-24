@@ -18,6 +18,9 @@ export default DS.Model.extend({
   type: DS.attr('string'), // one of MARKER_TYPES
   start: DS.attr('number'), // [s] timestamp in audio
 
+  // confidence in this marker's accuracy. used for analysis
+  confidence: DS.attr('number'),
+
   audioMeta: DS.belongsTo('audio-meta', { async: true }),
 
   // params

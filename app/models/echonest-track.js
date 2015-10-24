@@ -2,53 +2,21 @@ import Ember from 'ember';
 import DS from 'ember-data';
 import RequireAttributes from 'linx/lib/require-attributes';
 import _ from 'npm:underscore';
-import withDefault from 'linx/lib/computed/with-default';
 
 import { bpmToSpb, asResolvedPromise } from 'linx/lib/utils';
 
 const Analysis = Ember.Object.extend(
   RequireAttributes('analysis'), {
 
-  confidentBeatStart: withDefault('confidentBeats.firstObject.start', 0),
+  endOfFadeIn: Ember.computed.reads('analysis.track.end_of_fade_in'),
+  startOfFadeOut: Ember.computed.reads('analysis.track.start_of_fade_out'),
 
-  // the time of the first beat while still within track, using the most confident beat
-  firstBeatStart: function() {
-    var spb = bpmToSpb(this.get('bpm'));
-
-    var firstBeatStart = this.get('confidentBeatStart');
-    while ((firstBeatStart - spb) >= 0) {
-      firstBeatStart -= spb;
-    }
-
-    return firstBeatStart;
-  }.property('confidentBeats.firstObject.start', 'bpm'),
-
-  // the time of the last beat while still within track
-  lastBeatStart: function() {
-    var duration = this.get('duration');
-    var spb = bpmToSpb(this.get('bpm'));
-
-    var lastBeatStart = this.get('confidentBeatStart');
-    while ((lastBeatStart + spb) <= duration) {
-      lastBeatStart += spb;
-    }
-
-    return lastBeatStart;
-  }.property('firstBeatStart', 'bpm', 'duration'),
-
-  firstBarStart: function() {
-    // TODO
-  }.property('beatMarkers.firstObject.start', 'bpm'),
-
-  fadeInTime: Ember.computed.alias('analysis.track.end_of_fade_in'),
-  fadeOutTime: Ember.computed.alias('analysis.track.start_of_fade_out'),
-
-  duration: Ember.computed.alias('analysis.track.duration'),
-  bpm: Ember.computed.alias('analysis.track.tempo'),
-  timeSignature: Ember.computed.alias('analysis.track.time_signature'),
-  key: Ember.computed.alias('analysis.track.key'),
-  mode: Ember.computed.alias('analysis.track.mode'),
-  loudness: Ember.computed.alias('analysis.track.loudness'),
+  duration: Ember.computed.reads('analysis.track.duration'),
+  bpm: Ember.computed.reads('analysis.track.tempo'),
+  timeSignature: Ember.computed.reads('analysis.track.time_signature'),
+  key: Ember.computed.reads('analysis.track.key'),
+  mode: Ember.computed.reads('analysis.track.mode'),
+  loudness: Ember.computed.reads('analysis.track.loudness'),
 
   beats: unitProperty('analysis.beats', 'beat'),
   bars: unitProperty('analysis.bars', 'bar'),
@@ -57,6 +25,16 @@ const Analysis = Ember.Object.extend(
   confidentBeats: Ember.computed.filterBy('beats', 'isConfident'),
   confidentBars: Ember.computed.filterBy('bars', 'isConfident'),
   confidentSections: Ember.computed.filterBy('sections', 'isConfident'),
+
+  timeSort: ['start:asc'],
+  timeSortedBeats: Ember.computed.sort('confidentBeats', 'timeSort'),
+  timeSortedBars: Ember.computed.sort('confidentBars', 'timeSort'),
+  timeSortedSections: Ember.computed.sort('confidentSections', 'timeSort'),
+
+  confidenceSort: ['confidence:desc'],
+  confidenceSortedBeats: Ember.computed.sort('confidentBeats', 'confidenceSort'),
+  confidenceSortedBars: Ember.computed.sort('confidentBars', 'confidenceSort'),
+  confidenceSortedSections: Ember.computed.sort('confidentSections', 'confidenceSort'),
 });
 
 export const MIN_BEAT_CONFIDENCE = 0.5;
@@ -148,6 +126,6 @@ function unitProperty (propertyPath, unitType) {
       return Unit.create(_.defaults(params, {
         type: unitType,
       }));
-    }).sort('confidence');
+    });
   });
 }

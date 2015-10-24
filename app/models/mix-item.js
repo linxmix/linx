@@ -186,9 +186,14 @@ export default DS.Model.extend(
         toTrack,
       });
 
+      let fromTrackAudioMeta = fromTrack.get('audioMeta.content');
+      let fromTrackEndBeat = fromTrackAudioMeta.getNearestBar(fromTrackAudioMeta.get('fadeOutMarker.start'));
+
+      console.log("fromTrackEndBeat", fromTrackEndBeat);
+
       return Ember.RSVP.all([
-        transition.setFromTrackEnd(fromTrack.get('audioMeta.lastBeatMarker.start')),
-        transition.setToTrackStart(toTrack.get('audioMeta.firstBeatMarker.start')),
+        transition.setFromTrackEndBeat(fromTrackEndBeat),
+        transition.setToTrackStartBeat(toTrack.get('audioMeta.firstBeat')),
         transition.get('arrangement').then((arrangement) => {
           let automationClip = this.get('store').createRecord('automation-clip', {
             numBeats: 16,
