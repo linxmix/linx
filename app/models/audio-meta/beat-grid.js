@@ -1,14 +1,16 @@
 import Ember from 'ember';
 
 import LinearScale from 'linx/lib/linear-scale';
+import RequireAttributes from 'linx/lib/require-attributes';
 
-import { timeToBeat, bpmToSpb } from 'linx/lib/utils';
+import { bpmToSpb } from 'linx/lib/utils';
 
 export default Ember.Object.extend(
   RequireAttributes('audioMeta'), {
 
   duration: Ember.computed.reads('audioMeta.duration'),
   bpm: Ember.computed.reads('audioMeta.bpm'),
+  numBeats: Ember.computed.reads('audioMeta.numBeats'),
 
   timeToBeat(time) {
     return this.get('beatScale').getPoint(time);
@@ -19,7 +21,7 @@ export default Ember.Object.extend(
   },
 
   timeToBar(time) {
-    return this.get('barScale')(time);
+    return this.get('barScale').getPoint(time);
   },
 
   barToTime(bar) {
@@ -28,12 +30,12 @@ export default Ember.Object.extend(
 
   // domain is time [s]
   // range is beats [b]
-  beatScale: Ember.computed('firstBeatOffset', 'duration', 'numBeats', function() {
-    let { duration, firstBeatOffset, bpm } = this.getProperties('duration', 'firstBeatOffset', 'bpm');
+  beatScale: Ember.computed('firstBarOffset', 'duration', 'numBeats', function() {
+    let { duration, firstBarOffset, bpm } = this.getProperties('duration', 'firstBarOffset', 'bpm');
 
     return LinearScale.create({
       domain: [0, duration],
-      range: [-firstBeatOffset, numBeats - firstBeatOffset],
+      range: [-firstBarOffset, this.get('numBeats') - firstBarOffset],
     });
   }),
 
@@ -50,17 +52,20 @@ export default Ember.Object.extend(
     });
   }),
 
-  // TODO(MULTIGRID): adapt for multiple grid markers beatgrid. Piecewise-Scale?
+  // TODO(MULTIGRID): adapt for multiple grid markers. Piecewise-Scale? or a long domain/range?
   gridMarker: Ember.computed.reads('audioMeta.sortedGridMarkers.firstObject'),
 
   // the time of the first actual beat in the raw audio file
-  firstBeatOffset: Ember.computed('gridMarker.start', 'bpm', function() {
-    let bpm = this.get('bpm'),
-    let spb = bpmToSpb(bpm);
+  firstBarOffset: Ember.computed('gridMarker.start', 'bpm', function() {
+    let bpm = this.get('bpm');
+    let secondsPerBeat = bpmToSpb(bpm);
+    let secondsPerBar = secondsPerBeat * 4.0;
 
-    let firstBeatOffsetTime = this.get('gridMarker.start');
-    while ((firstBeatOffsetTime -= spb) >= 0) {}
+    let firstBarOffsetTime = this.get('gridMarker.start');
+    while ((firstBarOffsetTime - secondsPerBar) >= 0) {
+      firstBarOffsetTime -= secondsPerBar;
+    }
 
-    return -1 * firstBeatOffsetTime * spb;
+    return firstBarOffsetTime * secondsPerBar;
   }),
 });

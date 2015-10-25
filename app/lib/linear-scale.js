@@ -1,10 +1,11 @@
-import Ember from 'ember-data';
+import Ember from 'ember';
 import d3 from 'd3';
 
-import CurveMixin from 'linx/mixins/models/curve';
+import CurveMixin from 'linx/mixins/curve';
 import RequireAttributes from 'linx/lib/require-attributes';
 
-export default Ember.Object.create(CurveMixin,
+// Wrapper for d3.scale.linear
+export default Ember.Object.extend(CurveMixin,
   RequireAttributes('domain', 'range'), {
 
   getPoint(x) {
@@ -29,5 +30,5 @@ export default Ember.Object.create(CurveMixin,
 
   scale: Ember.computed('domain', 'range', function() {
     return d3.scale.linear().domain(this.get('domain')).range(this.get('range'));
-  });
+  }),
 });
