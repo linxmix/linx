@@ -54,26 +54,28 @@ describe('AudioMeta', function() {
 
     it('has correct fade in marker', function() {
       let fadeInMarker = audioMeta.get('fadeInMarker');
+      expect(fadeInMarker).to.be.ok;
       expect(fadeInMarker.get('start')).to.equal(analysis.get('endOfFadeIn'));
       expect(fadeInMarker.get('type')).to.equal(FADE_IN_MARKER_TYPE);
     });
 
     it('has correct fade out marker', function() {
       let fadeOutMarker = audioMeta.get('fadeOutMarker');
+      expect(fadeOutMarker).to.be.ok;
       expect(fadeOutMarker.get('start')).to.equal(analysis.get('startOfFadeOut'));
       expect(fadeOutMarker.get('type')).to.equal(FADE_OUT_MARKER_TYPE);
     });
 
-    it('has correct sortedGridMarkers', function*() {
+    it('has correct sortedGridMarkers', function() {
       expect(audioMeta.get('sortedGridMarkers.length')).to.equal(1);
     });
 
-    it('has correct sortedSectionMarkers', function*() {
+    it('has correct sortedSectionMarkers', function() {
       expect(audioMeta.get('sortedSectionMarkers.length')).to.equal(10);
     });
 
     it('has correct numBeats', function() {
-      expect(audioMeta.get('numBeats')).to.equal(783);
+      expect(audioMeta.get('numBeats')).to.be.closeTo(783.7039690866668, 0.0005);
     });
   });
 });

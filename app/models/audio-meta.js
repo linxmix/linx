@@ -40,8 +40,8 @@ export default DS.Model.extend(
   sortedUserMarkers: Ember.computed.filterBy('sortedMarkers', 'type', USER_MARKER_TYPE),
   sortedGridMarkers: Ember.computed.filterBy('sortedMarkers', 'type', GRID_MARKER_TYPE),
   sortedSectionMarkers: Ember.computed.filterBy('sortedMarkers', 'type', SECTION_MARKER_TYPE),
-  sortedFadeInMarkers: Ember.computed.filterBy('sortedAnalysisMarkers', 'type', FADE_IN_MARKER_TYPE),
-  sortedFadeOutMarkers: Ember.computed.filterBy('sortedAnalysisMarkers', 'type', FADE_OUT_MARKER_TYPE),
+  sortedFadeInMarkers: Ember.computed.filterBy('sortedMarkers', 'type', FADE_IN_MARKER_TYPE),
+  sortedFadeOutMarkers: Ember.computed.filterBy('sortedMarkers', 'type', FADE_OUT_MARKER_TYPE),
 
   analysisMarkers: Ember.computed.setDiff('sortedMarkers', 'sortedUserMarkers'),
 
@@ -75,8 +75,8 @@ export default DS.Model.extend(
   },
 
   destroyAnalysisMarkers: function() {
-    return this.get('analysisMarkers').then((markers) => {
-      return Ember.RSVP.all(markers.map((marker) => {
+    return this.get('markers').then(() => {
+      return Ember.RSVP.all(this.get('analysisMarkers').map((marker) => {
         return marker && marker.destroyRecord();
       }));
     });
@@ -117,11 +117,11 @@ export default DS.Model.extend(
     // add fadeIn and fadeOut markers
     markerParams.push({
       type: FADE_IN_MARKER_TYPE,
-      start: analysis.get('fadeInTime'),
+      start: analysis.get('endOfFadeIn'),
     });
     markerParams.push({
       type: FADE_OUT_MARKER_TYPE,
-      start: analysis.get('fadeOutTime'),
+      start: analysis.get('startOfFadeOut'),
     });
 
     // create and save all markers, then set properties and save track
