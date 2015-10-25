@@ -37,7 +37,7 @@ export default Ember.Object.extend(
       domain: [0, duration],
       range: [-firstBarOffset, this.get('numBeats') - firstBarOffset],
     });
-  }),
+  }).readOnly(),
 
   // domain is time [s]
   // range is bars [ba]
@@ -50,7 +50,7 @@ export default Ember.Object.extend(
       domain,
       range: [rangeMin / 4.0, rangeMax / 4.0]
     });
-  }),
+  }).readOnly(),
 
   // TODO(MULTIGRID): adapt for multiple grid markers. Piecewise-Scale? or a long domain/range?
   gridMarker: Ember.computed.reads('audioMeta.sortedGridMarkers.firstObject'),
@@ -69,3 +69,43 @@ export default Ember.Object.extend(
     return firstBarOffsetTime * secondsPerBar;
   }),
 });
+
+//
+// convenience computed properties
+//
+
+// provides dynamically updating time of the beat at given beatPath
+export function beatToTime(beatGridPath, beatPath) {
+  return Ember.computed(`${beatGridPath}.beatScale`, beatPath, function() {
+    let beat = this.get('beatPath');
+
+    return this.get('beatGridPath').beatToTime(beat);
+  });
+};
+
+// provides dynamically updating beat of the time at given timePath
+export function timeToBeat(beatGridPath, timePath) {
+  return Ember.computed(`${beatGridPath}.beatScale`, timePath, function() {
+    let time = this.get('timePath');
+
+    return this.get('beatGridPath').timeToBeat(time);
+  });
+};
+
+// provides dynamically updating time of the beat at given beatPath
+export function barToTime(beatGridPath, barPath) {
+  return Ember.computed(`${beatGridPath}.barScale`, barPath, function() {
+    let bar = this.get('barPath');
+
+    return this.get('beatGridPath').barToTime(bar);
+  });
+};
+
+// provides dynamically updating bar of the time at given timePath
+export function barToTime(beatGridPath, timePath) {
+  return Ember.computed(`${beatGridPath}.barScale`, timePath, function() {
+    let time = this.get('timePath');
+
+    return this.get('beatGridPath').timeToBar(time);
+  });
+};

@@ -53,7 +53,7 @@ export default DS.Model.extend(
   // params
   file: null,
 
-  // TODO: compact URL stuff into TrackAudioSource.create({ track: this })
+  // TODO: compact URL and AudioSource stuff into TrackAudioSource.create({ track: this })
   audioSource: Ember.computed('streamUrl', 'proxyStreamUrl', 'file', function() {
     return AudioSource.create({
       streamUrl: this.get('streamUrl'),

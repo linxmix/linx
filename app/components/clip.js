@@ -8,7 +8,7 @@ export default Ember.Component.extend(
   // optional params
   isPlaying: false,
   isFinished: false,
-  seekBeat: 0,
+  clipSeekBeat: 0,
   syncBpm: null,
   visibleMarkers: null,
   clipEvent: null,
@@ -17,4 +17,8 @@ export default Ember.Component.extend(
 
   // params
   model: Ember.computed.reads('clip.model'),
+
+  markerOptions: Ember.computed('visibleMarkers', function() {
+    return this.getProperties('visibleMarkers');
+  }),
 });

@@ -1,4 +1,5 @@
 import Ember from 'ember';
+
 import {
   beforeEach,
   describe,
@@ -37,15 +38,15 @@ describe('TrackClipModel', function() {
       });
     });
 
-    it('can persist numBeats', function() {
+    it('can persist endBeat', function() {
       Ember.run(function() {
-        trackClip.set('numBeats', 3);
+        trackClip.set('endBeat', 3);
         wait(trackClip.save());
       });
 
       // TODO(DBSTUB): make this actually check payload
       andThen(function() {
-        expect(trackClip.get('numBeats')).to.equal(3);
+        expect(trackClip.get('endBeat')).to.equal(3);
       });
     });
   });
@@ -56,17 +57,13 @@ describe('TrackClipModel', function() {
       subject() { return trackClip; },
       startBeat: 0,
       numBeats() { return track.get('audioMeta.numBeats'); },
-      clipStartBeatWithoutTransition() { return track.get('audioMeta.firstBeat'); },
-      clipEndBeatWithoutTransition() { return track.get('audioMeta.lastBeat'); },
-      clipStartBeat() { return trackClip.get('clipStartBeatWithoutTransition'); },
-      clipEndBeat() { return trackClip.get('clipEndBeatWithoutTransition'); },
-
-      audioStartTime: 0.15951140261485935,
-      audioLength: 367.14311391752545,
-      audioEndTime: 367.3026253201403,
+      audioStartBeatWithoutTransition() { return track.get('audioMeta.startBeat'); },
+      audioEndBeatWithoutTransition() { return track.get('audioMeta.endBeat'); },
+      audioStartBeat() { return trackClip.get('audioStartBeatWithoutTransition'); },
+      audioEndBeat() { return trackClip.get('audioEndBeatWithoutTransition'); },
+      numBeats() { return trackClip.get('numBeats'); },
     });
   });
-
 
   describe('with prevClip', function() {
     let prevClip;
@@ -81,7 +78,9 @@ describe('TrackClipModel', function() {
     describeAttrs('trackClip', {
       subject() { return trackClip; },
       startBeat() { return prevClip.get('endBeat'); },
-      numBeats() { return track.get('audioMeta.numBeats'); }
+      numBeats() { return track.get('audioMeta.numBeats'); },
+      audioStartBeat() { return trackClip.get('audioStartBeatWithoutTransition'); },
+      audioEndBeat() { return trackClip.get('audioEndBeatWithoutTransition'); },
     });
   });
 
@@ -106,9 +105,9 @@ describe('TrackClipModel', function() {
       prevClip() { return prevClip; },
       startBeat() { return prevClip.get('endBeat') - prevTransition.get('numBeats'); },
       numBeats() { return track.get('audioMeta.lastBeat') - prevTransition.get('toTrackStartBeat'); },
-      clipStartBeatWithTransition() { return prevTransition.get('toTrackStartBeat'); },
-      clipStartBeat() { return trackClip.get('clipStartBeatWithTransition'); },
-      clipEndBeat() { return trackClip.get('clipEndBeatWithoutTransition'); },
+      audioStartBeatWithTransition() { return prevTransition.get('toTrackStartBeat'); },
+      audioStartBeat() { return trackClip.get('audioStartBeatWithTransition'); },
+      audioEndBeat() { return trackClip.get('audioEndBeatWithoutTransition'); },
     });
   });
 
@@ -132,9 +131,9 @@ describe('TrackClipModel', function() {
       subject() { return trackClip; },
       startBeat: 0,
       numBeats() { return nextTransition.get('fromTrackEndBeat') - track.get('audioMeta.firstBeat'); },
-      clipEndBeatWithTransition() { return nextTransition.get('fromTrackEndBeat'); },
-      clipStartBeat() { return trackClip.get('clipStartBeatWithoutTransition'); },
-      clipEndBeat() { return trackClip.get('clipEndBeatWithTransition'); },
+      audioEndBeatWithTransition() { return nextTransition.get('fromTrackEndBeat'); },
+      audioStartBeat() { return trackClip.get('audioStartBeatWithoutTransition'); },
+      audioEndBeat() { return trackClip.get('audioEndBeatWithTransition'); },
     });
   });
 
@@ -162,10 +161,10 @@ describe('TrackClipModel', function() {
       nextClip() { return nextClip; },
       startBeat() { return prevClip.get('endBeat') - prevTransition.get('numBeats'); },
       numBeats() { return nextTransition.get('fromTrackEndBeat') - prevTransition.get('toTrackStartBeat'); },
-      clipStartBeatWithTransition() { return prevTransition.get('toTrackStartBeat'); },
-      clipEndBeatWithTransition() { return nextTransition.get('fromTrackEndBeat'); },
-      clipStartBeat() { return trackClip.get('clipStartBeatWithTransition'); },
-      clipEndBeat() { return trackClip.get('clipEndBeatWithTransition'); },
+      audioStartBeatWithTransition() { return prevTransition.get('toTrackStartBeat'); },
+      audioEndBeatWithTransition() { return nextTransition.get('fromTrackEndBeat'); },
+      audioStartBeat() { return trackClip.get('audioStartBeatWithTransition'); },
+      audioEndBeat() { return trackClip.get('audioEndBeatWithTransition'); },
     });
   });
 });

@@ -5,7 +5,6 @@ import Clip from './clip';
 import MixableClipMixin from 'linx/mixins/models/mixable-clip';
 import ReadinessMixin from 'linx/mixins/readiness';
 
-import { beatToTime } from 'linx/lib/utils';
 import { withDefaultProperty } from 'linx/lib/computed/with-default';
 import add from 'linx/lib/computed/add';
 
@@ -19,46 +18,33 @@ export default Clip.extend(
   firstTrack: Ember.computed.reads('track'),
   lastTrack: Ember.computed.reads('track'),
 
-  clipStartBeatWithoutTransition: Ember.computed.reads('audioStartBeat'),
-  clipEndBeatWithoutTransition: Ember.computed.reads('audioEndBeat'),
+  // allow custom startBeat and endBeat
+  audioStartBeatWithoutTransition: Ember.computed('audioMeta.startBeat', '_audioStartBeat', function() {
+    let startBeat = this.get('audioMeta.startBeat');
+    let customStartBeat = this.get('_audioStartBeat');
+    console.log('startBeat', startBeat);
+    console.log('customStartBeat', customStartBeat);
+    return Ember.isPresent(startBeat) ? startBeat : customStartBeat;
+  }),
+  audioEndBeatWithoutTransition: Ember.computed.any('audioMeta.endBeat', '_audioEndBeat'),
 
-  clipStartBeatWithTransition: Ember.computed.reads('prevTransition.toTrackStartBeat'),
-  clipEndBeatWithTransition: Ember.computed.reads('nextTransition.fromTrackEndBeat'),
+  audioStartBeatWithTransition: Ember.computed.reads('prevTransition.toTrackStartBeat'),
+  audioEndBeatWithTransition: Ember.computed.reads('nextTransition.fromTrackEndBeat'),
 
   // implementing Clip
-  numBeats: withDefaultProperty('_numBeats', 'numBeatsClip'),
   isTrackClipReady: Ember.computed.and('isAudioLoaded', 'track.isReady'),
 
   // track-clip specific
   track: Ember.computed.alias('model'),
   _audioStartBeat: DS.attr('number'),
-  _numBeats: DS.attr('number'),
   _audioEndBeat: DS.attr('number'),
-
 
   // TODO: move isAudioLoaded into ex track.audio.isLoaded?
   isAudioLoaded: false,
 
   // TODO: move into FxChainMixin
   pitch: 0,
-  volume: 1,
-
-  audioMeta: Ember.computed.reads('track.audioMeta'),
-  bpm: Ember.computed.reads('audioMeta.bpm'),
-
-  // TODO: figure out why beats and times are calculated differently
-  audioStartBeat: withDefaultProperty('_audioStartBeat', 'track.audioMeta.firstBeat'),
-  audioEndBeat: withDefaultProperty('_audioEndBeat', 'track.audioMeta.numBeats'),
-
-  audioStartTime: function() {
-    return beatToTime(this.get('clipStartBeat'), this.get('bpm'));
-  }.property('clipStartBeat', 'bpm'),
-
-  audioLength: function() {
-    return beatToTime(this.get('numBeats'), this.get('bpm'));
-  }.property('bpm', 'numBeats'),
-
-  audioEndTime: add('audioStartTime', 'audioLength')
+  volume: 1
 });
 
 // TODO: code to copy section of audiobuffer

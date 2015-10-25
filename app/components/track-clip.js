@@ -5,9 +5,13 @@ import _ from 'npm:underscore';
 import RequireAttributes from 'linx/lib/require-attributes';
 import Clip from './clip';
 
+import { beatToTime } from 'linx/models/audio-meta/beat-grid';
 import cssStyle from 'linx/lib/computed/css-style';
 import add from 'linx/lib/computed/add';
-import { flatten, beatToTime } from 'linx/lib/utils';
+import multiply from 'linx/lib/computed/multiply';
+import toPixels from 'linx/lib/computed/to-pixels';
+import { variableTernary } from 'linx/lib/computed/ternary';
+import { flatten } from 'linx/lib/utils';
 
 export default Clip.extend({
   actions: {
@@ -24,67 +28,45 @@ export default Clip.extend({
   attributeBindings: ['componentStyle:style'],
 
   componentStyle: cssStyle({
-    'left': 'beatgridOffsetStyle',
+    'left': 'audioOffsetStyle',
   }),
 
-  beatgridOffset: function() {
-    let { pxPerBeat, clipStartBeat } = this.getProperties('pxPerBeat', 'clipStartBeat');
-
-    return (-1.0 * clipStartBeat * pxPerBeat);
-  }.property('clipStartBeat', 'pxPerBeat'),
-
-  beatgridOffsetStyle: function() {
-    return `${this.get('beatgridOffset')}px`;
-  }.property('beatgridOffset'),
+  // visually align the segment of audio represented by this clip
+  audioOffset: multiply('audioStartBeat', 'pxPerBeat', -1.0),
+  audioOffsetStyle: toPixels('audioOffset'),
 
   // params
   track: Ember.computed.reads('model'),
-  clipStartBeat: Ember.computed.reads('clip.clipStartBeat'),
-  audioStartTime: Ember.computed.reads('clip.audioStartTime'),
-  audioEndTime: Ember.computed.reads('clip.audioEndTime'),
-  audioBpm: Ember.computed.reads('track.audioMeta.bpm'),
-  tempo: function() {
-    var audioBpm = this.get('audioBpm');
-    var syncBpm = this.get('syncBpm');
+  audioStartBeat: Ember.computed.reads('clip.audioStartBeat'),
+  audioEndBeat: Ember.computed.reads('clip.audioEndBeat'),
+
+  audioMeta: Ember.computed.reads('track.audioMeta'),
+  audioBeatGrid: Ember.computed.reads('audioMeta.beatGrid'),
+
+  // TODO(MULTIGRID): make this depend on ex seekTime and audioBeatGrid.beatScale
+  audioBpm: Ember.computed.reads('audioMeta.bpm'),
+
+  tempo: Ember.computed('audioBpm', 'syncBpm', function() {
+    let audioBpm = this.get('audioBpm');
+    let syncBpm = this.get('syncBpm');
     if (Ember.isNone(syncBpm)) {
       return 1;
     } else {
       return syncBpm / audioBpm;
     }
-  }.property('audioBpm', 'syncBpm'),
+  }),
 
-  seekTime: function() {
-    if (this.get('isFinished')) {
-      return this.get('audioEndTime');
-    } else {
-      return beatToTime(this.get('seekBeat'), this.get('audioBpm'));
-    }
-  }.property('seekBeat', 'isFinished', 'audioEndTime'),
+  audioSeekBeat: variableTernary('isFinished', 'audioEndBeat', 'clipSeekBeat'),
+  audioSeekTime: beatToTime('audioBeatGrid', 'audioSeekBeat'),
 
-  audioSeekTime: add('seekTime', 'audioStartTime'),
-
-  markers: Ember.computed.reads('track.audioMeta.markers'),
+  markers: Ember.computed.reads('audioMeta.markers'),
   visibleMarkers: function() {
-    var audioStartTime = this.get('audioStartTime');
-    var audioEndTime = this.get('audioEndTime');
+    let audioStartBeat = this.get('audioStartBeat');
+    let audioEndBeat = this.get('audioEndBeat');
 
     return this.getWithDefault('markers', []).filter((marker) => {
-      var markerStart = marker.get('start');
-      return markerStart >= audioStartTime && markerStart <= audioEndTime;
+      let markerStartBeat = marker.get('startBeat');
+      return markerStartBeat >= audioStartBeat && markerStartBeat <= audioEndBeat;
     });
-  }.property('audioStartTime', 'audioEndTime', 'markers.@each.start'),
-
-  firstBeatMarker: Ember.computed.reads('track.audioMeta.firstBeatMarker'),
-  // markerOptions: Ember.computed('firstBeatMarker', function() {
-  //   let firstBeatMarker = this.get('firstBeatMarker');
-
-  //   return {
-  //     visibleMarkers: firstBeatMarker ? [firstBeatMarker] : []
-  //   };
-  // }),
-  markerOptions: Ember.computed('visibleMarkers', function() {
-    return {
-      visibleMarkers: this.get('visibleMarkers')
-    };
-  }),
+  }.property('audioStartBeat', 'audioEndBeat', 'markers.@each.startBeat'),
 });

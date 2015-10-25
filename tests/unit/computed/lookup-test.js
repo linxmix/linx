@@ -19,7 +19,7 @@ let Car = Ember.Object.extend({
   model: lookup('make', MODELS)
 });
 
-describe('lookup macro', function() {
+describe('LookupComputedProperty', function() {
   let car;
 
   beforeEach(function() {

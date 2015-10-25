@@ -6,8 +6,9 @@ import {
 import { expect } from 'chai';
 
 import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
+import describeAttrs from 'linx/tests/helpers/describe-attrs';
 
-describe('EchonestTrack', function() {
+describe('EchonestTrackModel', function() {
   setupTestEnvironment();
 
   let echonestTrack;
@@ -29,28 +30,20 @@ describe('EchonestTrack', function() {
       expect(analysis).to.be.ok;
     });
 
-    it('has correct audio metadata', function() {
-      expect(analysis.get('duration')).to.equal(367.47320);
-      expect(analysis.get('bpm')).to.equal(127.961);
-      expect(analysis.get('timeSignature')).to.equal(4);
-      expect(analysis.get('key')).to.equal(11);
-      expect(analysis.get('mode')).to.equal(0);
-      expect(analysis.get('loudness')).to.equal(-4.804);
-    });
-
-    it('has correct fadeInTime and fadeOutTime', function() {
-      expect(analysis.get('fadeInTime')).to.be.closeTo(0.11188, 0.005);
-      expect(analysis.get('fadeOutTime')).to.be.closeTo(359.59583, 0.005);
-    });
-
-    it('has correct firstBeatStart and lastBeatStart', function() {
-      expect(analysis.get('firstBeatStart')).to.be.closeTo(0.15951140261485935, 0.005);
-      expect(analysis.get('lastBeatStart')).to.be.closeTo(367.30262532014035, 0.005);
-    });
-
-    it.skip('has correct firstBarStart and lastBarStart', function() {
-      // expect(analysis.get('firstBarStart')).to.equal(0.11188);
-      // expect(analysis.get('lastBarStart')).to.equal(0.11188);
+    describeAttrs('analysis', {
+      subject() { return analysis; },
+      duration: 367.47320,
+      bpm: 127.961,
+      timeSignature: 4,
+      key: 11,
+      mode: 0,
+      loudness: -4.804,
+      'beats.length': 807,
+      'confidentBeats.length': 214,
+      'bars.length': 203,
+      'confidentBars.length': 113,
+      'sections.length': 13,
+      'confidentSections.length': 10,
     });
   });
 });

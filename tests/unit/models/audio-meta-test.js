@@ -5,6 +5,7 @@ import {
 } from 'mocha';
 import { expect } from 'chai';
 import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
+import describeAttrs from 'linx/tests/helpers/describe-attrs';
 
 import {
   GRID_MARKER_TYPE,
@@ -14,7 +15,7 @@ import {
   USER_MARKER_TYPE,
 } from 'linx/models/marker';
 
-describe('AudioMeta', function() {
+describe('AudioMetaModel', function() {
   setupTestEnvironment();
 
   let audioMeta, echonestTrack, analysis;
@@ -38,18 +39,22 @@ describe('AudioMeta', function() {
     }
   });
 
-  describe('processing analysis', function() {
-    it('saves after processing echonest analysis', function() {
-      expect(audioMeta.get('isNew')).to.be.false;
-    });
-
-    it('has correct audio metadata', function() {
-      expect(audioMeta.get('duration')).to.equal(analysis.get('duration'));
-      expect(audioMeta.get('bpm')).to.equal(analysis.get('bpm'));
-      expect(audioMeta.get('timeSignature')).to.equal(analysis.get('timeSignature'));
-      expect(audioMeta.get('key')).to.equal(analysis.get('key'));
-      expect(audioMeta.get('mode')).to.equal(analysis.get('mode'));
-      expect(audioMeta.get('loudness')).to.equal(analysis.get('loudness'));
+  describe('after processing analysis', function() {
+    describeAttrs('audioMeta', {
+      subject() { return audioMeta; },
+      isNew: false,
+      duration() { return analysis.get('duration'); },
+      bpm() { return analysis.get('bpm'); },
+      timeSignature() { return analysis.get('timeSignature'); },
+      key() { return analysis.get('key'); },
+      mode() { return analysis.get('mode'); },
+      loudness() { return analysis.get('loudness'); },
+      startBeat: -3.505014027252512,
+      endBeat() { return audioMeta.get('numBeats') - Math.abs(audioMeta.get('startBeat')); },
+      numBeats: 783.7039690866668,
+      // TODO(MULTIGRID): this needs to change
+      'sortedGridMarkers.length': 1,
+      'sortedSectionMarkers.length': function() { return analysis.get('confidentSections.length'); },
     });
 
     it('has correct fade in marker', function() {
@@ -64,18 +69,6 @@ describe('AudioMeta', function() {
       expect(fadeOutMarker).to.be.ok;
       expect(fadeOutMarker.get('start')).to.equal(analysis.get('startOfFadeOut'));
       expect(fadeOutMarker.get('type')).to.equal(FADE_OUT_MARKER_TYPE);
-    });
-
-    it('has correct sortedGridMarkers', function() {
-      expect(audioMeta.get('sortedGridMarkers.length')).to.equal(1);
-    });
-
-    it('has correct sortedSectionMarkers', function() {
-      expect(audioMeta.get('sortedSectionMarkers.length')).to.equal(10);
-    });
-
-    it('has correct numBeats', function() {
-      expect(audioMeta.get('numBeats')).to.be.closeTo(783.7039690866668, 0.0005);
     });
   });
 });

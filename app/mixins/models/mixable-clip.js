@@ -36,19 +36,20 @@ export default Ember.Mixin.create(
   prevTransitionIsValid: Ember.computed.reads('prevTransitionClip.isValid'),
   nextTransitionIsValid: Ember.computed.reads('nextTransitionClip.isValid'),
 
-  clipStartBeat: variableTernary(
+  audioStartBeat: variableTernary(
     'prevTransitionIsValid',
-    'clipStartBeatWithTransition',
-    'clipStartBeatWithoutTransition'
+    'audioStartBeatWithTransition',
+    'audioStartBeatWithoutTransition'
   ),
 
-  clipEndBeat: variableTernary(
+  audioEndBeat: variableTernary(
     'nextTransitionIsValid',
-    'clipEndBeatWithTransition',
-    'clipEndBeatWithoutTransition'
+    'audioEndBeatWithTransition',
+    'audioEndBeatWithoutTransition'
   ),
 
-  numBeatsClip: subtract('clipEndBeat', 'clipStartBeat'),
+  audioNumBeats: subtract('audioEndBeat', 'audioStartBeat'),
+  numBeats: Ember.computed.reads('audioNumBeats'),
 
   // overlap with prevClip if is transition
   _startBeat: withDefault('prevClip.endBeat', 0),

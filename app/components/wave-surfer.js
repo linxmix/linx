@@ -110,6 +110,7 @@ export const Wave = Ember.Object.extend(
     }
   }.observes('wavesurfer', 'volume'),
 
+  // TODO: can this remove dependence on audioBpm?
   updateZoom: function() {
     var wavesurfer = this.get('wavesurfer');
     var pxPerBeat = this.get('pxPerBeat');

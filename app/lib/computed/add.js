@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 import { isString, arraySum } from 'linx/lib/utils';
 
-// totalSquares: add('redSquares.length', 'blueSquares.length')
+// totalSquares: add('redSquares.length', 'blueSquares.length', 3)
 export default function(...args) {
   let props = args.filter((arg) => {
     return isString(arg);

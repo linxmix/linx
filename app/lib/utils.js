@@ -91,11 +91,19 @@ export const getContent = function(obj, prop) {
 };
 
 export const arraySum = function(arr) {
-  return arr.reduce((sum, el) => {
-    let val = isString(el) ? this.get(el) : el;
+  return arr.reduce((sum, val) => {
+    Ember.assert('arraySum requires an array of numbers', isNumber(val));
 
     return sum + val;
   }, 0);
+};
+
+export const arrayProduct = function(arr) {
+  return arr.reduce((product, val) => {
+    Ember.assert('arrayProduct requires an array of numbers', isNumber(val));
+
+    return product * val;
+  }, 1.0);
 };
 
 export const roundTo = function(x, n) {

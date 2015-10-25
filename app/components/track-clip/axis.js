@@ -4,65 +4,66 @@ import d3 from 'd3';
 import BubbleActions from 'linx/lib/bubble-actions';
 import RequireAttributes from 'linx/lib/require-attributes';
 
+import multiply from 'linx/lib/computed/multiply';
+import toPixels from 'linx/lib/computed/to-pixels';
 import cssStyle from 'linx/lib/computed/css-style';
 import { clamp } from 'linx/lib/utils';
 
 const MAX_BEATS_ON_SCREEN = 100;
 
 export default Ember.Component.extend(
-  BubbleActions(), RequireAttributes('clip', 'pxPerBeat', 'beatgridOffset'), {
+  BubbleActions(), RequireAttributes('clip', 'pxPerBeat'), {
 
   actions: {},
   classNames: ['TrackClipAxis'],
   classNameBindings: [],
-  attributeBindings: ['componentStyle:style'],
+  // TODO: is this necessary?
+  // attributeBindings: ['componentStyle:style'],
 
   track: Ember.computed.reads('clip.track'),
   numBeats: Ember.computed.reads('clip.numBeats'),
-  clipStartBeat: Ember.computed.reads('clip.clipStartBeat'),
-  clipEndBeat: Ember.computed.reads('clip.clipEndBeat'),
+  audioStartBeat: Ember.computed.reads('clip.audioStartBeat'),
+  audioEndBeat: Ember.computed.reads('clip.audioEndBeat'),
 
   showBeatGrid: Ember.computed.and('clipWidth', 'numBeatsOnScreenIsValid'),
   numBeatsOnScreenIsValid: Ember.computed.lte('numBeatsOnScreen', MAX_BEATS_ON_SCREEN),
 
-  numBeatsOnScreen: Ember.computed('clipWidth', 'numBeats', function() {
-    let numBeats = this.get('numBeats');
-    let viewWidth = this._getArrangementViewWidth(); // TODO: update on resize
-    let clipWidth = this.get('clipWidth');
+  numBeatsOnScreen: Ember.computed('clipWidth', 'numBeats', 'arrangementViewWidth', function() {
+    let {
+      numBeats,
+      arrangementViewWidth,
+      clipWidth,
+    } = this.getProperties('clipWidth', 'numBeats', 'arrangementViewWidth');
 
-    return (viewWidth / clipWidth) * numBeats;
+    return (arrangementViewWidth / clipWidth) * numBeats;
   }),
 
-  clipWidth: function() {
-    return this.get('numBeats') * this.get('pxPerBeat');
-  }.property('numBeats', 'pxPerBeat'),
-
-  clipWidthStyle: Ember.computed('clipWidth', function() {
-    return `${this.get('clipWidth')}px`;
-  }),
-
-  beatgridOffsetStyle: function() {
-    return `${this.get('beatgridOffset')}px`;
-  }.property('beatgridOffset'),
+  clipWidth: multiply('numBeats', 'pxPerBeat'),
+  clipWidthStyle: toPixels('clipWidth'),
 
   componentStyle: cssStyle({
     width: 'clipWidthStyle',
-    right: 'beatgridOffsetStyle'
   }),
 
-  beatScale: Ember.computed('clipWidth', 'clipStartBeat', 'clipEndBeat', function () {
-    let rangeMax = this.get('clipWidth');
-    let domainMin = this.get('clipStartBeat');
-    let domainMax = this.get('clipEndBeat');
+  // TODO(MULTIGRID): this will need a piecewise scale or something
+  beatViewScale: Ember.computed('clipWidth', 'audioStartBeat', 'audioEndBeat', function () {
+    let {
+      clipWidth: rangeMax,
+      audioStartBeat: domainMin,
+      audioEndBeat: domainMax,
+    } = this.getProperties('clipWidth', 'audioStartBeat', 'audioEndBeat');
 
     return d3.scale.linear().domain([domainMin, domainMax]).range([0, rangeMax]);
   }).readOnly(),
 
-  _getArrangementViewWidth() {
-    let arrangementView = this.get('parentView.parentView.parentView');
+  // TODO: make less brittle (?)
+  // TODO: update on window.resize
+  arrangementView: Ember.computed.reads('parentView.parentView.parentView'),
+  arrangementViewWidth: Ember.computed('arrangementView',' arrangementView.isInDom', function() {
+    let arrangementView = this.get('arrangementView');
 
     if (arrangementView && arrangementView.get('isInDom')) {
       return arrangementView.$().width();
     }
-  },
+  }),
 });

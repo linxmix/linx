@@ -123,7 +123,9 @@ var ClipEvent = Ember.Object.extend(
   // optional params
   repeatInterval: null,
 
-  clipSeekBeat: function() {
+  // current metronome seekBeat from clipEvent's frame of reference
+  // different from _seekBeat because this factors in delay, and clamps to clip min and max
+  seekBeat: function() {
     var seekBeat = this.get('_seekBeat');
     var delayBeats = this.get('_delayBeats');
     var numBeats = this.get('numBeats');
