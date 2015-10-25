@@ -3,8 +3,7 @@ import DS from 'ember-data';
 
 import { timeToBeat, beatToTime, isNumber } from 'linx/lib/utils';
 
-export const BEAT_MARKER_TYPE = 'beat';
-export const BAR_MARKER_TYPE = 'bar';
+export const GRID_MARKER_TYPE = 'grid';
 export const SECTION_MARKER_TYPE = 'section';
 export const FADE_IN_MARKER_TYPE = 'fade-in';
 export const FADE_OUT_MARKER_TYPE = 'fade-out';
@@ -22,23 +21,39 @@ export default DS.Model.extend({
   confidence: DS.attr('number'),
 
   audioMeta: DS.belongsTo('audio-meta', { async: true }),
+  beatGrid: Ember.computed.reads('audioMeta.beatGrid'),
 
-  // params
-  bpm: Ember.computed.reads('audioMeta.bpm'),
-
-  startBeat: Ember.computed('bpm', 'start', {
+  startBeat: Ember.computed('beatGrid.beatScale', 'start', {
     get(key) {
-      return timeToBeat(this.get('start'), this.get('bpm'));
+      let beatGrid = this.get('beatGrid');
+      return beatGrid.timeToBeat(this.get('start'));
     },
 
-    set(key, value) {
-      let bpm = this.get('bpm');
+    set(key, beat) {
+      let beatGrid = this.get('beatGrid');
 
-      Ember.assert('Can only set marker startBeat to a valid number', isNumber(value));
-      Ember.assert('Can only set marker startBeat with valid numeric BPM', isNumber(bpm));
+      Ember.assert('Can only set marker startBeat with numeric beat', isNumber(beat));
+      Ember.assert('Can only set marker startBeat with valid beatGrid', isNumber(bpm));
 
-      this.set('start', beatToTime(value, bpm));
-      return value;
+      this.set('start', beatGrid.beatToTime(beat));
+      return beat;
+    }
+  }),
+
+  startBar: Ember.computed('beatGrid.barScale', 'start', {
+    get(key) {
+      let beatGrid = this.get('beatGrid');
+      return beatGrid.timeToBar(this.get('start'));
+    },
+
+    set(key, bar) {
+      let beatGrid = this.get('beatGrid');
+
+      Ember.assert('Can only set marker startBeat with numeric bar', isNumber(bar));
+      Ember.assert('Can only set marker startBeat with valid beatGrid', isNumber(bpm));
+
+      this.set('start', beatGrid.barToTime(bar));
+      return bar;
     }
   }),
 });

@@ -7,8 +7,7 @@ import { expect } from 'chai';
 import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 
 import {
-  BEAT_MARKER_TYPE,
-  BAR_MARKER_TYPE,
+  GRID_MARKER_TYPE,
   SECTION_MARKER_TYPE,
   FADE_IN_MARKER_TYPE,
   FADE_OUT_MARKER_TYPE,

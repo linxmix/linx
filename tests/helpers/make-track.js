@@ -2,8 +2,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import {
-  BEAT_MARKER_TYPE,
-  BAR_MARKER_TYPE,
+  GRID_MARKER_TYPE,
   SECTION_MARKER_TYPE,
   FADE_IN_MARKER_TYPE,
   FADE_OUT_MARKER_TYPE,

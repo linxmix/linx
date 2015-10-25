@@ -5,8 +5,7 @@ import cssStyle from 'linx/lib/computed/css-style';
 import withDefault from 'linx/lib/computed/with-default';
 
 import {
-  BEAT_MARKER_TYPE,
-  BAR_MARKER_TYPE,
+  GRID_MARKER_TYPE,
   SECTION_MARKER_TYPE,
   FADE_IN_MARKER_TYPE,
   FADE_OUT_MARKER_TYPE,
@@ -29,8 +28,8 @@ export default Ember.Component.extend(
   color: Ember.computed.or('marker.color', 'typeColor'),
   typeColor: function() {
     switch (this.get('marker.type')) {
-      case BEAT_MARKER_TYPE: return 'rgba(0,255,255,0.5)';
-      case BAR_MARKER_TYPE: return 'rgba(255,0,0,0.5)';
+      case GRID_MARKER_TYPE: return 'rgba(0,255,255,0.5)';
+      case USER_MARKER_TYPE: return 'rgba(255,0,0,0.5)';
       case SECTION_MARKER_TYPE: return 'rgba(0,255,0,0.5)';
       case FADE_IN_MARKER_TYPE: case FADE_OUT_MARKER_TYPE: return 'rgba(255,255,0,0.5)';
     }

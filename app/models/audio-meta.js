@@ -6,12 +6,13 @@ import _ from 'npm:underscore';
 import ReadinessMixin from 'linx/mixins/readiness';
 import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 
+import BeatGrid from './audio-meta/beat-grid';
+
 import { timeToBeat, roundTo, clamp } from 'linx/lib/utils';
 import withDefault from 'linx/lib/computed/with-default';
 import add from 'linx/lib/computed/add';
 import {
-  BEAT_MARKER_TYPE,
-  BAR_MARKER_TYPE,
+  GRID_MARKER_TYPE,
   SECTION_MARKER_TYPE,
   FADE_IN_MARKER_TYPE,
   FADE_OUT_MARKER_TYPE,
@@ -22,8 +23,7 @@ export const BEAT_LEAD_TIME = 0.5;
 
 export default DS.Model.extend(
   ReadinessMixin('isAudioMetaReady'),
-  DependentRelationshipMixin('markers'),
-  DependentRelationshipMixin('analysisMarkers'), {
+  DependentRelationshipMixin('markers'), {
 
   duration: DS.attr('number'),
   bpm: DS.attr('number'),
@@ -33,56 +33,38 @@ export default DS.Model.extend(
   loudness: DS.attr('number'),
 
   track: DS.belongsTo('track', { async: true }),
-
   markers: DS.hasMany('marker', { async: true }),
-  analysisMarkers: DS.hasMany('marker', { async: true }),
 
   timeSort: ['start:asc'],
   sortedMarkers: Ember.computed.sort('markers', 'timeSort'),
-  sortedBeatMarkers: Ember.computed.filterBy('sortedMarkers', 'type', BEAT_MARKER_TYPE),
-  sortedBarMarkers: Ember.computed.filterBy('sortedMarkers', 'type', BAR_MARKER_TYPE),
+  sortedUserMarkers: Ember.computed.filterBy('sortedMarkers', 'type', USER_MARKER_TYPE),
+  sortedGridMarkers: Ember.computed.filterBy('sortedMarkers', 'type', GRID_MARKER_TYPE),
   sortedSectionMarkers: Ember.computed.filterBy('sortedMarkers', 'type', SECTION_MARKER_TYPE),
+  sortedFadeInMarkers: Ember.computed.filterBy('sortedAnalysisMarkers', 'type', FADE_IN_MARKER_TYPE),
+  sortedFadeOutMarkers: Ember.computed.filterBy('sortedAnalysisMarkers', 'type', FADE_OUT_MARKER_TYPE),
 
-  sortedAnalysisMarkers: Ember.computed.sort('analysisMarkers', 'timeSort'),
-  sortedAnalysisBeatMarkers: Ember.computed.filterBy('sortedAnalysisMarkers', 'type', BEAT_MARKER_TYPE),
-  sortedAnalysisBarMarkers: Ember.computed.filterBy('sortedAnalysisMarkers', 'type', BAR_MARKER_TYPE),
-  sortedAnalysisSectionMarkers: Ember.computed.filterBy('sortedAnalysisMarkers', 'type', SECTION_MARKER_TYPE),
-  sortedAnalysisFadeInMarkers: Ember.computed.filterBy('sortedAnalysisMarkers', 'type', FADE_IN_MARKER_TYPE),
-  sortedAnalysisFadeOutMarkers: Ember.computed.filterBy('sortedAnalysisMarkers', 'type', FADE_OUT_MARKER_TYPE),
+  analysisMarkers: Ember.computed.setDiff('sortedMarkers', 'sortedUserMarkers'),
 
-  analysisFadeInMarker: Ember.computed.reads('sortedAnalysisFadeInMarkers'),
+  fadeInMarker: Ember.computed.reads('sortedFadeInMarkers.firstObject'),
+  fadeOutMarker: Ember.computed.reads('sortedFadeOutMarkers.firstObject'),
 
-  // TODO: adapt for multiple grid markers
-  gridMarker: Ember.computed.or('sortedBeatMarkers.firstObject', 'sortedAnalysisBeatMarkers.firstObject'),
-  barGridMarker: Ember.computed.or('sortedBarMarkers.firstObject', 'sortedAnalysisBarMarkers.firstObject'),
-
-  getNearestBeat(time) {
-    return clamp(0, Math.round(timeToBeat(time, this.get('bpm'))), this.get('numBeats'));
-  },
-
-  getNearestBar(time) {
-    let beat = this.getNearestBeat(time);
-    let bar = roundTo(beat, 4);
-
-    if (bar > this.get('numBeats')) {
-      return bar - 4;
-    }
-
-    return bar;
-  },
-
-  // the time of the first down beat, using the first beat and the most confident beat
-  fadeInBeat: Ember.computed('gridMarker', 'bpm', 'numBeats', function() {
-    return this.getNearestBeat(this.get(''))
+  startBeat: Ember.computed('beatGrid.beatScale', function() {
+    return this.get('beatGrid').timeToBeat(0);
   }),
-
-  fadeOutBeat: Ember.computed('gridMarker', 'bpm', 'numBeats', function() {
-
-  }),
-
-  numBeats: function() {
+  endBeat: add('startBeat', 'numBeats'),
+  numBeats: Ember.computed('duration', 'bpm', function() {
     return timeToBeat(this.get('duration'), this.get('bpm'));
-  }.property('duration', 'bpm'),
+  }),
+
+  beatGrid: Ember.computed(function() {
+    return BeatGrid.create({ audioMeta: this });
+  }),
+
+  // TODO
+  // amount by which echonest analysis is off from the downbeats
+  // this is calculated from the calculated first bar, and the confident first bar
+  echonestBeatOffset: function() {
+  }.property('beatGrid'),
 
   destroyMarkers: function() {
     return this.get('markers').then((markers) => {
@@ -93,8 +75,8 @@ export default DS.Model.extend(
   },
 
   destroyAnalysisMarkers: function() {
-    return this.get('markers').then((markers) => {
-      return Ember.RSVP.all(this.get('analysisMarkers').map((marker) => {
+    return this.get('analysisMarkers').then((markers) => {
+      return Ember.RSVP.all(markers.map((marker) => {
         return marker && marker.destroyRecord();
       }));
     });
@@ -103,72 +85,28 @@ export default DS.Model.extend(
   // implement readiness
   isAudioMetaReady: Ember.computed.not('isProcessingAnalysis'),
 
-
-  confidentBarStart: withDefault('confidentBars.firstObject.start', 0),
-  confidentBeatStart: withDefault('confidentBeats.firstObject.start', 0),
-  firstBeatStart: withDefault('sortedBeats.firstObject.start', 0),
-
-  // the time of the first down beat, using the first beat and the most confident beat
-  firstBarStart: function() {
-    let spb = bpmToSpb(this.get('bpm'));
-
-    let firstBarStart = this.get('confidentBeatStart');
-    while (Math.round(firstBarStart - spb) > Math.round(this.get('firstBeatStart'))) {
-      firstBarStart -= spb;
-    }
-
-    return firstBarStart;
-  }.property('confidentBeatStart', 'firstBeatStart', 'bpm'),
-
-  // amount by which echonest analysis is off from the downbeats
-  // this is calculated from the calculated first bar, and the confident first bar
-  echonestBeatOffset: function() {
-
-  }.property('firstBarStart', 'confidentBarStart'),
-
-
   // Updates audio-meta based on the given EchonestTrack.Analysis
   // Returns a promise which resolves into this model
   isProcessingAnalysis: false,
   processAnalysis: function(analysis) {
     if (this.get('isProcessingAnalysis')) {
       return console.log("WARNING: processAnalysis called while already isProcessingAnalysis");
+    } else {
+      this.set('isProcessingAnalysis', true);
     }
 
-    this.set('isProcessingAnalysis', true);
+    let markerParams = [];
 
-    var markerParams = [];
-
-    // add confident beat marker
+    // add highest confidence bar as grid marker
+    let confidentBar = analysis.get('confidenceSortedBars.firstObject');
     markerParams.push({
-      type: BEAT_MARKER_TYPE,
-      start: analysis.get('confidentBeatStart'),
+      type: GRID_MARKER_TYPE,
+      start: confidentBar.start,
+      confidence: confidentBar.confidence,
     });
-
-    // add first bar marker
-    markerParams.push({
-      type: BAR_MARKER_TYPE,
-      start: analysis.get('firstBarStart'),
-    });
-
-    // add beat markers
-    // markerParams = markerParams.concat(analysis.get('sortedBeats').slice(0, 10).map((beat) => {
-    //   return {
-    //     type: BEAT_MARKER_TYPE,
-    //     start: beat.get('start'),
-    //   };
-    // }));
-
-    // add bar markers
-    // markerParams = markerParams.concat(analysis.get('confidentBars').slice(0, 10).map((bar) => {
-    //   return {
-    //     type: BAR_MARKER_TYPE,
-    //     start: bar.get('start'),
-    //   };
-    // }));
 
     // add section markers
-    markerParams = markerParams.concat(analysis.get('confidentSections').map((section) => {
+    markerParams = markerParams.concat(analysis.get('timeSortedSections').map((section) => {
       return {
         type: SECTION_MARKER_TYPE,
         start: section.get('start'),

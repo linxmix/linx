@@ -37,6 +37,8 @@ export default DS.Model.extend(
     });
   },
 
+
+  // TODO: compact audioMeta into AudioMeta.create({ track: this })
   _audioMeta: DS.belongsTo('audio-meta', { async: true }),
   audioMeta: withDefaultModel('_audioMeta', function() {
     return this.fetchAudioMeta();
@@ -51,6 +53,7 @@ export default DS.Model.extend(
   // params
   file: null,
 
+  // TODO: compact URL stuff into TrackAudioSource.create({ track: this })
   audioSource: Ember.computed('streamUrl', 'proxyStreamUrl', 'file', function() {
     return AudioSource.create({
       streamUrl: this.get('streamUrl'),
