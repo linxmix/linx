@@ -20,6 +20,10 @@ export default Ember.Mixin.create(
   model: null,
   firstTrack: null,
   lastTrack: null,
+  audioStartBeatWithTransition: null,
+  audioEndBeatWithTransition: null,
+  audioStartBeatWithoutTransition: null,
+  audioEndBeatWithoutTransition: null,
 
   prevItem: Ember.computed.reads('mixItem.prevItem'),
   nextItem: Ember.computed.reads('mixItem.nextItem'),

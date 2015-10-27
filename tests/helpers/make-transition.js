@@ -13,7 +13,7 @@ import {
 export default function(options = {}) {
   var fromTrackEnd = Ember.getWithDefault(options, 'fromTrackEnd', 100);
   var toTrackStart = Ember.getWithDefault(options, 'toTrackStart', 50);
-  var numBeats = Ember.getWithDefault(options, 'numBeats', 20);
+  var numBeats = Ember.getWithDefault(options, 'numBeats', 16);
 
   var fromTrack = Ember.getWithDefault(options, 'fromTrack', makeTrack.call(this));
   var toTrack = Ember.getWithDefault(options, 'toTrack', makeTrack.call(this));

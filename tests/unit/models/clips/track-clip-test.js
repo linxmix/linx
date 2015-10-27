@@ -104,7 +104,7 @@ describe('TrackClipModel', function() {
       subject() { return trackClip; },
       prevClip() { return prevClip; },
       startBeat() { return prevClip.get('endBeat') - prevTransition.get('numBeats'); },
-      numBeats() { return track.get('audioMeta.lastBeat') - prevTransition.get('toTrackStartBeat'); },
+      numBeats() { return track.get('audioMeta.endBeat') - prevTransition.get('toTrackStartBeat'); },
       audioStartBeatWithTransition() { return prevTransition.get('toTrackStartBeat'); },
       audioStartBeat() { return trackClip.get('audioStartBeatWithTransition'); },
       audioEndBeat() { return trackClip.get('audioEndBeatWithoutTransition'); },
@@ -130,7 +130,7 @@ describe('TrackClipModel', function() {
     describeAttrs('trackClip', {
       subject() { return trackClip; },
       startBeat: 0,
-      numBeats() { return nextTransition.get('fromTrackEndBeat') - track.get('audioMeta.firstBeat'); },
+      numBeats() { return nextTransition.get('fromTrackEndBeat') - track.get('audioMeta.startBeat'); },
       audioEndBeatWithTransition() { return nextTransition.get('fromTrackEndBeat'); },
       audioStartBeat() { return trackClip.get('audioStartBeatWithoutTransition'); },
       audioEndBeat() { return trackClip.get('audioEndBeatWithTransition'); },

@@ -5,15 +5,15 @@ import makeTrack from 'linx/tests/helpers/make-track';
 import makeTransition from 'linx/tests/helpers/make-transition';
 import makeTrackClip from 'linx/tests/helpers/make-track-clip';
 
-// creates transition-event with specifications
+// creates transition-clip with specifications
 export default function(options = {}) {
   let { fromTrack, transition, toTrack, fromTrackClip, toTrackClip } = options;
 
   if (!fromTrack) {
-    fromTrack = fromTrackClip && fromTrackClip.get('track.content') || makeTrack.call(this);
+    fromTrack = (fromTrackClip && fromTrackClip.get('track.content')) || makeTrack.call(this);
   }
   if (!toTrack) {
-    toTrack = toTrackClip && toTrackClip.get('track.content') || makeTrack.call(this);
+    toTrack = (toTrackClip && toTrackClip.get('track.content')) || makeTrack.call(this);
   }
   if (!transition) {
     let results = makeTransition.call(this, { fromTrack, toTrack });
@@ -29,7 +29,7 @@ export default function(options = {}) {
     toTrackClip = results.trackClip;
   }
 
-  let transitionClip = this.factory.make('transition-clip', { transition: transition });
+  let transitionClip = this.factory.make('transition-clip', { model: transition });
 
   transitionClip.setProperties({
     fromClip: fromTrackClip,

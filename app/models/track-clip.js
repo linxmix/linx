@@ -19,13 +19,7 @@ export default Clip.extend(
   lastTrack: Ember.computed.reads('track'),
 
   // allow custom startBeat and endBeat
-  audioStartBeatWithoutTransition: Ember.computed('audioMeta.startBeat', '_audioStartBeat', function() {
-    let startBeat = this.get('audioMeta.startBeat');
-    let customStartBeat = this.get('_audioStartBeat');
-    console.log('startBeat', startBeat);
-    console.log('customStartBeat', customStartBeat);
-    return Ember.isPresent(startBeat) ? startBeat : customStartBeat;
-  }),
+  audioStartBeatWithoutTransition: Ember.computed.any('audioMeta.startBeat', '_audioStartBeat'),
   audioEndBeatWithoutTransition: Ember.computed.any('audioMeta.endBeat', '_audioEndBeat'),
 
   audioStartBeatWithTransition: Ember.computed.reads('prevTransition.toTrackStartBeat'),
@@ -36,6 +30,7 @@ export default Clip.extend(
 
   // track-clip specific
   track: Ember.computed.alias('model'),
+  audioMeta: Ember.computed.reads('track.audioMeta'),
   _audioStartBeat: DS.attr('number'),
   _audioEndBeat: DS.attr('number'),
 

@@ -24,10 +24,7 @@ export default Ember.Controller.extend({
   }),
 
   fromTrackEndBeat: Ember.computed.reads('model.fromTrackEndBeat'),
-  fromTrackFirstBeat: Ember.computed.reads('model.fromTrack.audioMeta.firstBeat'),
-
   toTrackStartBeat: Ember.computed.reads('model.toTrackStartBeat'),
-  toTrackFirstBeat: Ember.computed.reads('model.toTrack.audioMeta.firstBeat'),
 
   // Hacky stuff to convert <input type="number"> values to numbers
   inputFromTrackEndBeat: subtract('fromTrackEndBeat', 'fromTrackFirstBeat'),
@@ -41,6 +38,7 @@ export default Ember.Controller.extend({
       return;
     }
 
+    // TODO
     this.get('model.readyPromise').then((transition) => {
       transition.setFromTrackEndBeat(value + this.get('fromTrackFirstBeat'));
     });
@@ -52,6 +50,7 @@ export default Ember.Controller.extend({
       return;
     }
 
+    // TODO
     this.get('model.readyPromise').then((transition) => {
       transition.setToTrackStartBeat(value + this.get('toTrackFirstBeat'));
     });

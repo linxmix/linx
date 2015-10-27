@@ -48,6 +48,7 @@ export default DS.Model.extend(
 
   _arrangement: DS.belongsTo('arrangement', { async: true }),
   arrangement: withDefaultModel('_arrangement', function() {
+    // TODO: have to fake title for Firebase to accept record
     let arrangement = this.get('store').createRecord('arrangement', {
       title: 'test title'
     });
