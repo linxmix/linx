@@ -39,11 +39,11 @@ describe('MultiplyComputedProperty', function() {
     expect(statistic.get('probabilityProduct')).to.equal(4 * 2 * 0.5);
   });
 
-  it('blows up when a depdendent key is not a number', function() {
-    Ember.run(() => {
-      statistic.set('probabilityA', null);
-    });
+  // it('blows up when a depdendent key is not a number', function() {
+  //   Ember.run(() => {
+  //     statistic.set('probabilityA', null);
+  //   });
 
-    expect(() => { return statistic.get('probabilityProduct'); }).to.throw();
-  });
+  //   expect(() => { return statistic.get('probabilityProduct'); }).to.throw();
+  // });
 });

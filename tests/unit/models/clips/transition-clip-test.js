@@ -56,7 +56,7 @@ describe('TransitionClipModel', function() {
     });
   });
 
-  // TODO(TEST)
+  // TODO(TRANSITION)
   describe.skip('with conflicting prevTransition', function() {
   });
   describe.skip('with conflicting nextTransition', function() {

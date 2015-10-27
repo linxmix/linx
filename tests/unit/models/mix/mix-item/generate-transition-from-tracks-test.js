@@ -41,8 +41,8 @@ describe('MixItemModel#generateTransitionFromTracks', function() {
       subject() { return transition; },
       'fromTrack.content': () => fromTrack,
       'toTrack.content': () => toTrack,
-      fromTrackEnd() { return fromTrack.get('audioMeta.lastBeatMarker.start'); },
-      toTrackStart() { return toTrack.get('audioMeta.firstBeatMarker.start'); },
+      fromTrackEndBeat() { return fromTrack.get('audioMeta.endBeat'); },
+      toTrackStartBeat() { return toTrack.get('audioMeta.startBeat'); },
     });
   });
 });

@@ -46,7 +46,7 @@ export default Ember.Component.extend(
   }),
 
   // TODO(MULTIGRID): this will need a piecewise scale or something
-  beatViewScale: Ember.computed('clipWidth', 'audioStartBeat', 'audioEndBeat', function () {
+  beatViewScale: Ember.computed('clipWidth', 'audioStartBeat', 'audioEndBeat', function() {
     let {
       clipWidth: rangeMax,
       audioStartBeat: domainMin,
@@ -59,7 +59,7 @@ export default Ember.Component.extend(
   // TODO: make less brittle (?)
   // TODO: update on window.resize
   arrangementView: Ember.computed.reads('parentView.parentView.parentView'),
-  arrangementViewWidth: Ember.computed('arrangementView',' arrangementView.isInDom', function() {
+  arrangementViewWidth: Ember.computed('arrangementView.isInDom', function() {
     let arrangementView = this.get('arrangementView');
 
     if (arrangementView && arrangementView.get('isInDom')) {

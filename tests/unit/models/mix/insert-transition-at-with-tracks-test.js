@@ -47,8 +47,9 @@ describe('MixModel#insertTransitionAtWithTracks', function() {
       expect(mix.modelAt(0)).to.equal(fromTrack);
     });
 
-    it('adds transition to correct place', function() {
+    it('adds valid transition to correct place', function() {
       expect(mix.transitionAt(0)).to.equal(transition);
+      expect(mix.objectAt(0).get('hasValidTransition')).to.be.true;
     });
 
     it('adds toTrack to correct place', function() {
@@ -57,12 +58,9 @@ describe('MixModel#insertTransitionAtWithTracks', function() {
   });
 
   describe('when matches fromTrack', function() {
-    let trackItem;
-
     beforeEach(function() {
       Ember.run(() => {
-        wait(mix.appendModel(fromTrack).then((_trackItem) => {
-          trackItem = _trackItem;
+        wait(mix.appendModel(fromTrack).then(() => {
           return mix.insertTransitionAtWithTracks(0, transition);
         }));
       });
@@ -73,12 +71,13 @@ describe('MixModel#insertTransitionAtWithTracks', function() {
       length: 2,
     });
 
-    it('retains existing trackItem', function() {
-      expect(mix.objectAt(0)).to.equal(trackItem);
+    it('adds valid transition to correct place', function() {
+      expect(mix.transitionAt(0)).to.equal(transition);
+      expect(mix.objectAt(0).get('hasValidTransition')).to.be.true;
     });
 
-    it('adds transition to correct place', function() {
-      expect(mix.transitionAt(0)).to.equal(transition);
+    it('adds toTrack to correct place', function() {
+      expect(mix.modelAt(1)).to.equal(toTrack);
     });
   });
 
@@ -90,31 +89,100 @@ describe('MixModel#insertTransitionAtWithTracks', function() {
 
       Ember.run(() => {
         wait(mix.appendModel(otherTrack).then((_otherTrackItem) => {
-          otherTrackItem = _otherTrackItem;
-          return mix.insertTransitionAtWithTracks(1, transition);
+          otherTrackItem = mix.objectAt(0);
+          return mix.insertTransitionAtWithTracks(0, transition);
         }));
       });
     });
 
     describeAttrs('mix', {
       subject() { return mix; },
-      length: 3,
+      length: 2,
     });
 
-    it('retains existing otherTrackItem', function() {
-      expect(mix.objectAt(0)).to.equal(otherTrackItem);
+    it('adds valid transition to correct place', function() {
+      expect(mix.transitionAt(0)).to.equal(transition);
+      expect(mix.objectAt(0).get('hasValidTransition')).to.be.true;
     });
 
     it('adds fromTrack to correct place', function() {
-      expect(mix.modelAt(1)).to.equal(fromTrack);
-    });
-
-    it('adds transition to correct place', function() {
-      expect(mix.transitionAt(1)).to.equal(transition);
+      expect(mix.modelAt(0)).to.equal(fromTrack);
     });
 
     it('adds toTrack to correct place', function() {
-      expect(mix.modelAt(2)).to.equal(toTrack);
+      expect(mix.modelAt(1)).to.equal(toTrack);
+    });
+
+    // TODO: should this be the case?
+    // it('retains existing otherTrackItem', function() {
+    //   expect(mix.objectAt(0)).to.equal(otherTrackItem);
+    // });
+  });
+
+  describe('when matches toTrack', function() {
+    beforeEach(function() {
+      Ember.run(() => {
+        wait(mix.appendModel(toTrack).then(() => {
+          return mix.insertTransitionAtWithTracks(0, transition);
+        }));
+      });
+    });
+
+    describeAttrs('mix', {
+      subject() { return mix; },
+      length: 2,
+    });
+
+    it('adds valid transition to correct place', function() {
+      expect(mix.transitionAt(0)).to.equal(transition);
+      expect(mix.objectAt(0).get('hasValidTransition')).to.be.true;
+    });
+
+    it('adds fromTrack to correct place', function() {
+      expect(mix.modelAt(0)).to.equal(fromTrack);
     });
   });
+
+  describe('when does not match toTrack', function() {
+    let otherTrack, otherTrackItem;
+
+    beforeEach(function() {
+      otherTrack = makeTrack.call(this);
+
+      Ember.run(() => {
+        wait(mix.appendModel(otherTrack).then((_otherTrackItem) => {
+          otherTrackItem = mix.objectAt(0);
+          return mix.insertTransitionAtWithTracks(0, transition);
+        }));
+      });
+    });
+
+    describeAttrs('mix', {
+      subject() { return mix; },
+      length: 2,
+    });
+
+    it('adds valid transition to correct place', function() {
+      expect(mix.transitionAt(0)).to.equal(transition);
+      expect(mix.objectAt(0).get('hasValidTransition')).to.be.true;
+    });
+
+    it('adds fromTrack to correct place', function() {
+      expect(mix.modelAt(0)).to.equal(fromTrack);
+    });
+
+    it('adds toTrack to correct place', function() {
+      expect(mix.modelAt(1)).to.equal(toTrack);
+    });
+
+    // TODO: should this be the case?
+    // it('retains existing otherTrackItem', function() {
+    //   expect(mix.objectAt(0)).to.equal(otherTrackItem);
+    // });
+  });
+
+  // TODO(TRANSITION): add tests
+  //    when matches / doesnt match both tracks (?)
+  //    when in middle of mix (?)
+  //    insertModelAtWithTransitions too
 });

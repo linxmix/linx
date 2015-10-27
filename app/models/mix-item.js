@@ -118,7 +118,7 @@ export default DS.Model.extend(
   generateTransition(options) {
     return this.get('listReadyPromise').then(() => {
       let model = this.get('model.content');
-      let nextItem = this.get('nextItem')
+      let nextItem = this.get('nextItem');
       let nextModel = nextItem && nextItem.get('model.content');
 
       if (!(model && nextModel)) {
@@ -133,7 +133,7 @@ export default DS.Model.extend(
       return this.generateTransitionFromClips(this.get('clip'), nextItem.get('clip'), options).then((transition) => {
         return this.setTransition(transition).then(() => {
           return transition;
-        })
+        });
       });
     });
   },
@@ -186,14 +186,14 @@ export default DS.Model.extend(
         toTrack,
       });
 
-      let fromTrackAudioMeta = fromTrack.get('audioMeta.content');
-      let fromTrackEndBeat = fromTrackAudioMeta.getNearestBar(fromTrackAudioMeta.get('fadeOutMarker.start'));
+      // let fromTrackAudioMeta = fromTrack.get('audioMeta.content');
+      // let fromTrackEndBeat = fromTrackAudioMeta.getNearestBar(fromTrackAudioMeta.get('fadeOutMarker.start'));
 
-      console.log("fromTrackEndBeat", fromTrackEndBeat);
+      // console.log("fromTrackEndBeat", fromTrackEndBeat);
 
       return Ember.RSVP.all([
-        transition.setFromTrackEndBeat(fromTrackEndBeat),
-        transition.setToTrackStartBeat(toTrack.get('audioMeta.firstBeat')),
+        transition.setFromTrackEndBeat(fromTrack.get('audioMeta.endBeat')),
+        transition.setToTrackStartBeat(toTrack.get('audioMeta.startBeat')),
         transition.get('arrangement').then((arrangement) => {
           let automationClip = this.get('store').createRecord('automation-clip', {
             numBeats: 16,

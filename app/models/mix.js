@@ -37,7 +37,11 @@ export default DS.Model.extend(
   },
 
   insertModelAt(index, model) {
-    return this.createAt(index).setModel(model);
+    let item = this.createAt(index);
+
+    return item.setModel(model).then(() => {
+      return item;
+    });
   },
 
   insertTransitionAt(index, transition) {
@@ -106,7 +110,7 @@ export default DS.Model.extend(
     return this.insertTransitionAtWithTracks(this.get('length'), transition);
   },
 
-  // TODO: this will break when transitions conflict
+  // TODO(TRANSITION): this will break when transitions conflict
   // TODO: update for mixes too
   insertTransitionAtWithTracks(index, transition) {
     return Ember.RSVP.all([this.get('readyPromise'), transition.get('readyPromise')]).then(() => {

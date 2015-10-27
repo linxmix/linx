@@ -30,5 +30,5 @@ export default function(options = {}) {
     markers: [gridMarker]
   }));
 
-  return audioMeta
+  return audioMeta;
 }

@@ -61,7 +61,6 @@ describe('TrackClipModel', function() {
       audioEndBeatWithoutTransition() { return track.get('audioMeta.endBeat'); },
       audioStartBeat() { return trackClip.get('audioStartBeatWithoutTransition'); },
       audioEndBeat() { return trackClip.get('audioEndBeatWithoutTransition'); },
-      numBeats() { return trackClip.get('numBeats'); },
     });
   });
 

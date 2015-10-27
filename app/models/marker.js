@@ -33,7 +33,7 @@ export default DS.Model.extend({
       let beatGrid = this.get('beatGrid');
 
       Ember.assert('Can only set marker startBeat with numeric beat', isNumber(beat));
-      Ember.assert('Can only set marker startBeat with valid beatGrid', isNumber(bpm));
+      Ember.assert('Can only set marker startBeat with valid beatGrid', Ember.isPresent(beatGrid));
 
       this.set('start', beatGrid.beatToTime(beat));
       return beat;
@@ -50,7 +50,7 @@ export default DS.Model.extend({
       let beatGrid = this.get('beatGrid');
 
       Ember.assert('Can only set marker startBeat with numeric bar', isNumber(bar));
-      Ember.assert('Can only set marker startBeat with valid beatGrid', isNumber(bpm));
+      Ember.assert('Can only set marker startBeat with valid beatGrid', Ember.isPresent(beatGrid));
 
       this.set('start', beatGrid.barToTime(bar));
       return bar;

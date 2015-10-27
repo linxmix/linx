@@ -42,6 +42,41 @@ describe('OrderedHasManyMixin', function() {
     });
   });
 
+  describe('#getOrCreateAt', function() {
+    let index = 0, item;
+
+    describe('without item at index', function() {
+      beforeEach(function() {
+        item = list.getOrCreateAt(index);
+      });
+
+      it('creates new item', function() {
+        expect(item).to.be.ok;
+      });
+
+      it('inserts item at index', function() {
+        expect(list.objectAt(index)).to.equal(item);
+      });
+    });
+
+    describe('with item at index', function() {
+      let existingItem;
+
+      beforeEach(function() {
+        existingItem = list.createAt(index);
+        item = list.getOrCreateAt(index);
+      });
+
+      it('returns existingItem', function() {
+        expect(item).to.equal(existingItem);
+      });
+
+      it('does not create a new item', function() {
+        expect(list.get('length')).to.equal(1);
+      });
+    });
+  });
+
   describe('operations with one item', function() {
     let item;
 

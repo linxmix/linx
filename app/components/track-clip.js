@@ -32,7 +32,7 @@ export default Clip.extend({
   }),
 
   // visually align the segment of audio represented by this clip
-  audioOffset: multiply('audioStartBeat', 'pxPerBeat', -1.0),
+  audioOffset: multiply('audioStartBeat', 'pxPerBeat'),
   audioOffsetStyle: toPixels('audioOffset'),
 
   // params

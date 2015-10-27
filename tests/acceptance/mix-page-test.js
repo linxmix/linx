@@ -106,7 +106,7 @@ describe('Acceptance: MixPage', function() {
 
   });
 
-  describe('with track and transition items', function() {
+  describe.skip('with track and transition items', function() {
     let track1, transition, track2;
 
     beforeEach(function() {

@@ -17,7 +17,7 @@ export default Ember.Object.extend(
   },
 
   beatToTime(beat) {
-    return this.get('beatScale').getInverse(y);
+    return this.get('beatScale').getInverse(beat);
   },
 
   timeToBar(time) {
@@ -70,42 +70,20 @@ export default Ember.Object.extend(
   }),
 });
 
-//
-// convenience computed properties
-//
+// provides dynamically updating beat grid properties
+function beatGridPropertyGenerator(beatGridFunctionName) {
+  return function(beatGridPath, unitPath) {
+    return Ember.computed(`${beatGridPath}.beatScale`, unitPath, function() {
+      let unit = this.get(unitPath);
+      let beatGrid = this.get(beatGridPath)
 
-// provides dynamically updating time of the beat at given beatPath
-export function beatToTime(beatGridPath, beatPath) {
-  return Ember.computed(`${beatGridPath}.beatScale`, beatPath, function() {
-    let beat = this.get('beatPath');
+      return beatGrid && beatGrid[beatGridFunctionName](unit);
+    });
+  };
+}
 
-    return this.get('beatGridPath').beatToTime(beat);
-  });
-};
+export const beatToTime = beatGridPropertyGenerator('beatToTime');
+export const timeToBeat = beatGridPropertyGenerator('timeToBeat');
 
-// provides dynamically updating beat of the time at given timePath
-export function timeToBeat(beatGridPath, timePath) {
-  return Ember.computed(`${beatGridPath}.beatScale`, timePath, function() {
-    let time = this.get('timePath');
-
-    return this.get('beatGridPath').timeToBeat(time);
-  });
-};
-
-// provides dynamically updating time of the beat at given beatPath
-export function barToTime(beatGridPath, barPath) {
-  return Ember.computed(`${beatGridPath}.barScale`, barPath, function() {
-    let bar = this.get('barPath');
-
-    return this.get('beatGridPath').barToTime(bar);
-  });
-};
-
-// provides dynamically updating bar of the time at given timePath
-export function barToTime(beatGridPath, timePath) {
-  return Ember.computed(`${beatGridPath}.barScale`, timePath, function() {
-    let time = this.get('timePath');
-
-    return this.get('beatGridPath').timeToBar(time);
-  });
-};
+export const barToTime = beatGridPropertyGenerator('barToTime');
+export const timeToBar = beatGridPropertyGenerator('timeToBar');
