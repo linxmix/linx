@@ -6,11 +6,15 @@ import _ from 'npm:underscore';
 import ReadinessMixin from 'linx/mixins/readiness';
 import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 
-import BeatGrid from './audio-meta/beat-grid';
+import {
+  default as BeatGrid,
+  timeToBeat as computedTimeToBeat,
+  timeToBar as computedTimeToBar
+} from './audio-meta/beat-grid';
 
-import { timeToBeat, roundTo, clamp } from 'linx/lib/utils';
+import { roundTo, clamp } from 'linx/lib/utils';
 import withDefault from 'linx/lib/computed/with-default';
-import add from 'linx/lib/computed/add';
+import subtract from 'linx/lib/computed/subtract';
 import {
   GRID_MARKER_TYPE,
   SECTION_MARKER_TYPE,
@@ -48,17 +52,15 @@ export default DS.Model.extend(
   fadeInMarker: Ember.computed.reads('sortedFadeInMarkers.firstObject'),
   fadeOutMarker: Ember.computed.reads('sortedFadeOutMarkers.firstObject'),
 
-  startBeat: Ember.computed('beatGrid.beatScale', function() {
-    return this.get('beatGrid').timeToBeat(0);
-  }),
-  endBeat: add('startBeat', 'numBeats'),
-  numBeats: Ember.computed('duration', 'bpm', function() {
-    return timeToBeat(this.get('duration'), this.get('bpm'));
-  }),
-
   beatGrid: Ember.computed(function() {
     return BeatGrid.create({ audioMeta: this });
   }),
+
+  startBeat: computedTimeToBeat('beatGrid', 0),
+  startBar: computedTimeToBar('beatGrid', 0),
+  endBeat: computedTimeToBeat('beatGrid', 'duration'),
+  endBar: computedTimeToBar('beatGrid', 'duration'),
+  numBeats: subtract('endBeat', 'startBeat'),
 
   // TODO
   // amount by which echonest analysis is off from the downbeats

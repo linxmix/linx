@@ -3,14 +3,13 @@ import Ember from 'ember';
 import LinearScale from 'linx/lib/linear-scale';
 import RequireAttributes from 'linx/lib/require-attributes';
 
-import { bpmToSpb } from 'linx/lib/utils';
+import { timeToBeat as timeToBeatUtil, bpmToSpb, isNumber } from 'linx/lib/utils';
 
 export default Ember.Object.extend(
   RequireAttributes('audioMeta'), {
 
   duration: Ember.computed.reads('audioMeta.duration'),
   bpm: Ember.computed.reads('audioMeta.bpm'),
-  numBeats: Ember.computed.reads('audioMeta.numBeats'),
 
   timeToBeat(time) {
     return this.get('beatScale').getPoint(time);
@@ -55,7 +54,13 @@ export default Ember.Object.extend(
   // TODO(MULTIGRID): adapt for multiple grid markers. Piecewise-Scale? or a long domain/range?
   gridMarker: Ember.computed.reads('audioMeta.sortedGridMarkers.firstObject'),
 
+  // TODO(MULTIGRID): this will depend on the grid markers and bpm
+  numBeats: Ember.computed('duration', 'bpm', function() {
+    return timeToBeatUtil(this.get('duration'), this.get('bpm'));
+  }),
+
   // the time of the first actual beat in the raw audio file
+  // TODO(MULTIGRID): this supposes a constant bpm in the audio file
   firstBarOffset: Ember.computed('gridMarker.start', 'bpm', function() {
     let bpm = this.get('bpm');
     let secondsPerBeat = bpmToSpb(bpm);
@@ -71,14 +76,29 @@ export default Ember.Object.extend(
 });
 
 // provides dynamically updating beat grid properties
+// supports constants and paths
 function beatGridPropertyGenerator(beatGridFunctionName) {
-  return function(beatGridPath, unitPath) {
-    return Ember.computed(`${beatGridPath}.beatScale`, unitPath, function() {
-      let unit = this.get(unitPath);
-      let beatGrid = this.get(beatGridPath)
+  return function(beatGridPath, unitOrPath) {
+    let isPath = !isNumber(unitOrPath);
 
-      return beatGrid && beatGrid[beatGridFunctionName](unit);
-    });
+    if (isPath) {
+      let unitPath = unitOrPath;
+
+      return Ember.computed(`${beatGridPath}.beatScale`, unitPath, function() {
+        let unit = this.get(unitPath);
+        let beatGrid = this.get(beatGridPath)
+
+        return beatGrid && beatGrid[beatGridFunctionName](unit);
+      });
+    } else {
+      let unit = unitOrPath;
+
+      return Ember.computed(`${beatGridPath}.beatScale`, function() {
+        let beatGrid = this.get(beatGridPath)
+
+        return beatGrid && beatGrid[beatGridFunctionName](unit);
+      });
+    }
   };
 }
 

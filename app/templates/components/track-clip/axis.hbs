@@ -12,3 +12,18 @@
     }}
   {{/data-visual}}
 {{/if}}
+
+{{#if showBarGrid}}
+  {{#data-visual
+    as |svg width height|
+  }}
+    {{d3-axis
+      select=(svg-transition svg.bar-grid)
+      transform=(svg-translate 0 125)
+      scale=barViewScale
+      orient="top"
+      tickSize=125
+      ticks=numBars
+    }}
+  {{/data-visual}}
+{{/if}}

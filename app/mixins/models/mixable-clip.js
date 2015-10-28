@@ -6,6 +6,7 @@ import ReadinessMixin from '../readiness';
 
 import { variableTernary } from 'linx/lib/computed/ternary';
 import subtract from 'linx/lib/computed/subtract';
+import multiply from 'linx/lib/computed/multiply';
 import withDefault from 'linx/lib/computed/with-default';
 
 export default Ember.Mixin.create(
@@ -45,15 +46,19 @@ export default Ember.Mixin.create(
     'audioStartBeatWithTransition',
     'audioStartBeatWithoutTransition'
   ),
+  audioStartBar: multiply('audioStartBeat', 0.25),
 
   audioEndBeat: variableTernary(
     'nextTransitionIsValid',
     'audioEndBeatWithTransition',
     'audioEndBeatWithoutTransition'
   ),
+  audioEndBar: multiply('audioEndBeat', 0.25),
 
   audioNumBeats: subtract('audioEndBeat', 'audioStartBeat'),
+  audioNumBars: multiply('audioNumBeats', 0.25),
   numBeats: Ember.computed.reads('audioNumBeats'),
+  numBars: Ember.computed.reads('audioNumBars'),
 
   // overlap with prevClip if is transition
   _startBeat: withDefault('prevClip.endBeat', 0),
