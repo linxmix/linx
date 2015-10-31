@@ -37,7 +37,6 @@ export default DS.Model.extend(
     });
   },
 
-
   // TODO: compact audioMeta into AudioMeta.create({ track: this })
   _audioMeta: DS.belongsTo('audio-meta', { async: true }),
   audioMeta: withDefaultModel('_audioMeta', function() {

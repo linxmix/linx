@@ -29,9 +29,18 @@ export default function(propertyPath) {
           }]))
         );
       }
+    // 'ready' is built into DS.Model
     }.on('init', 'ready'),
 
     isReady: false,
+
+    _logReadiness() {
+      console.log('isReady', this.get('isReady'));
+
+      this.get('_readinessPaths').map((path) => {
+        console.log(`${path}:`, this.get(path));
+      });
+    },
 
     _didBecomeReady: function() {
       Ember.run.once(() => {

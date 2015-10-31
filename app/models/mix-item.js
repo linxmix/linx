@@ -35,7 +35,6 @@ export default DS.Model.extend(
   }.property('model.content'),
 
   clipIsReady: Ember.computed.reads('clip.isReady'),
-  transitionClipIsReady: Ember.computed.reads('transitionClip.isReady'),
 
   trackClip: DS.belongsTo('track-clip', { async: true }),
   transitionClip: DS.belongsTo('transition-clip', { async: true }),
