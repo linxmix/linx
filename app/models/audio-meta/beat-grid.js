@@ -54,6 +54,13 @@ export default Ember.Object.extend(
   // TODO(MULTIGRID): adapt for multiple grid markers. Piecewise-Scale? or a long domain/range?
   gridMarker: Ember.computed.reads('audioMeta.sortedGridMarkers.firstObject'),
 
+  nudge(value) {
+    Ember.assert('Cannot nudge BeatGrid without numeric value', isNumber(value));
+
+    let gridMarker = this.get('gridMarker');
+    gridMarker.set('start', gridMarker.get('start') + value);
+  },
+
   // TODO(MULTIGRID): this will depend on the grid markers and bpm
   numBeats: Ember.computed('duration', 'bpm', function() {
     return timeToBeatUtil(this.get('duration'), this.get('bpm'));

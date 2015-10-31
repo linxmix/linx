@@ -1,15 +1,13 @@
 import Ember from 'ember';
 import RequireAttributes from 'linx/lib/require-attributes';
 
-const EXCLUDE_PARAMs = ['analysis_url', 'AWSAccessKeyId'];
+const NUDGE_VALUE = 0.005;
 
 export default Ember.Component.extend(
-  RequireAttributes('track', 'clip'), {
+  RequireAttributes('track', 'store'), {
 
   classNames: ['TrackFull'],
-
-  echonestTrack: Ember.computed.reads('track.echonestTrack'),
-  analysis: Ember.computed.reads('echonestTrack.analysis'),
+  session: Ember.inject.service(),
 
   actions: {
     playpause: function() {
@@ -22,20 +20,31 @@ export default Ember.Component.extend(
 
     analyzeTrack(track) {
       track.fetchAudioMeta();
-    }
+    },
+
+    nudgeLeft(scalar = 1) {
+      this.get('beatGrid').nudge(-1.0 * scalar * NUDGE_VALUE);
+    },
+
+    nudgeRight(scalar = 1) {
+      this.get('beatGrid').nudge(scalar * NUDGE_VALUE);
+    },
   },
 
-  session: Ember.inject.service(),
+  beatGrid: Ember.computed.reads('track.audioMeta.beatGrid'),
 
-  displayAudioParams: function() {
-    var audioParams = this.get('echonestTrack.audioParams') || [];
-    return audioParams.reject(function(param) {
-      return EXCLUDE_PARAMs.contains(param.key);
-    });
-  }.property('echonestTrack.audioParams'),
+  arrangement: Ember.computed('track', 'store', function() {
+    let store = this.get('store');
+    let track = this.get('track');
 
-  // TODO: remove hack
-  seekBeat: 0,
-  pxPerBeat: 15,
-  isPlaying: false,
+    if (store && track) {
+      let arrangement = store.createRecord('arrangement');
+      let trackClip = store.createRecord('track-clip', {
+        model: track
+      });
+
+      arrangement.get('trackClips').addObject(trackClip);
+      return arrangement;
+    }
+  }),
 });

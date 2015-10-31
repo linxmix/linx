@@ -1,3 +1,15 @@
 <div class="track-page">
-  {{track-full track=model clip=clip}}
+  <div class="inverted orange ui icon button {{if model.anyDirty '' 'basic disabled'}}" {{action "saveTrack"}}>
+    <i class="cloud upload icon"></i>
+    Save Track
+  </div>
+  <div class="inverted red ui icon button" {{action "deleteTrack"}}>
+    <i class="remove icon"></i>
+    Delete Track
+  </div>
+
+  {{track-full
+    track=model
+    store=store
+  }}
 </div>

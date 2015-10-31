@@ -50,4 +50,29 @@ describe('BeatGrid', function() {
         .to.equal(beatGrid.timeToBeat(audioMeta.get('duration')) / 4.0);
     });
   });
+
+  // TODO(MULTIGRID): rework
+  describe('#nudge', function() {
+    let nudgeAmount = 0.005, previousStart;
+
+    beforeEach(function() {
+      previousStart = beatGrid.get('gridMarker.start');
+    });
+
+    it('nudge right works', function() {
+      Ember.run(() => {
+        beatGrid.nudge(nudgeAmount);
+      });
+
+      expect(beatGrid.get('gridMarker.start')).to.equal(previousStart + nudgeAmount);
+    });
+
+    it('nudge left works', function() {
+      Ember.run(() => {
+        beatGrid.nudge(-nudgeAmount);
+      });
+
+      expect(beatGrid.get('gridMarker.start')).to.equal(previousStart - nudgeAmount);
+    });
+  });
 });

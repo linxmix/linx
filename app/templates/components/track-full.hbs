@@ -2,39 +2,36 @@
 <div>{{track.title}}</div>
 <div>{{track.artist}}</div>
 
-<div class="TrackFull-clip">
-  {{track-clip
-    clip=clip
-    isPlaying=isPlaying
-    seekBeat=seekBeat
-    pxPerBeat=pxPerBeat
-    disableMouseInteraction=false
-  }}
-</div>
-
-{{play-buttons
-  isPlaying=isPlaying
-  playpause='playpause'
-  skipBack='skipBack'
-  skipForth='skipForth'
+{{simple-arrangement
+  arrangement=arrangement
 }}
 
-<div class="inverted purple ui button" {{action "queueTrack" track}}>Queue</div>
-<div class="inverted orange ui button" {{action "analyzeTrack" track}}>Reset Analysis</div>
+<hr/>
+
+<div class="inverted blue ui icon button" {{action "nudgeLeft" 100}}>
+  <i class="fast backward icon"></i>
+</div>
+<div class="inverted blue ui icon button" {{action "nudgeLeft" 10}}>
+  <i class="step backward icon"></i>
+</div>
+<div class="inverted blue ui icon button" {{action "nudgeLeft" 1}}>
+  <i class="left caret icon"></i>
+</div>
+<div class="inverted blue ui icon button" {{action "nudgeRight" 1}}>
+  <i class="right caret icon"></i>
+</div>
+<div class="inverted blue ui icon button" {{action "nudgeRight" 10}}>
+  <i class="step forward icon"></i>
+</div>
+<div class="inverted blue ui icon button" {{action "nudgeRight" 100}}>
+  <i class="fast forward icon"></i>
+</div>
 
 <hr/>
 
-{{#if displayAudioParams.length}}
-  <div>Analysis</div>
-  {{#each param in displayAudioParams}}
-    <div>{{param.key}}&nbsp;{{param.value}}</div>
-  {{/each}}
-{{else}}
-  <div>Analysis Pending</div>
-{{/if}}
-
-<hr/>
-
-<div>Echonest Track</div>
-<div>{{echonestTrack.title}}</div>
-<div>{{echonestTrack.artist}}</div>
+<div class="inverted purple ui button" {{action "queueTrack" track}}>
+  Queue
+</div>
+<div class="inverted orange ui button" {{action "analyzeTrack" track}}>
+  Reset Analysis
+</div>
