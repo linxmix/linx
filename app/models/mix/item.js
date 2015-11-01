@@ -26,7 +26,7 @@ export default DS.Model.extend(
   nextTransitionIsMatch: equalProps('transition.toTrack.content', 'nextTransition.fromTrack.content'),
 
   transitionClip: Ember.computed('transition', function() {
-    return this.get('store').createRecord('track-clip', {
+    return this.get('store').createRecord('transition-clip', {
       transition: this.get('transition'),
       mixItem: this,
     });

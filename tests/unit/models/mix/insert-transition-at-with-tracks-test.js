@@ -13,7 +13,7 @@ import makeTransition from 'linx/tests/helpers/make-transition';
 import makeMix from 'linx/tests/helpers/make-mix';
 import describeAttrs from 'linx/tests/helpers/describe-attrs';
 
-describe('MixModel#insertTransitionAtWithTracks', function() {
+describe.skip('MixModel#insertTransitionAtWithTracks', function() {
   setupTestEnvironment();
 
   let mix, arrangement;

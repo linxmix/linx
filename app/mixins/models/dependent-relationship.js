@@ -93,7 +93,7 @@ export default function(propertyPath) {
 
     // TODO: figure this out
     // implement readiness mixin
-    _areDependentModelsReady: isEvery('dependentModels', 'isLoaded', true),
+    // _areDependentModelsReady: isEvery('dependentModels', 'isLoaded', true),
 
     // implement readiness mixin
     _areDependentModelsReady: Ember.computed('dependentModels.@each.isLoaded', 'dependentModels.@each.id', function() {

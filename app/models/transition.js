@@ -39,10 +39,11 @@ export default DS.Model.extend(
   }),
 
   // TODO: add transition relationship to marker?
+  // TODO: what if tracks are switched out after the transition has been made?
   _fromTrackMarker: DS.belongsTo('marker', { async: true }),
   fromTrackMarker: withDefaultModel('_fromTrackMarker', function() {
-    return this.get('readyPromise').then(() => {
-      this.get('store').createRecord('marker', {
+    return this.get('fromTrack.readyPromise').then(() => {
+      return this.get('store').createRecord('marker', {
         audioMeta: this.get('fromTrack.audioMeta'),
         type: TRANSITION_OUT_MARKER_TYPE,
       });
@@ -51,8 +52,8 @@ export default DS.Model.extend(
 
   _toTrackMarker: DS.belongsTo('marker', { async: true }),
   toTrackMarker: withDefaultModel('_toTrackMarker', function() {
-    return this.get('readyPromise').then(() => {
-      this.get('store').createRecord('marker', {
+    return this.get('toTrack.readyPromise').then(() => {
+      return this.get('store').createRecord('marker', {
         audioMeta: this.get('toTrack.audioMeta'),
         type: TRANSITION_IN_MARKER_TYPE,
       });
@@ -101,7 +102,6 @@ export default DS.Model.extend(
     Ember.assert('Transition.setToTrackStartBeat requires a valid number', isNumber(beat));
 
     return this.get('toTrackMarker').then((marker) => {
-      console.log("setToTrackStart", beat);
       marker.set('startBeat', beat);
       return marker;
     });

@@ -13,16 +13,16 @@ export default DS.Model.extend(
   title: DS.attr('string'),
   _mixItems: DS.hasMany('mix/item', { async: true }),
 
-  fromTracks: Ember.computed.mapBy('items', 'fromTrack'),
-  toTracks: Ember.computed.mapBy('items', 'toTrack'),
-  tracks: Ember.computed.uniq('fromTracks', 'toTracks'),
+  fromTracks: Ember.computed.mapBy('items', 'fromTrack.content'),
+  toTracks: Ember.computed.mapBy('items', 'toTrack.content'),
+  tracks: Ember.computed.union('fromTracks', 'toTracks'),
   transitions: Ember.computed.mapBy('items', 'transition'),
 
   fromTrackClips: Ember.computed.mapBy('items', 'fromTrackClip'),
   toTrackClips: Ember.computed.mapBy('items', 'toTrackClip'),
-  trackClips: Ember.computed.uniq('fromTrackClips', 'toTrackClips'),
+  trackClips: Ember.computed.union('fromTrackClips', 'toTrackClips'),
   transitionClips: Ember.computed.mapBy('items', 'transitionClip'),
-  clips: Ember.computed.uniq('trackClips', 'transitionClips'),
+  clips: Ember.computed.union('trackClips', 'transitionClips'),
 
   trackAt(index) {
     let item = this.objectAt(index);
@@ -32,6 +32,14 @@ export default DS.Model.extend(
   transitionAt(index) {
     let item = this.objectAt(index);
     return item && item.get('transition.content');
+  },
+
+  appendTransition(transition) {
+    return this.insertTransitionAt(this.get('length'), transition);
+  },
+
+  insertTransitionAt(index, transition) {
+    return this.createAt(index, { transition });
   },
 
   insertTransitionsAt(index, transitions) {
