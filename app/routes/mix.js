@@ -1,5 +1,7 @@
 import Ember from 'ember';
 
+import _ from 'npm:underscore';
+
 export default Ember.Route.extend({
   actions: {
     saveMix() {
@@ -34,24 +36,19 @@ export default Ember.Route.extend({
     selectTrack(track) {
       let mix = this.get('controller.model');
 
-      if (this.get('controller.insertTracksWithTransitions')) {
-        mix.appendModelWithTransition(track);
-      } else {
-        mix.appendModel(track);
-      }
+      mix.generateAndAppendTransition({
+        toTrack: track
+      });
     },
 
     addRandomTrack() {
       let mix = this.get('controller.model');
-      mix.generateTransitionAndAppend({
+      let tracks = this.get('controller.searchTracks.content');
+      let randomTrack = _.sample(tracks.toArray());
 
-      })
-
-      if (this.get('controller.insertTracksWithTransitions')) {
-        mix.appendModelWithTransition(track);
-      } else {
-        mix.appendModel(track);
-      }
+      mix.generateAndAppendTransition({
+        toTrack: randomTrack
+      });
     },
 
     removeItem(mixItem) {

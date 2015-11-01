@@ -6,7 +6,7 @@ export default Ember.Controller.extend({
 
   actions: {
     viewItem(mixItem) {
-      mixItem.get('clip.readyPromise').then((clip) => {
+      mixItem.get('transitionClip.readyPromise').then((clip) => {
         this.set('scrollCenterBeat', clip.get('centerBeat'));
       });
     },
@@ -17,7 +17,4 @@ export default Ember.Controller.extend({
   searchTracks: Ember.computed(function() {
     return this.get('store').findAll('track');
   }),
-
-  // controlled by checkbox
-  insertTracksWithTransitions: false,
 });

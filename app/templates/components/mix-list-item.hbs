@@ -1,7 +1,9 @@
 <div class="content">
-  {{#link-to modelLinkTo item.model}}
-    {{position}} &middot; {{item.modelName}} &middot; {{item.model.title}}
-  {{/link-to}}
+  {{#if showFromTrack}}
+    {{#link-to 'track' fromTrack}}
+      {{position}} &middot; {{fromTrack.title}} &middot; {{fromTrack.artist}}
+    {{/link-to}}
+  {{/if}}
   <div class='tiny inverted basic circular yellow ui icon button' {{action "view" item}}>
     <i class='search icon'></i>
   </div>
@@ -12,11 +14,11 @@
     <i class='remove icon'></i>
   </div>
 
-  {{#if item.transition}}
+  {{#if showToTrack}}
     <div>
-    {{#link-to 'transition' item.transition}}
-      transition &middot; {{item.transition.id}}
-    {{/link-to}}
+      {{#link-to 'track' toTrack}}
+        {{lastPosition}} &middot; {{toTrack.title}} &middot; {{toTrack.artist}}
+      {{/link-to}}
     </div>
   {{/if}}
 </div>

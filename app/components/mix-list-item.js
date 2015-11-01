@@ -3,13 +3,8 @@ import Ember from 'ember';
 import BubbleActions from 'linx/lib/bubble-actions';
 import RequireAttributes from 'linx/lib/require-attributes';
 
-import lookup from 'linx/lib/computed/lookup';
-
-export const MODEL_LINK_TOS = {
-  track: 'track',
-  transition: 'transition',
-  mix: 'mix',
-};
+import add from 'linx/lib/computed/add';
+import equalProps from 'linx/lib/computed/equal-props';
 
 export default Ember.Component.extend(
   BubbleActions('remove', 'view', 'preview'), RequireAttributes('item'), {
@@ -18,15 +13,18 @@ export default Ember.Component.extend(
   classNames: ['MixListItem', 'item'],
   classNameBindings: [],
 
-  modelName: Ember.computed.reads('item.modelName'),
-  modelLinkTo: lookup('modelName', MODEL_LINK_TOS),
-
   // params
+  transition: Ember.computed.reads('item.transition'),
+  fromTrack: Ember.computed.reads('item.fromTrack'),
+  toTrack: Ember.computed.reads('item.toTrack'),
   mix: Ember.computed.reads('item.mix'),
+
   index: Ember.computed.reads('item.index'),
   position: Ember.computed.reads('item.position'),
-  isLastItem: function() {
-    return this.get('index') + 1 === this.get('mix.length');
-  }.property('index', 'mix.length'),
+  lastPosition: add('position', 1),
+  isLastItem: equalProps('position', 'mix.length'),
+
+  showFromTrack: Ember.computed.bool('toTrack.content'),
+  showToTrack: Ember.computed.and('isLastItem', 'toTrack.content'),
 });
 
