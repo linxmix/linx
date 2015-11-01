@@ -17,12 +17,11 @@ export default DS.Model.extend(
   DependentRelationshipMixin('fromTrackMarker'),
   DependentRelationshipMixin('toTrackMarker'),
   DependentRelationshipMixin('arrangement'),
-  ReadinessMixin('isTransitionReady'),
-  OrderedHasManyItemMixin('mix'), {
+  ReadinessMixin('isTransitionReady'), {
 
   title: DS.attr('string'),
 
-  mix: DS.belongsTo('mix', { async: true }),
+  mixItem: DS.belongsTo('mix/item', { async: true }),
   fromTrack: DS.belongsTo('track', { async: true }),
   toTrack: DS.belongsTo('track', { async: true }),
 

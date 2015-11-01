@@ -8,7 +8,6 @@ import {
   TRANSITION_OUT_MARKER_TYPE,
 } from 'linx/models/marker';
 
-
 // creates transition with specifications
 export default function(options = {}) {
   var fromTrackEnd = Ember.getWithDefault(options, 'fromTrackEnd', 100);

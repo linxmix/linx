@@ -20,7 +20,7 @@ describe('MixItemModel#generateTransitionFromClips', function() {
   let generateTransitionFromTracksStub, options;
 
   beforeEach(function() {
-    mixItem = this.factory.make('mix-item');
+    mixItem = this.factory.make('mix/item');
 
     let fromResults = makeTrackClip.call(this);
     fromTrackClip = fromResults.trackClip;

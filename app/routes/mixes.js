@@ -1,17 +1,32 @@
 import Ember from 'ember';
 import ENV from 'linx/config/environment';
 
+import _ from 'npm:underscore';
+
 import { executePromisesInSeries } from 'linx/lib/utils';
 
 export default Ember.Route.extend({
   actions: {
     createMix() {
-      var store = this.get('store');
-      var mix = store.createRecord('mix', {
+      let store = this.get('store');
+      let mix = store.createRecord('mix', {
         title: 'Mix ' + Ember.uuid(),
       });
 
-      this.transitionTo('mix', mix);
+      // create the mix with a transition
+      let tracks = this.get('controller.tracks');
+      let [fromTrack, toTrack] = _.sample(tracks.toArray(), 2);
+
+      console.log('tracks', tracks.toArray());
+      console.log('fromTrack', fromTrack);
+      console.log('toTrack', toTrack);
+
+      mix.generateTransitionAt(0, {
+        fromTrack,
+        toTrack,
+      }).then(() => {
+        this.transitionTo('mix', mix);
+      });
     },
 
     createCategoryMix() {
@@ -56,9 +71,6 @@ export default Ember.Route.extend({
           });
         });
       });
-
-
-
     },
   },
 
@@ -71,6 +83,7 @@ export default Ember.Route.extend({
   model: function() {
     return Ember.RSVP.hash({
       mixes: this.get('store').findAll('mix'),
+      tracks: this.get('store').findAll('track'),
     });
   }
 });

@@ -108,7 +108,7 @@ export default function(hasManyPath, itemModelName) {
 
     // creates a new item and inserts it at given index
     createAt: function(index, params) {
-      let item = this._createItem(params);
+      let item = this.createItem(params);
       this.insertAt(index, item);
       return item;
     },
@@ -119,7 +119,7 @@ export default function(hasManyPath, itemModelName) {
     },
 
     // creates and returns a new item, does NOT insert into list
-    _createItem: function(params = {}) {
+    createItem: function(params = {}) {
       return this.get('store').createRecord(itemModelName, params);
     },
 

@@ -18,7 +18,7 @@ describe('MixItemModel#generateTransitionFromTracks', function() {
   let fromTrack, toTrack, transition;
 
   beforeEach(function() {
-    mixItem = this.factory.make('mix-item');
+    mixItem = this.factory.make('mix/item');
 
     fromTrack = makeTrack.call(this);
     toTrack = makeTrack.call(this);

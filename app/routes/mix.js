@@ -41,13 +41,21 @@ export default Ember.Route.extend({
       }
     },
 
-    appendTransitionWithTracks(transition) {
-      var mix = this.get('controller.model');
-      mix.appendTransitionWithTracks(transition);
+    addRandomTrack() {
+      let mix = this.get('controller.model');
+      mix.generateTransitionAndAppend({
+
+      })
+
+      if (this.get('controller.insertTracksWithTransitions')) {
+        mix.appendModelWithTransition(track);
+      } else {
+        mix.appendModel(track);
+      }
     },
 
     removeItem(mixItem) {
-      var mix = this.get('controller.model');
+      let mix = this.get('controller.model');
       mix.removeObject(mixItem);
     },
   },

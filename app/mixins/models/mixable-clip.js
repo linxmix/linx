@@ -12,7 +12,7 @@ import withDefault from 'linx/lib/computed/with-default';
 export default Ember.Mixin.create(
   ReadinessMixin('isMixableClipReady'), {
 
-  mixItem: DS.belongsTo('mix-item', { async: true }),
+  mixItem: DS.belongsTo('mix/item', { async: true }),
 
   // implement readiness mixin
   isMixableClipReady: Ember.computed.bool('model.isLoaded'),
@@ -38,11 +38,11 @@ export default Ember.Mixin.create(
   prevTransitionClip: Ember.computed.reads('prevItem.transitionClip'),
   nextTransitionClip: Ember.computed.reads('item.transitionClip'),
 
-  prevTransitionIsValid: Ember.computed.reads('prevTransitionClip.isValid'),
+  prevTransitionClipIsValid: Ember.computed.reads('prevTransitionClip.isValid'),
   nextTransitionIsValid: Ember.computed.reads('nextTransitionClip.isValid'),
 
   audioStartBeat: variableTernary(
-    'prevTransitionIsValid',
+    'prevTransitionClipIsValid',
     'audioStartBeatWithTransition',
     'audioStartBeatWithoutTransition'
   ),
@@ -60,7 +60,5 @@ export default Ember.Mixin.create(
   numBeats: Ember.computed.reads('audioNumBeats'),
   numBars: Ember.computed.reads('audioNumBars'),
 
-  // overlap with prevClip if is transition
-  _startBeat: withDefault('prevClip.endBeat', 0),
-  startBeat: variableTernary('prevTransitionIsValid', 'prevTransitionClip.startBeat', '_startBeat'),
+  startBeat: withDefault('prevTransitionClip.startBeat', 0),
 });

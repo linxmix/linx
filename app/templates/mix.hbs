@@ -11,6 +11,10 @@
     <i class="remove icon"></i>
     Delete Mix
   </div>
+  <div class="inverted purple ui icon button" {{action "appendRandomTrack"}}>
+    <i class="shuffle icon"></i>
+    Add Random Track
+  </div>
 
   {{search-tracks
     tracksPromise=searchTracks
@@ -29,6 +33,7 @@
       checked=insertTracksWithTransitions
     }}
   </div>
+
 
   {{!-- {{search-transitions
     transitions=searchTransitions

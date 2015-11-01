@@ -7,7 +7,7 @@ import cssStyle from 'linx/lib/computed/css-style';
 import { clamp, isNumber } from 'linx/lib/utils';
 
 export default Ember.Component.extend(
-  RequireAttributes('pxPerBeat'),
+  RequireAttributes('pxPerBeat', 'arrangement'),
   BubbleActions('seekToClick'), {
 
   // optional params

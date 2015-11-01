@@ -8,19 +8,18 @@ import equalProps from 'linx/lib/computed/equal-props';
 import subtract from 'linx/lib/computed/subtract';
 
 export default ArrangementClip.extend({
-  mixItem: DS.belongsTo('mix-item', { async: true }),
+  transition: DS.belongsTo('transition', { async: true }),
 
   // implementing Clip
   startBeat: subtract('fromClip.endBeat', 'numBeats'), // overlap
   numBeats: Ember.computed.reads('transition.numBeats'),
-  isValid: Ember.computed.and('hasTransition', 'timesAreValid', 'fromTrackIsValid', 'toTrackIsValid'),
 
   // implementing arrangementClip
   nestedArrangement: Ember.computed.reads('transition.arrangement'),
 
   // transition-clip specific
-  model: DS.belongsTo('transition', { async: true }),
-  transition: Ember.computed.reads('model'),
+  // TODO(TRANSITION): what of the rest is necessary?
+  isValid: Ember.computed.and('hasTransition', 'timesAreValid', 'fromTrackIsValid', 'toTrackIsValid'),
 
   prevItem: Ember.computed.reads('mixItem.prevItem'),
   nextItem: Ember.computed.reads('mixItem.nextItem'),

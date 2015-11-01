@@ -19,6 +19,10 @@ export default Ember.Component.extend(
     }
   },
 
+  // implement ArrangementPlayerMixin
+  arrangement: Ember.computed.reads('mix'),
+
+  // params
   scrollCenterBeat: 0,
 
   // Hacky stuff to convert <input type="number"> values to numbers

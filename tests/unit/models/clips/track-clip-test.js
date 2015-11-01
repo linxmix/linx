@@ -94,7 +94,7 @@ describe('TrackClipModel', function() {
       Ember.run(() => {
         trackClip.setProperties({
           prevTransition,
-          prevTransitionIsValid: true
+          prevTransitionClipIsValid: true
         });
       });
     });
@@ -121,7 +121,7 @@ describe('TrackClipModel', function() {
       Ember.run(() => {
         trackClip.setProperties({
           nextTransition,
-          nextTransitionIsValid: true
+          nextTransitionClipIsValid: true
         });
       });
     });

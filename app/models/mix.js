@@ -8,41 +8,57 @@ import PlayableArrangementMixin from 'linx/mixins/playable-arrangement';
 
 export default DS.Model.extend(
   PlayableArrangementMixin,
-  OrderedHasManyMixin('_transitions', 'transition'), {
-
-  trackClips: Ember.computed.mapBy('transitions', 'fromTrackClip'),
-  transitionClips: Ember.computed.mapBy('transitions', 'transitionClip'),
-  clips: Ember.computed.uniq('trackClips', 'transitionClips'),
+  OrderedHasManyMixin('_mixItems', 'mix/item'), {
 
   title: DS.attr('string'),
-  _transitions: DS.hasMany('transitions', { async: true }),
+  _mixItems: DS.hasMany('mix/item', { async: true }),
+
+  fromTracks: Ember.computed.mapBy('items', 'fromTrack'),
+  toTracks: Ember.computed.mapBy('items', 'toTrack'),
+  tracks: Ember.computed.uniq('fromTracks', 'toTracks'),
+  transitions: Ember.computed.mapBy('items', 'transition'),
+
+  fromTrackClips: Ember.computed.mapBy('items', 'fromTrackClip'),
+  toTrackClips: Ember.computed.mapBy('items', 'toTrackClip'),
+  trackClips: Ember.computed.uniq('fromTrackClips', 'toTrackClips'),
+  transitionClips: Ember.computed.mapBy('items', 'transitionClip'),
+  clips: Ember.computed.uniq('trackClips', 'transitionClips'),
+
+  trackAt(index) {
+    let item = this.objectAt(index);
+    return item && item.get('fromTrack.content');
+  },
+
+  transitionAt(index) {
+    let item = this.objectAt(index);
+    return item && item.get('transition.content');
+  },
+
+  insertTransitionsAt(index, transitions) {
+    let items = transitions.map((transition) => {
+      return this.createItem({ transition });
+    });
+
+    return this.replace(index, 0, items);
+  },
+
+  appendTransitions(transitions) {
+    return this.insertTransitionsAt(this.get('length'), transitions);
+  },
+
+  generateTransitionAt(index, options) {
+    let item = this.getOrCreateAt(index);
+
+    return item.generateTransition(options);
+  },
+
+  assertTransitionAt(index, options) {
+    let item = this.getOrCreateAt(index);
+
+    return item.assertTransition(options);
+  },
 });
 
-//   // TODO: what of the rest is necessary?
-//   _arrangement: DS.belongsTo('arrangement', { async: true }),
-//   arrangement: withDefaultModel('_arrangement', function() {
-//     let arrangement = this.get('store').createRecord('arrangement');
-//     return arrangement;
-//   }),
-
-//   models: Ember.computed.mapBy('items', 'model'),
-//   transitions: Ember.computed.mapBy('items', 'transition'),
-
-//   modelAt(index) {
-//     return this.objectAt(index).get('model.content');
-//   },
-
-//   transitionAt(index) {
-//     return this.objectAt(index).get('transition.content');
-//   },
-
-//   insertModelAt(index, model) {
-//     let item = this.createAt(index);
-
-//     return item.setModel(model).then(() => {
-//       return item;
-//     });
-//   },
 
 //   insertTransitionAt(index, transition) {
 //     let item = this.objectAt(index);
@@ -67,9 +83,6 @@ export default DS.Model.extend(
 //       };
 //     }));
 //   },
-
-//   // implement readiness mixin
-//   isMixReady: Ember.computed.bool('arrangement.content'),
 
 //   appendModelWithTransition(track) {
 //     return this.insertModelAtWithTransitions(this.get('length'), track);
