@@ -7,10 +7,11 @@ import cssStyle from 'linx/lib/computed/css-style';
 import { clamp, isNumber } from 'linx/lib/utils';
 
 export default Ember.Component.extend(
-  RequireAttributes('arrangement', 'metronome', 'pxPerBeat'),
+  RequireAttributes('pxPerBeat'),
   BubbleActions('seekToClick'), {
 
   // optional params
+  isReady: false,
   scrollCenterBeat: null,
   centerBeat: 0,
 
@@ -29,14 +30,14 @@ export default Ember.Component.extend(
   },
 
   _scrollToCenterBeat: function() {
-    if (this.get('arrangement.isReady')) {
+    if (this.get('isReady')) {
       let scrollCenterBeat = this.get('scrollCenterBeat');
 
       if (isNumber(scrollCenterBeat)) {
         this.scrollToBeat(scrollCenterBeat);
       }
     }
-  }.observes('scrollCenterBeat', 'arrangement.isReady'),
+  }.observes('scrollCenterBeat', 'isReady'),
 
   _scrollHandler: null,
   _setupScrollHandler: function() {

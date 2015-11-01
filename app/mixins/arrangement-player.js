@@ -4,7 +4,6 @@ import RequireAttributes from 'linx/lib/require-attributes';
 import _ from 'npm:underscore';
 
 // exposes metronome, isPlaying, isReady and playback actions
-// pass metronome to clips for registering
 export default Ember.Mixin.create(
   RequireAttributes('arrangement'), {
 
@@ -40,5 +39,4 @@ export default Ember.Mixin.create(
 
   notReady: Ember.computed.not('isReady'),
   isReady: Ember.computed.reads('arrangement.isReady'),
-
 });

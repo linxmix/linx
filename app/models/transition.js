@@ -4,6 +4,8 @@ import DS from 'ember-data';
 import ReadinessMixin from 'linx/mixins/readiness';
 import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 
+import OrderedHasManyItemMixin from 'linx/mixins/models/ordered-has-many-item';
+
 import withDefaultModel from 'linx/lib/computed/with-default-model';
 import { isNumber } from 'linx/lib/utils';
 import {
@@ -15,37 +17,19 @@ export default DS.Model.extend(
   DependentRelationshipMixin('fromTrackMarker'),
   DependentRelationshipMixin('toTrackMarker'),
   DependentRelationshipMixin('arrangement'),
-  ReadinessMixin('isTransitionReady'), {
+  ReadinessMixin('isTransitionReady'),
+  OrderedHasManyItemMixin('mix'), {
 
   title: DS.attr('string'),
 
-  isTransitionReady: Ember.computed.and('fromTrack.isReady', 'toTrack.isReady'),
-
-  _fromTrackMarker: DS.belongsTo('marker', { async: true }),
-  fromTrackMarker: withDefaultModel('_fromTrackMarker', function() {
-    return this.get('store').createRecord('marker', {
-      audioMeta: this.get('fromTrack.audioMeta'),
-      type: TRANSITION_OUT_MARKER_TYPE,
-    });
-  }),
-
-  _toTrackMarker: DS.belongsTo('marker', { async: true }),
-  toTrackMarker: withDefaultModel('_toTrackMarker', function() {
-    return this.get('store').createRecord('marker', {
-      audioMeta: this.get('toTrack.audioMeta'),
-      type: TRANSITION_IN_MARKER_TYPE,
-    });
-  }),
-
-  fromTrackEndBeat: Ember.computed.reads('fromTrackMarker.startBeat'),
-  toTrackStartBeat: Ember.computed.reads('toTrackMarker.startBeat'),
-
-  fromTrackEnd: Ember.computed.reads('fromTrackMarker.start'),
-  toTrackStart: Ember.computed.reads('toTrackMarker.start'),
-
+  mix: DS.belongsTo('mix', { async: true }),
   fromTrack: DS.belongsTo('track', { async: true }),
   toTrack: DS.belongsTo('track', { async: true }),
 
+  isTransitionReady: Ember.computed.and('fromTrack.isReady', 'toTrack.isReady'),
+  numBeats: Ember.computed.reads('arrangement.numBeats'),
+
+  // the transition's arrangement
   _arrangement: DS.belongsTo('arrangement', { async: true }),
   arrangement: withDefaultModel('_arrangement', function() {
     // TODO: have to fake title for Firebase to accept record
@@ -55,7 +39,33 @@ export default DS.Model.extend(
     return arrangement;
   }),
 
-  numBeats: Ember.computed.reads('arrangement.numBeats'),
+  // TODO: add transition relationship to marker?
+  _fromTrackMarker: DS.belongsTo('marker', { async: true }),
+  fromTrackMarker: withDefaultModel('_fromTrackMarker', function() {
+    return this.get('readyPromise').then(() => {
+      this.get('store').createRecord('marker', {
+        audioMeta: this.get('fromTrack.audioMeta'),
+        type: TRANSITION_OUT_MARKER_TYPE,
+      });
+    });
+  }),
+
+  _toTrackMarker: DS.belongsTo('marker', { async: true }),
+  toTrackMarker: withDefaultModel('_toTrackMarker', function() {
+    return this.get('readyPromise').then(() => {
+      this.get('store').createRecord('marker', {
+        audioMeta: this.get('toTrack.audioMeta'),
+        type: TRANSITION_IN_MARKER_TYPE,
+      });
+    });
+  }),
+
+  // TODO: figure out what else is necessary
+  fromTrackEndBeat: Ember.computed.reads('fromTrackMarker.startBeat'),
+  toTrackStartBeat: Ember.computed.reads('toTrackMarker.startBeat'),
+
+  fromTrackEnd: Ember.computed.reads('fromTrackMarker.start'),
+  toTrackStart: Ember.computed.reads('toTrackMarker.start'),
 
   // sets fromTrackMarker to given time in fromTrack
   setFromTrackEnd: function(time) {

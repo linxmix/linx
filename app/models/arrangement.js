@@ -2,6 +2,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import ReadinessMixin from 'linx/mixins/readiness';
+import PlayableArrangementMixin from 'linx/mixins/playable-arrangement';
 
 import isEvery from 'linx/lib/computed/is-every';
 import withDefault from 'linx/lib/computed/with-default';
@@ -9,6 +10,7 @@ import concat from 'linx/lib/computed/concat';
 import { copyInPlace } from 'linx/lib/utils';
 
 export default DS.Model.extend(
+  PlayableArrangementMixin,
   ReadinessMixin('isArrangementReady'), {
 
   // fake title to make sure arrangement saves
@@ -20,9 +22,8 @@ export default DS.Model.extend(
   mixClips: DS.hasMany('mix-clip', { async: true }),
   automationClips: DS.hasMany('automation-clip', { async: true }),
 
-  isArrangementReady: Ember.computed.and('_hasManiesAreFulfilled', '_clipsAreReady'),
+  isArrangementReady: Ember.computed.bool('_hasManiesAreFulfilled'),
 
-  _clipsAreReady: isEvery('clips', 'isReady', true),
   _hasManiesAreFulfilled: Ember.computed.and('trackClips.isFulfilled', 'transitionClips.isFulfilled', 'mixClips.isFulfilled', 'automationClips.isFulfilled'),
 
   clips: Ember.computed(() => { return []; }),
@@ -51,18 +52,6 @@ export default DS.Model.extend(
       copyInPlace(clips, newClips);
     }
   },
-
-  // params
-  readyClips: Ember.computed.filterBy('clips', 'isReady', true),
-
-  clipSort: ['endBeat:asc'],
-  sortedClips: Ember.computed.sort('clips', 'clipSort'),
-  endBeat: Ember.computed.reads('sortedClips.lastObject.endBeat'),
-  numBeats: withDefault('endBeat', 0),
-
-  numBars: Ember.computed('numBeats', function() {
-    return this.get('numBeats') / 4.0;
-  }),
 
   // TODO(CLEANUP): destroy clips when destroying arrangement?
 });
