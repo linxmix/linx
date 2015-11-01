@@ -64,25 +64,6 @@ describe('TrackClipModel', function() {
     });
   });
 
-  describe('with prevClip', function() {
-    let prevClip;
-
-    beforeEach(function() {
-      let results = makeTrackClip.call(this);
-      prevClip = results.trackClip;
-      trackClip.set('prevClip', prevClip);
-      prevClip.set('nextClip', trackClip);
-    });
-
-    describeAttrs('trackClip', {
-      subject() { return trackClip; },
-      startBeat() { return prevClip.get('endBeat'); },
-      numBeats() { return track.get('audioMeta.numBeats'); },
-      audioStartBeat() { return trackClip.get('audioStartBeatWithoutTransition'); },
-      audioEndBeat() { return trackClip.get('audioEndBeatWithoutTransition'); },
-    });
-  });
-
   describe('with valid prevTransition', function() {
     let prevClip, prevTransition;
 
@@ -101,7 +82,6 @@ describe('TrackClipModel', function() {
 
     describeAttrs('trackClip', {
       subject() { return trackClip; },
-      prevClip() { return prevClip; },
       startBeat() { return prevClip.get('endBeat') - prevTransition.get('numBeats'); },
       numBeats() { return track.get('audioMeta.endBeat') - prevTransition.get('toTrackStartBeat'); },
       audioStartBeatWithTransition() { return prevTransition.get('toTrackStartBeat'); },
@@ -156,8 +136,6 @@ describe('TrackClipModel', function() {
 
     describeAttrs('trackClip', {
       subject() { return trackClip; },
-      prevClip() { return prevClip; },
-      nextClip() { return nextClip; },
       startBeat() { return prevClip.get('endBeat') - prevTransition.get('numBeats'); },
       numBeats() { return nextTransition.get('fromTrackEndBeat') - prevTransition.get('toTrackStartBeat'); },
       audioStartBeatWithTransition() { return prevTransition.get('toTrackStartBeat'); },

@@ -29,21 +29,17 @@ export default function(options = {}) {
     toTrackClip = results.trackClip;
   }
 
-  let transitionClip = this.factory.make('transition-clip', { model: transition });
+  let transitionClip = this.factory.make('transition-clip', { transition });
 
   transitionClip.setProperties({
-    fromClip: fromTrackClip,
-    toClip: toTrackClip,
+    fromTrackClip,
+    toTrackClip,
   });
 
   fromTrackClip.setProperties({
-    nextClip: toTrackClip,
-    nextTransition: transition,
     nextTransitionClip: transitionClip
   });
   toTrackClip.setProperties({
-    prevClip: fromTrackClip,
-    prevTransition: transition,
     prevTransitionClip: transitionClip
   });
 

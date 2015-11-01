@@ -43,7 +43,7 @@ describe('MixItemModel', function() {
     'toTrackClip.model.content': () => toTrack,
   });
 
-  describe('#generateTransitionFromTracks', function() {
+  describe('#generateTransition', function() {
     let generatedTransition;
 
     describe('without constraints', function() {

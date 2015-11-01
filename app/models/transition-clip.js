@@ -11,7 +11,7 @@ export default ArrangementClip.extend({
   transition: DS.belongsTo('transition', { async: true }),
 
   // implementing Clip
-  startBeat: subtract('fromClip.endBeat', 'numBeats'), // overlap
+  startBeat: subtract('fromTrackClip.endBeat', 'numBeats'), // overlap
   numBeats: Ember.computed.reads('transition.numBeats'),
 
   // implementing arrangementClip
@@ -19,29 +19,27 @@ export default ArrangementClip.extend({
 
   // transition-clip specific
   // TODO(TRANSITION): what of the rest is necessary?
-  isValid: Ember.computed.and('hasTransition', 'timesAreValid', 'fromTrackIsValid', 'toTrackIsValid'),
+  isValid: Ember.computed.and('hasTransition', 'timesAreValid'),
+  // isValid: Ember.computed.and('hasTransition', 'timesAreValid', 'fromTrackIsValid', 'toTrackIsValid'),
 
-  prevItem: Ember.computed.reads('mixItem.prevItem'),
-  nextItem: Ember.computed.reads('mixItem.nextItem'),
+  fromTrackClip: Ember.computed.reads('mixItem.fromTrackClip'),
+  toTrackClip: Ember.computed.reads('mixItem.toTrackClip'),
 
-  fromClip: Ember.computed.reads('mixItem.clip'),
-  toClip: Ember.computed.reads('nextItem.clip'),
-
-  hasTransition: Ember.computed.bool('transition.content'),
+  hasTransition: Ember.computed.bool('transition.id'),
 
   expectedFromTrack: Ember.computed.reads('transition.fromTrack'),
   expectedToTrack: Ember.computed.reads('transition.toTrack'),
 
-  actualFromTrack: Ember.computed.reads('fromClip.lastTrack'),
-  actualToTrack: Ember.computed.reads('toClip.firstTrack'),
+  actualFromTrack: Ember.computed.reads('fromTrackClip.lastTrack'),
+  actualToTrack: Ember.computed.reads('toTrackClip.firstTrack'),
 
-  fromTrackIsValid: equalProps('expectedFromTrack.content', 'actualFromTrack.content'),
-  toTrackIsValid: equalProps('expectedToTrack.content', 'actualToTrack.content'),
+  fromTrackIsValid: equalProps('expectedFromTrack.id', 'actualFromTrack.id'),
+  toTrackIsValid: equalProps('expectedToTrack.id', 'actualToTrack.id'),
 
   // TODO(TRANSITION)
   timesAreValid: function() {
-    var startBeat = this.get('fromClip.startBeat');
-    var endBeat = this.get('fromClip.endBeatWithTransition');
+    var startBeat = this.get('fromTrackClip.startBeat');
+    var endBeat = this.get('fromTrackClip.endBeatWithTransition');
     // return isNumber(startBeat) && isNumber(endBeat) && startBeat <= endBeat;
     return true;
   }.property('clipStartBeat', 'clipEndBeatWithTransition'),

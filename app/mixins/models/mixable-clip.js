@@ -5,6 +5,7 @@ import RequireAttributes from 'linx/lib/require-attributes';
 import ReadinessMixin from '../readiness';
 
 import { variableTernary } from 'linx/lib/computed/ternary';
+import equalProps from 'linx/lib/computed/equal-props';
 import subtract from 'linx/lib/computed/subtract';
 import multiply from 'linx/lib/computed/multiply';
 import withDefault from 'linx/lib/computed/with-default';
@@ -26,30 +27,35 @@ export default Ember.Mixin.create(
   audioStartBeatWithoutTransition: null,
   audioEndBeatWithoutTransition: null,
 
+  // determines which side of the mixItem this is
+  isFromTrackClip: equalProps('mixItem.transition.fromTrack.id', 'model.id'),
+
   prevItem: Ember.computed.reads('mixItem.prevItem'),
   nextItem: Ember.computed.reads('mixItem.nextItem'),
 
-  prevTransition: Ember.computed.reads('prevItem.transition'),
-  nextTransition: Ember.computed.reads('item.transition'),
+  prevTransitionClip: variableTernary(
+    'isFromTrackClip',
+    'prevItem.transitionClip',
+    'mixItem.transitionClip'
+  ),
+  nextTransitionClip: variableTernary(
+    'isFromTrackClip',
+    'mixItem.transitionClip',
+    'nextItem.transitionClip'
+  ),
 
-  prevClip: Ember.computed.reads('prevItem.clip'),
-  nextClip: Ember.computed.reads('nextItem.clip'),
-
-  prevTransitionClip: Ember.computed.reads('prevItem.transitionClip'),
-  nextTransitionClip: Ember.computed.reads('item.transitionClip'),
-
-  prevTransitionClipIsValid: Ember.computed.reads('prevTransitionClip.isValid'),
-  nextTransitionIsValid: Ember.computed.reads('nextTransitionClip.isValid'),
+  prevTransition: Ember.computed.reads('prevTransitionClip.transition'),
+  nextTransition: Ember.computed.reads('nextTransitionClip.transition'),
 
   audioStartBeat: variableTernary(
-    'prevTransitionClipIsValid',
+    'prevTransitionClip.isValid',
     'audioStartBeatWithTransition',
     'audioStartBeatWithoutTransition'
   ),
   audioStartBar: multiply('audioStartBeat', 0.25),
 
   audioEndBeat: variableTernary(
-    'nextTransitionIsValid',
+    'nextTransitionClip.isValid',
     'audioEndBeatWithTransition',
     'audioEndBeatWithoutTransition'
   ),

@@ -8,7 +8,6 @@ import { expect } from 'chai';
 import Ember from 'ember';
 
 import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
-import makeMix from 'linx/tests/helpers/make-mix';
 import makeTrack from 'linx/tests/helpers/make-track';
 import makeTransition from 'linx/tests/helpers/make-transition';
 
@@ -20,8 +19,7 @@ describe('Acceptance: MixPage', function() {
   let mix;
 
   beforeEach(function() {
-    let results = makeMix.call(this);
-    mix = results.mix;
+    mix = this.factory.make('mix');
 
     visit(`/mixes/${mix.get('id')}`);
   });

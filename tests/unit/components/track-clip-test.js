@@ -14,44 +14,42 @@ import TrackClipComponent from 'linx/components/track-clip';
 describe('TrackClipComponent', function() {
   setupTestEnvironment();
 
-  let track, trackClip, pxPerBeat, syncBpm, seekBeat, component;
+  let track, trackClip, pxPerBeat, syncBpm, clipSeekBeat, component;
 
   beforeEach(function() {
     let results = makeTrackClip.call(this);
     track = results.track;
     trackClip = results.trackClip;
 
-    pxPerBeat = 15; syncBpm = 100; seekBeat = 10;
+    pxPerBeat = 15; syncBpm = 100; clipSeekBeat = 10;
 
     // setup component
     component = TrackClipComponent.create({
       clip: trackClip,
       pxPerBeat,
       syncBpm,
-      seekBeat,
+      clipSeekBeat,
     });
   });
 
   describeAttrs('track-clip component', {
     subject() { return component; },
-    beatgridOffset: -5.102809647500005,
-    seekTime: 4.688928657950469,
-    audioSeekTime: 4.848440060565328,
+    audioOffset: -4.487625521944136,
+    audioSeekTime: 4.829209697390428,
     tempo: 0.7814881096584115,
   });
 
-  describe('when seekBeat changes', function() {
+  describe('when clipSeekBeat changes', function() {
     let newSeekBeat;
 
     beforeEach(function() {
-      newSeekBeat = seekBeat * 2;
-      component.set('seekBeat', newSeekBeat);
+      newSeekBeat = clipSeekBeat * 2;
+      component.set('clipSeekBeat', newSeekBeat);
     });
 
     describeAttrs('track-clip component', {
       subject() { return component; },
-      seekTime: 9.377857315900938,
-      audioSeekTime: 9.537368718515797,
+      audioSeekTime: 9.518138355340895,
     });
   });
 
@@ -65,8 +63,7 @@ describe('TrackClipComponent', function() {
 
     describeAttrs('track-clip component', {
       subject() { return component; },
-      seekTime: 4.688928657950469,
-      audioSeekTime: 4.848440060565328,
+      audioSeekTime: 4.829209697390428,
       tempo: 1.1722321644876172,
     });
   });
@@ -81,7 +78,7 @@ describe('TrackClipComponent', function() {
 
     describeAttrs('track-clip component', {
       subject() { return component; },
-      beatgridOffset: -7.6542144712500075,
+      audioOffset: -6.731438282916205,
     });
   });
 });

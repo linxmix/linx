@@ -26,7 +26,7 @@ export default DS.Model.extend({
   startBeat: Ember.computed('beatGrid.beatScale', 'start', {
     get(key) {
       let beatGrid = this.get('beatGrid');
-      return beatGrid.timeToBeat(this.get('start'));
+      return beatGrid && beatGrid.timeToBeat(this.get('start'));
     },
 
     set(key, beat) {
@@ -43,7 +43,7 @@ export default DS.Model.extend({
   startBar: Ember.computed('beatGrid.barScale', 'start', {
     get(key) {
       let beatGrid = this.get('beatGrid');
-      return beatGrid.timeToBar(this.get('start'));
+      return beatGrid && beatGrid.timeToBar(this.get('start'));
     },
 
     set(key, bar) {
