@@ -69,6 +69,12 @@ describe('MixModel', function() {
       expect(prevItem.get('toTrackClip')).not.to.equal(item.get('fromTrackClip'));
       expect(item.get('toTrackClip')).not.to.equal(nextItem.get('fromTrackClip'));
     });
+
+    describeAttrs('item', {
+      subject() { return mix.objectAt(1); },
+      prevTransitionIsMatch: false,
+      nextTransitionIsMatch: false,
+    });
   });
 
   describe('with matching transitions', function() {
@@ -112,6 +118,12 @@ describe('MixModel', function() {
     it('adjacent items do share track clips', function() {
       expect(prevItem.get('toTrackClip')).to.equal(item.get('fromTrackClip'));
       expect(item.get('toTrackClip')).to.equal(nextItem.get('fromTrackClip'));
+    });
+
+    describeAttrs('item', {
+      subject() { return item; },
+      prevTransitionIsMatch: true,
+      nextTransitionIsMatch: true,
     });
   });
 });

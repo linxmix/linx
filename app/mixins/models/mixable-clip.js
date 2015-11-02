@@ -38,6 +38,7 @@ export default Ember.Mixin.create(
     'prevItem.transitionClip',
     'mixItem.transitionClip'
   ),
+  // prevTransitionClip: Ember.computed.reads('mixItem.transitionClip'),
   nextTransitionClip: variableTernary(
     'isFromTrackClip',
     'mixItem.transitionClip',
@@ -67,4 +68,5 @@ export default Ember.Mixin.create(
   numBars: Ember.computed.reads('audioNumBars'),
 
   startBeat: withDefault('prevTransitionClip.startBeat', 0),
+  startBeat: 0,
 });

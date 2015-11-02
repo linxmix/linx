@@ -88,6 +88,9 @@ export const OrderedHasManyProxy = Ember.ArrayProxy.extend(
   removedContent: Ember.computed.filterBy('_sortedContent', 'isRemoved'),
   _sortedContent: Ember.computed.sort('hasMany.content', 'hasManySort'),
   hasManySort: ['order:asc'],
+  // _sortedContent: Ember.computed('hasMany.content.@each.order', function() {
+  //   return this.get('hasMany.content').sortBy('order');
+  // }),
 });
 
 // exposes sorted items
@@ -186,9 +189,9 @@ export default function(hasManyPath, itemModelName) {
 
   // this is how ordered-has-many implements Ember.MutableArray
   // note we cannot mixin Ember.MutableArray explicitly for a model (it causes errors)
-  let itemsMethodAliases = ['addArrayObserver', 'addObject', 'addObjects', 'arrayContentDidChange', 'arrayContentWillChange', 'clear', 'compact', 'contains', 'every', 'filter', 'filterBy', 'find', 'findBy', 'forEach', 'getEach', 'indexOf', 'insertAt', 'isEvery', 'lastIndexOf', 'map', 'mapBy', 'objectAt', 'objectsAt', 'popObject', 'pushObject', 'pushObjects', 'reject', 'rejectBy', 'removeArrayObserver', 'removeAt', 'removeObject', 'removeObjects', 'replace', 'reverseObjects', 'setEach', 'setObjects', 'shiftObject', 'slice', 'sortBy', 'unshiftObject', 'unshiftObjects', 'without'];
+  let itemsMethodAliases = ['addObject', 'addObjects', 'clear', 'compact', 'contains', 'every', 'filter', 'filterBy', 'find', 'findBy', 'forEach', 'getEach', 'indexOf', 'insertAt', 'isEvery', 'lastIndexOf', 'map', 'mapBy', 'objectAt', 'objectsAt', 'popObject', 'pushObject', 'pushObjects', 'reject', 'rejectBy', 'removeAt', 'removeObject', 'removeObjects', 'replace', 'reverseObjects', 'setEach', 'setObjects', 'shiftObject', 'slice', 'sortBy', 'unshiftObject', 'unshiftObjects', 'without'];
 
-  let itemsPropertyAliases = ['@each', '[]', 'firstObject', 'hasArrayObservers', 'lastObject', 'length'];
+  let itemsPropertyAliases = ['@each', '[]', 'firstObject', 'lastObject', 'length'];
 
   return Ember.Mixin.create(
     AliasObjectMethodsMixin('items', itemsMethodAliases),

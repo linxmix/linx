@@ -32,18 +32,20 @@ export default DS.Model.extend(
     });
   }),
 
-  fromTrackClip: Ember.computed('fromTrack', function() {
+  fromTrackClip: Ember.computed('fromTrack.content', function() {
+    let fromTrack = this.get('fromTrack.content');
     return this.get('store').createRecord('track-clip', {
-      model: this.get('fromTrack'),
+      model: fromTrack,
       mixItem: this,
     });
   }),
 
   // share with nextItem, if matches
   toTrackClip: variableTernary('nextTransitionIsMatch', 'nextItem.fromTrackClip', '_toTrackClip'),
-  _toTrackClip: Ember.computed('toTrack', function() {
+  _toTrackClip: Ember.computed('toTrack.content', function() {
+    let toTrack = this.get('toTrack.content');
     return this.get('store').createRecord('track-clip', {
-      model: this.get('toTrack'),
+      model: toTrack,
       mixItem: this,
     });
   }),

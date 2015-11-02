@@ -6,9 +6,21 @@
   seekToBeat="seekToBeat"
 }}
   {{#arrangement-row}}
-    {{#each mix.trackClips as |clip|}}
+    {{#each mix.items as |item|}}
       {{lx-clip
-        clip=clip
+        clip=item.fromTrackClip
+        metronome=metronome
+        pxPerBeat=pxPerBeat
+      }}
+
+      {{lx-clip
+        clip=item.transitionClip
+        metronome=metronome
+        pxPerBeat=pxPerBeat
+      }}
+
+      {{lx-clip
+        clip=item.toTrackClip
         metronome=metronome
         pxPerBeat=pxPerBeat
       }}
@@ -16,13 +28,13 @@
   {{/arrangement-row}}
 
   {{#arrangement-row}}
-    {{#each mix.transitionClips as |clip|}}
+    {{!-- {{#each mix.transitionClips as |clip|}}
       {{lx-clip
         clip=clip
         metronome=metronome
         pxPerBeat=pxPerBeat
       }}
-    {{/each}}
+    {{/each}} --}}
   {{/arrangement-row}}
 {{/arrangement-grid}}
 

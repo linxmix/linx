@@ -15,14 +15,19 @@ export default DS.Model.extend(
 
   fromTracks: Ember.computed.mapBy('items', 'fromTrack.content'),
   toTracks: Ember.computed.mapBy('items', 'toTrack.content'),
-  tracks: Ember.computed.union('fromTracks', 'toTracks'),
+  tracks: Ember.computed.uniq('fromTracks', 'toTracks'),
   transitions: Ember.computed.mapBy('items', 'transition'),
 
-  fromTrackClips: Ember.computed.mapBy('items', 'fromTrackClip'),
-  toTrackClips: Ember.computed.mapBy('items', 'toTrackClip'),
-  trackClips: Ember.computed.union('fromTrackClips', 'toTrackClips'),
+  fromTrackClips: Ember.computed('items.@each.fromTrackClip', function() {
+    return this.get('items').mapBy('fromTrackClip');
+  }),
+  toTrackClips: Ember.computed('items.@each.toTrackClip', function() {
+    return this.get('items').mapBy('toTrackClip');
+  }),
+
+  trackClips: Ember.computed.uniq('fromTrackClips', 'toTrackClips'),
   transitionClips: Ember.computed.mapBy('items', 'transitionClip'),
-  clips: Ember.computed.union('trackClips', 'transitionClips'),
+  clips: Ember.computed.uniq('trackClips', 'transitionClips'),
 
   trackAt(index) {
     let item = this.objectAt(index);
