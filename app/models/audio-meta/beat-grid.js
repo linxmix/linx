@@ -93,7 +93,7 @@ function beatGridPropertyGenerator(beatGridFunctionName) {
 
       return Ember.computed(`${beatGridPath}.beatScale`, unitPath, function() {
         let unit = this.get(unitPath);
-        let beatGrid = this.get(beatGridPath)
+        let beatGrid = this.get(beatGridPath);
 
         return beatGrid && beatGrid[beatGridFunctionName](unit);
       });
@@ -101,7 +101,7 @@ function beatGridPropertyGenerator(beatGridFunctionName) {
       let unit = unitOrPath;
 
       return Ember.computed(`${beatGridPath}.beatScale`, function() {
-        let beatGrid = this.get(beatGridPath)
+        let beatGrid = this.get(beatGridPath);
 
         return beatGrid && beatGrid[beatGridFunctionName](unit);
       });

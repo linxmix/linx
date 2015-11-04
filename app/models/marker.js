@@ -20,6 +20,8 @@ export default DS.Model.extend({
   // confidence in this marker's accuracy. used for analysis
   confidence: DS.attr('number'),
 
+  fromTransitions: DS.belongsTo('transition', { async: true, inverse: '_fromTrackMarker' }),
+  toTransitions: DS.belongsTo('transition', { async: true, inverse: '_toTrackMarker' }),
   audioMeta: DS.belongsTo('audio-meta', { async: true }),
   beatGrid: Ember.computed.reads('audioMeta.beatGrid'),
 
@@ -56,4 +58,9 @@ export default DS.Model.extend({
       return bar;
     }
   }),
+
+  save() {
+    console.log("save marker", this.get('start'), this.get('audioMeta.id'));
+    return this._super.apply(this, arguments);
+  }
 });

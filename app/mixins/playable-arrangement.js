@@ -11,7 +11,9 @@ export default Ember.Mixin.create(
   RequireAttributes('clips'),
   ReadinessMixin('isPlayableArrangementReady'), {
 
-  isPlayableArrangementReady: equalProps('readyClips.length', 'validClips.length'),
+  isPlayableArrangementReady: Ember.computed('readyClips.length', 'validClips.length', function() {
+    return this.get('readyClips.length') >= this.get('validClips.length');
+  }),
 
   validClips: Ember.computed.filterBy('clips', 'isValid', true),
   readyClips: Ember.computed.filterBy('clips', 'isReady', true),

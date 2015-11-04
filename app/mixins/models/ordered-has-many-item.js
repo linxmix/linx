@@ -31,6 +31,8 @@ export default function(listPropertyPath) {
       return this.get('_items').objectAt(this.get('index') - 1);
     }.property('index', '_items.[]'),
 
+    isFirstItem: Ember.computed.equal('index', 0),
+
     // // save only after finishing loading
     // save: function() {
     //   // TODO: why does this happen? how to fix?
@@ -58,8 +60,10 @@ export default function(listPropertyPath) {
 
   // implement readiness mixin
   let readinessKey = `${listPropertyPath}_isReady`;
-  mixinParams[readinessKey] = Ember.computed(`${listPropertyPath}.isLoaded`, function() {
-    return this.get(`${listPropertyPath}.isLoaded`) === true;
+  mixinParams[readinessKey] = Ember.computed(`${listPropertyPath}.isLoaded`, `${listPropertyPath}.id`, function() {
+    let list = this.get(listPropertyPath);
+
+    return !list || !list.get('id') || list.get('isLoaded');
   });
 
   return Ember.Mixin.create(ReadinessMixin(readinessKey), mixinParams);

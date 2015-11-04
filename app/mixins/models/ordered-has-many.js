@@ -88,9 +88,6 @@ export const OrderedHasManyProxy = Ember.ArrayProxy.extend(
   removedContent: Ember.computed.filterBy('_sortedContent', 'isRemoved'),
   _sortedContent: Ember.computed.sort('hasMany.content', 'hasManySort'),
   hasManySort: ['order:asc'],
-  // _sortedContent: Ember.computed('hasMany.content.@each.order', function() {
-  //   return this.get('hasMany.content').sortBy('order');
-  // }),
 });
 
 // exposes sorted items

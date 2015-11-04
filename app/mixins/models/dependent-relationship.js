@@ -76,13 +76,13 @@ export default function(propertyPath) {
     },
 
     save(options = {}) {
-      let { skipDependents } = options;
+      let skipPath = `skipDependent_${propertyPath}`;
 
-      if (!skipDependents) {
+      if (!(options.skipPath || options.skipDependents)) {
         return this.saveDirtyDependentModels().then(() => {
           return new Ember.RSVP.Promise((resolve, reject) => {
-            options.skipDependents = true;
-            this.save(options).then(resolve, reject);
+            options.skipPath = true;
+            return this.save(options).then(resolve, reject);
           });
         });
       } else {
@@ -92,9 +92,6 @@ export default function(propertyPath) {
     },
 
     // TODO: figure this out
-    // implement readiness mixin
-    // _areDependentModelsReady: isEvery('dependentModels', 'isLoaded', true),
-
     // implement readiness mixin
     _areDependentModelsReady: Ember.computed('dependentModels.@each.isLoaded', 'dependentModels.@each.id', function() {
       return this.get('dependentModels').every((dependentModel) => {

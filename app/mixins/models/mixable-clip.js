@@ -4,7 +4,7 @@ import DS from 'ember-data';
 import RequireAttributes from 'linx/lib/require-attributes';
 import ReadinessMixin from '../readiness';
 
-import { variableTernary } from 'linx/lib/computed/ternary';
+import { variableTernary, propertyOrDefault } from 'linx/lib/computed/ternary';
 import equalProps from 'linx/lib/computed/equal-props';
 import subtract from 'linx/lib/computed/subtract';
 import multiply from 'linx/lib/computed/multiply';
@@ -38,7 +38,6 @@ export default Ember.Mixin.create(
     'prevItem.transitionClip',
     'mixItem.transitionClip'
   ),
-  // prevTransitionClip: Ember.computed.reads('mixItem.transitionClip'),
   nextTransitionClip: variableTernary(
     'isFromTrackClip',
     'mixItem.transitionClip',
@@ -67,6 +66,7 @@ export default Ember.Mixin.create(
   numBeats: Ember.computed.reads('audioNumBeats'),
   numBars: Ember.computed.reads('audioNumBars'),
 
-  startBeat: withDefault('prevTransitionClip.startBeat', 0),
-  startBeat: 0,
+  startBeat: propertyOrDefault('isNotFirstClip', 'prevTransitionClip.startBeat', 0),
+  isFirstClip: Ember.computed.and('mixItem.isFirstItem', 'isFromTrackClip'),
+  isNotFirstClip: Ember.computed.not('isFirstClip'),
 });
