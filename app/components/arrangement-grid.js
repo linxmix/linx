@@ -3,10 +3,13 @@ import Ember from 'ember';
 import BubbleActions from 'linx/lib/bubble-actions';
 import RequireAttributes from 'linx/lib/require-attributes';
 
+import PreventMacBackScroll from 'linx/mixins/prevent-mac-back-scroll';
+
 import cssStyle from 'linx/lib/computed/css-style';
 import { clamp, isNumber } from 'linx/lib/utils';
 
 export default Ember.Component.extend(
+  PreventMacBackScroll,
   RequireAttributes('pxPerBeat', 'arrangement'),
   BubbleActions('seekToClick'), {
 
