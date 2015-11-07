@@ -53,6 +53,14 @@ describe('TrackClipModel', function() {
 
   // TODO: refactor into mixable clip behaviours
   describe('without other clips', function() {
+    beforeEach(function() {
+      Ember.run(() => {
+        trackClip.setProperties({
+          isFirstClip: true,
+        });
+      });
+    });
+
     describeAttrs('trackClip', {
       subject() { return trackClip; },
       startBeat: 0,
@@ -74,7 +82,11 @@ describe('TrackClipModel', function() {
 
       Ember.run(() => {
         trackClip.setProperties({
-          prevTransition,
+          isFirstClip: false,
+        });
+
+        prevClip.setProperties({
+          isFirstClip: true,
         });
       });
     });
@@ -99,7 +111,7 @@ describe('TrackClipModel', function() {
 
       Ember.run(() => {
         trackClip.setProperties({
-          nextTransition,
+          isFirstClip: true,
         });
       });
     });
@@ -124,6 +136,9 @@ describe('TrackClipModel', function() {
         let prevResults = makeTransitionClip.call(this, { toTrackClip: trackClip });
         prevClip = prevResults.fromTrackClip;
         prevTransition = prevResults.transition;
+        prevClip.setProperties({
+          isFirstClip: true,
+        });
 
         // setup nextClip
         let nextResults = makeTransitionClip.call(this, { fromTrackClip: trackClip });

@@ -38,29 +38,25 @@ export default DS.Model.extend(
     return arrangement;
   }),
 
-  // TODO: add transition relationship to marker?
   // TODO: what if tracks are switched out after the transition has been made?
+  // TODO: what if tracks are not present when transition is made?
   _fromTrackMarker: DS.belongsTo('marker', { async: true }),
   fromTrackMarker: withDefaultModel('_fromTrackMarker', function() {
     return this.get('fromTrack.audioMeta').then((audioMeta) => {
-      console.log("AUDIO META", audioMeta && audioMeta.get('id'));
-      let marker = this.get('store').createRecord('marker', {
+      return audioMeta && audioMeta.createMarker({
         audioMeta,
         type: TRANSITION_OUT_MARKER_TYPE,
       });
-      return marker.save().then(() => marker);
     });
   }),
 
   _toTrackMarker: DS.belongsTo('marker', { async: true }),
   toTrackMarker: withDefaultModel('_toTrackMarker', function() {
     return this.get('toTrack.audioMeta').then((audioMeta) => {
-      console.log("AUDIO META", audioMeta && audioMeta.get('id'));
-      let marker = this.get('store').createRecord('marker', {
+      return audioMeta && audioMeta.createMarker({
         audioMeta,
         type: TRANSITION_IN_MARKER_TYPE,
-      })
-      return marker.save().then(() => marker);
+      });
     });
   }),
 

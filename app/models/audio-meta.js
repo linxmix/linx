@@ -84,6 +84,16 @@ export default DS.Model.extend(
     });
   },
 
+  createMarker(params) {
+    let marker = this.get('store').createRecord('marker', params);
+
+    return marker.save().then(() => {
+      this.get('markers').addObject(marker);
+
+      return this.save().then(() => marker);
+    });
+  },
+
   // implement readiness
   isAudioMetaReady: Ember.computed.not('isProcessingAnalysis'),
 

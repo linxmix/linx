@@ -34,10 +34,12 @@ export default function(options = {}) {
   transitionClip.setProperties({
     fromTrackClip,
     toTrackClip,
+    isReadyAndValid: true,
   });
 
   fromTrackClip.setProperties({
-    nextTransitionClip: transitionClip
+    nextTransitionClip: transitionClip,
+    isFromTrackClip: true,
   });
   toTrackClip.setProperties({
     prevTransitionClip: transitionClip
