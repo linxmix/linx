@@ -33,10 +33,10 @@ export default Clip.extend({
   }),
 
   // visually align the segment of audio represented by this clip
-  _audioOffset: Ember.computed('audioStartBeat', 'audioMeta.startBeat', function() {
-    return this.get('audioMeta.startBeat') - this.get('audioStartBeat');
+  audioOffset: Ember.computed('audioStartBeat', 'audioMeta.startBeat', 'pxPerBeat', function() {
+    let offsetBeats = this.get('audioMeta.startBeat') - this.get('audioStartBeat');
+    return offsetBeats * this.get('pxPerBeat');
   }),
-  audioOffset: multiply('_audioOffset', 'pxPerBeat'),
   audioOffsetStyle: toPixels('audioOffset'),
 
   // params

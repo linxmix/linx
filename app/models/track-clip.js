@@ -7,6 +7,8 @@ import ReadinessMixin from 'linx/mixins/readiness';
 
 import { withDefaultProperty } from 'linx/lib/computed/with-default';
 import add from 'linx/lib/computed/add';
+import isNumber from 'linx/lib/computed/is-number';
+import { variableTernary } from 'linx/lib/computed/ternary';
 
 export default Clip.extend(
   ReadinessMixin('isTrackClipReady'),
@@ -19,8 +21,16 @@ export default Clip.extend(
   lastTrack: Ember.computed.reads('track'),
 
   // allow custom startBeat and endBeat
-  audioStartBeatWithoutTransition: Ember.computed.any('audioMeta.startBeat', '_audioStartBeat'),
-  audioEndBeatWithoutTransition: Ember.computed.any('audioMeta.endBeat', '_audioEndBeat'),
+  audioStartBeatWithoutTransition: variableTernary(
+    '_audioStartBeatIsNumber',
+    '_audioStartBeat',
+    'audioMeta.startBeat'
+  ),
+  audioEndBeatWithoutTransition: variableTernary(
+    '_audioEndBeatIsNumber',
+    '_audioEndBeat',
+    'audioMeta.endBeat'
+  ),
 
   audioStartBeatWithTransition: Ember.computed.reads('prevTransition.toTrackStartBeat'),
   audioEndBeatWithTransition: Ember.computed.reads('nextTransition.fromTrackEndBeat'),
@@ -33,6 +43,9 @@ export default Clip.extend(
   audioMeta: Ember.computed.reads('track.audioMeta'),
   _audioStartBeat: DS.attr('number'),
   _audioEndBeat: DS.attr('number'),
+
+  _audioStartBeatIsNumber: isNumber('_audioStartBeat'),
+  _audioEndBeatIsNumber: isNumber('_audioEndBeat'),
 
   // TODO: move isAudioLoaded into ex track.audio.isLoaded?
   isAudioLoaded: false,

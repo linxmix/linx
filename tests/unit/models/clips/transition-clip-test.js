@@ -41,6 +41,7 @@ describe('TransitionClipModel', function() {
 
       Ember.run(() => {
         transition.set('numBeats', 30);
+        fromTrackClip.set('isFirstClip', true);
       });
     });
 

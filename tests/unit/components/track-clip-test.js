@@ -1,3 +1,4 @@
+import Ember from 'ember';
 import {
   beforeEach,
   describe,
@@ -14,12 +15,19 @@ import TrackClipComponent from 'linx/components/track-clip';
 describe('TrackClipComponent', function() {
   setupTestEnvironment();
 
-  let track, trackClip, pxPerBeat, syncBpm, clipSeekBeat, component;
+  let track, trackClip, pxPerBeat, syncBpm, clipSeekBeat, component, audioStartBeat;
 
   beforeEach(function() {
+    audioStartBeat = 0;
     let results = makeTrackClip.call(this);
     track = results.track;
     trackClip = results.trackClip;
+
+    Ember.run(() => {
+      trackClip.setProperties({
+        audioStartBeat,
+      });
+    });
 
     pxPerBeat = 15; syncBpm = 100; clipSeekBeat = 10;
 

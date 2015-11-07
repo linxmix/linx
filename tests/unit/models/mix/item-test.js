@@ -59,8 +59,8 @@ describe('MixItemModel', function() {
         subject() { return generatedTransition; },
         'fromTrack.content': () => fromTrack,
         'toTrack.content': () => toTrack,
-        fromTrackEndBeat() { return fromTrack.get('audioMeta.endBeat'); },
-        toTrackStartBeat() { return toTrack.get('audioMeta.startBeat'); },
+        fromTrackEndBeat() { return ~~fromTrack.get('audioMeta.endBeat'); },
+        toTrackStartBeat() { return ~~toTrack.get('audioMeta.startBeat'); },
         numBeats: 16,
       });
 

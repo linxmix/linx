@@ -78,10 +78,10 @@ export default function(propertyPath) {
     save(options = {}) {
       let skipPath = `skipDependent_${propertyPath}`;
 
-      if (!(options.skipPath || options.skipDependents)) {
+      if (!(options[skipPath] || options.skipDependents)) {
         return this.saveDirtyDependentModels().then(() => {
           return new Ember.RSVP.Promise((resolve, reject) => {
-            options.skipPath = true;
+            options[skipPath] = true;
             return this.save(options).then(resolve, reject);
           });
         });

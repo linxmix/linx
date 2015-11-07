@@ -58,9 +58,4 @@ export default DS.Model.extend({
       return bar;
     }
   }),
-
-  save() {
-    console.log("save marker", this.get('start'), this.get('audioMeta.id'));
-    return this._super.apply(this, arguments);
-  }
 });

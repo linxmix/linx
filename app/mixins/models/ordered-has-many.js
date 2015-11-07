@@ -188,7 +188,7 @@ export default function(hasManyPath, itemModelName) {
   // note we cannot mixin Ember.MutableArray explicitly for a model (it causes errors)
   let itemsMethodAliases = ['addObject', 'addObjects', 'clear', 'compact', 'contains', 'every', 'filter', 'filterBy', 'find', 'findBy', 'forEach', 'getEach', 'indexOf', 'insertAt', 'isEvery', 'lastIndexOf', 'map', 'mapBy', 'objectAt', 'objectsAt', 'popObject', 'pushObject', 'pushObjects', 'reject', 'rejectBy', 'removeAt', 'removeObject', 'removeObjects', 'replace', 'reverseObjects', 'setEach', 'setObjects', 'shiftObject', 'slice', 'sortBy', 'unshiftObject', 'unshiftObjects', 'without'];
 
-  let itemsPropertyAliases = ['@each', '[]', 'firstObject', 'lastObject', 'length'];
+  let itemsPropertyAliases = ['[]', 'firstObject', 'lastObject', 'length'];
 
   return Ember.Mixin.create(
     AliasObjectMethodsMixin('items', itemsMethodAliases),

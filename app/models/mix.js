@@ -18,12 +18,15 @@ export default DS.Model.extend(
   tracks: Ember.computed.uniq('fromTracks', 'toTracks'),
   transitions: Ember.computed.mapBy('items', 'transition'),
 
-  fromTrackClips: Ember.computed('items.@each.fromTrackClip', function() {
-    return this.get('items').mapBy('fromTrackClip');
-  }),
-  toTrackClips: Ember.computed('items.@each.toTrackClip', function() {
-    return this.get('items').mapBy('toTrackClip');
-  }),
+  // TODO(CLEANUP): wtf? why does this break. might be because they're models
+  fromTrackClips: Ember.computed.mapBy('items', 'fromTrackClip'),
+  toTrackClips: Ember.computed.mapBy('items', 'toTrackClip'),
+  // toTrackClips: Ember.computed('items.@each.toTrackClip', function() {
+  //   return this.get('items').mapBy('toTrackClip');
+  // }),
+  // fromTrackClips: Ember.computed('items.@each.fromTrackClip', function() {
+  //   return this.get('items').mapBy('fromTrackClip');
+  // }),
 
   trackClips: Ember.computed.uniq('fromTrackClips', 'toTrackClips'),
   transitionClips: Ember.computed.mapBy('items', 'transitionClip'),
