@@ -30,6 +30,7 @@
     "chalk": "^1.0.0",
     "cors-anywhere": "^0.2.5",
     "ember-backoff": "^0.1.0",
+    "ember-browserify": "^1.1.1",
     "ember-cli": "1.13.6",
     "ember-cli-app-version": "0.3.3",
     "ember-cli-babel": "^5.0.0",
@@ -61,7 +62,6 @@
     "wavesurfer.js": "1.0.27"
   },
   "dependencies": {
-    "ember-browserify": "^1.0.1",
     "ember-disable-proxy-controllers": "^1.0.0",
     "ember-export-application-global": "^1.0.2"
   }
