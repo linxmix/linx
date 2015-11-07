@@ -15,7 +15,7 @@ export default Ember.Component.extend(
     seekToBeat(beat) {
       // TODO: round to beat, round to bar, no round. based on config + UI control
       this.get('metronome').seekToBeat(beat);
-      this.set('scrollCenterBeat', beat);
+      // this.set('scrollCenterBeat', beat);
     }
   },
 

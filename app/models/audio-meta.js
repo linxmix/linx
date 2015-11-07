@@ -110,7 +110,7 @@ export default DS.Model.extend(
     let markerParams = [];
 
     // add highest confidence bar as grid marker
-    let confidentBar = analysis.get('confidenceSortedBars.firstObject');
+    let confidentBar = analysis.get('confidenceSortedBeats.firstObject');
     markerParams.push({
       type: GRID_MARKER_TYPE,
       start: confidentBar.start,

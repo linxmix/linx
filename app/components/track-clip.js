@@ -8,6 +8,7 @@ import Clip from './clip';
 import { beatToTime } from 'linx/models/audio-meta/beat-grid';
 import cssStyle from 'linx/lib/computed/css-style';
 import add from 'linx/lib/computed/add';
+import subtract from 'linx/lib/computed/add';
 import multiply from 'linx/lib/computed/multiply';
 import toPixels from 'linx/lib/computed/to-pixels';
 import { variableTernary } from 'linx/lib/computed/ternary';
@@ -32,7 +33,10 @@ export default Clip.extend({
   }),
 
   // visually align the segment of audio represented by this clip
-  audioOffset: multiply('audioStartBeat', 'pxPerBeat'),
+  _audioOffset: Ember.computed('audioStartBeat', 'audioMeta.startBeat', function() {
+    return this.get('audioMeta.startBeat') - this.get('audioStartBeat');
+  }),
+  audioOffset: multiply('_audioOffset', 'pxPerBeat'),
   audioOffsetStyle: toPixels('audioOffset'),
 
   // params
@@ -56,7 +60,8 @@ export default Clip.extend({
     }
   }),
 
-  audioSeekBeat: variableTernary('isFinished', 'audioEndBeat', 'clipSeekBeat'),
+  _audioSeekBeat: add('clipSeekBeat', 'audioStartBeat'), // align clipSeekBeat to audio
+  audioSeekBeat: variableTernary('isFinished', 'audioEndBeat', '_audioSeekBeat'),
 
   // TODO(CLEANUP): this hack is necessary because computed off audioSeekBeat is broken in Ember
   // audioSeekTime: beatToTime('audioBeatGrid', 'audioSeekBeat'),
@@ -64,7 +69,7 @@ export default Clip.extend({
   updateAudioSeekTime: Ember.observer('audioBeatGrid.beatScale', 'audioSeekBeat', function() {
     let { audioBeatGrid: beatGrid, audioSeekBeat: beat } = this.getProperties('audioBeatGrid', 'audioSeekBeat');
     this.set('audioSeekTime', beatGrid && beatGrid.beatToTime(beat));
-  }),
+  }).on('init'),
 
   markers: Ember.computed.reads('audioMeta.markers'),
   visibleMarkers: function() {
