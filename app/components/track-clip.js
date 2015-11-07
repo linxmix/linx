@@ -57,7 +57,14 @@ export default Clip.extend({
   }),
 
   audioSeekBeat: variableTernary('isFinished', 'audioEndBeat', 'clipSeekBeat'),
-  audioSeekTime: beatToTime('audioBeatGrid', 'audioSeekBeat'),
+
+  // TODO(CLEANUP): this hack is necessary because computed off audioSeekBeat is broken in Ember
+  // audioSeekTime: beatToTime('audioBeatGrid', 'audioSeekBeat'),
+  audioSeekTime: 0,
+  updateAudioSeekTime: Ember.observer('audioBeatGrid.beatScale', 'audioSeekBeat', function() {
+    let { audioBeatGrid: beatGrid, audioSeekBeat: beat } = this.getProperties('audioBeatGrid', 'audioSeekBeat');
+    this.set('audioSeekTime', beatGrid && beatGrid.beatToTime(beat));
+  }),
 
   markers: Ember.computed.reads('audioMeta.markers'),
   visibleMarkers: function() {
