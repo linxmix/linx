@@ -9,7 +9,7 @@ import { isObject } from 'linx/lib/utils';
 export default {
   name: 'Echonest',
 
-  initialize: function(registry, app) {
+  initialize: function(app) {
     app.register("Echonest:main", Echonest);
     app.inject("model:track", "echonest", "Echonest:main");
     app.inject("model:echonest-track", "echonest", "Echonest:main");

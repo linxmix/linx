@@ -16,6 +16,6 @@ Ember.Component.reopen({
 export default {
   name: 'ComponentIsInDom',
 
-  initialize: function(registry, app) {
+  initialize: function(app) {
   },
 };
