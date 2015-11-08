@@ -33,7 +33,9 @@ export default Ember.Mixin.create({
   setupUnloadHandlers: function() {
     var self = this;
     var beforeunload = function() {
-      if (self.modelForDirtyTransition().get('isDirty')) {
+      let model = self.modelForDirtyTransition();
+
+      if (model.get('hasDirtyAttributes') || model.get('anyDirty')) {
         return self.get('dirtyTransitionBeforeunloadMessage');
       }
     };

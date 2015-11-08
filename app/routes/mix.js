@@ -2,15 +2,16 @@ import Ember from 'ember';
 
 import _ from 'npm:underscore';
 
-export default Ember.Route.extend({
+import PreventDirtyTransitionMixin from 'linx/mixins/routes/prevent-dirty-transition';
+
+export default Ember.Route.extend(PreventDirtyTransitionMixin, {
   actions: {
     saveMix() {
-      var mix = this.get('controller.model');
-      mix.save();
+      this.get('controller.model').save();
     },
 
     deleteMix() {
-      var mix = this.get('controller.model');
+      let mix = this.get('controller.model');
 
       if (window.confirm("Are you sure you want to delete this mix? It cannot be restored once deleted.")) {
         mix.destroyRecord();
@@ -31,29 +32,6 @@ export default Ember.Route.extend({
 
         this.send('appendTrack', track);
       });
-    },
-
-    selectTrack(track) {
-      let mix = this.get('controller.model');
-
-      mix.generateAndAppendTransition({
-        toTrack: track
-      });
-    },
-
-    addRandomTrack() {
-      let mix = this.get('controller.model');
-      let tracks = this.get('controller.searchTracks.content');
-      let randomTrack = _.sample(tracks.toArray());
-
-      mix.generateAndAppendTransition({
-        toTrack: randomTrack
-      });
-    },
-
-    removeItem(mixItem) {
-      let mix = this.get('controller.model');
-      mix.removeObject(mixItem);
     },
   },
 

@@ -7,7 +7,7 @@ import {
 import hbs from 'htmlbars-inline-precompile';
 
 describeComponent(
-  'mix-list-item',
+  'mix-list/item',
   'Integration: MixListItemComponent',
   {
     integration: true
@@ -18,12 +18,12 @@ describeComponent(
       // Handle any actions with this.on('myAction', function(val) { ... });
       // Template block usage:
       // this.render(hbs`
-      //   {{#mix-list-item}}
+      //   {{#mix-list/item}}
       //     template content
-      //   {{/mix-list-item}}
+      //   {{/mix-list/item}}
       // `);
 
-      this.render(hbs`{{mix-list-item}}`);
+      this.render(hbs`{{mix-list/item}}`);
       expect(this.$()).to.have.length(1);
     });
   }

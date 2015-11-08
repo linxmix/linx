@@ -1,3 +1,51 @@
+<div>{{mix.title}}</div>
+<div class="inverted green ui icon button test-save-mix {{if mix.anyDirty "" "basic disabled"}}" {{action "saveMix"}}>
+  <i class="cloud upload icon"></i>
+  Save Mix
+</div>
+<div class="inverted orange ui icon button {{if mix.anyDirty "" "basic disabled"}}" {{action "resetMix"}}>
+  <i class="refresh icon"></i>
+  Undo Changes
+</div>
+<div class="inverted red ui icon button test-delete-mix" {{action "deleteMix"}}>
+  <i class="remove icon"></i>
+  Delete Mix
+</div>
+<div class="inverted purple ui icon button" {{action "appendRandomTrack"}}>
+  <i class="shuffle icon"></i>
+  Add Random Track
+</div>
+
+{{search-tracks
+  tracksPromise=searchTracks
+  action="selectTrack"
+}}
+
+{{search-soundcloud-tracks
+  selectTrack="selectTrack"
+  store=store
+}}
+
+{{!-- {{search-transitions
+  transitions=searchTransitions
+  action="appendTransitionWithTracks"
+}} --}}
+
+<hr/>
+
+{{#mix-list mix=mix}}
+  {{#each mix.items as |item|}}
+    {{mix-list/item
+      item=item
+      remove="removeItem"
+      view="viewItem"
+      play="playItem"
+    }}
+  {{/each}}
+{{/mix-list}}
+
+<hr/>
+
 {{#arrangement-grid
   arrangement=arrangement
   isReady=isReady
@@ -41,9 +89,9 @@
 {{play-buttons
   isDisabled=notReady
   isPlaying=isPlaying
-  playpause='playpause'
-  skipBack='skipBack'
-  skipForth='skipForth'
+  playpause="playpause"
+  skipBack="skipBack"
+  skipForth="skipForth"
 }}
 
 <hr/>

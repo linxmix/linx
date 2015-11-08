@@ -6,7 +6,7 @@ export default Ember.Component.extend(
   BubbleActions(), RequireAttributes('mix'), {
 
   actions: {},
-  classNames: ['MixList', 'inverted ui selection list'],
+  classNames: ['MixList', 'inverted ui list'],
   classNameBindings: [],
 
   // params

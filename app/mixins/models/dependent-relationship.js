@@ -11,7 +11,7 @@ import isEvery from 'linx/lib/computed/is-every';
 // Supports any property path which resolves to a model, or to an array of models.
 // Supports mixing in multiple times for multiple dependentModels.
 
-// Provides observable properties `hasDirtyDependentModels` and `isDirty`.
+// Provides observable properties `hasDirtyDependentModels` and `anyDirty`.
 // On save, saves dirtyDependentModels.
 // On destroy, destroys dependentModels
 export default function(propertyPath) {

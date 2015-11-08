@@ -5,7 +5,11 @@ Ember.Component.reopen({
   isInDom: false,
 
   _setIsInDom: function() {
-    this.set('isInDom', true);
+    Ember.run.next(() => {
+      if (!this.get('isDestroyed')) {
+        this.set('isInDom', true);
+      }
+    });
   }.on('didInsertElement'),
 
   _unsetIsInDom: function() {

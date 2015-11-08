@@ -2,7 +2,7 @@ import Ember from 'ember';
 import RequireAttributes from 'linx/lib/require-attributes';
 import Clock from 'linx/lib/clock';
 import { ClockEvent } from 'linx/lib/clock';
-import { beatToTime, timeToBeat, clamp } from 'linx/lib/utils';
+import { beatToTime, timeToBeat, clamp, isNumber } from 'linx/lib/utils';
 
 // Holds rhythym based on clock
 export default Ember.Object.extend(
@@ -20,15 +20,15 @@ export default Ember.Object.extend(
     return this.getCurrentBeat();
   }.property('absTickTime'),
 
-  setBpm: function(bpm) {
+  setBpm(bpm) {
     // update seekBeat first
     this.seekToBeat(this.getCurrentBeat());
     this.set('bpm', bpm);
   },
 
-  seekToBeat: function(beat) {
+  seekToBeat(beat) {
     console.log("metronome seekToBeat", beat);
-    var prevBeat = this.get('seekBeat');
+    let prevBeat = this.get('seekBeat');
 
     // hack to make sure to trigger property changes
     if (beat === prevBeat) {
@@ -41,22 +41,32 @@ export default Ember.Object.extend(
     });
   },
 
-  playpause: function() {
-    var isPlaying = !this.get('isPlaying');
+  playpause(beat) {
+    if (!this.get('isPlaying')) {
+      this.play(beat);
+    } else {
+      this.pause();
+    }
+  },
+
+  play(beat) {
+    if (isNumber(beat)) {
+      this.seekToBeat(beat);
+    }
 
     // synchronously update times
-    if (isPlaying) {
-      this.setProperties({
-        absSeekTime: this._getAbsTime(),
-        lastPlayBeat: this.get('seekBeat'),
-        isPlaying: isPlaying,
-      });
-    } else {
-      this.setProperties({
-        seekBeat: this.getCurrentBeat(),
-        isPlaying: isPlaying,
-      });
-    }
+    this.setProperties({
+      absSeekTime: this._getAbsTime(),
+      lastPlayBeat: this.get('seekBeat'),
+      isPlaying: true,
+    });
+  },
+
+  pause() {
+    this.setProperties({
+      seekBeat: this.getCurrentBeat(),
+      isPlaying: false,
+    });
   },
 
   // Returns current metronome beat
