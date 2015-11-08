@@ -5,7 +5,7 @@
   height: 100%;
   width: 100%;
 
-  stroke: rgba(#fff, 0.3);
+  stroke: rgba(#fff, 0.2);
   shape-rendering: crispEdges;
 
   text {
@@ -27,7 +27,7 @@
   }
 
   .bar-grid {
-    stroke: rgba(#000, 0.5);
+    stroke: rgba(#fff, 0.3);
     z-index: 6;
   }
 }
