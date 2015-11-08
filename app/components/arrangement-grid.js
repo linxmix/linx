@@ -37,6 +37,7 @@ export default Ember.Component.extend(
       let scrollCenterBeat = this.get('scrollCenterBeat');
 
       if (isNumber(scrollCenterBeat)) {
+        // console.log('_scrollToCenterBeat', this.get('scrollCenterBeat'));
         this.scrollToBeat(scrollCenterBeat);
       }
     }
@@ -45,7 +46,7 @@ export default Ember.Component.extend(
   _scrollHandler: null,
   _setupScrollHandler: function() {
     let scrollHandler = (e) => {
-      this._updateCenterBeat();
+      Ember.run.once(this, '_didScroll');
     };
 
     this.$().on('scroll', scrollHandler);
@@ -57,20 +58,80 @@ export default Ember.Component.extend(
     this.$().off('scroll', this.get('_scrollHandler'));
   }.on('willDestroyElement'),
 
-  _updateCenterBeat() {
-    let centerBeat = (this.$().scrollLeft() + this.getHalfWidth()) / this.get('pxPerBeat');
-    this.set('centerBeat', centerBeat);
+  // store previous value of prevPxPerBeat
+  prevPxPerBeat: 0,
+  _initPrevPxPerBeat: function() {
+    this.set('prevPxPerBeat', this.get('pxPerBeat'));
+  }.on('init'),
+
+  didInitAttrs(options) {
+    console.log('didInitAttrs', options);
   },
 
-  _recenterOnZoom: function() {
-    this.scrollToBeat(this.get('centerBeat'), false);
-  }.observes('pxPerBeat'),
+  didUpdateAttrs(options) {
+    console.log('didUpdateAttrs', options);
+  },
+
+  willUpdate(options) {
+    console.log('willUpdate', options);
+  },
+
+  didReceiveAttrs(options) {
+    console.log('didReceiveAttrs', options);
+    let { oldAttrs, newAttrs } = options;
+    let { pxPerBeat: oldPxPerBeat } = oldAttrs || {};
+    let { pxPerBeat: newPxPerBeat } = newAttrs || {};
+
+    if (oldPxPerBeat !== newPxPerBeat) {
+      console.log('zoomDidChange');
+    }
+  },
+
+  willRender() {
+    console.log('willRender');
+  },
+
+  didRender() {
+    console.log('didRender');
+  },
+
+  didInsertElement() {
+    console.log('didInsertElement');
+  },
+
+  didUpdate(options) {
+    console.log('didUpdate', options);
+  },
+
+
+  _didScroll() {
+    // console.log('_didScroll', this.getProperties('pxPerBeat', 'prevPxPerBeat'));
+    // if scrolling due to zoom change, scroll to previous centerBeat
+    if (this.get('pxPerBeat') !== this.get('prevPxPerBeat')) {
+      this.set('prevPxPerBeat', this.get('pxPerBeat'));
+      this.scrollToBeat(this.get('centerBeat'), false);
+
+    // otherwise, the user is scrolling => update centerBeat
+    } else {
+      this._updateCenterBeat();
+    }
+  },
+
+  _updateCenterBeat() {
+    let pxPerBeat = this.get('pxPerBeat');
+    let centerBeat = (this.$().scrollLeft() + this.getHalfWidth()) / pxPerBeat;
+
+    // console.log("_updateCenterBeat", centerBeat, pxPerBeat)
+
+    this.set('centerBeat', centerBeat);
+  },
 
   getHalfWidth() {
     return this.$().innerWidth() / 2.0;
   },
 
   scrollToBeat(beat, doAnimate = true) {
+    // console.log('scrollToBeat', beat);
     let pxPerBeat = this.get('pxPerBeat');
     let $this = this.$();
 
@@ -86,7 +147,5 @@ export default Ember.Component.extend(
     } else {
       $this.scrollLeft(scrollLeft);
     }
-
-    this._updateCenterBeat();
   },
 });
