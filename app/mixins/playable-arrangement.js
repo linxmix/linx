@@ -17,7 +17,7 @@ export default Ember.Mixin.create(
 
   validClips: Ember.computed.filterBy('clips', 'isValid', true),
   readyClips: Ember.computed.filterBy('clips', 'isReady', true),
-  clipSort: ['endBeat:asc'],
+  clipSort: ['endBeat:asc', 'startBeat:asc'],
   sortedClips: Ember.computed.sort('clips', 'clipSort'),
   endBeat: Ember.computed.reads('sortedClips.lastObject.endBeat'),
   numBeats: withDefault('endBeat', 0),

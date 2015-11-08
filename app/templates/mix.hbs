@@ -34,9 +34,9 @@
   <hr/>
 
   {{#mix-list mix=model}}
-    {{#each model.items as |item|}}
+    {{#each model.sortedClips as |clip|}}
       {{mix-list-item
-        item=item
+        clip=clip
         remove="removeItem"
         view="viewItem"
         preview="previewItem"

@@ -62,11 +62,11 @@ export default DS.Model.extend(
   endBar: computedTimeToBar('beatGrid', 'duration'),
   numBeats: subtract('endBeat', 'startBeat'),
 
-  // TODO
+  // TODO: implement this, and move to audio-meta/beat-grid?
   // amount by which echonest analysis is off from the downbeats
-  // this is calculated from the calculated first bar, and the confident first bar
-  echonestBeatOffset: function() {
-  }.property('beatGrid'),
+  // calculated by diff from echonest section markers and the grid marker
+  echonestBeatOffset: Ember.computed('beatGrid.beatScale', 'beatGrid.barScale', function() {
+  }),
 
   destroyMarkers: function() {
     return this.get('markers').then((markers) => {
@@ -110,7 +110,7 @@ export default DS.Model.extend(
     let markerParams = [];
 
     // add highest confidence bar as grid marker
-    let confidentBar = analysis.get('confidenceSortedBeats.firstObject');
+    let confidentBar = analysis.get('confidenceSortedBars.firstObject');
     markerParams.push({
       type: GRID_MARKER_TYPE,
       start: confidentBar.start,
