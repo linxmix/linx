@@ -16,7 +16,7 @@ export default Ember.Route.extend({
       // create the mix with a transition
       let tracks = this.get('controller.tracks');
       // let [fromTrack, toTrack] = _.sample(tracks.toArray(), 2);
-      let [fromTrack, toTrack] = [tracks.objectAt(0), tracks.objectAt(2)];
+      let [fromTrack, toTrack] = [tracks.objectAt(5), tracks.objectAt(6)];
 
       console.log('fromTrack', fromTrack.get('title'));
       console.log('toTrack', toTrack.get('title'));

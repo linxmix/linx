@@ -12,19 +12,20 @@ export default DS.RESTSerializer.extend({
   /**
     Normalize all payloads, removing "response" namespace and "status" property
 
-    @method normalizePayload
+    @method normalizeResponse
     @param {Object} payload
     @return {Object} the normalized payload
   */
 
-  normalizePayload: function(payload) {
+  normalizeResponse: function(store, primaryModelClass, payload, id, requestType) {
     var normalized = {};
     delete payload.response.status;
 
     Object.keys(payload.response).forEach(function (key) {
       normalized['echonest_%@'.fmt(key)] = payload.response[key];
     });
-    return normalized;
+
+    return this._super(store, primaryModelClass, normalized, id, requestType);
   },
 
   normalizeHash: {

@@ -27,9 +27,8 @@ export default DS.Model.extend(
 
   transitionClip: Ember.computed('transition', function() {
     let transition = this.get('transition.content');
-
     return this.get('store').createRecord('transition-clip', {
-      transition: this.get('transition'),
+      transition,
       mixItem: this,
     });
   }),

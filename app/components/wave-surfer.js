@@ -67,7 +67,7 @@ export const Wave = Ember.Object.extend(
       var seekTime = this.get('seekTime');
       var isPlaying = this.get('isPlaying');
 
-      console.log("updatePlayTime", seekTime, currentTime);
+      // console.log("updatePlayTime", seekTime, currentTime);
 
       // if playing, only seek if seekTime and currentTime have diverged
       if (!isPlaying || Math.abs(seekTime - currentTime) >= 0.01) {
