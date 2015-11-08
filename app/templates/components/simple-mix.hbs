@@ -13,11 +13,11 @@
         pxPerBeat=pxPerBeat
       }}
 
-      {{lx-clip
+      {{!-- {{lx-clip
         clip=item.transitionClip
         metronome=metronome
         pxPerBeat=pxPerBeat
-      }}
+      }} --}}
 
       {{lx-clip
         clip=item.toTrackClip
@@ -28,13 +28,13 @@
   {{/arrangement-row}}
 
   {{#arrangement-row}}
-    {{!-- {{#each mix.transitionClips as |clip|}}
+    {{#each mix.transitionClips as |clip|}}
       {{lx-clip
         clip=clip
         metronome=metronome
         pxPerBeat=pxPerBeat
       }}
-    {{/each}} --}}
+    {{/each}}
   {{/arrangement-row}}
 {{/arrangement-grid}}
 
