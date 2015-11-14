@@ -1,26 +1,10 @@
-<div>TRANSITION</div>
-<div>{{model.fromTrack.title}}&nbsp;&nbsp;-&nbsp;&nbsp;{{model.toTrack.title}}</div>
-<div class="inverted orange ui icon button {{if model.anyDirty '' 'basic disabled'}}" {{action 'saveTransition'}}>
+<div class="inverted orange ui icon button {{if model.anyDirty "" "basic disabled"}}" {{action "saveTransition"}}>
   <i class="cloud upload icon"></i>
   Save Transition
 </div>
-<div class="inverted red ui icon button" {{action 'deleteTransition'}}>
+<div class="inverted red ui icon button" {{action "deleteTransition"}}>
   <i class="remove icon"></i>
   Delete Transition
 </div>
 
-<hr/>
-
-{{#if mix.arrangement}}
-  {{simple-arrangement
-    arrangement=mix.arrangement
-    scrollCenterBeat=scrollCenterBeat
-  }}
-{{/if}}
-
-<hr/>
-
-
-<div>FromTrack EndBeat: {{model.fromTrackEndBeat}}</div>
-<div>ToTrack StartBeat: {{model.toTrackStartBeat}}</div>
-<div>Transition Length: {{model.numBeats}}</div>
+{{simple-transition transition=model}}

@@ -9,7 +9,7 @@ import cssStyle from 'linx/lib/computed/css-style';
 import { clamp, isNumber } from 'linx/lib/utils';
 
 export default Ember.Component.extend(
-  PreventMacBackScroll,
+  // PreventMacBackScroll,
   RequireAttributes('pxPerBeat', 'arrangement'),
   BubbleActions('seekToClick'), {
 

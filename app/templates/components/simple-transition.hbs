@@ -1,0 +1,76 @@
+<div>
+  From &middot;
+  {{#link-to "track" fromTrack}}
+    {{fromTrack.title}}
+  {{/link-to}}
+
+  &middot; To &middot;
+  {{#link-to "track" toTrack}}
+    {{toTrack.title}}
+  {{/link-to}}
+</div>
+
+<div>FromTrack EndBeat: {{transition.fromTrackEndBeat}}</div>
+<div>ToTrack StartBeat: {{transition.toTrackStartBeat}}</div>
+<div>Transition Length: {{transition.numBeats}}</div>
+
+{{#arrangement-grid
+  arrangement=arrangement
+  isReady=isReady
+  pxPerBeat=pxPerBeat
+  scrollCenterBeat=scrollCenterBeat
+  seekToBeat="seekToBeat"
+}}
+  {{#if transition.isReady}}
+    {{#arrangement-row}}
+      {{lx-clip
+        clip=fromTrackClip
+        metronome=metronome
+        pxPerBeat=pxPerBeat
+      }}
+    {{/arrangement-row}}
+
+    {{#arrangement-row}}
+      {{lx-clip
+        clip=transitionClip
+        metronome=metronome
+        pxPerBeat=pxPerBeat
+      }}
+    {{/arrangement-row}}
+
+    {{#arrangement-row}}
+      {{lx-clip
+        clip=toTrackClip
+        metronome=metronome
+        pxPerBeat=pxPerBeat
+      }}
+    {{/arrangement-row}}
+  {{/if}}
+{{/arrangement-grid}}
+
+{{play-buttons
+  isDisabled=notReady
+  isPlaying=isPlaying
+  playpause="playpause"
+  skipBack="skipBack"
+  skipForth="skipForth"
+}}
+
+<hr/>
+
+<div>BPM: {{input type="number" value=inputBpm min="0" max="200" }}</div>
+<div>Zoom: {{input type="range" value=inputZoom min="2" max="20" step="0.5"}}</div>
+
+<hr/>
+{{#each arrangement.clips as |clip|}}
+  <div>
+    Pitch: {{input type="number" value=clip.pitch}}
+    Volume: {{input type="range" value=clip.volume min="0" max="1" step="0.1"}}
+  </div>
+{{/each}}
+<hr/>
+
+<div>arrangementPlayer isReady {{isReady}}</div>
+{{#each arrangement.clips as |clip|}}
+  <div>clip isReady {{clip.isReady}}</div>
+{{/each}}

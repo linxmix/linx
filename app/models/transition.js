@@ -112,10 +112,8 @@ export default DS.Model.extend(
     return DS.PromiseObject.create({
       promise: this.get('readyPromise').then(() => {
         let mix = this.get('store').createRecord('mix');
-
-        return mix.appendTransitionWithTracks(this).then(() => {
-          return mix;
-        });
+        mix.appendTransition(this);
+        return mix;
       }),
     });
   },
