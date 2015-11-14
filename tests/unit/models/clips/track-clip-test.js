@@ -26,6 +26,19 @@ describe('TrackClipModel', function() {
   });
 
   describe('persisting attributes', function() {
+    it('can persist _startBeat', function() {
+      Ember.run(function() {
+        trackClip.set('_startBeat', 3);
+        wait(trackClip.save());
+      });
+
+      // TODO(DBSTUB): make this actually check payload
+      andThen(function() {
+        expect(trackClip.get('startBeat')).to.equal(3);
+        expect(trackClip.get('_startBeat')).to.equal(3);
+      });
+    });
+
     it('can persist _audioStartBeat', function() {
       Ember.run(function() {
         trackClip.set('_audioStartBeat', 3);
@@ -50,6 +63,21 @@ describe('TrackClipModel', function() {
         expect(trackClip.get('_audioEndBeat')).to.equal(0);
         expect(trackClip.get('audioEndBeat')).to.equal(0);
       });
+    });
+  });
+
+  describe('with custom startBeat', function() {
+    beforeEach(function() {
+      Ember.run(() => {
+        trackClip.setProperties({
+          _startBeat: 3,
+        });
+      });
+    });
+
+    describeAttrs('trackClip', {
+      subject() { return trackClip; },
+      startBeat: 3,
     });
   });
 

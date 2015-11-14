@@ -40,7 +40,8 @@ export default Ember.Component.extend(
     if (store && track) {
       let arrangement = store.createRecord('arrangement');
       let trackClip = store.createRecord('track-clip', {
-        model: track
+        model: track,
+        startBeat: 0,
       });
 
       arrangement.get('trackClips').addObject(trackClip);

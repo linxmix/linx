@@ -4,4 +4,4 @@ export function svgTransition([ sel ], hash) {
   return Ember.tryInvoke(sel, 'transition', [ hash ]) || sel;
 }
 
-export default Ember.HTMLBars.makeBoundHelper(svgTransition);
+export default Ember.Helper.helper(svgTransition);

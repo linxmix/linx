@@ -66,7 +66,7 @@ export default Ember.Mixin.create(
   numBeats: Ember.computed.reads('audioNumBeats'),
   numBars: Ember.computed.reads('audioNumBars'),
 
-  startBeat: propertyOrDefault('isNotFirstClip', 'prevTransitionClip.startBeat', 0),
+  startBeatInMix: propertyOrDefault('isNotFirstClip', 'prevTransitionClip.startBeat', 0),
   isFirstClip: Ember.computed.and('mixItem.isFirstItem', 'isFromTrackClip'),
   isNotFirstClip: Ember.computed.not('isFirstClip'),
 });

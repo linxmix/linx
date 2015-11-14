@@ -20,7 +20,14 @@ export default Clip.extend(
   firstTrack: Ember.computed.reads('track'),
   lastTrack: Ember.computed.reads('track'),
 
-  // allow custom startBeat and endBeat
+  // allow custom startBeat within arrangement
+  startBeat: variableTernary(
+    '_startBeatIsNumber',
+    '_startBeat',
+    'startBeatInMix'
+  ),
+
+  // allow custom audioStartBeat and audioEndBeat
   audioStartBeatWithoutTransition: variableTernary(
     '_audioStartBeatIsNumber',
     '_audioStartBeat',
@@ -43,11 +50,13 @@ export default Clip.extend(
   audioMeta: Ember.computed.reads('track.audioMeta'),
   _audioStartBeat: DS.attr('number'),
   _audioEndBeat: DS.attr('number'),
+  _startBeat: DS.attr('number'),
 
   _audioStartBeatIsNumber: isNumber('_audioStartBeat'),
   _audioEndBeatIsNumber: isNumber('_audioEndBeat'),
+  _startBeatIsNumber: isNumber('_startBeat'),
 
-  // TODO: move isAudioLoaded into ex track.audio.isLoaded?
+  // TODO: move isAudioLoaded into ex track.audioSource.isLoaded?
   isAudioLoaded: false,
 
   // TODO: move into FxChainMixin

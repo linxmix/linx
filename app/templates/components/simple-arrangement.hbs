@@ -1,6 +1,5 @@
 {{#arrangement-grid
   arrangement=arrangement
-  metronome=metronome
   isReady=isReady
   pxPerBeat=pxPerBeat
   scrollCenterBeat=scrollCenterBeat
@@ -17,50 +16,29 @@
   {{/arrangement-row}}
 {{/arrangement-grid}}
 
-<div class="ui grid">
-  <div class="ten wide column">
-    {{play-buttons
-      isDisabled=notReady
-      isPlaying=isPlaying
-      playpause='playpause'
-      skipBack='skipBack'
-      skipForth='skipForth'
-    }}
-  </div>
-  <div class="two wide column">
-    {{#if isEditing}}
-      <div class="basic inverted green ui icon button" {{action 'toggleEditing'}}>
-        <i class="check icon"></i>
-        Done
-      </div>
-    {{else}}
-      <div class="basic inverted orange ui icon button" {{action 'toggleEditing'}}>
-        <i class="pencil icon"></i>
-        Edit
-      </div>
-    {{/if}}
-  </div>
-</div>
-
+{{play-buttons
+  isDisabled=notReady
+  isPlaying=isPlaying
+  playpause="playpause"
+  skipBack="skipBack"
+  skipForth="skipForth"
+}}
 
 <hr/>
 
+<div>BPM: {{input type="number" value=inputBpm min="0" max="200" }}</div>
+<div>Zoom: {{input type="range" value=inputZoom min="2" max="20" step="0.5"}}</div>
 
-{{#if isEditing}}
-  <div>BPM: {{input type="number" value=inputBpm min="0" max="200" }}</div>
-  <div>Zoom: {{input type="range" value=inputZoom min="2" max="20" step="0.5"}}</div>
+<hr/>
+{{#each arrangement.clips as |clip|}}
+  <div>
+    Pitch: {{input type="number" value=clip.pitch}}
+    Volume: {{input type="range" value=clip.volume min="0" max="1" step="0.1"}}
+  </div>
+{{/each}}
+<hr/>
 
-  <hr/>
-  {{#each clip in arrangement.clips}}
-    <div>
-      Pitch: {{input type="number" value=clip.pitch}}
-      Volume: {{input type="range" value=clip.volume min="0" max="1" step="0.1"}}
-    </div>
-  {{/each}}
-  <hr/>
-
-  <div>arrangementPlayer isReady {{isReady}}</div>
-  {{#each clip in arrangement.clips}}
-    <div>clip isReady {{clip.isReady}}</div>
-  {{/each}}
-{{/if}}
+<div>arrangementPlayer isReady {{isReady}}</div>
+{{#each arrangement.clips as |clip|}}
+  <div>clip isReady {{clip.isReady}}</div>
+{{/each}}
