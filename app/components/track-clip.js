@@ -26,7 +26,14 @@ export default Clip.extend({
 
   classNames: ['TrackClip'],
 
-  attributeBindings: ['componentStyle:style'],
+  // attributeBindings: ['componentStyle:style'],
+  _updateComponentStyle: Ember.observer('audioOffset', function() {
+    let audioOffset = this.get('audioOffset');
+
+    audioOffset && this.$().animate({
+      left: audioOffset + 'px',
+    });
+  }),
 
   componentStyle: cssStyle({
     'left': 'audioOffsetStyle',
