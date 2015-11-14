@@ -31,7 +31,8 @@ export default function(listPropertyPath) {
       return this.get('_items').objectAt(this.get('index') - 1);
     }.property('index', '_items.[]'),
 
-    isFirstItem: Ember.computed.equal('index', 0),
+    isFirstItem: Ember.computed.not('prevItem'),
+    isLastItem: Ember.computed.not('nextItem'),
 
     // // save only after finishing loading
     // save: function() {

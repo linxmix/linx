@@ -26,8 +26,7 @@ export default Clip.extend({
 
   classNames: ['TrackClip'],
 
-  attributeBindings: ['componentStyle:style'],
-  componentStyle: cssStyle({
+  waveStyle: cssStyle({
     'left': 'audioOffsetStyle',
   }),
 
