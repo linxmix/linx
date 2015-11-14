@@ -6,7 +6,7 @@ import RequireAttributes from 'linx/lib/require-attributes';
 import Clip from './clip';
 
 import { beatToTime } from 'linx/models/audio-meta/beat-grid';
-import cssStyle from 'linx/lib/computed/css-style';
+import { default as cssStyle, animateStyle } from 'linx/lib/computed/css-style';
 import add from 'linx/lib/computed/add';
 import subtract from 'linx/lib/computed/add';
 import multiply from 'linx/lib/computed/multiply';
@@ -26,15 +26,7 @@ export default Clip.extend({
 
   classNames: ['TrackClip'],
 
-  // attributeBindings: ['componentStyle:style'],
-  _updateComponentStyle: Ember.observer('audioOffset', function() {
-    let audioOffset = this.get('audioOffset');
-
-    audioOffset && this.$().animate({
-      left: audioOffset + 'px',
-    });
-  }),
-
+  attributeBindings: ['componentStyle:style'],
   componentStyle: cssStyle({
     'left': 'audioOffsetStyle',
   }),
