@@ -57,7 +57,7 @@ export default Clip.extend(
   _startBeatIsNumber: isNumber('_startBeat'),
 
   // TODO: move isAudioLoaded into ex track.audioSource.isLoaded?
-  isAudioLoaded: false,
+  isAudioLoaded: Ember.computed.reads('track.isAudioLoaded'),
 
   // TODO: move into FxChainMixin
   pitch: 0,

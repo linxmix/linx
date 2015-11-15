@@ -46,6 +46,9 @@ export default DS.Model.extend(
   // implement readiness
   isTrackReady: Ember.computed.reads('audioMeta.isReady'),
 
+  // TODO: move elsewhere
+  isAudioLoaded: false,
+
   // injected by app
   echonest: null,
 

@@ -4,7 +4,7 @@ import RequireAttributes from 'linx/lib/require-attributes';
 import cssStyle from 'linx/lib/computed/css-style';
 
 export default Ember.Component.extend(
-  RequireAttributes('clip', 'metronome', 'pxPerBeat'), {
+  RequireAttributes('metronome', 'pxPerBeat'), {
 
   classNames: ['LxClip'],
   attributeBindings: ['componentStyle:style', 'draggable'],
@@ -17,6 +17,7 @@ export default Ember.Component.extend(
 
   // params
   clipEvent: null,
+  clip: null,
 
   // TODO: refactor into mixin?
   isDraggable: false,

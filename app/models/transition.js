@@ -21,7 +21,7 @@ export default DS.Model.extend(
 
   title: DS.attr('string'),
 
-  mixItem: DS.belongsTo('mix/item', { async: true }),
+  mixItems: DS.hasMany('mix/item', { async: true }),
   fromTrack: DS.belongsTo('track', { async: true }),
   toTrack: DS.belongsTo('track', { async: true }),
 

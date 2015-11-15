@@ -17,11 +17,11 @@ export default Ember.Component.extend(ArrangementPlayerMixin,
   classNameBindings: [],
 
   actions: {
-    moveTrackMarker(marker, beat) {
+    moveTrackMarker(marker, beat, direction = 1) {
       let beatGrid = marker.get('beatGrid');
       let quantization = this.get('selectedQuantization');
       let oldStartBeat = marker.get('startBeat');
-      let newStartBeat = beatGrid.getQuantizedBeat(beat, quantization);
+      let newStartBeat = beatGrid.getQuantizedBeat(direction * beat, quantization);
 
       // TODO(QUANTIZATION): tolerance, not exact equality
       if (oldStartBeat !== newStartBeat) {

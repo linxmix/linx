@@ -17,7 +17,7 @@ import { flatten } from 'linx/lib/utils';
 export default Clip.extend({
   actions: {
     waveDidLoad: function() {
-      this.get('clip').set('isAudioLoaded', true);
+      this.get('track').set('isAudioLoaded', true);
     },
   },
 

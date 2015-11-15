@@ -28,38 +28,36 @@
   scrollCenterBeat=scrollCenterBeat
   seekToBeat="seekToBeat"
 }}
-  {{#if transition.isReady}}
-    {{#arrangement-row}}
-      {{lx-clip
-        clip=fromTrackClip
-        metronome=metronome
-        pxPerBeat=pxPerBeat
-        isDraggable=true
-        onDrag=(action "moveTrackMarker" fromTrackMarker)
-        class="SimpleTransition-FromTrackClip"
-      }}
-    {{/arrangement-row}}
+  {{#arrangement-row}}
+    {{lx-clip
+      clip=fromTrackClip
+      metronome=metronome
+      pxPerBeat=pxPerBeat
+      isDraggable=true
+      onDrag=(action "moveTrackMarker" fromTrackMarker)
+      class="SimpleTransition-FromTrackClip"
+    }}
+  {{/arrangement-row}}
 
-    {{#arrangement-row}}
-      {{lx-clip
-        clip=transitionClip
-        metronome=metronome
-        pxPerBeat=pxPerBeat
-        class="SimpleTransition-TransitionClip"
-      }}
-    {{/arrangement-row}}
+  {{#arrangement-row}}
+    {{lx-clip
+      clip=transitionClip
+      metronome=metronome
+      pxPerBeat=pxPerBeat
+      class="SimpleTransition-TransitionClip"
+    }}
+  {{/arrangement-row}}
 
-    {{#arrangement-row}}
-      {{lx-clip
-        clip=toTrackClip
-        metronome=metronome
-        pxPerBeat=pxPerBeat
-        isDraggable=true
-        onDrag=(action "moveTrackMarker" toTrackMarker)
-        class="SimpleTransition-ToTrackClip"
-      }}
-    {{/arrangement-row}}
-  {{/if}}
+  {{#arrangement-row}}
+    {{lx-clip
+      clip=toTrackClip
+      metronome=metronome
+      pxPerBeat=pxPerBeat
+      isDraggable=true
+      onDrag=(action "moveTrackMarker" toTrackMarker -1)
+      class="SimpleTransition-ToTrackClip"
+    }}
+  {{/arrangement-row}}
 {{/arrangement-grid}}
 
 <div class="ui grid">
