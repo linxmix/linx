@@ -83,41 +83,13 @@ export default Ember.Component.extend(ArrangementPlayerMixin,
     // update pxPerBeat
     this.set('pxPerBeat', parseFloat(this.get('inputZoom')));
   }.observes('inputZoom'),
-  // /hacky stuff
 
-  // Hacky stuff to convert <input type="number"> values to numbers
-  inputFromTrackEndBeat: subtract('fromTrackEndBeat', 'fromTrackFirstBeat'),
-  inputToTrackStartBeat: subtract('toTrackStartBeat', 'toTrackFirstBeat'),
   inputTransitionLength: Ember.computed.reads('transition.numBeats'),
 
-  _inputFromTrackEndBeat: function() {
-    let value = parseFloat(this.get('inputFromTrackEndBeat'));
-
-    if (value === NaN) {
-      return;
-    }
-
-    // TODO
-    this.get('transition.readyPromise').then((transition) => {
-      transition.setFromTrackEndBeat(value + this.get('fromTrackFirstBeat'));
-    });
-  }.observes('inputFromTrackEndBeat'),
-  _inputToTrackStartBeat: function() {
-    let value = parseFloat(this.get('inputToTrackStartBeat'));
-
-    if (value === NaN) {
-      return;
-    }
-
-    // TODO
-    this.get('transition.readyPromise').then((transition) => {
-      transition.setToTrackStartBeat(value + this.get('toTrackFirstBeat'));
-    });
-  }.observes('inputToTrackStartBeat'),
   _inputTransitionLength: function() {
     let value = parseFloat(this.get('inputTransitionLength'));
 
-    if (value === NaN) {
+    if (isNaN(value)) {
       return;
     }
 

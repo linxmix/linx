@@ -1,9 +1,10 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
+import _ from 'npm:underscore';
+
 import ReadinessMixin from '../readiness';
 
-import _ from 'npm:underscore';
 import { flatten } from 'linx/lib/utils';
 import isEvery from 'linx/lib/computed/is-every';
 
@@ -22,14 +23,17 @@ export default function(propertyPath) {
     _dependentModelPaths: [propertyPath],
 
     _addDependentModelsProperty: function() {
-      let dependentKeys = this.get('_dependentModelPaths');
+      let dependentModelPaths = this.get('_dependentModelPaths');
+      let dependentKeys = dependentModelPaths.concat(dependentModelPaths.map((path) => {
+        return `${path}.[]`;
+      }));
 
       if (!this.dependentModels) {
         Ember.defineProperty(this, 'dependentModels',
           Ember.computed.apply(Ember, dependentKeys.concat([function() {
             return flatten(dependentKeys.map((key) => {
               return this.get(key);
-            }));
+            })).reject(Ember.isNone);
           }]))
         );
       }

@@ -3,6 +3,7 @@ import DS from 'ember-data';
 
 import ReadinessMixin from 'linx/mixins/readiness';
 import PlayableArrangementMixin from 'linx/mixins/playable-arrangement';
+import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 
 import isEvery from 'linx/lib/computed/is-every';
 import withDefault from 'linx/lib/computed/with-default';
@@ -11,6 +12,7 @@ import { copyInPlace } from 'linx/lib/utils';
 
 export default DS.Model.extend(
   PlayableArrangementMixin,
+  DependentRelationshipMixin('clips'),
   ReadinessMixin('isArrangementReady'), {
 
   // fake title to make sure arrangement saves
@@ -52,7 +54,5 @@ export default DS.Model.extend(
 
       copyInPlace(clips, newClips);
     }
-  },
-
-  // TODO(CLEANUP): destroy clips when destroying arrangement?
+  }
 });

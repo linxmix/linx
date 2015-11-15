@@ -60,12 +60,15 @@ export default DS.Model.extend(
     });
   }),
 
-  // TODO: figure out what else is necessary
   fromTrackEndBeat: Ember.computed.reads('fromTrackMarker.startBeat'),
   toTrackStartBeat: Ember.computed.reads('toTrackMarker.startBeat'),
 
-  fromTrackEnd: Ember.computed.reads('fromTrackMarker.start'),
-  toTrackStart: Ember.computed.reads('toTrackMarker.start'),
+  // TODO(TRANSITION): figure out what else is necessary
+
+  // TODO(TRANSITION): fix this
+  setTransitionNumBeats(numBeats) {
+    this.get('arrangement.clips.lastObject').set('numBeats', numBeats);
+  },
 
   // sets fromTrackMarker to given time in fromTrack
   setFromTrackEnd: function(time) {

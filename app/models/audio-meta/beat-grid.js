@@ -60,7 +60,7 @@ export default Ember.Object.extend(
       // TODO(QUANTIZATION)
       default:
         return beat;
-    };
+    }
   },
 
   getQuantizedTime(time, quantization) {

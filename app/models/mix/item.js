@@ -119,8 +119,8 @@ export default DS.Model.extend(
       });
 
       return Ember.RSVP.all([
-        transition.setFromTrackEndBeat(~~fromTrack.get('audioMeta.endBeat')),
-        transition.setToTrackStartBeat(~~toTrack.get('audioMeta.startBeat')),
+        transition.setFromTrackEndBeat(Math.round(fromTrack.get('audioMeta.endBeat'))),
+        transition.setToTrackStartBeat(Math.round(toTrack.get('audioMeta.startBeat'))),
         transition.get('arrangement').then((arrangement) => {
           let automationClip = this.get('store').createRecord('automation-clip', {
             numBeats: 16,

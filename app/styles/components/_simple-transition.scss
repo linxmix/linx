@@ -2,6 +2,10 @@
 
 }
 
-.SimpleTransition-FromTrackClip {
+.SimpleTransition-FromTrackClip, .SimpleTransition-ToTrackClip {
+  cursor: move;
+}
+
+.SimpleTransition-TransitionClip {
   cursor: col-resize;
 }

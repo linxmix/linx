@@ -41,7 +41,7 @@ export default Ember.Component.extend(
 
   _drag(e = {}) {
     let originalEvent = e.originalEvent;
-    let { x, y } = originalEvent
+    let { x, y } = originalEvent;
 
     // ignore final drag event
     // TODO: why does is event at 0,0?
