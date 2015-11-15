@@ -15,6 +15,7 @@ export default DS.Model.extend(
 
   // fake title to make sure arrangement saves
   title: DS.attr('string', { defaultValue: 'placeholder title' }),
+  timeSignature: DS.attr('number', { defaultValue: 4.0 }),
 
   // TODO(POLYMORPHISM)
   trackClips: DS.hasMany('track-clip', { async: true }),

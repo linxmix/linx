@@ -11,6 +11,7 @@ export default DS.Model.extend(
   OrderedHasManyMixin('_mixItems', 'mix/item'), {
 
   title: DS.attr('string'),
+  timeSignature: DS.attr('number', { defaultValue: 4.0 }),
   _mixItems: DS.hasMany('mix/item', { async: true }),
 
   fromTracks: Ember.computed.mapBy('items', 'fromTrack.content'),

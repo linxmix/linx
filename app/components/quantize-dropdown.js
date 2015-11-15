@@ -2,14 +2,16 @@ import Ember from 'ember';
 import BubbleActions from 'linx/lib/bubble-actions';
 import RequireAttributes from 'linx/lib/require-attributes';
 
-export const BAR_QUANTIZATION = 'bar';
-export const BEAT_QUANTIZATION = 'beat';
-export const TICK_QUANTIZATION = 'tick';
-export const MS10_QUANTIZATION = '10ms';
-export const MS1_QUANTIZATION = '1ms';
-export const SAMPLE_QUANTIZATION = 'sample';
+import {
+  BAR_QUANTIZATION,
+  BEAT_QUANTIZATION,
+  TICK_QUANTIZATION,
+  MS10_QUANTIZATION,
+  MS1_QUANTIZATION,
+  SAMPLE_QUANTIZATION,
+} from 'linx/models/audio-meta/beat-grid';
 
-export const QUANTIZATIONS = {
+export const QUANTIZATION_DISPLAY_VALUES = {
   [BAR_QUANTIZATION]: 'Bar',
   [BEAT_QUANTIZATION]: 'Beat',
   [TICK_QUANTIZATION]: 'Tick',
@@ -27,6 +29,6 @@ export default Ember.Component.extend(
 
   // optional params
   selected: BAR_QUANTIZATION,
-  options: QUANTIZATIONS,
+  options: QUANTIZATION_DISPLAY_VALUES,
 });
 

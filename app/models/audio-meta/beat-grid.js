@@ -5,11 +5,21 @@ import RequireAttributes from 'linx/lib/require-attributes';
 
 import { timeToBeat as timeToBeatUtil, bpmToSpb, isNumber } from 'linx/lib/utils';
 
+export const BAR_QUANTIZATION = 'bar';
+export const BEAT_QUANTIZATION = 'beat';
+export const TICK_QUANTIZATION = 'tick';
+export const MS10_QUANTIZATION = '10ms';
+export const MS1_QUANTIZATION = '1ms';
+export const SAMPLE_QUANTIZATION = 'sample';
+
+export const TICKS_PER_BEAT = 120;
+
 export default Ember.Object.extend(
   RequireAttributes('audioMeta'), {
 
   duration: Ember.computed.reads('audioMeta.duration'),
   bpm: Ember.computed.reads('audioMeta.bpm'),
+  timeSignature: Ember.computed.reads('audioMeta.timeSignature'),
 
   timeToBeat(time) {
     return this.get('beatScale').getPoint(time);
@@ -19,12 +29,44 @@ export default Ember.Object.extend(
     return this.get('beatScale').getInverse(beat);
   },
 
+  beatToBar(beat) {
+    return beat / this.get('timeSignature');
+  },
+
+  barToBeat(bar) {
+    return bar * this.get('timeSignature');
+  },
+
   timeToBar(time) {
     return this.get('barScale').getPoint(time);
   },
 
   barToTime(bar) {
     return this.get('barScale').getInverse(bar);
+  },
+
+  getQuantizedBar(bar, quantization) {
+    let beat = this.barToBeat(bar);
+    let quantizedBeat = this.getQuantizedBeat(beat, quantization);
+    return this.beatToBar(quantizedBeat);
+  },
+
+  getQuantizedBeat(beat, quantization) {
+    switch (quantization) {
+      case BAR_QUANTIZATION:
+        return this.barToBeat(Math.round(this.beatToBar(beat)));
+      case BEAT_QUANTIZATION:
+        return Math.round(beat);
+      // TODO(QUANTIZATION)
+      default:
+        return beat;
+    };
+  },
+
+  getQuantizedTime(time, quantization) {
+    let beat = this.timeToBeat(time);
+    let quantizedBeat = this.getQuantizedBeat(beat, quantization);
+    return this.beatToTime(quantizedBeat);
   },
 
   // domain is time [s]
@@ -40,14 +82,15 @@ export default Ember.Object.extend(
 
   // domain is time [s]
   // range is bars [ba]
-  barScale: Ember.computed('beatScale.domain', 'beatScale.range', function() {
+  barScale: Ember.computed('beatScale.domain', 'beatScale.range', 'timeSignature', function() {
+    let timeSignature = this.get('timeSignature');
     let beatScale = this.get('beatScale');
     let domain = beatScale.get('domain');
     let [rangeMin, rangeMax] = beatScale.get('range');
 
     return LinearScale.create({
       domain,
-      range: [rangeMin / 4.0, rangeMax / 4.0]
+      range: [rangeMin / timeSignature, rangeMax / timeSignature]
     });
   }).readOnly(),
 
@@ -68,10 +111,11 @@ export default Ember.Object.extend(
 
   // the time of the first actual beat in the raw audio file
   // TODO(MULTIGRID): this supposes a constant bpm in the audio file
-  firstBarOffset: Ember.computed('gridMarker.start', 'bpm', function() {
+  firstBarOffset: Ember.computed('gridMarker.start', 'bpm', 'timeSignature', function() {
     let bpm = this.get('bpm');
+    let timeSignature = this.get('timeSignature');
     let secondsPerBeat = bpmToSpb(bpm);
-    let secondsPerBar = secondsPerBeat * 4.0;
+    let secondsPerBar = secondsPerBeat * timeSignature;
 
     let firstBarOffsetTime = this.get('gridMarker.start');
     while ((firstBarOffsetTime - secondsPerBar) >= 0) {

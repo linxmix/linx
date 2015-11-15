@@ -8,7 +8,7 @@ import subtract from 'linx/lib/computed/subtract';
 import { isNumber } from 'linx/lib/utils';
 
 import { MIX_ITEM_PREVIEW_DISTANCE } from 'linx/components/simple-mix';
-import { BAR_QUANTIZATION } from 'linx/components/quantize-dropdown';
+import { BAR_QUANTIZATION } from 'linx/models/audio-meta/beat-grid';
 
 export default Ember.Component.extend(ArrangementPlayerMixin,
   RequireAttributes('transition'), {
@@ -17,17 +17,15 @@ export default Ember.Component.extend(ArrangementPlayerMixin,
   classNameBindings: [],
 
   actions: {
-    // TODO: abstract for syncToBeat,syncToBar,noSync[debounce]
-    dragFromTrackClip(beat) {
-      let fromTrackMarker = this.get('fromTrackMarker');
-      let beatGrid = fromTrackMarker.get('beatGrid');
+    moveTrackMarker(marker, beat) {
+      let beatGrid = marker.get('beatGrid');
+      let quantization = this.get('selectedQuantization');
+      let oldStartBeat = marker.get('startBeat');
+      let newStartBeat = beatGrid.getQuantizedBeat(beat, quantization);
 
-      let oldStartBeat = fromTrackMarker.get('startBeat');
-      let newStartBeat = ~~beat;
-
-      // TODO: tolerance, not exact equality
+      // TODO(QUANTIZATION): tolerance, not exact equality
       if (oldStartBeat !== newStartBeat) {
-        fromTrackMarker.set('startBeat', newStartBeat);
+        marker.set('startBeat', newStartBeat);
       }
     },
 
@@ -46,12 +44,12 @@ export default Ember.Component.extend(ArrangementPlayerMixin,
     },
 
     selectQuantization(quantization) {
-      console.log('selectQuantization', quantization);
-      this.set('selectedQuantization', [quantization]);
+      this.set('selectedQuantizations', [quantization]);
     },
   },
 
-  selectedQuantization: [BAR_QUANTIZATION],
+  selectedQuantizations: [BAR_QUANTIZATION],
+  selectedQuantization: Ember.computed.reads('selectedQuantizations.firstObject'),
 
   // implementing ArrangementPlayerMixin
   arrangement: Ember.computed.reads('mix'),

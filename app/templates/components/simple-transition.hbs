@@ -35,7 +35,7 @@
         metronome=metronome
         pxPerBeat=pxPerBeat
         isDraggable=true
-        onDrag=(action "dragFromTrackClip")
+        onDrag=(action "moveTrackMarker" fromTrackMarker)
         class="SimpleTransition-FromTrackClip"
       }}
     {{/arrangement-row}}
@@ -71,7 +71,7 @@
 
   <div class="eight wide column">
     {{quantize-dropdown
-      selected=selectedQuantization
+      selected=selectedQuantizations
       onSelect=(action "selectQuantization")
     }}
   </div>

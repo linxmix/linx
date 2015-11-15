@@ -1,7 +1,8 @@
 import Ember from 'ember';
 import PreventDirtyTransitionMixin from 'linx/mixins/routes/prevent-dirty-transition';
 
-export default Ember.Route.extend(PreventDirtyTransitionMixin, {
+// export default Ember.Route.extend(PreventDirtyTransitionMixin, {
+export default Ember.Route.extend({
   actions: {
     saveTransition() {
       let transition = this.get('controller.model');

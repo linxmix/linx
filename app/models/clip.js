@@ -20,6 +20,7 @@ export default DS.Model.extend(
   row: DS.attr('number'), // for complex display
   startBeat: DS.attr('number', { defaultValue: 0 }), // starting beat in arrangement
   arrangement: DS.belongsTo('arrangement', { async: true }),
+  timeSignature: Ember.computed.reads('arrangement.timeSignature'),
 
   endBeat: add('startBeat', 'numBeats'),
   numBeats: subtract('endBeat', 'startBeat'),
@@ -28,8 +29,8 @@ export default DS.Model.extend(
   }),
   centerBeat: add('startBeat', 'halfNumBeats'),
 
-  numBars: Ember.computed('numBeats', function() {
-    return this.get('numBeats') / 4.0;
+  numBars: Ember.computed('numBeats', 'timeSignature', function() {
+    return this.get('numBeats') / this.get('timeSignature');
   }),
 
   isValidStartBeat: function() {

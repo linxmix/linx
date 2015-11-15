@@ -19,10 +19,11 @@ export default Ember.Mixin.create(
   readyClips: Ember.computed.filterBy('clips', 'isReady', true),
   clipSort: ['endBeat:asc', 'startBeat:asc'],
   sortedClips: Ember.computed.sort('clips', 'clipSort'),
+  timeSignature: Ember.computed.reads('arrangement.timeSignature'),
   endBeat: Ember.computed.reads('sortedClips.lastObject.endBeat'),
   numBeats: withDefault('endBeat', 0),
 
-  numBars: Ember.computed('numBeats', function() {
-    return this.get('numBeats') / 4.0;
+  numBars: Ember.computed('numBeats', 'timeSignature', function() {
+    return this.get('numBeats') / this.get('timeSignature');
   }),
 });

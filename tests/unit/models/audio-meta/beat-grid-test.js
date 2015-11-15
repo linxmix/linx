@@ -9,6 +9,15 @@ import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 
 import makeAudioMeta from 'linx/tests/helpers/make-audio-meta';
 
+import {
+  BAR_QUANTIZATION,
+  BEAT_QUANTIZATION,
+  TICK_QUANTIZATION,
+  MS10_QUANTIZATION,
+  MS1_QUANTIZATION,
+  SAMPLE_QUANTIZATION,
+} from 'linx/models/audio-meta/beat-grid';
+
 describe('BeatGrid', function() {
   setupTestEnvironment();
 
@@ -43,12 +52,12 @@ describe('BeatGrid', function() {
 
   describe('#timeToBar', function() {
     it('lower bound is correct', function() {
-      expect(beatGrid.timeToBar(0)).to.equal(beatGrid.timeToBeat(0) / 4.0);
+      expect(beatGrid.timeToBar(0)).to.equal(beatGrid.timeToBeat(0) / audioMeta.get('timeSignature'));
     });
 
     it('upper bound is correct', function() {
       expect(beatGrid.timeToBar(audioMeta.get('duration')))
-        .to.equal(beatGrid.timeToBeat(audioMeta.get('duration')) / 4.0);
+        .to.equal(beatGrid.timeToBeat(audioMeta.get('duration')) / audioMeta.get('timeSignature'));
     });
   });
 
@@ -74,6 +83,32 @@ describe('BeatGrid', function() {
       });
 
       expect(beatGrid.get('gridMarker.start')).to.equal(previousStart - nudgeAmount);
+    });
+  });
+
+  describe('#getQuantizedBeat', function() {
+    let beat = 1234.56789, timeSignature;
+
+    beforeEach(function() {
+      timeSignature = audioMeta.get('timeSignature');
+    });
+
+    it('BAR_QUANTIZATION is correct', function() {
+      let quantizedBeat = beatGrid.getQuantizedBeat(beat, BAR_QUANTIZATION);
+
+      expect(quantizedBeat).to.equal(Math.round(beat / timeSignature) * timeSignature);
+    });
+
+    it('BEAT_QUANTIZATION is correct', function() {
+      let quantizedBeat = beatGrid.getQuantizedBeat(beat, BEAT_QUANTIZATION);
+
+      expect(quantizedBeat).to.equal(Math.round(beat));
+    });
+
+    it('SAMPLE_QUANTIZATION is correct', function() {
+      let quantizedBeat = beatGrid.getQuantizedBeat(beat, SAMPLE_QUANTIZATION);
+
+      expect(quantizedBeat).to.equal(beat);
     });
   });
 });
