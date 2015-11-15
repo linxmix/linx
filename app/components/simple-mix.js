@@ -7,7 +7,7 @@ import RequireAttributes from 'linx/lib/require-attributes';
 
 import ArrangementPlayerMixin from 'linx/mixins/arrangement-player';
 
-const MIX_ITEM_PREVIEW_DISTANCE = 4;
+export const MIX_ITEM_PREVIEW_DISTANCE = 4;
 
 export default Ember.Component.extend(
   ArrangementPlayerMixin,

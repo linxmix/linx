@@ -51,6 +51,7 @@ export default Ember.Component.extend(
       let scrollCenterBeat = this.get('scrollCenterBeat');
 
       if (isNumber(scrollCenterBeat)) {
+        // console.log("scrollToCenterBeat")
         this.scrollToBeat(scrollCenterBeat);
       }
     }
@@ -76,7 +77,7 @@ export default Ember.Component.extend(
   },
 
   scrollToBeat(beat, doAnimate = true) {
-    // console.log('scrollToBeat', beat);
+    console.log('scrollToBeat', beat);
     let pxPerBeat = this.get('pxPerBeat');
     let $this = this.$();
 

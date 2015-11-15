@@ -4,4 +4,12 @@
   display: inline-block;
   border: 1px solid blue;
   overflow: hidden;
+
+  &:hover {
+    border: 1px solid orange;
+  }
 }
+
+// .LxClip.is-draggable {
+//   cursor: move;
+// }

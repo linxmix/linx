@@ -7,6 +7,8 @@ import ArrangementPlayerMixin from 'linx/mixins/arrangement-player';
 import subtract from 'linx/lib/computed/subtract';
 import { isNumber } from 'linx/lib/utils';
 
+import { MIX_ITEM_PREVIEW_DISTANCE } from 'linx/components/simple-mix';
+
 export default Ember.Component.extend(ArrangementPlayerMixin,
   RequireAttributes('transition'), {
 
@@ -14,6 +16,33 @@ export default Ember.Component.extend(ArrangementPlayerMixin,
   classNameBindings: [],
 
   actions: {
+    // TODO: abstract for syncToBeat,syncToBar,noSync[debounce]
+    dragFromTrackClip(beat) {
+      let fromTrackMarker = this.get('fromTrackMarker');
+      let beatGrid = fromTrackMarker.get('beatGrid');
+
+      let oldStartBeat = fromTrackMarker.get('startBeat');
+      let newStartBeat = ~~beat;
+
+      // TODO: tolerance, not exact equality
+      if (oldStartBeat !== newStartBeat) {
+        fromTrackMarker.set('startBeat', newStartBeat);
+      }
+    },
+
+    playTransition() {
+      this.send('viewTransition');
+
+      this.get('transitionClip.readyPromise').then((clip) => {
+        this.send('play', clip.get('startBeat') - MIX_ITEM_PREVIEW_DISTANCE);
+      });
+    },
+
+    viewTransition() {
+      this.get('transitionClip.readyPromise').then((clip) => {
+        this.set('scrollCenterBeat', clip.get('centerBeat'));
+      });
+    },
   },
 
   // implementing ArrangementPlayerMixin
@@ -26,13 +55,14 @@ export default Ember.Component.extend(ArrangementPlayerMixin,
   }),
 
   fromTrack: Ember.computed.reads('transition.fromTrack'),
+  fromTrackMarker: Ember.computed.reads('transition.fromTrackMarker'),
   toTrack: Ember.computed.reads('transition.toTrack'),
+  toTrackMarker: Ember.computed.reads('transition.toTrackMarker'),
 
   mixItem: Ember.computed.reads('mix.items.firstObject'),
   transitionClip: Ember.computed.reads('mixItem.transitionClip'),
   fromTrackClip: Ember.computed.reads('mixItem.fromTrackClip'),
   toTrackClip: Ember.computed.reads('mixItem.toTrackClip'),
-  scrollCenterBeat: Ember.computed.reads('transitionClip.centerBeat'),
 
   fromTrackEndBeat: Ember.computed.reads('transition.fromTrackEndBeat'),
   toTrackStartBeat: Ember.computed.reads('transition.toTrackStartBeat'),

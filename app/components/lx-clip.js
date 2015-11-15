@@ -1,4 +1,5 @@
 import Ember from 'ember';
+
 import RequireAttributes from 'linx/lib/require-attributes';
 import cssStyle from 'linx/lib/computed/css-style';
 
@@ -6,7 +7,8 @@ export default Ember.Component.extend(
   RequireAttributes('clip', 'metronome', 'pxPerBeat'), {
 
   classNames: ['LxClip'],
-  attributeBindings: ['componentStyle:style'],
+  attributeBindings: ['componentStyle:style', 'draggable'],
+  classNameBindings: ['isDraggable'],
 
   componentStyle: cssStyle({
     'left': 'startPx',
@@ -15,6 +17,38 @@ export default Ember.Component.extend(
 
   // params
   clipEvent: null,
+
+  // TODO: refactor into mixin?
+  isDraggable: false,
+  draggable: Ember.computed.reads('isDraggable'),
+
+  getHoverBeat(e) {
+    if (!e) { return; }
+
+    let $this = this.$();
+    let offsetX = e.originalEvent.pageX - $this.offset().left;
+
+    return offsetX / this.get('pxPerBeat');
+  },
+
+  // dragStart(e) {
+  //   e.originalEvent.dataTransfer.setDragImage('', 10, 10);
+  // },
+
+  drag(e) {
+    Ember.run.throttle(this, '_drag', e, 50, true);
+  },
+
+  _drag(e = {}) {
+    let originalEvent = e.originalEvent;
+    let { x, y } = originalEvent
+
+    // ignore final drag event
+    // TODO: why does is event at 0,0?
+    if (!(x === 0 && y === 0)) {
+     this.sendAction('onDrag', this.getHoverBeat(e));
+    }
+  },
 
   updateClipEvent: function() {
     Ember.run.once(this, '_updateClipEvent');
