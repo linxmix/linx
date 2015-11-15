@@ -1,0 +1,14 @@
+Snap To:
+{{#lx-dropdown
+  selected=selected
+  onSelect=(action "onSelect")
+  class="basic inverted inline button selection"
+}}
+  <input type="hidden" name="quantize">
+  <div class="default text">Quantize</div>
+  <div class="menu">
+    {{#each-in options as |key value|}}
+      <div class="item" data-value="{{key}}" data-text="{{value}}">{{value}}</div>
+    {{/each-in}}
+  </div>
+{{/lx-dropdown}}

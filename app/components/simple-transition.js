@@ -8,6 +8,7 @@ import subtract from 'linx/lib/computed/subtract';
 import { isNumber } from 'linx/lib/utils';
 
 import { MIX_ITEM_PREVIEW_DISTANCE } from 'linx/components/simple-mix';
+import { BAR_QUANTIZATION } from 'linx/components/quantize-dropdown';
 
 export default Ember.Component.extend(ArrangementPlayerMixin,
   RequireAttributes('transition'), {
@@ -43,7 +44,14 @@ export default Ember.Component.extend(ArrangementPlayerMixin,
         this.set('scrollCenterBeat', clip.get('centerBeat'));
       });
     },
+
+    selectQuantization(quantization) {
+      console.log('selectQuantization', quantization);
+      this.set('selectedQuantization', [quantization]);
+    },
   },
+
+  selectedQuantization: [BAR_QUANTIZATION],
 
   // implementing ArrangementPlayerMixin
   arrangement: Ember.computed.reads('mix'),

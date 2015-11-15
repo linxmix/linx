@@ -58,13 +58,24 @@
   {{/if}}
 {{/arrangement-grid}}
 
-{{play-buttons
-  isDisabled=notReady
-  isPlaying=isPlaying
-  playpause="playpause"
-  skipBack="skipBack"
-  skipForth="skipForth"
-}}
+<div class="ui grid">
+  <div class="eight wide column">
+    {{play-buttons
+      isDisabled=notReady
+      isPlaying=isPlaying
+      playpause="playpause"
+      skipBack="skipBack"
+      skipForth="skipForth"
+    }}
+  </div>
+
+  <div class="eight wide column">
+    {{quantize-dropdown
+      selected=selectedQuantization
+      onSelect=(action "selectQuantization")
+    }}
+  </div>
+</div>
 
 <hr/>
 
