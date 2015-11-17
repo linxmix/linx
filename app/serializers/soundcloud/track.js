@@ -1,10 +1,8 @@
-import DS from 'ember-data';
-
 import ENV from 'linx/config/environment';
 
-import CamelCaseAttributesMixin from 'linx/mixins/serializers/camel-case-attributes';
+import SoundcloudSerializer from '../soundcloud';
 
-export default DS.JSONSerializer.extend(CamelCaseAttributesMixin, {
+export default SoundcloudSerializer.extend({
   normalize(typeClass, hash) {
 
     // add client_id to stream_url

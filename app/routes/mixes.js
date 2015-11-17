@@ -49,7 +49,7 @@ export default Ember.Route.extend({
 
             return {
               id: track.id,
-              type: 'soundcloud-track',
+              type: 'soundcloud/track',
               attributes: track
             };
           }),
@@ -81,9 +81,11 @@ export default Ember.Route.extend({
   },
 
   model: function() {
+    let store = this.get('store');
     return Ember.RSVP.hash({
-      mixes: this.get('store').findAll('mix'),
-      tracks: this.get('store').findAll('track'),
+      mixes: store.findAll('mix'),
+      me: store.findRecord('soundcloud/me'),
+      tracks: store.findAll('track'),
     });
   }
 });

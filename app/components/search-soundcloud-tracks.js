@@ -9,7 +9,7 @@ export default Ember.Component.extend(
     executeSearch() {
       let q = this.$('.SearchSoundcloudTracks-Input').val();
 
-      let tracks = this.get('store').query('soundcloud-track', { q });
+      let tracks = this.get('store').query('soundcloud/track', { q });
       this.set('tracks', tracks);
     },
   },

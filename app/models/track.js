@@ -27,7 +27,7 @@ export default DS.Model.extend(
     return this.fetchEchonestTrack();
   }),
 
-  soundcloudTrack: DS.belongsTo('soundcloud-track', { async: true }),
+  soundcloudTrack: DS.belongsTo('soundcloud/track', { async: true }),
 
   createFromSoundcloudTrack(soundcloudTrack) {
     this.setProperties({

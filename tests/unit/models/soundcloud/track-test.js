@@ -31,7 +31,7 @@ describe('SoundcloudTrackModel', function() {
 
     it('fetched soundcloud track', function() {
       expect(soundcloudTrack).to.be.an('object');
-      expect(soundcloudTrack.constructor.modelName).to.equal('soundcloud-track');
+      expect(soundcloudTrack.constructor.modelName).to.equal('soundcloud/track');
     });
 
     describeAttrs('soundcloudTrack', {
@@ -68,7 +68,7 @@ describe('SoundcloudTrackModel', function() {
 
     it('fetched tracks of correct model type', function() {
       models.mapBy('constructor.modelName').forEach((modelName) => {
-        expect(modelName).to.equal('soundcloud-track');
+        expect(modelName).to.equal('soundcloud/track');
       });
     });
   });

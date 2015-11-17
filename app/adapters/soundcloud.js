@@ -15,6 +15,7 @@ import ajax from 'ic-ajax';
 */
 
 export default DS.RESTAdapter.extend({
+  defaultSerializer: 'soundcloud',
   soundcloud: Ember.inject.service(),
 
   /**
@@ -27,7 +28,7 @@ export default DS.RESTAdapter.extend({
   */
 
   pathForType: function (type) {
-    let splitType = type.split('soundcloud-');
+    let splitType = type.split('soundcloud/');
     if (splitType.length > 1) {
       splitType = splitType[1].toLowerCase();
     }

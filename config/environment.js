@@ -32,7 +32,7 @@ module.exports = function(environment) {
     },
 
     APP: {
-      SC_REDIRECT_UI: 'assets/soundcloud/callback.html'
+      SC_REDIRECT_UI: 'http://localhost:3000/assets/soundcloud/callback.html',
     }
   };
 
