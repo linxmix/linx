@@ -5,10 +5,7 @@ import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationshi
 import ReadinessMixin from 'linx/mixins/readiness';
 
 import withDefaultModel from 'linx/lib/computed/with-default-model';
-
-export const AudioSource = Ember.Object.extend({
-
-});
+import AudioSource from './track/audio-source';
 
 export default DS.Model.extend(
   ReadinessMixin('isTrackReady'),
@@ -46,37 +43,14 @@ export default DS.Model.extend(
   // implement readiness
   isTrackReady: Ember.computed.reads('audioMeta.isReady'),
 
-  // TODO: move elsewhere
-  isAudioLoaded: false,
-
   // injected by app
   echonest: null,
 
-  // params
-  file: null,
-
-  // TODO: compact URL and AudioSource stuff into TrackAudioSource.create({ track: this })
-  // TODO: add tests for track.audioSource
-  audioSource: Ember.computed('streamUrl', 'proxyStreamUrl', 'file', function() {
+  audioSource: Ember.computed(function() {
     return AudioSource.create({
-      streamUrl: this.get('streamUrl'),
-      proxyStreamUrl: this.get('proxyStreamUrl'),
-      // arrayBuffer: this.get('soundcloudTrack.audioArrayBuffer'),
-      file: this.get('file'),
+      track: this,
     });
   }),
-
-  streamUrl: Ember.computed.or('s3StreamUrl', 'scStreamUrl', 'soundcloudTrack.streamUrl'),
-  proxyStreamUrl: Ember.computed('streamUrl', function() {
-    return `/${this.get('_streamUrl')}`;
-  }),
-
-  s3StreamUrl: function() {
-    if (!Ember.isNone(this.get('s3Url'))) {
-      // TODO: move to s3 service
-      return "http://s3-us-west-2.amazonaws.com/linx-music/" + this.get('s3Url');
-    }
-  }.property('s3Url'),
 
   // figure out which track this is in echonest
   fetchEchonestTrack() {

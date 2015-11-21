@@ -42,8 +42,8 @@ export default Clip.extend(
   audioStartBeatWithTransition: Ember.computed.reads('prevTransition.toTrackStartBeat'),
   audioEndBeatWithTransition: Ember.computed.reads('nextTransition.fromTrackEndBeat'),
 
-  // implementing Clip
-  isTrackClipReady: Ember.computed.and('isAudioLoaded', 'track.isReady'),
+  // implementing readiness
+  isTrackClipReady: Ember.computed.and('track.audioSource.isReady', 'track.isReady'),
 
   // track-clip specific
   track: Ember.computed.alias('model'),
@@ -55,9 +55,6 @@ export default Clip.extend(
   _audioStartBeatIsNumber: isNumber('_audioStartBeat'),
   _audioEndBeatIsNumber: isNumber('_audioEndBeat'),
   _startBeatIsNumber: isNumber('_startBeat'),
-
-  // TODO: move isAudioLoaded into ex track.audioSource.isLoaded?
-  isAudioLoaded: Ember.computed.reads('track.isAudioLoaded'),
 
   // TODO: move into FxChainMixin
   pitch: 0,

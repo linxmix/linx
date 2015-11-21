@@ -1,7 +1,8 @@
 import Ember from 'ember';
-import Metronome from 'linx/lib/metronome';
-import RequireAttributes from 'linx/lib/require-attributes';
+
 import _ from 'npm:underscore';
+
+import RequireAttributes from 'linx/lib/require-attributes';
 
 // exposes metronome, isPlaying, isReady and playback actions
 export default Ember.Mixin.create(
@@ -34,6 +35,7 @@ export default Ember.Mixin.create(
   },
 
   // params
+  metronome: Ember.computed.reads('arrangement.metronome'),
   isPlaying: Ember.computed.reads('metronome.isPlaying'),
   session: Ember.inject.service(),
   pxPerBeat: 5,
@@ -55,13 +57,6 @@ export default Ember.Mixin.create(
       return beat;
     }
   }),
-
-  metronome: function() {
-    var audioContext = this.get('session.audioContext');
-    if (audioContext) {
-      return Metronome.create({ audioContext: audioContext });
-    }
-  }.property('session.audioContext'),
 
   notReady: Ember.computed.not('isReady'),
   isReady: Ember.computed.reads('arrangement.isReady'),

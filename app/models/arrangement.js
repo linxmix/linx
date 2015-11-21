@@ -19,6 +19,9 @@ export default DS.Model.extend(
   title: DS.attr('string', { defaultValue: 'placeholder title' }),
   timeSignature: DS.attr('number', { defaultValue: 4.0 }),
 
+  // implement playable-arrangement
+  session: Ember.inject.service(),
+
   // TODO(POLYMORPHISM)
   trackClips: DS.hasMany('track-clip', { async: true }),
   transitionClips: DS.hasMany('transition-clip', { async: true }),

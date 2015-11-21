@@ -14,6 +14,9 @@ export default DS.Model.extend(
   timeSignature: DS.attr('number', { defaultValue: 4.0 }),
   _mixItems: DS.hasMany('mix/item', { async: true }),
 
+  // implement playable-arrangement
+  session: Ember.inject.service(),
+
   fromTracks: Ember.computed.mapBy('items', 'fromTrack.content'),
   toTracks: Ember.computed.mapBy('items', 'toTrack.content'),
   tracks: Ember.computed.uniq('fromTracks', 'toTracks'),

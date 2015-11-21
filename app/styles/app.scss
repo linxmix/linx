@@ -3,7 +3,6 @@ $site-nav-height: 35px;
 @import 'index';
 
 @import 'components/site-nav';
-@import 'components/wave-surfer';
 @import 'components/page-drop';
 @import 'components/progress-bar';
 
@@ -28,6 +27,7 @@ $site-nav-height: 35px;
 @import 'components/d3-axis';
 @import 'components/_arrangement-grid/axis';
 @import 'components/_track-clip/axis';
+@import 'components/_track-clip/wave';
 @import 'components/simple-mix';
 
 @import 'components/mix-list';

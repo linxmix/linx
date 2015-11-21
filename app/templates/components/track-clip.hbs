@@ -3,26 +3,24 @@
   pxPerBeat=pxPerBeat
 }}
 
-{{#if track.audioSource}}
-  <div class="TrackClip-wave" style="{{waveStyle}}">
-    {{wave-surfer
-      audioSource=track.audioSource
+<div class="TrackClip-wave" style="{{waveStyle}}">
+  {{track-clip/wave
+    audioSource=track.audioSource
 
-      isPlaying=isPlaying
-      seekTime=audioSeekTime
+    isPlaying=isPlaying
+    seekTime=audioSeekTime
 
-      pxPerBeat=pxPerBeat
-      audioBpm=audioBpm
+    pxPerBeat=pxPerBeat
+    audioBpm=audioBpm
 
-      volume=clip.volume
-      pitch=clip.pitch
-      tempo=tempo
+    volume=clip.volume
+    pitch=clip.pitch
+    tempo=tempo
 
-      disableMouseInteraction=disableMouseInteraction
+    disableMouseInteraction=disableMouseInteraction
 
-      waveDidLoad="waveDidLoad"
-    }}
-  </div>
-{{/if}}
+    waveDidLoad="waveDidLoad"
+  }}
+</div>
 
 {{yield markerOptions}}

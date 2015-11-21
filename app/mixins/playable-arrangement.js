@@ -1,5 +1,6 @@
 import Ember from 'ember';
 
+import Metronome from './playable-arrangement/metronome';
 import ReadinessMixin from 'linx/mixins/readiness';
 import RequireAttributes from 'linx/lib/require-attributes';
 
@@ -8,7 +9,7 @@ import equalProps from 'linx/lib/computed/equal-props';
 
 // Interface for playable arrangements of clips
 export default Ember.Mixin.create(
-  RequireAttributes('clips'),
+  RequireAttributes('clips', 'session'),
   ReadinessMixin('isPlayableArrangementReady'), {
 
   isPlayableArrangementReady: Ember.computed('readyClips.length', 'validClips.length', function() {
@@ -25,5 +26,10 @@ export default Ember.Mixin.create(
 
   numBars: Ember.computed('numBeats', 'timeSignature', function() {
     return this.get('numBeats') / this.get('timeSignature');
+  }),
+
+  audioContext: Ember.computed.reads('session.audioContext'),
+  metronome: Ember.computed('audioContext', function() {
+    return Metronome.create({ audioContext: this.get('audioContext') });
   }),
 });
