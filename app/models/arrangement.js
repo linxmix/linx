@@ -15,7 +15,7 @@ export default DS.Model.extend(
   DependentRelationshipMixin('clips'),
   ReadinessMixin('isArrangementReady'), {
 
-  // fake title to make sure arrangement saves
+  // TODO(FIREBASE): remove fake title which makes sure arrangement saves
   title: DS.attr('string', { defaultValue: 'placeholder title' }),
   timeSignature: DS.attr('number', { defaultValue: 4.0 }),
 
@@ -23,9 +23,9 @@ export default DS.Model.extend(
   session: Ember.inject.service(),
 
   // TODO(POLYMORPHISM)
-  trackClips: DS.hasMany('track-clip', { async: true }),
-  transitionClips: DS.hasMany('transition-clip', { async: true }),
-  mixClips: DS.hasMany('mix-clip', { async: true }),
+  trackClips: DS.hasMany('arrangement/track-clip', { async: true }),
+  transitionClips: DS.hasMany('arrangement/transition-clip', { async: true }),
+  // mixClips: DS.hasMany('mix-clip', { async: true }),
   automationClips: DS.hasMany('automation-clip', { async: true }),
 
   isArrangementReady: Ember.computed.bool('_hasManiesAreFulfilled'),

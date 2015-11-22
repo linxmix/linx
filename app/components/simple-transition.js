@@ -8,7 +8,7 @@ import subtract from 'linx/lib/computed/subtract';
 import { isNumber } from 'linx/lib/utils';
 
 import { MIX_ITEM_PREVIEW_DISTANCE } from 'linx/components/simple-mix';
-import { BAR_QUANTIZATION } from 'linx/models/audio-meta/beat-grid';
+import { BAR_QUANTIZATION } from 'linx/models/track/audio-meta/beat-grid';
 
 export default Ember.Component.extend(ArrangementPlayerMixin,
   RequireAttributes('transition'), {

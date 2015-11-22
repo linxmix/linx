@@ -13,7 +13,7 @@
   pxPerBeat=pxPerBeat
   seekToBeat="seekToBeat"
 }}
-  {{#arrangement-row size="mini"}}
+  {{#arrangement-grid/row size="mini"}}
     {{#each clipEvent in clipEvents}}
       {{arrangement-item
         clipEvent=clipEvent
@@ -21,5 +21,5 @@
         pxPerBeat=pxPerBeat
       }}
     {{/each}}
-  {{/arrangement-row}}
+  {{/arrangement-grid/row}}
 {{/simple-arrangement}}

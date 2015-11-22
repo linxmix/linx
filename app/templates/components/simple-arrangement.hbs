@@ -5,15 +5,15 @@
   scrollCenterBeat=scrollCenterBeat
   seekToBeat="seekToBeat"
 }}
-  {{#arrangement-row}}
+  {{#arrangement-grid/row}}
     {{#each arrangement.clips as |clip|}}
-      {{lx-clip
+      {{arrangement-grid/event
         clip=clip
         metronome=metronome
         pxPerBeat=pxPerBeat
       }}
     {{/each}}
-  {{/arrangement-row}}
+  {{/arrangement-grid/row}}
 {{/arrangement-grid}}
 
 {{play-buttons

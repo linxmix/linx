@@ -7,7 +7,8 @@ $site-nav-height: 35px;
 @import 'components/progress-bar';
 
 @import 'components/arrangement-grid';
-@import 'components/arrangement-row';
+@import 'components/_arrangement-grid/event';
+@import 'components/_arrangement-grid/row';
 @import 'components/simple-arrangement';
 
 @import 'components/track-full';
@@ -18,7 +19,6 @@ $site-nav-height: 35px;
 @import 'components/queue-controls';
 @import 'components/mixes-list';
 @import 'components/mixes-list-item';
-@import 'components/lx-clip';
 @import 'components/clip';
 @import 'components/track-clip';
 @import 'components/transition-clip';

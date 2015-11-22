@@ -16,7 +16,7 @@ import {
   MS10_QUANTIZATION,
   MS1_QUANTIZATION,
   SAMPLE_QUANTIZATION,
-} from 'linx/models/audio-meta/beat-grid';
+} from 'linx/models/track/audio-meta/beat-grid';
 
 describe('BeatGrid', function() {
   setupTestEnvironment();

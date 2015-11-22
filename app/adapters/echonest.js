@@ -66,7 +66,7 @@ export default DS.RESTAdapter.extend({
   */
 
   pathForType: function (type) {
-    var splitType = type.split('echonest-');
+    var splitType = type.split('echonest/');
     if (splitType.length > 1) {
       return splitType[1].toLowerCase();
     }

@@ -5,7 +5,7 @@ import _ from 'npm:underscore';
 import RequireAttributes from 'linx/lib/require-attributes';
 import Clip from './clip';
 
-import { beatToTime } from 'linx/models/audio-meta/beat-grid';
+import { beatToTime } from 'linx/models/track/audio-meta/beat-grid';
 import { default as cssStyle, animateStyle } from 'linx/lib/computed/css-style';
 import add from 'linx/lib/computed/add';
 import subtract from 'linx/lib/computed/add';
@@ -17,9 +17,6 @@ import { flatten } from 'linx/lib/utils';
 export default Clip.extend({
   actions: {
   },
-
-  // optional params
-  disableMouseInteraction: true,
 
   classNames: ['TrackClip'],
 

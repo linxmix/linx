@@ -5,7 +5,7 @@ import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationshi
 import ReadinessMixin from 'linx/mixins/readiness';
 
 import withDefaultModel from 'linx/lib/computed/with-default-model';
-import AudioSource from './track/audio-source';
+import AudioBinary from './track/audio-binary';
 
 export default DS.Model.extend(
   ReadinessMixin('isTrackReady'),
@@ -19,7 +19,7 @@ export default DS.Model.extend(
   s3Url: DS.attr('string'),
   scStreamUrl: DS.attr('string'),
 
-  _echonestTrack: DS.belongsTo('echonest-track', { async: true }),
+  _echonestTrack: DS.belongsTo('echonest/track', { async: true }),
   echonestTrack: withDefaultModel('_echonestTrack', function() {
     return this.fetchEchonestTrack();
   }),
@@ -34,10 +34,15 @@ export default DS.Model.extend(
     });
   },
 
-  // TODO: compact audioMeta into AudioMeta.create({ track: this })
-  _audioMeta: DS.belongsTo('audio-meta', { async: true }),
+  _audioMeta: DS.belongsTo('track/audio-meta', { async: true }),
   audioMeta: withDefaultModel('_audioMeta', function() {
     return this.fetchAudioMeta();
+  }),
+
+  audioBinary: Ember.computed(function() {
+    return AudioBinary.create({
+      track: this,
+    });
   }),
 
   // implement readiness
@@ -45,12 +50,7 @@ export default DS.Model.extend(
 
   // injected by app
   echonest: null,
-
-  audioSource: Ember.computed(function() {
-    return AudioSource.create({
-      track: this,
-    });
-  }),
+  session: Ember.inject.service(),
 
   // figure out which track this is in echonest
   fetchEchonestTrack() {
@@ -71,7 +71,7 @@ export default DS.Model.extend(
         return this.get('_audioMeta').then((audioMeta) => {
           // console.log("got audioMeta");
           if (!audioMeta) {
-            audioMeta = this.get('store').createRecord('audio-meta', {
+            audioMeta = this.get('store').createRecord('track/audio-meta', {
               track: this
             });
           }

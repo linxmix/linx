@@ -14,7 +14,7 @@ describe('EchonestTrackModel', function() {
   let echonestTrack;
 
   beforeEach(function() {
-    echonestTrack = this.factory.make('echonest-track-giveitupforlove');
+    echonestTrack = this.factory.make('echonest/track-giveitupforlove');
   });
 
   describe('Analysis', function() {

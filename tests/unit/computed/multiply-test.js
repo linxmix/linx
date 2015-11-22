@@ -8,12 +8,6 @@ import { expect } from 'chai';
 
 import multiply from 'linx/lib/computed/multiply';
 
-const MODELS = {
-  honda: 'accord',
-  toyota: 'prius',
-  ford: 'mustang'
-};
-
 let Statistic = Ember.Object.extend({
   probabilityA: 3,
   probabilityB: 2,

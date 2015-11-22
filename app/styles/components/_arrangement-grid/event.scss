@@ -1,0 +1,15 @@
+.ArrangementGridEvent {
+  height: 100%;
+  position: absolute;
+  display: inline-block;
+  border: 1px solid blue;
+  overflow: hidden;
+
+  &:hover {
+    border: 1px solid orange;
+  }
+}
+
+// .ArrangementGridEvent.is-draggable {
+//   cursor: move;
+// }

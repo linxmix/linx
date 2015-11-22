@@ -1,0 +1,20 @@
+{{#if clip}}
+  {{#component clip.componentName
+    clip=clip
+    clipEvent=clipEvent
+    isPlaying=clipEvent.isPlaying
+    isFinished=clipEvent.isFinished
+    clipSeekBeat=clipEvent.seekBeat
+    tickBeat=clipEvent.tickBeat
+    syncBpm=clipEvent.bpm
+    pxPerBeat=pxPerBeat
+    as |clipComponent|
+  }}
+    {{#each clipComponent.visibleMarkers as |marker|}}
+      {{clip-marker
+        marker=marker
+        pxPerBeat=pxPerBeat
+      }}
+    {{/each}}
+  {{/component}}
+{{/if}}

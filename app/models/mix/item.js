@@ -3,7 +3,9 @@ import DS from 'ember-data';
 
 import _ from 'npm:underscore';
 
-import OrderedHasManyItemMixin from 'linx/mixins/models/ordered-has-many-item';
+import TrackClip from './track-clip';
+import TransitionClip from './transition-clip';
+import OrderedHasManyItemMixin from 'linx/mixins/models/ordered-has-many/item';
 import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 
 import equalProps from 'linx/lib/computed/equal-props';
@@ -25,29 +27,23 @@ export default DS.Model.extend(
   nextTransition: Ember.computed.reads('nextItem.transition'),
   nextTransitionIsMatch: equalProps('transition.toTrack.content', 'nextTransition.fromTrack.content'),
 
-  transitionClip: Ember.computed('transition', function() {
-    let transition = this.get('transition.content');
-    return this.get('store').createRecord('transition-clip', {
-      transition,
-      mixItem: this,
+  transitionClip: Ember.computed('transition.content', function() {
+    return TransitionClip.create({
+      transition: this.get('transition.content'),
     });
   }),
 
   fromTrackClip: Ember.computed('fromTrack.content', function() {
-    let fromTrack = this.get('fromTrack.content');
-    return this.get('store').createRecord('track-clip', {
-      model: fromTrack,
-      mixItem: this,
+    return TrackClip.create({
+      track: this.get('fromTrack.content'),
     });
   }),
 
   // share with nextItem, if matches
   toTrackClip: variableTernary('nextTransitionIsMatch', 'nextItem.fromTrackClip', '_toTrackClip'),
   _toTrackClip: Ember.computed('toTrack.content', function() {
-    let toTrack = this.get('toTrack.content');
-    return this.get('store').createRecord('track-clip', {
-      model: toTrack,
-      mixItem: this,
+    return TrackClip.create({
+      track: this.get('toTrack.content'),
     });
   }),
 
@@ -122,7 +118,7 @@ export default DS.Model.extend(
         transition.setFromTrackEndBeat(Math.round(fromTrack.get('audioMeta.endBeat'))),
         transition.setToTrackStartBeat(Math.round(toTrack.get('audioMeta.startBeat'))),
         transition.get('arrangement').then((arrangement) => {
-          let automationClip = this.get('store').createRecord('automation-clip', {
+          let automationClip = this.get('store').createRecord('arrangement/automation-clip', {
             numBeats: 16,
           });
           arrangement.get('automationClips').addObject(automationClip);

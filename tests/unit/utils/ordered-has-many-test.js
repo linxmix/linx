@@ -12,7 +12,7 @@ import { asResolvedPromise } from 'linx/lib/utils';
 
 import OrderedHasManyMixin from 'linx/mixins/models/ordered-has-many';
 
-// End to end testing of ordered-has-many and ordered-has-many-item.
+// End to end testing of ordered-has-many and ordered-has-many/item.
 describe('OrderedHasManyMixin', function() {
   setupTestEnvironment();
 

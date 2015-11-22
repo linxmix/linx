@@ -12,7 +12,7 @@ export default {
   initialize: function(app) {
     app.register("Echonest:main", Echonest);
     app.inject("model:track", "echonest", "Echonest:main");
-    app.inject("model:echonest-track", "echonest", "Echonest:main");
+    app.inject("model:echonest/track", "echonest", "Echonest:main");
   },
 };
 
@@ -23,13 +23,13 @@ var Echonest = Ember.Object.extend({
   baseUrl: 'http://developer.echonest.com/api/v4',
   apiKey: ENV.ECHONEST_KEY,
 
-  // fetch echonest-track from linx-track
+  // fetch echonest/track from linx-track
   // TODO: identifyTrackMD5 first?
   fetchTrack: function(track) {
     return DS.PromiseObject.create({
       promise: this.uploadTrack(track).then((response) => {
         var store = this.get('store');
-        return this.get('store').findRecord('echonest-track', response.id);
+        return this.get('store').findRecord('echonest/track', response.id);
       }),
     });
   },

@@ -4,14 +4,14 @@ import DS from 'ember-data';
 import ReadinessMixin from 'linx/mixins/readiness';
 import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 
-import OrderedHasManyItemMixin from 'linx/mixins/models/ordered-has-many-item';
+import OrderedHasManyItemMixin from 'linx/mixins/models/ordered-has-many/item';
 
 import withDefaultModel from 'linx/lib/computed/with-default-model';
 import { isNumber } from 'linx/lib/utils';
 import {
   TRANSITION_IN_MARKER_TYPE,
   TRANSITION_OUT_MARKER_TYPE,
-} from './marker';
+} from './track/audio-meta/marker';
 
 export default DS.Model.extend(
   DependentRelationshipMixin('fromTrackMarker'),
@@ -40,7 +40,7 @@ export default DS.Model.extend(
 
   // TODO: what if tracks are switched out after the transition has been made?
   // TODO: what if tracks are not present when transition is made?
-  _fromTrackMarker: DS.belongsTo('marker', { async: true }),
+  _fromTrackMarker: DS.belongsTo('track/audio-meta/marker', { async: true }),
   fromTrackMarker: withDefaultModel('_fromTrackMarker', function() {
     return this.get('fromTrack.audioMeta').then((audioMeta) => {
       return audioMeta && audioMeta.createMarker({
@@ -50,7 +50,7 @@ export default DS.Model.extend(
     });
   }),
 
-  _toTrackMarker: DS.belongsTo('marker', { async: true }),
+  _toTrackMarker: DS.belongsTo('track/audio-meta/marker', { async: true }),
   toTrackMarker: withDefaultModel('_toTrackMarker', function() {
     return this.get('toTrack.audioMeta').then((audioMeta) => {
       return audioMeta && audioMeta.createMarker({

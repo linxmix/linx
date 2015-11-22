@@ -3,11 +3,19 @@ import Ember from 'ember';
 export default Ember.Service.extend({
   store: Ember.inject.service(),
 
-  audioContext: function() {
+  audioContext: Ember.computed(function() {
     // TODO: error handle for unsupported browsers
-    var AudioContext = (window.AudioContext || window.webkitAudioContext);
+    let AudioContext = (window.AudioContext || window.webkitAudioContext);
     return new AudioContext();
-  }.property(),
+  }),
+
+  offlineAudioContext: Ember.computed('audioContext', function() {
+    let audioContext = this.get('audioContext');
+    // TODO: error handle for unsupported browsers
+    let OfflineAudioContext = (window.OfflineAudioContext || window.webkitOfflineAudioContext);
+
+    return new OfflineAudioContext(1, 2, audioContext.sampleRate);
+  }),
 
   getCurrentTime: function() {
     return this.get('audioContext').currentTime;
@@ -52,13 +60,3 @@ export default Ember.Service.extend({
     // return store && store.createRecord('mix');
   }),
 });
-
-// TODO
-// getOfflineAudioContext: function (sampleRate) {
-//     if (!WaveSurfer.WebAudio.offlineAudioContext) {
-//         WaveSurfer.WebAudio.offlineAudioContext = new (
-//             window.OfflineAudioContext || window.webkitOfflineAudioContext
-//         )(1, 2, sampleRate);
-//     }
-//     return WaveSurfer.WebAudio.offlineAudioContext;
-// },

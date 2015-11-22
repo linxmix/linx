@@ -26,7 +26,7 @@ describe('TrackModel', function() {
       }));
     });
 
-    it('fetched echonest-track', function() {
+    it('fetched echonest/track', function() {
       expect(echonestTrack).to.be.ok;
       expect(echonestTrack.get('id')).to.equal('TRAWOGC14E8320817F');
     });

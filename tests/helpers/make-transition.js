@@ -17,13 +17,13 @@ export default function(options = {}) {
   var fromTrack = Ember.getWithDefault(options, 'fromTrack', makeTrack.call(this));
   var toTrack = Ember.getWithDefault(options, 'toTrack', makeTrack.call(this));
 
-  var fromTrackMarker = this.factory.make('marker', {
+  var fromTrackMarker = this.factory.make('track/audio-meta/marker', {
     type: TRANSITION_OUT_MARKER_TYPE,
     audioMeta: fromTrack.get('audioMeta.content'),
     start: fromTrackEnd,
   });
 
-  var toTrackMarker = this.factory.make('marker', {
+  var toTrackMarker = this.factory.make('track/audio-meta/marker', {
     type: TRANSITION_IN_MARKER_TYPE,
     audioMeta: toTrack.get('audioMeta.content'),
     start: toTrackStart

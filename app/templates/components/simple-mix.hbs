@@ -53,33 +53,33 @@
   scrollCenterBeat=scrollCenterBeat
   seekToBeat="seekToBeat"
 }}
-  {{#arrangement-row}}
+  {{#arrangement-grid/row}}
     {{#each mix.items as |item|}}
-      {{lx-clip
+      {{arrangement-grid/event
         clip=item.fromTrackClip
-        metronome=metronome
+        arrangement=arrangement
         pxPerBeat=pxPerBeat
       }}
 
       {{#if item.isLastItem}}
-        {{lx-clip
+        {{arrangement-grid/event
           clip=item.toTrackClip
-          metronome=metronome
+          arrangement=arrangement
           pxPerBeat=pxPerBeat
         }}
       {{/if}}
     {{/each}}
-  {{/arrangement-row}}
+  {{/arrangement-grid/row}}
 
-  {{#arrangement-row}}
+  {{#arrangement-grid/row}}
     {{#each mix.transitionClips as |clip|}}
-      {{lx-clip
+      {{arrangement-grid/event
         clip=clip
-        metronome=metronome
+        arrangement=arrangement
         pxPerBeat=pxPerBeat
       }}
     {{/each}}
-  {{/arrangement-row}}
+  {{/arrangement-grid/row}}
 {{/arrangement-grid}}
 
 {{play-buttons
