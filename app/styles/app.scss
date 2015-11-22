@@ -7,31 +7,31 @@ $site-nav-height: 35px;
 @import 'components/progress-bar';
 
 @import 'components/arrangement-grid';
-@import 'components/_arrangement-grid/event';
+@import 'components/_arrangement-grid/axis';
 @import 'components/_arrangement-grid/row';
+@import 'components/_arrangement-grid/event';
+@import 'components/_arrangement-grid/track-clip';
+@import 'components/_arrangement-grid/transition-clip';
+@import 'components/_arrangement-grid/clip-marker';
+@import 'components/_arrangement-grid/track-clip/axis';
+@import 'components/_arrangement-grid/track-clip/wave';
+
+@import 'components/simple-mix';
 @import 'components/simple-arrangement';
+@import 'components/simple-transition';
 
 @import 'components/track-full';
 @import 'components/track-list';
 @import 'components/track-list-item';
-@import 'components/clip-marker';
 @import 'components/bottom-bar';
 @import 'components/queue-controls';
 @import 'components/mixes-list';
 @import 'components/mixes-list-item';
-@import 'components/clip';
-@import 'components/track-clip';
-@import 'components/transition-clip';
 @import 'components/bezier-curve';
 @import 'components/lx-canvas';
 @import 'components/d3-axis';
-@import 'components/_arrangement-grid/axis';
-@import 'components/_track-clip/axis';
-@import 'components/_track-clip/wave';
-@import 'components/simple-mix';
 
 @import 'components/mix-list';
 @import 'components/_mix-list/item';
-@import 'components/simple-transition';
 @import 'components/quantize-dropdown';
 @import 'components/lx-dropdown';

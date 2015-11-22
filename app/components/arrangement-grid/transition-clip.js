@@ -2,21 +2,21 @@ import Ember from 'ember';
 
 import BubbleActions from 'linx/lib/bubble-actions';
 import RequireAttributes from 'linx/lib/require-attributes';
+import ClipPlayerMixin from 'linx/mixins/arrangement-player/clip';
+import { clamp, isNumber } from 'linx/lib/utils';
 
-import Clip from './clip';
-import { clamp } from 'linx/lib/utils';
-
-export default Clip.extend(
+export default Ember.Component.extend(
+  ClipPlayerMixin,
   BubbleActions(), RequireAttributes(), {
 
   actions: {},
-  classNames: ['TransitionClip'],
+  classNames: ['ArrangementGridTransitionClip'],
   classNameBindings: [],
 
   // params
   fromTrackClip: Ember.computed.reads('clip.fromTrackClip'),
   toTrackClip: Ember.computed.reads('clip.toTrackClip'),
-  numBeats: Ember.computed.reads('clip.numBeats'),
+  beatCount: Ember.computed.reads('clip.beatCount'),
 
   // called with x in range [0, 1]
   // expected to update automatables
@@ -43,19 +43,16 @@ export default Clip.extend(
     toTrackClip && toTrackClip.set('volume', clamp(0, toTrackClipVolume, 1));
   },
 
-  // TODO(AUTOMATION): first check this is the closest automation
+  // TODO(AUTOMATION): what if two automations are affecting the same automatable?
   _updateClipVolumes: function() {
-    let { clipEvent, numBeats } = this.getProperties('clipEvent', 'numBeats');
+    let x = Math.max(this.getCurrentEventBeat() / this.get('beatCount'));
 
-    if (clipEvent) {
-      let currentBeat = clipEvent.getCurrentBeat();
-      let x = Math.max(currentBeat / numBeats);
-
+    if (isNumber(x)) {
       this.updateValue(x);
     }
   },
 
   _automationDidTick: function() {
     Ember.run.once(this, '_updateClipVolumes');
-  }.observes('numBeats', 'clipEvent.tick', 'isFinished', 'isPlaying', 'seekBeat'),
+  }.observes('beatCount', 'tick', 'isFinished', 'isPlaying', 'seekBeat'),
 });

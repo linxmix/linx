@@ -10,6 +10,7 @@ SoundTouch.prototype.clearBuffers = function() {
   this.outputBuffer.clear();
 };
 
+// fix bug (?)
 SoundTouch.prototype.getSampleReq = function() {
   return this.tdStretch.sampleReq;
 };

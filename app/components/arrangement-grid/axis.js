@@ -14,13 +14,14 @@ export default Ember.Component.extend(
   classNameBindings: [],
   attributeBindings: ['componentStyle:style'],
 
-  playheadStyle: cssStyle({
-    'left': 'playheadPx'
-  }),
+  // TODO: figure out playhead
+  // playheadStyle: cssStyle({
+  //   'left': 'playheadPx'
+  // }),
 
-  playheadPx: function() {
-    return (this.get('metronome.tickBeat') * this.get('pxPerBeat')) + 'px';
-  }.property('metronome.tickBeat', 'pxPerBeat'),
+  // playheadPx: function() {
+  //   return (this.get('metronome.tickBeat') * this.get('pxPerBeat')) + 'px';
+  // }.property('metronome.tickBeat', 'pxPerBeat'),
 
   arrangementWidth: function() {
     return this.get('arrangement.numBeats') * this.get('pxPerBeat');

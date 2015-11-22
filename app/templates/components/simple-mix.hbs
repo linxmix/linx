@@ -57,14 +57,16 @@
     {{#each mix.items as |item|}}
       {{arrangement-grid/event
         clip=item.fromTrackClip
-        arrangement=arrangement
+        metronome=metronome
+        sinkNode=arrangementInputNode
         pxPerBeat=pxPerBeat
       }}
 
       {{#if item.isLastItem}}
         {{arrangement-grid/event
           clip=item.toTrackClip
-          arrangement=arrangement
+          metronome=metronome
+          sinkNode=arrangementInputNode
           pxPerBeat=pxPerBeat
         }}
       {{/if}}
@@ -75,7 +77,8 @@
     {{#each mix.transitionClips as |clip|}}
       {{arrangement-grid/event
         clip=clip
-        arrangement=arrangement
+        metronome=metronome
+        sinkNode=arrangementInputNode
         pxPerBeat=pxPerBeat
       }}
     {{/each}}

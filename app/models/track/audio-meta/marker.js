@@ -1,7 +1,7 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
-import { timeToBeat, beatToTime, isNumber } from 'linx/lib/utils';
+import { isNumber } from 'linx/lib/utils';
 
 export const GRID_MARKER_TYPE = 'grid';
 export const SECTION_MARKER_TYPE = 'section';

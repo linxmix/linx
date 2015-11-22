@@ -8,8 +8,8 @@ import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationshi
 
 import {
   default as BeatGrid,
-  timeToBeat as computedTimeToBeat,
-  timeToBar as computedTimeToBar
+  computedTimeToBeat,
+  computedTimeToBar
 } from './audio-meta/beat-grid';
 import {
   GRID_MARKER_TYPE,

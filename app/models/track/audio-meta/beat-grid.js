@@ -3,7 +3,7 @@ import Ember from 'ember';
 import LinearScale from 'linx/lib/linear-scale';
 import RequireAttributes from 'linx/lib/require-attributes';
 
-import { timeToBeat as timeToBeatUtil, bpmToSpb, isNumber } from 'linx/lib/utils';
+import { timeToBeat, bpmToSpb, isNumber } from 'linx/lib/utils';
 
 export const BAR_QUANTIZATION = 'bar';
 export const BEAT_QUANTIZATION = 'beat';
@@ -45,6 +45,7 @@ export default Ember.Object.extend(
     return this.get('barScale').getInverse(bar);
   },
 
+  // TODO(QUANTIZATION): refactor into quantile scales
   getQuantizedBar(bar, quantization) {
     let beat = this.barToBeat(bar);
     let quantizedBeat = this.getQuantizedBeat(beat, quantization);
@@ -57,7 +58,6 @@ export default Ember.Object.extend(
         return this.barToBeat(Math.round(this.beatToBar(beat)));
       case BEAT_QUANTIZATION:
         return Math.round(beat);
-      // TODO(QUANTIZATION)
       default:
         return beat;
     }
@@ -106,7 +106,7 @@ export default Ember.Object.extend(
 
   // TODO(MULTIGRID): this will depend on the grid markers and bpm
   numBeats: Ember.computed('duration', 'bpm', function() {
-    return timeToBeatUtil(this.get('duration'), this.get('bpm'));
+    return timeToBeat(this.get('duration'), this.get('bpm'));
   }),
 
   // the time of the first actual beat in the raw audio file
@@ -153,8 +153,8 @@ function beatGridPropertyGenerator(beatGridFunctionName) {
   };
 }
 
-export const beatToTime = beatGridPropertyGenerator('beatToTime');
-export const timeToBeat = beatGridPropertyGenerator('timeToBeat');
+export const computedBeatToTime = beatGridPropertyGenerator('beatToTime');
+export const computedTimeToBeat = beatGridPropertyGenerator('timeToBeat');
 
-export const barToTime = beatGridPropertyGenerator('barToTime');
-export const timeToBar = beatGridPropertyGenerator('timeToBar');
+export const computedBarToTime = beatGridPropertyGenerator('barToTime');
+export const computedTimeToBar = beatGridPropertyGenerator('timeToBar');

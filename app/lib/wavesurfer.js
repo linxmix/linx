@@ -1,3 +1,5 @@
+// TODO(REFACTOR): should be able to remove this file
+
 /* global SimpleFilter:true */
 
 import Wavesurfer from 'npm:wavesurfer.js';

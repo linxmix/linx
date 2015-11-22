@@ -11,6 +11,6 @@ export default Ember.Mixin.create(
   isArrangementClipReady: Ember.computed.reads('nestedArrangement.isReady'),
 
   // implement playable-clip
-  componentName: 'arrangement-clip',
+  componentName: 'arrangement-grid/arrangement-clip',
   beatCount: Ember.computed.reads('nestedArrangement.beatCount'),
 });

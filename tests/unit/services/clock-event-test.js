@@ -36,7 +36,7 @@ describe('ClockEvent', function() {
         dummyContext.currentTime += n;
       }
 
-      clock.tick();
+      clock.tickClock();
     };
   });
 

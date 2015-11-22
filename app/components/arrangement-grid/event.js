@@ -2,22 +2,43 @@ import Ember from 'ember';
 
 import RequireAttributes from 'linx/lib/require-attributes';
 import cssStyle from 'linx/lib/computed/css-style';
+import subtract from 'linx/lib/computed/subtract';
+import { propertyOrDefault } from 'linx/lib/computed/ternary';
 
 export default Ember.Component.extend(
-  RequireAttributes('arrangement', 'clip', 'pxPerBeat'), {
+  RequireAttributes('metronome', 'clip', 'sinkNode', 'pxPerBeat'), {
 
   classNames: ['ArrangementGridEvent'],
   attributeBindings: ['componentStyle:style', 'draggable'],
   classNameBindings: ['isDraggable'],
 
+  //
+  // Event Logic
+  //
+  clipEvent: null,
+  eventDidChange: Ember.observer('metronome', 'clip', function() {
+    Ember.run.once(this, 'updateClipEvent');
+  }),
+
+  updateClipEvent() {
+    this.destroyClipEvent();
+    let clipEvent = ClipEvent.create(this.getProperties('clip', 'metronome'));
+    this.set('clipEvent', clipEvent);
+  },
+
+  destroyClipEvent: function() {
+    console.log("destroy clip event");
+    let clipEvent = this.get('clipEvent');
+    clipEvent && clipEvent.destroy();
+  }.on('willDestroyElement'),
+
+  //
+  // View Logic
+  //
   componentStyle: cssStyle({
     'left': 'startPx',
     'width': 'widthPx',
   }),
-
-  // params
-  clipEvent: null,
-  metronome: Ember.computed.reads('arrangement.metronome'),
 
   // TODO: refactor into draggable mixin?
   isDraggable: false,
@@ -50,50 +71,6 @@ export default Ember.Component.extend(
     }
   },
 
-  updateClipEvent: Ember.observer('metronome', 'clip', function() {
-    Ember.run.once(this, '_updateClipEvent');
-  }).on('init'),
-
-  _updateClipEvent: function() {
-    let clip = this.get('clip');
-    let metronome = this.get('metronome');
-
-    // re-sync clip and metronome
-    if (!(metronome && clip)) {
-      this.destroyClipEvent();
-    } else {
-      let { clipEvent, clipRepeatInterval } = this.getProperties('clipEvent', 'clipRepeatInterval');
-
-      if (!clipEvent) {
-        clipEvent = ClipEvent.create({})
-      } else {
-        clipEvent.set('clip', clip);
-      }
-
-      // TODO(AUTOMATION): let child component automation-clip handle this?
-      clipEvent.set('repeatInterval', clipRepeatInterval);
-      this.set('clipEvent', clipEvent);
-    }
-  },
-
-  // for clips that need to have 'ticks'
-  clipRepeatInterval: Ember.computed('clip', function() {
-    let clipModelName = this.get('clip.modelName');
-
-    // TODO(AUTOMATION)
-    if (clipModelName === 'transition-clip') {
-      return 0.05;
-    }
-  }),
-
-  destroyClipEvent: function() {
-    let clipEvent = this.get('clipEvent');
-
-    clipEvent && clipEvent.destroy();
-
-    this.set('clipEvent', undefined);
-  }.on('willDestroyElement'),
-
   startPx: function() {
     return this.beatToPx(this.get('clip.startBeat')) + 'px';
   }.property('clip.startBeat', 'pxPerBeat'),
@@ -103,94 +80,55 @@ export default Ember.Component.extend(
   }.property('clip.endBeat', 'pxPerBeat'),
 
   widthPx: function() {
-    return this.beatToPx(this.get('clip.numBeats')) + 'px';
-  }.property('clip.numBeats', 'pxPerBeat'),
+    return this.beatToPx(this.get('clip.beatCount')) + 'px';
+  }.property('clip.beatCount', 'pxPerBeat'),
 
   beatToPx: function(beat) {
     return beat * this.get('pxPerBeat'); // beat * (px / beat) = px
   },
 });
 
-// binds a clip to an arrangement as a ClipEvent
+// binds a clip to a metronome as a ClipEvent
+// exposes isPlaying, isFinished, seekBeat and bpm.
 export const ClipEvent = Ember.Object.extend(
-  RequireAttributes('clip', 'arrangement'), {
+  RequireAttributes('clip', 'metronome'), {
 
   // params
-  metronome: Ember.computed.reads('arrangement.metronome'),
-  clock: Ember.computed.reads('metronome.clock'),
   startBeat: Ember.computed.reads('clip.startBeat'),
   endBeat: Ember.computed.reads('clip.endBeat'),
-  numBeats: Ember.computed.reads('clip.numBeats'),
-  bpm: Ember.computed.reads('metronome.bpm'),
+  beatCount: Ember.computed.reads('clip.beatCount'),
+  syncBpm: Ember.computed.reads('bpm'),
+  tick: propertyOrDefault('isPlaying', 'metronome.tick', 0),
   isPlaying: false,
   isFinished: false,
-  tick: 0,
 
-  // optional params
-  repeatInterval: null,
+  // absSeekBeat clamped within this clip's bounds
+  seekBeat: Ember.computed('seekBeat', 'beatCount', 'isFinished', function() {
+    let { seekBeat, beatCount } = this.getProperties('seekBeat', 'beatCount');
 
-  // current seekBeat from this event's frame of reference
-  // different from _seekBeat because this factors in delay, and clamps to clip min and max
-  seekBeat: function() {
-    var seekBeat = this.get('_seekBeat');
-    var delayBeats = this.get('_delayBeats');
-    var numBeats = this.get('numBeats');
-
-    // factor in delay
-    seekBeat += delayBeats;
-
-    return clamp(0, seekBeat, numBeats);
-  }.property('_seekBeat', 'numBeats', '_delayBeats'),
+    if (isFinished) {
+      return beatCount;
+    } else {
+      return clamp(0, seekBeat, beatCount);
+    }
+  }),
+  // current metronome seekBeat from clipEvent's frame of reference
+  absSeekBeat: subtract('metronome.seekBeat', 'startBeat'),
 
   // returns current beat from this event's frame of reference
   getCurrentBeat() {
     let currentBeat = this.get('metronome').getCurrentBeat() - this.get('startBeat');
-    return clamp(0, currentBeat, this.get('numBeats'));
+    return clamp(0, currentBeat, this.get('beatCount'));
   },
-
-  // internal params
-  _delayTime: 0,
-  _delayBeats: function() {
-    return timeToBeat(this.get('_delayTime'), this.get('bpm'));
-  }.property('_delayTime', 'bpm'),
-
-  _startEvent: Ember.computed(function() {
-    return ClockEvent.create({
-      onExecute: this._executeStart.bind(this),
-      clock: this.get('clock'),
-    });
-  }),
-
-  _tickEvent: Ember.computed(function() {
-    return ClockEvent.create({
-      onExecute: this._executeTick.bind(this),
-      clock: this.get('clock'),
-    });
-  }),
-
-  _endEvent: Ember.computed(function() {
-    return ClockEvent.create({
-      onExecute: this._executeEnd.bind(this),
-      clock: this.get('clock'),
-    });
-  }),
-
-  // current metronome seekBeat from clipEvent's frame of reference
-  _seekBeat: function() {
-    var metronomeSeekBeat = this.get('metronome.seekBeat');
-    var startBeat = this.get('startBeat');
-
-    return metronomeSeekBeat - startBeat;
-  }.property('metronome.seekBeat', 'startBeat'),
 
   _schedulingDidChange: function() {
     Ember.run.once(this, '_updateEventTimes');
-  }.observes('metronome.isPlaying', 'metronome.absSeekTime', 'startBeat', 'bpm', 'endBeat', 'numBeats').on('init'),
+  }.observes('metronome.isPlaying', 'metronome.absSeekTime', 'startBeat', 'syncBpm', 'endBeat', 'beatCount').on('init'),
 
   _updateEventTimes: function() {
     let metronome = this.get('metronome');
-    let seekTime = beatToTime(this.get('_seekBeat'), this.get('bpm'));
-    let lengthTime = beatToTime(this.get('numBeats'), this.get('bpm'));
+    let seekTime = beatToTime(this.get('absSeekBeat'), this.get('syncBpm'));
+    let duration = beatToTime(this.get('beatCount'), this.get('syncBpm'));
     let metronomeIsPlaying = metronome.get('isPlaying');
 
     // if metronome is paused or jumped back, pause this
@@ -207,17 +145,11 @@ export const ClipEvent = Ember.Object.extend(
 
     // update events
     let startEvent = this.get('_startEvent');
-    let tickEvent = this.get('_tickEvent');
     let endEvent = this.get('_endEvent');
     let absStartTime = metronome.getCurrentAbsTime() - seekTime;
-    let absEndTime = absStartTime + lengthTime;
+    let absEndTime = absStartTime + duration;
 
     startEvent.setProperties({
-      deadline: absStartTime,
-      isScheduled: !isFinished && metronomeIsPlaying,
-    });
-
-    tickEvent.setProperties({
       deadline: absStartTime,
       isScheduled: !isFinished && metronomeIsPlaying,
     });
@@ -228,27 +160,28 @@ export const ClipEvent = Ember.Object.extend(
     });
   },
 
+  _startEvent: Ember.computed('metronome', function() {
+    return this.get('metronome').createEvent({
+      onExecute: this._executeStart.bind(this),
+    });
+  }),
+
+  _endEvent: Ember.computed('metronome', function() {
+    return this.get('metronome').createEvent({
+      onExecute: this._executeEnd.bind(this),
+    });
+  }),
+
   _executeStart(delay) {
     // console.log("_executeStart", this.get('clip.model.title'), delay);
-    // TODO(PERFORMANCE): will this miss a few ticks when run loop is behind?
-    this.get('_tickEvent').set('repeatInterval', this.get('repeatInterval'));
-
     this.setProperties({
-      _delayTime: delay,
       isPlaying: true,
       isFinished: false,
     });
   },
 
-  _executeTick(delay) {
-    // console.log("_executeTick", this.get('clip.model.title'));
-    this.incrementProperty('tick');
-  },
-
   _executeEnd(delay) {
     // console.log("_executeEnd", this.get('clip.model.title'), delay);
-    this.get('_tickEvent').cancelRepeat();
-
     this.setProperties({
       isPlaying: false,
       isFinished: true,
@@ -257,7 +190,6 @@ export const ClipEvent = Ember.Object.extend(
 
   destroy() {
     this.get('_startEvent').destroy();
-    this.get('_tickEvent').destroy();
     this.get('_endEvent').destroy();
     this._super.apply(this, arguments);
   }

@@ -13,7 +13,7 @@ export default Ember.Mixin.create(
   isTrackClipReady: Ember.computed.and('trackSourceNode.isReady', 'track.isReady'),
 
   // implement playable-clip
-  componentName: 'track-clip',
+  componentName: 'arrangement-grid/track-clip',
 
   // params
   track: null,
@@ -21,6 +21,7 @@ export default Ember.Mixin.create(
   audioEndBeat: null,
 
   audioMeta: Ember.computed.reads('track.audioMeta'),
+  audioBeatGrid: Ember.computed.reads('audioMeta.beatGrid'),
   timeSignature: Ember.computed.reads('audioMeta.timeSignature'),
   audioStartBar: Ember.computed('audioStartBeat', 'timeSignature', function() {
     return this.get('audioStartBeat') / this.get('timeSignature');
@@ -33,11 +34,15 @@ export default Ember.Mixin.create(
   beatCount: Ember.computed.reads('audioBeatCount'),
   barCount: Ember.computed.reads('audioBarCount'),
 
+  // offset of this clip wrt the audioBeatGrid
+  // TODO(REFACTOR): figure out which offset direction is correct
+  audioOffset: subtract('audioBeatGrid.firstBarOffset', 'audioStartBeat'),
+
+  // TODO(REFACTOR): move to track source chain
   trackSourceNode: Ember.computed('track', function() {
     return TrackSourceNode.create({ track: this.get('track') });
   }),
-
-  // TODO: move into FxChainMixin.
+  trackSource: null,
   pitch: 0,
   volume: 1
 });

@@ -5,7 +5,7 @@ import _ from 'npm:underscore';
 
 import RequireAttributes from 'linx/lib/require-attributes';
 
-const TICK_INTERVAL = 0.2; // [s] Time between clock ticks
+const TICK_INTERVAL = 0.05; // [s] Time between clock ticks
 
 // Wraps Waaclock event
 export const ClockEvent = Ember.Object.extend(
@@ -114,14 +114,14 @@ export const ClockEvent = Ember.Object.extend(
 export default Ember.Object.extend(
   RequireAttributes('audioContext'), {
 
-  createEvent(params) {
-    return ClockEvent.create(_.extend({
+  createEvent(options = {}) {
+    return ClockEvent.create(_.defaults(options, {
       clock: this,
-    }, params));
+    }));
   },
 
   // params
-  tickTime: 0,
+  tick: 0,
   isStarted: false,
   start: function() {
     if (!this.get('isStarted')) {
@@ -137,7 +137,8 @@ export default Ember.Object.extend(
     }
   },
 
-  tick: function() {
+  // manually advance clock
+  tickClock: function() {
     this.get('_clock')._tick();
   },
 
@@ -153,32 +154,27 @@ export default Ember.Object.extend(
   _clock: Ember.computed(function() { return new WaaClock(this.get('audioContext')); }),
   _tickEvent: null,
   _setupTickEvent: function() {
-    this._removeTickEvent();
+    this._destroyTickEvent();
 
-    if (this.get('isStarted') && false) {
-      this.set('_tickEvent', ClockEvent.create({
-        onExecute: () => { Ember.run(this, '_tick'); },
+    if (this.get('isStarted')) {
+      this.set('_tickEvent', this.createEvent({
+        onExecute: () => { this.incrementProperty('tick'); },
         onExpired: () => { console.log("TICK EXPIRED"); },
         deadline: this.getCurrentTime(),
         repeatInterval: TICK_INTERVAL,
-        clock: this,
         isScheduled: true,
       }));
     }
   }.observes('isStarted').on('init'),
 
-  _removeTickEvent: function() {
+  _destroyTickEvent: function() {
     var tickEvent = this.get('_tickEvent');
     if (tickEvent) { tickEvent.destroy(); }
   },
 
-  _tick: function() {
-    this.set('tickTime', this.getCurrentTime());
-  },
-
   destroy: function() {
     this.get('_clock').stop();
-    this._removeTickEvent();
+    this._destroyTickEvent();
     this._super.apply(this, arguments);
   }
 });

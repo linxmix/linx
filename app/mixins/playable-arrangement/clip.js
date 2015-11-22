@@ -11,8 +11,7 @@ import { isNumber } from 'linx/lib/utils';
 // Interface for playable arrangement clips
 // Provides helpful properties which may be overridden
 export default Ember.Mixin.create({
-  componentName: null, // used to render arrangement component
-  arrangementEvent: null, // used to bind clip to an arrangement
+  componentName: null, // used to render arrangement-grid clip component
 
   startBeat: null,
   timeSignature: null,

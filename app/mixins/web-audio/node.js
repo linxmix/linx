@@ -22,11 +22,15 @@ export default Ember.Object.extend(
     } else {
       node.disconnect();
     }
+  }),
+
+  destroyNode() {
+    let node = this.get('node');
+    node && node.disconnect();
   },
 
   destroy() {
-    let node = this.get('node');
-    node && node.disconnect();
+    this.destroyNode();
     return this._super.apply(this, arguments);
   },
 });

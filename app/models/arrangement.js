@@ -24,7 +24,7 @@ export default DS.Model.extend(
 
   // TODO(POLYMORPHISM)
   trackClips: DS.hasMany('arrangement/track-clip', { async: true }),
-  transitionClips: DS.hasMany('arrangement/transition-clip', { async: true }),
+  // transitionClips: DS.hasMany('arrangement/transition-clip', { async: true }),
   // mixClips: DS.hasMany('mix-clip', { async: true }),
   automationClips: DS.hasMany('automation-clip', { async: true }),
 
