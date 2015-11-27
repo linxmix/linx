@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 import RequireAttributes from 'linx/lib/require-attributes';
 import BubbleActions from 'linx/lib/bubble-actions';
-import ArrangementPlayerMixin from 'linx/mixins/arrangement-player';
+import ArrangementPlayerMixin from 'linx/mixins/components/arrangement-player';
 
 import subtract from 'linx/lib/computed/subtract';
 import { isNumber } from 'linx/lib/utils';

@@ -3,7 +3,7 @@ import Ember from 'ember';
 // TODO: test/use this.
 // adds propertyNamePromise
 // propertyName is populated when the promise fulfills
-export default function(...props, fn, defaultValue) {
+export default function(defaultValue, fn, ...props) {
   props.push({
     get(key) {
       let promiseKey = `${key}Promise`;

@@ -5,8 +5,9 @@ import cssStyle from 'linx/lib/computed/css-style';
 import subtract from 'linx/lib/computed/subtract';
 import { propertyOrDefault } from 'linx/lib/computed/ternary';
 
+// TODO(REFACTOR): separate this into arrangement-grid/clip-event and mixin arrangement-grid/event
 export default Ember.Component.extend(
-  RequireAttributes('metronome', 'clip', 'sinkNode', 'pxPerBeat'), {
+  RequireAttributes('event', 'pxPerBeat'), {
 
   classNames: ['ArrangementGridEvent'],
   attributeBindings: ['componentStyle:style', 'draggable'],
@@ -72,16 +73,16 @@ export default Ember.Component.extend(
   },
 
   startPx: function() {
-    return this.beatToPx(this.get('clip.startBeat')) + 'px';
-  }.property('clip.startBeat', 'pxPerBeat'),
+    return this.beatToPx(this.get('event.startBeat')) + 'px';
+  }.property('event.startBeat', 'pxPerBeat'),
 
   endPx: function() {
-    return this.beatToPx(this.get('clip.endBeat')) + 'px';
-  }.property('clip.endBeat', 'pxPerBeat'),
+    return this.beatToPx(this.get('event.endBeat')) + 'px';
+  }.property('event.endBeat', 'pxPerBeat'),
 
   widthPx: function() {
-    return this.beatToPx(this.get('clip.beatCount')) + 'px';
-  }.property('clip.beatCount', 'pxPerBeat'),
+    return this.beatToPx(this.get('event.beatCount')) + 'px';
+  }.property('event.beatCount', 'pxPerBeat'),
 
   beatToPx: function(beat) {
     return beat * this.get('pxPerBeat'); // beat * (px / beat) = px

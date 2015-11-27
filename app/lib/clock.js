@@ -156,7 +156,7 @@ export default Ember.Object.extend(
   _setupTickEvent: function() {
     this._destroyTickEvent();
 
-    if (this.get('isStarted')) {
+    if (this.get('isStarted') && false) {
       this.set('_tickEvent', this.createEvent({
         onExecute: () => { this.incrementProperty('tick'); },
         onExpired: () => { console.log("TICK EXPIRED"); },

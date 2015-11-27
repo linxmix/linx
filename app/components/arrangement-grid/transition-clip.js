@@ -2,8 +2,10 @@ import Ember from 'ember';
 
 import BubbleActions from 'linx/lib/bubble-actions';
 import RequireAttributes from 'linx/lib/require-attributes';
-import ClipPlayerMixin from 'linx/mixins/arrangement-player/clip';
+import ClipPlayerMixin from 'linx/mixins/components/arrangement-player/clip';
 import { clamp, isNumber } from 'linx/lib/utils';
+
+
 
 export default Ember.Component.extend(
   ClipPlayerMixin,
@@ -17,6 +19,21 @@ export default Ember.Component.extend(
   fromTrackClip: Ember.computed.reads('clip.fromTrackClip'),
   toTrackClip: Ember.computed.reads('clip.toTrackClip'),
   beatCount: Ember.computed.reads('clip.beatCount'),
+
+  // TODO(MULTIGRID): calculate control curve timing off metronome's beatgrid
+  // TODO(REFACTOR): TODO(AUTOMATION): finish this, move this to sensible place in automation-clip
+  // internally, Control uses Control.AudioParam.setValueCurveAtTime
+  // Control.isSuspended for live play
+  // TODO(REFACTOR): pass metronome in instead of seekTime and syncBpm... wow can i just use all web audio nodes? so i dont ever have to do event and seekTime stuff? then synchronously
+  // TODO(REFACTOR): anything that needs to update continually can requestAnimationFrame
+  curve: null,
+  control: null,
+  updateControl: Ember.observer('curve', 'control', 'isPlaying', 'seekTime', 'syncBpm', function() {
+    let { isPlaying, curve, control, syncBpm } = this.getProperties('curve', 'control', 'isPlaying', 'syncBpm');
+    let seekTime = this.getCurrentAudioTime();
+
+  }),
+
 
   // called with x in range [0, 1]
   // expected to update automatables
@@ -56,3 +73,4 @@ export default Ember.Component.extend(
     Ember.run.once(this, '_updateClipVolumes');
   }.observes('beatCount', 'tick', 'isFinished', 'isPlaying', 'seekBeat'),
 });
+

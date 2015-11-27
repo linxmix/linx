@@ -8,89 +8,41 @@ export default Ember.Object.extend(
   WebAudioNodeMixin,
   ReadinessMixin('isAudioLoaded'), {
 
-  // params
-  isAudioLoaded: Ember.computed.bool('decodedArrayBuffer'),
-  decodedArrayBuffer: null,
-  isPlaying: false,
-  seekTime: 0,
-
-  playStateDidChange: Ember.observer('sourceNode', 'isPlaying', 'seekTime', function() {
-    Ember.run.once(this, 'updateSourceNode');
-  }),
-
-  // TODO(REFACTOR): isolate this audio source logic
-  updateSourceNode() {
-    let { isPlaying, seekTime, sourceNode } = this.getProperties('sourceNode', 'isPlaying', 'seekTime');
-
-    if (sourceNode) {
-      let currentTime = this.getCurrentAudioTime();
-      console.log("updateSourceNode", isPlaying, currentTime, this.get('track.title'));
-
-      if (isPlaying) {
-        sourceNode.play(currentTime);
-      } else {
-        sourceNode.pause();
-      }
-
-      // TODO(REFACTOR): is this necessary?
-      // if playing, only seek if seekTime and currentTime have diverged
-      // if (!isPlaying || Math.abs(seekTime - currentTime) >= 0.01) {
-      //   wavesurfer.seekToTime(seekTime);
-      // }
-    }
-  },
-
-  // web audio buffer sources can only be played once
-  // therefore we must recreate source on each playback
-  play(time) {
-    if (this.get('isPlaying'))
-    let sourceNode = this.createSourceNode();
-    if (isNumber(time)) {
-      this.seekToBeat(time);
-    }
-
-    let sourceNode = this.get('sourceNode');
-    this.set('isPlaying', true);
-  },
-
-  pause() {
-  },
-
-  setPlaybackRate(rate) {
-
-  },
-
   // implement web-audio/node
-  node: Ember.computed.reads('sourceNode'),
-  sourceNode: null,
+  node: null,
 
-  createSourceNode() {
-    this.destroyNode()
+  // implmement readiness
+  isAudioLoaded: Ember.computed.bool('decodedArrayBuffer'),
+
+  // params
+  decodedArrayBuffer: null,
+
+  start(when, offset, duration) {
+    // web audio buffer sources can only be played once
+    // therefore we must recreate source on each playback
+    this.stop();
+    let node = this.recreateBufferSource();
+    node.start(when, offset, duration);
+  },
+
+  stop() {
+    this.disconnect();
+  },
+
+  recreateBufferSource() {
+    this.disconnect()
     let audioContext = this.get('audioContext')
     let sourceNode = audioContext.createBufferSource();
-    this.set('sourceNode', sourceNode);
-    this.reloadSourceNode();
+    this.set('node', sourceNode);
+    this.reloadBuffer();
     return sourceNode;
   },
 
-  resetSource: function () {
-      this.disconnectSource();
-      this.source = this.ac.createBufferSource();
+  reloadBuffer: Ember.observer('decodedArrayBuffer', function() {
+    let { sourceNode, decodedArrayBuffer } = this.getProperties('node', 'decodedArrayBuffer');
 
-      //adjust for old browsers.
-      this.source.start = this.source.start || this.source.noteGrainOn;
-      this.source.stop = this.source.stop || this.source.noteOff;
-
-      this.source.playbackRate.value = this.playbackRate;
-      this.source.buffer = this.buffer;
-      this.source.connect(this.analyser);
-  },
-
-  reloadSourceNode: Ember.observer('decodedArrayBuffer', function() {
-    let { sourceNode, decodedArrayBuffer } = this.getProperties('sourceNode', 'decodedArrayBuffer');
-
-    if (sourceNode && decodedArrayBuffer) {
-      sourceNode.buffer = decodedArrayBuffer;
+    if (node && decodedArrayBuffer) {
+      node.buffer = decodedArrayBuffer;
     }
   }),
 });

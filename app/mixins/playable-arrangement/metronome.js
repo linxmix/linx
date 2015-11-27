@@ -12,7 +12,6 @@ export default Ember.Object.extend(
   RequireAttributes('audioContext'), {
 
   // params
-  tick: Ember.computed.reads('clock.tick'),
   seekBeat: 0,        // last seeked beat of the metronome
   absSeekTime: 0,     // [s] last seeked time of metronome in clock frame of reference
   lastPlayBeat: 0,    // beat at which metronome was last played
@@ -75,6 +74,12 @@ export default Ember.Object.extend(
       seekBeat: this.getCurrentBeat(),
       isPlaying: false,
     });
+  },
+
+  // TODO(REFACTOR): turn into beatgrid
+  // returns absolute time at which given beat will occur in audioContext
+  beatToTime(beat) {
+    return this.getCurrentAbsTime() + beatToTime(absTime, this.get('bpm'));
   },
 
   // Returns current metronome beat

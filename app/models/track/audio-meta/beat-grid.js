@@ -153,8 +153,14 @@ function beatGridPropertyGenerator(beatGridFunctionName) {
   };
 }
 
+// beat | time
 export const computedBeatToTime = beatGridPropertyGenerator('beatToTime');
 export const computedTimeToBeat = beatGridPropertyGenerator('timeToBeat');
 
+// beat | bar
+export const computedBeatToBar = beatGridPropertyGenerator('beatToBar');
+export const computedBarToBeat = beatGridPropertyGenerator('barToBeat');
+
+// bar | time
 export const computedBarToTime = beatGridPropertyGenerator('barToTime');
 export const computedTimeToBar = beatGridPropertyGenerator('timeToBar');

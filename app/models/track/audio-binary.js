@@ -27,7 +27,6 @@ export default Ember.Object.extend(
 
   session: Ember.computed.reads('track.session'),
   audioContext: Ember.computed.reads('session.audioContext'),
-  offlineAudioContext: Ember.computed.reads('session.offlineAudioContext'),
 
   // TODO(FILE)
   file: null,
@@ -52,13 +51,13 @@ export default Ember.Object.extend(
   }),
 
   // TODO(COMPUTEDPROMISE): use that?
-  // TODO: handle in web worker
-  decodedArrayBuffer: Ember.computed('offlineAudioContext', 'arrayBuffer', function() {
-    let { arrayBuffer, offlineAudioContext } = this.getProperties('arrayBuffer', 'offlineAudioContext');
+  // TODO(WEBWORKER): handle in web worker
+  decodedArrayBuffer: Ember.computed('audioContext', 'arrayBuffer', function() {
+    let { arrayBuffer, audioContext } = this.getProperties('arrayBuffer', 'audioContext');
 
     return DS.PromiseArray.create({
       promise: arrayBuffer.then((arrayBuffer) => {
-        return offlineAudioContext.decodeAudioData(arrayBuffer).catch((error) => {
+        return audioContext.decodeAudioData(arrayBuffer).catch((error) => {
           console.log('AudioSource Decoding Error: ' + error.err);
           throw error;
         }),

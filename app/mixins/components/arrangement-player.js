@@ -5,6 +5,7 @@ import _ from 'npm:underscore';
 import RequireAttributes from 'linx/lib/require-attributes';
 import Metronome from './playable-arrangement/metronome';
 
+// Interface for controlling Playable Arrangements
 // exposes metronome, isPlaying, isReady and playback actions
 export default Ember.Mixin.create(
   RequireAttributes('arrangement'), {
@@ -36,7 +37,6 @@ export default Ember.Mixin.create(
   },
 
   // params
-  metronome: Ember.computed.reads('arrangement.metronome'),
   isPlaying: Ember.computed.reads('metronome.isPlaying'),
   notReady: Ember.computed.not('isReady'),
   isReady: Ember.computed.reads('arrangement.isReady'),
@@ -44,13 +44,15 @@ export default Ember.Mixin.create(
   session: Ember.inject.service(),
   audioContext: Ember.computed.reads('session.audioContext'),
 
+  // metronome: Ember.computed.reads('arrangement.metronome'),
   metronome: Ember.computed('audioContext', function() {
     return Metronome.create({ audioContext: this.get('audioContext') });
   }),
 
   // TODO(REFACTOR): manage arr FX chain here. connect to speakers, expose sinkNode
+  // speakers is audioContext.destination
 
-  // TODO: move view logic out of player?
+  // TODO(REFACTOR): move view logic out of player? to make it so player is not tied to component
   pxPerBeat: 5,
   _scrollCenterBeat: 0,
   scrollCenterBeat: Ember.computed({

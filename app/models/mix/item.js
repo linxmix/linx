@@ -23,27 +23,36 @@ export default DS.Model.extend(
   hasValidTransition: Ember.computed.reads('transitionClip.isValid'),
 
   prevTransition: Ember.computed.reads('prevItem.transition'),
+  prevTransitionClip: Ember.computed.reads('prevItem.transitionClip'),
   prevTransitionIsMatch: equalProps('prevTransition.toTrack.content', 'transition.fromTrack.content'),
+
   nextTransition: Ember.computed.reads('nextItem.transition'),
+  nextTransitionClip: Ember.computed.reads('nextItem.transitionClip'),
   nextTransitionIsMatch: equalProps('transition.toTrack.content', 'nextTransition.fromTrack.content'),
 
-  transitionClip: Ember.computed('transition.content', function() {
+  transitionClip: Ember.computed(function() {
     return TransitionClip.create({
-      transition: this.get('transition.content'),
+      mixItem: this,
     });
   }),
 
-  fromTrackClip: Ember.computed('fromTrack.content', function() {
+  fromTrackClip: Ember.computed('fromTrack.content', 'mix', 'prevTransitionClip', 'transitionClip', function() {
     return TrackClip.create({
       track: this.get('fromTrack.content'),
+      arrangement: this.get('mix'),
+      fromTransitionClip: this.get('prevTransitionClip'),
+      toTransitionClip: this.get('transitionClip'),
     });
   }),
 
   // share with nextItem, if matches
   toTrackClip: variableTernary('nextTransitionIsMatch', 'nextItem.fromTrackClip', '_toTrackClip'),
-  _toTrackClip: Ember.computed('toTrack.content', function() {
+  _toTrackClip: Ember.computed('toTrack.content', 'mix', 'transitionClip', 'nextTransitionClip', function() {
     return TrackClip.create({
       track: this.get('toTrack.content'),
+      arrangement: this.get('mix'),
+      fromTransitionClip: this.get('transitionClip'),
+      toTransitionClip: this.get('nextTransitionClip'),
     });
   }),
 
@@ -115,6 +124,7 @@ export default DS.Model.extend(
       });
 
       return Ember.RSVP.all([
+        // TODO(TRANSITION): this should ideally be first and last quantized bar
         transition.setFromTrackEndBeat(Math.round(fromTrack.get('audioMeta.endBeat'))),
         transition.setToTrackStartBeat(Math.round(toTrack.get('audioMeta.startBeat'))),
         transition.get('arrangement').then((arrangement) => {

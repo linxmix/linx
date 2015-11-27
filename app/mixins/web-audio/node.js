@@ -3,34 +3,25 @@ import Ember from 'ember';
 import RequireAttributes from 'linx/lib/require-attributes';
 
 // Interface for Web Audio Nodes
-export default Ember.Object.extend(
-  RequireAttributes('session'), {
+export default Ember.Mixin.create(
+  RequireAttributes('audioContext'), {
 
   // params
   node: null,
-  session: null,
-  outputNode: null,
-  audioContext: Ember.computed.reads('session.audioContext'),
-  offlineAudioContext: Ember.computed.reads('session.offlineAudioContext'),
-  isConnected: Ember.computed.bool('outputNode'),
 
-  connectToOutput: Ember.observer('node', 'outputNode', function() {
-    let { node, outputNode } = this.getProperties('node', 'outputNode');
+  connect(destNode, output, input) {
+    let node = this.get('content');
+    node && node.connect(destNode, output, input);
+    // this.addDestNode(destNode);
+  },
 
-    if (outputNode) {
-      node.connect(outputNode);
-    } else {
-      node.disconnect();
-    }
-  }),
-
-  destroyNode() {
+  disconnect() {
     let node = this.get('node');
     node && node.disconnect();
   },
 
   destroy() {
-    this.destroyNode();
+    this.disconnect();
     return this._super.apply(this, arguments);
   },
 });

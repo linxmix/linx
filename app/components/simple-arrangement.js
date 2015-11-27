@@ -1,6 +1,6 @@
 import Ember from 'ember';
 import RequireAttributes from 'linx/lib/require-attributes';
-import ArrangementPlayerMixin from 'linx/mixins/arrangement-player';
+import ArrangementPlayerMixin from 'linx/mixins/components/arrangement-player';
 
 export default Ember.Component.extend(ArrangementPlayerMixin,
   RequireAttributes('arrangement'), {

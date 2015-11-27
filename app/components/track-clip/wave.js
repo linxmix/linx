@@ -12,7 +12,6 @@ export default Ember.Component.extend(
 
   // params
   foo: 'bar',
-});
 
   // TODO: can this remove dependence on audioBpm?
   updateZoom: function() {
@@ -29,42 +28,42 @@ export default Ember.Component.extend(
 });
 
 
-export default Ember.Component.extend(
-  RequireAttributes('audioSource'), {
+// export default Ember.Component.extend(
+//   RequireAttributes('audioSource'), {
 
-  classNames: ['WaveSurfer'],
+//   classNames: ['WaveSurfer'],
 
-  // optional params
-  audioBpm: null,
-  isPlaying: false,
-  seekTime: 0,
-  waveParams: null,
-  pxPerBeat: 15,
-  disableMouseInteraction: false,
+//   // optional params
+//   audioBpm: null,
+//   isPlaying: false,
+//   seekTime: 0,
+//   waveParams: null,
+//   pxPerBeat: 15,
+//   disableMouseInteraction: false,
 
-  // params
-  pitch: 0, // semitones
-  tempo: 1, // rate
-  volume: 0,
-  session: Ember.inject.service(),
-});
+//   // params
+//   pitch: 0, // semitones
+//   tempo: 1, // rate
+//   volume: 0,
+//   session: Ember.inject.service(),
+// });
 
-// TODO(WAVECOLOR): remove hack
-const WAVE_COLORS = [{
-    wave: 'violet',
-    progress: 'purple'
-  }, {
-    wave: 'steelblue',
-    progress: 'darkblue'
-  },
-];
+// // TODO(WAVECOLOR): remove hack
+// const WAVE_COLORS = [{
+//     wave: 'violet',
+//     progress: 'purple'
+//   }, {
+//     wave: 'steelblue',
+//     progress: 'darkblue'
+//   },
+// ];
 
-// {
-//   wave: 'coral',
-//   progress: 'orangered'
+// // {
+// //   wave: 'coral',
+// //   progress: 'orangered'
+// // }
+
+// var waveColor = 0;
+// function getWaveColor() {
+//   return WAVE_COLORS[waveColor++ % WAVE_COLORS.length];
 // }
-
-var waveColor = 0;
-function getWaveColor() {
-  return WAVE_COLORS[waveColor++ % WAVE_COLORS.length];
-}

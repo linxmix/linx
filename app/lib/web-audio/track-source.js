@@ -7,6 +7,7 @@ import RequireAttributes from 'linx/lib/require-attributes';
 export default AudioSourceNode.extend(
   RequireAttributes('track'), {
 
+  audioContext: Ember.computed.reads('track.metronome.audioContext'),
   trackAudioBinary: Ember.computed.reads('track.audioBinary'),
   decodedArrayBuffer: Ember.computed.reads('trackAudioBinary.decodedArrayBuffer.content'),
 });
