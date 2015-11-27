@@ -10,6 +10,7 @@ export default Ember.Object.extend(
 
   // implement web-audio/node
   node: null,
+  outputNode: null,
 
   // implmement readiness
   isAudioLoaded: Ember.computed.bool('decodedArrayBuffer'),
@@ -21,7 +22,7 @@ export default Ember.Object.extend(
     // web audio buffer sources can only be played once
     // therefore we must recreate source on each playback
     this.stop();
-    let node = this.recreateBufferSource();
+    let node = this.createBufferSource();
     node.start(when, offset, duration);
   },
 
@@ -29,14 +30,26 @@ export default Ember.Object.extend(
     this.disconnect();
   },
 
-  recreateBufferSource() {
+  createBufferSource() {
     this.disconnect()
-    let audioContext = this.get('audioContext')
+    let audioContext = this.get('audioContext');
     let sourceNode = audioContext.createBufferSource();
+
     this.set('node', sourceNode);
+
     this.reloadBuffer();
+    this.reconnectOutput();
     return sourceNode;
   },
+
+  reconnectOutput: Ember.observer('outputNode', function() {
+    let node = this.get('node');
+    let outputNode = this.get('outputNode');
+
+    if (node && outputNode) {
+      node.connect(outputNode);
+    }
+  }),
 
   reloadBuffer: Ember.observer('decodedArrayBuffer', function() {
     let { sourceNode, decodedArrayBuffer } = this.getProperties('node', 'decodedArrayBuffer');

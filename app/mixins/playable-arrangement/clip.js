@@ -13,15 +13,14 @@ import { isNumber } from 'linx/lib/utils';
 // Methods: getCurrentBeat, getCurrentAbsTime
 // Properties: seekBeat
 export default Ember.Mixin.create({
+
   // necessary params
   componentName: null, // used to render arrangement-grid clip component
   arrangement: null,
 
+  outputNode: Ember.computed.reads('arrangement.inputNode'),
   metronome: Ember.computed.reads('arrangement.metronome'),
   audioContext: Ember.computed.reads('metronome.audioContext'),
-  metronomeIsPlaying: Ember.computed.reads('metronome.isPlaying'),
-  metronomeSeekBeat: Ember.computed.reads('metronome.seekBeat'),
-  metronomeBpm: Ember.computed.reads('metronome.bpm'),
 
   // returns current beat within this clip's bounds
   getCurrentClipBeat() {
@@ -30,12 +29,12 @@ export default Ember.Mixin.create({
   },
 
   // TODO(REFACTOR): needs to change with metronome beatgrid
-  schedulingDidChange: Ember.observer('startBeat', 'beatCount', 'metronomeIsPlaying', 'metronomeSeekBeat', 'metronomeBpm', function() {
+  schedulingDidChange: Ember.observer('startBeat', 'beatCount', 'metronome.isPlaying', 'metronome.absSeekTime', 'metronome.bpm', function() {
     Ember.run.once(this, 'triggerSchedulingEvent');
   }),
 
   triggerSchedulingEvent() {
-    if (this.get('metronomeIsPlaying')) {
+    if (this.get('metronome.isPlaying')) {
       this.trigger('schedule');
     } else {
       this.trigger('unschedule');

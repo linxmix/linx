@@ -5,14 +5,15 @@ import RequireAttributes from 'linx/lib/require-attributes';
 // Interface for Web Audio Nodes
 export default Ember.Mixin.create(
   RequireAttributes('audioContext'), {
+  content: Ember.computed.reads('node'),
 
   // params
   node: null,
+  outputNode: null,
 
   connect(destNode, output, input) {
-    let node = this.get('content');
+    let node = this.get('node');
     node && node.connect(destNode, output, input);
-    // this.addDestNode(destNode);
   },
 
   disconnect() {

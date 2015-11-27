@@ -21,6 +21,7 @@ export default DS.Model.extend(
 
   // implement playable-arrangement
   session: Ember.inject.service(),
+  audioContext: Ember.computed.reads('session.audioContext'),
 
   // TODO(POLYMORPHISM)
   trackClips: DS.hasMany('arrangement/track-clip', { async: true }),

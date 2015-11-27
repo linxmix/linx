@@ -16,6 +16,7 @@ export default DS.Model.extend(
 
   // implement playable-arrangement
   session: Ember.inject.service(),
+  audioContext: Ember.computed.reads('session.audioContext'),
 
   fromTracks: Ember.computed.mapBy('items', 'fromTrack.content'),
   toTracks: Ember.computed.mapBy('items', 'toTrack.content'),

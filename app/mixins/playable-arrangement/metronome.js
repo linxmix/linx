@@ -38,9 +38,9 @@ export default Ember.Object.extend(
     let prevBeat = this.get('seekBeat');
 
     // TODO: hack to make sure to trigger property changes
-    if (beat === prevBeat) {
-      beat += 0.00000000001;
-    }
+    // if (beat === prevBeat) {
+    //   beat += 0.00000000001;
+    // }
 
     this.setProperties({
       seekBeat: beat,

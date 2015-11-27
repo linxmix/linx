@@ -2,8 +2,12 @@ import Ember from 'ember';
 
 import PlayableClipMixin from './clip';
 import TrackSourceNode from 'linx/lib/web-audio/track-source-node';
+import SoundtouchNode from 'linx/lib/web-audio/soundtouch-node';
+import GainNode from 'linx/lib/web-audio/gain-node';
+import FxNode from 'linx/lib/web-audio/fx-node';
 import ReadinessMixin from '../readiness';
 import subtract from 'linx/lib/computed/subtract';
+import { flatten } from 'linx/lib/utils';
 
 import {
   computedBeatToTime,
@@ -46,10 +50,6 @@ export default Ember.Mixin.create(
   // TODO(REFACTOR): figure out which offset direction is correct
   audioOffset: subtract('audioBeatGrid.firstBarOffset', 'audioStartBeat'),
 
-  //
-  // Playback Logic
-  //
-
   // TODO(REFACTOR): need to somehow make sourceNode.playbackRate observe tempo
   // TODO(MULTIGRID): make this depend on ex seekTime and audioBeatGrid.beatScale
   // TODO(MULTIGRID): need to be able to multiply beatgrids together
@@ -78,23 +78,54 @@ export default Ember.Mixin.create(
   },
 
   schedulingDidChange: Ember.observer('audioStartBeat', 'audioBeatCount', function() {
-    Ember.run.once(this, 'restartSource');
+    Ember.run.once(this, 'scheduleStart');
   }).on('schedule'),
 
-  restartSource() {
+  scheduleStart() {
     let metronome = this.get('metronome');
     let when = metronome.beatToTime(this.get('startBeat'));
     let offset = this.getCurrentAudioTime();
     let duration = offset - this.get('audioDuration');
-    // TODO(REFACTOR): how will source get connected?
     this.get('trackSourceNode').start(when, offset, duration);
   },
 
-  // TODO(REFACTOR): move to track source chain
-  trackSourceNode: Ember.computed('track', function() {
-    return TrackSourceNode.create({ track: this.get('track') });
+  //
+  // Web Audio Nodes
+  //
+  trackSourceNode: Ember.computed('audioContext', 'track', 'soundtouchNode', function() {
+    let { audioContext, track, soundtouchNode } = this.getProperties('audioContext', 'track', 'soundtouchNode');
+    return TrackSourceNode.create({ audioContext, track, outputNode: soundtouchNode });
   }),
-  trackSource: null,
-  pitch: 0,
-  volume: 1
+
+  soundtouchNode: Ember.computed('audioContext', 'gainNode', function() {
+    let { audioContext, gainNode } = this.getProperties('audioContext', 'gainNode');
+    return SoundtouchNode.create({ audioContext, outputNode: gainNode });
+  }),
+
+  // TODO(REFACTOR): how to distinguish between track gain, fx gain, arrangement gain?
+  // TODO(REFACTOR): set GainControl.defaultValue based on track.audioMeta.loudness
+  // that might mean making a specific TrackGainNode?
+  gainNode: Ember.computed('audioContext', 'fxNode', function() {
+    let { audioContext, fxNode } = this.getProperties('audioContext', 'fxNode');
+    return GainNode.create({ audioContext, outputNode: fxNode });
+  }),
+
+  fxNode: Ember.computed('audioContext', 'outputNode', function() {
+    let { audioContext, outputNode } = this.getProperties('audioContext', 'outputNode');
+    return FxNode.create({ audioContext, outputNode });
+  }),
+
+  nodes: Ember.computed.collect('trackSourceNode', 'soundtouchNode', 'gainNode', 'fxNode'),
+  controls: Ember.computed('nodes.@each.controls', function() {
+    return flatten(this.get('nodes').mapBy('controls'));
+  }),
+
+  destroyNodes() {
+    this.get('nodes').map((node) => { return node.destroy(); });
+  },
+
+  destroy() {
+    this.destroyNodes();
+    return this._super.apply(this, arguments);
+  },
 });

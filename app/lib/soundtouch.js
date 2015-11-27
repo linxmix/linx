@@ -57,7 +57,7 @@ function getWebAudioNode(audioContext, source) {
   var samples = new Float32Array(BUFFER_SIZE * 2);
 
   node.onaudioprocess = function(e) {
-  // TODO(WEBWORKER): handle in web worker
+  // TODO(WEBWORKER): handle in web worker. will be possible with AudioWorkerNode
     var l = e.outputBuffer.getChannelData(0);
     var r = e.outputBuffer.getChannelData(1);
     var framesExtracted = source.extract(samples, BUFFER_SIZE);
