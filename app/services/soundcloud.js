@@ -21,9 +21,9 @@ export default Ember.Service.extend({
       redirect_uri: ENV.APP.SC_REDIRECT_UI,
     });
 
-    console.log(ENV.APP.SC_REDIRECT_UI)
-
-    return sdk.connect().then(() => {
+    // let promise = (ENV.environment === 'test') ? asResolvedPromise(sdk) : sdk.connect();
+    let promise = true ? asResolvedPromise(sdk) : sdk.connect();
+    return promise.then(() => {
       this.set('isSdkAuthenticated', true);
       return sdk;
     });

@@ -60,7 +60,7 @@ export default Ember.Object.extend(
         return audioContext.decodeAudioData(arrayBuffer).catch((error) => {
           console.log('AudioSource Decoding Error: ' + error.err);
           throw error;
-        }),
+        });
       }),
     });
   }),

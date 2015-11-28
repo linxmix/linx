@@ -60,17 +60,17 @@ export default Ember.Component.extend(
     toTrackClip && toTrackClip.set('volume', clamp(0, toTrackClipVolume, 1));
   },
 
-  // TODO(AUTOMATION): what if two automations are affecting the same automatable?
-  _updateClipVolumes: function() {
-    let x = Math.max(this.getCurrentEventBeat() / this.get('beatCount'));
+  // // TODO(AUTOMATION): what if two automations are affecting the same automatable?
+  // _updateClipVolumes: function() {
+  //   let x = Math.max(this.getCurrentEventBeat() / this.get('beatCount'));
 
-    if (isNumber(x)) {
-      this.updateValue(x);
-    }
-  },
+  //   if (isNumber(x)) {
+  //     this.updateValue(x);
+  //   }
+  // },
 
-  _automationDidTick: function() {
-    Ember.run.once(this, '_updateClipVolumes');
-  }.observes('beatCount', 'tick', 'isFinished', 'isPlaying', 'seekBeat'),
+  // _automationDidTick: function() {
+  //   Ember.run.once(this, '_updateClipVolumes');
+  // }.observes('beatCount', 'tick', 'isFinished', 'isPlaying', 'seekBeat'),
 });
 

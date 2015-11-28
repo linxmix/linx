@@ -5,6 +5,7 @@ import RequireAttributes from 'linx/lib/require-attributes';
 import withDefault from 'linx/lib/computed/with-default';
 import Metronome from './playable-arrangement/metronome';
 import WebAudioMergerNode from 'linx/lib/web-audio/merger-node';
+import computedObject from 'linx/lib/computed/object';
 import { flatten } from 'linx/lib/utils';
 
 // Interface for playable arrangements of clips
@@ -14,7 +15,7 @@ export default Ember.Mixin.create(
 
   // params
   // TODO(REFACTOR): who connects arrangement to output?
-  outputNode: null,
+  outputNode: Ember.computed.reads('audioContext.destination'),
 
   metronome: Ember.computed('audioContext', function() {
     return Metronome.create({ audioContext: this.get('audioContext') });
@@ -39,20 +40,15 @@ export default Ember.Mixin.create(
   //
   // Web Audio Nodes
   //
-  inputNode: Ember.computed('audioContext', 'fxNode', function() {
-    let { audioContext, fxNode } = this.getProperties('audioContext', 'fxNode');
-    let mergerNode = WebAudioMergerNode.create({
-      audioContext,
-      outputNode: fxNode,
-    });
-
-    return mergerNode;
+  inputNode: computedObject(WebAudioMergerNode, {
+    'audioContext': 'audioContext',
+    'outputNode': 'outputNode',
   }),
 
-  fxNode: Ember.computed('audioContext', 'outputNode', function() {
-    let { audioContext, outputNode } = this.getProperties('audioContext', 'outputNode');
-    return FxNode.create({ audioContext, outputNode });
-  }),
+  // fxNode: Ember.computed('audioContext', 'outputNode', function() {
+  //   let { audioContext, outputNode } = this.getProperties('audioContext', 'outputNode');
+  //   return FxNode.create({ audioContext, outputNode });
+  // }),
 
   nodes: Ember.computed.collect('inputNode', 'fxNode'),
   controls: Ember.computed('nodes.@each.controls', function() {
@@ -60,7 +56,7 @@ export default Ember.Mixin.create(
   }),
 
   destroyNodes() {
-    this.get('nodes').map((node) => { return node.destroy(); });
+    this.get('nodes').map((node) => { return node && node.destroy(); });
   },
 
   destroy() {

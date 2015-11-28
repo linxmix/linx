@@ -4,9 +4,12 @@ import ReadinessMixin from 'linx/mixins/readiness';
 import WebAudioNodeMixin from 'linx/mixins/web-audio/node';
 import { isNumber } from 'linx/lib/utils';
 
-export default Ember.Object.extend(
+export default Ember.ObjectProxy.extend(
   WebAudioNodeMixin,
   ReadinessMixin('isAudioLoaded'), {
+
+  // params
+  decodedArrayBuffer: null,
 
   // implement web-audio/node
   node: null,
@@ -14,9 +17,6 @@ export default Ember.Object.extend(
 
   // implmement readiness
   isAudioLoaded: Ember.computed.bool('decodedArrayBuffer'),
-
-  // params
-  decodedArrayBuffer: null,
 
   start(when, offset, duration) {
     // web audio buffer sources can only be played once
@@ -31,27 +31,15 @@ export default Ember.Object.extend(
   },
 
   createBufferSource() {
-    this.disconnect()
     let audioContext = this.get('audioContext');
     let sourceNode = audioContext.createBufferSource();
-
     this.set('node', sourceNode);
-
-    this.reloadBuffer();
-    this.reconnectOutput();
+    this.loadBuffer();
+    this.connectOutput();
     return sourceNode;
   },
 
-  reconnectOutput: Ember.observer('outputNode', function() {
-    let node = this.get('node');
-    let outputNode = this.get('outputNode');
-
-    if (node && outputNode) {
-      node.connect(outputNode);
-    }
-  }),
-
-  reloadBuffer: Ember.observer('decodedArrayBuffer', function() {
+  loadBuffer: Ember.observer('node', 'decodedArrayBuffer', function() {
     let { sourceNode, decodedArrayBuffer } = this.getProperties('node', 'decodedArrayBuffer');
 
     if (node && decodedArrayBuffer) {

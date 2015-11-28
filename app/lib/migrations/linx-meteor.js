@@ -3,7 +3,7 @@ import Ember from 'ember';
 import {
   TRANSITION_IN_MARKER_TYPE,
   TRANSITION_OUT_MARKER_TYPE,
-} from 'linx/models/marker';
+} from 'linx/models/track/audio-meta/marker';
 
 const SONGS_PATH = '/assets/migrations/linx-meteor-songs.json';
 const TRANSITIONS_PATH = '/assets/migrations/linx-meteor-transitions.json';

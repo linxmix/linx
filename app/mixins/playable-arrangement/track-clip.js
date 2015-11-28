@@ -2,17 +2,18 @@ import Ember from 'ember';
 
 import PlayableClipMixin from './clip';
 import TrackSourceNode from 'linx/lib/web-audio/track-source-node';
+import TrackGainNode from 'linx/lib/web-audio/track-gain-node';
 import SoundtouchNode from 'linx/lib/web-audio/soundtouch-node';
-import GainNode from 'linx/lib/web-audio/gain-node';
 import FxNode from 'linx/lib/web-audio/fx-node';
 import ReadinessMixin from '../readiness';
 import subtract from 'linx/lib/computed/subtract';
+import computedObject from 'linx/lib/computed/object';
 import { flatten } from 'linx/lib/utils';
 
 import {
   computedBeatToTime,
-  computedBeatToBar,
-} from 'linx/models/audio-meta/beat-grid';
+  computedBarToBeat,
+} from 'linx/models/track/audio-meta/beat-grid';
 
 export default Ember.Mixin.create(
   PlayableClipMixin,
@@ -92,28 +93,30 @@ export default Ember.Mixin.create(
   //
   // Web Audio Nodes
   //
-  trackSourceNode: Ember.computed('audioContext', 'track', 'soundtouchNode', function() {
-    let { audioContext, track, soundtouchNode } = this.getProperties('audioContext', 'track', 'soundtouchNode');
-    return TrackSourceNode.create({ audioContext, track, outputNode: soundtouchNode });
-  }),
-
-  soundtouchNode: Ember.computed('audioContext', 'gainNode', function() {
-    let { audioContext, gainNode } = this.getProperties('audioContext', 'gainNode');
-    return SoundtouchNode.create({ audioContext, outputNode: gainNode });
-  }),
-
   // TODO(REFACTOR): how to distinguish between track gain, fx gain, arrangement gain?
   // TODO(REFACTOR): set GainControl.defaultValue based on track.audioMeta.loudness
   // that might mean making a specific TrackGainNode?
-  gainNode: Ember.computed('audioContext', 'fxNode', function() {
-    let { audioContext, fxNode } = this.getProperties('audioContext', 'fxNode');
-    return GainNode.create({ audioContext, outputNode: fxNode });
+  trackSourceNode: computedObject(TrackSourceNode, {
+    'audioContext': 'audioContext',
+    'track': 'track',
+    // 'outputNode': 'trackGainNode',
+    'outputNode': 'outputNode',
   }),
 
-  fxNode: Ember.computed('audioContext', 'outputNode', function() {
-    let { audioContext, outputNode } = this.getProperties('audioContext', 'outputNode');
-    return FxNode.create({ audioContext, outputNode });
-  }),
+  // trackGainNode: computedObject(TrackGainNode, {
+  //   'audioContext': 'audioContext',
+  //   'outputNode': 'soundtouchNode',
+  // }),
+
+  // soundtouchNode: computedObject(SoundtouchNode, {
+  //   'audioContext': 'audioContext',
+  //   'outputNode': 'fxNode',
+  // }),
+
+  // fxNode: computedObject(FxNode, {
+  //   'audioContext': 'audioContext',
+  //   'outputNode': 'outputNode',
+  // }),
 
   nodes: Ember.computed.collect('trackSourceNode', 'soundtouchNode', 'gainNode', 'fxNode'),
   controls: Ember.computed('nodes.@each.controls', function() {
@@ -121,7 +124,7 @@ export default Ember.Mixin.create(
   }),
 
   destroyNodes() {
-    this.get('nodes').map((node) => { return node.destroy(); });
+    this.get('nodes').map((node) => { return node && node.destroy(); });
   },
 
   destroy() {

@@ -1,14 +1,11 @@
 import Ember from 'ember';
 
-import ReadinessMixin from 'linx/mixins/readiness';
 import WebAudioNodeMixin from 'linx/mixins/web-audio/node';
-import { isNumber } from 'linx/lib/utils';
 
 const MERGER_NODE_INPUTS = 10;
 
-export default Ember.Object.extend(
-  WebAudioNodeMixin,
-  ReadinessMixin('isAudioLoaded'), {
+export default Ember.ObjectProxy.extend(
+  WebAudioNodeMixin, {
 
   // params
   // TODO(REFACTOR): make this not static?

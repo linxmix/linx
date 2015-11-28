@@ -1,11 +1,10 @@
 import Ember from 'ember';
-import DS from 'ember-data';
 
 import RequireAttributes from 'linx/lib/require-attributes';
 
 // Low level ajax request, used where responseType: 'arraybuffer' is needed (which jQuery does not support).
 export default Ember.ObjectProxy.extend(
-  DS.PromiseProxyMixin,
+  Ember.PromiseProxyMixin,
   RequireAttributes('url'), {
 
   // params

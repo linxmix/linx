@@ -5,7 +5,7 @@ import cssStyle from 'linx/lib/computed/css-style';
 import subtract from 'linx/lib/computed/subtract';
 import { propertyOrDefault } from 'linx/lib/computed/ternary';
 
-// TODO(REFACTOR): separate this into arrangement-grid/clip-event and mixin arrangement-grid/event
+// TODO(REFACTOR): remove this file
 export default Ember.Component.extend(
   RequireAttributes('event', 'pxPerBeat'), {
 

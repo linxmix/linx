@@ -4,7 +4,7 @@ import BufferSourceNode from './buffer-source-node';
 import RequireAttributes from 'linx/lib/require-attributes';
 
 // TODO(REFACTOR): create base track FX chain + audio source node + soundtouch node
-export default AudioSourceNode.extend(
+export default BufferSourceNode.extend(
   RequireAttributes('trackAudioBinary'), {
 
   // implement audio-source-node
