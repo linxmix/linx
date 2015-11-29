@@ -7,8 +7,8 @@ import TrackClip from './track-clip';
 import TransitionClip from './transition-clip';
 import OrderedHasManyItemMixin from 'linx/mixins/models/ordered-has-many/item';
 import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
-
 import equalProps from 'linx/lib/computed/equal-props';
+import computedObject from 'linx/lib/computed/object';
 import { variableTernary } from 'linx/lib/computed/ternary';
 
 export default DS.Model.extend(
@@ -30,30 +30,24 @@ export default DS.Model.extend(
   nextTransitionClip: Ember.computed.reads('nextItem.transitionClip'),
   nextTransitionIsMatch: equalProps('transition.toTrack.content', 'nextTransition.fromTrack.content'),
 
-  transitionClip: Ember.computed(function() {
-    return TransitionClip.create({
-      mixItem: this,
-    });
+  transitionClip: computedObject(TransitionClip, {
+    'mixItem': 'this',
   }),
 
-  fromTrackClip: Ember.computed('fromTrack.content', 'mix', 'prevTransitionClip', 'transitionClip', function() {
-    return TrackClip.create({
-      track: this.get('fromTrack.content'),
-      arrangement: this.get('mix'),
-      fromTransitionClip: this.get('prevTransitionClip'),
-      toTransitionClip: this.get('transitionClip'),
-    });
+  fromTrackClip: computedObject(TrackClip, {
+    'track': 'fromTrack.content',
+    'arrangement': 'mix.content',
+    'fromTransitionClip': 'prevTransitionClip',
+    'toTransitionClip': 'transitionClip',
   }),
 
   // share with nextItem, if matches
   toTrackClip: variableTernary('nextTransitionIsMatch', 'nextItem.fromTrackClip', '_toTrackClip'),
-  _toTrackClip: Ember.computed('toTrack.content', 'mix', 'transitionClip', 'nextTransitionClip', function() {
-    return TrackClip.create({
-      track: this.get('toTrack.content'),
-      arrangement: this.get('mix'),
-      fromTransitionClip: this.get('transitionClip'),
-      toTransitionClip: this.get('nextTransitionClip'),
-    });
+  _toTrackClip: computedObject(TrackClip, {
+    'track': 'toTrack.content',
+    'arrangement': 'mix.content',
+    'fromTransitionClip': 'transitionClip',
+    'toTransitionClip': 'nextTransitionClip',
   }),
 
   //
@@ -124,7 +118,7 @@ export default DS.Model.extend(
       });
 
       return Ember.RSVP.all([
-        // TODO(TRANSITION): this should ideally be first and last quantized bar
+        // TODO(REFACTOR): this should ideally be first and last quantized bar
         transition.setFromTrackEndBeat(Math.round(fromTrack.get('audioMeta.endBeat'))),
         transition.setToTrackStartBeat(Math.round(toTrack.get('audioMeta.startBeat'))),
         transition.get('arrangement').then((arrangement) => {

@@ -38,6 +38,7 @@ export default DS.Model.extend(
     return arrangement;
   }),
 
+  // TODO(REFACTOR): don't store markers, store times, and generate markers from those timestamp
   // TODO: what if tracks are switched out after the transition has been made?
   // TODO: what if tracks are not present when transition is made?
   _fromTrackMarker: DS.belongsTo('track/audio-meta/marker', { async: true }),

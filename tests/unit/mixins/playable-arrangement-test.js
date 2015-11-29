@@ -58,5 +58,6 @@ describe('PlayableArrangementMixin', function() {
   });
 
   describe.skip('with clips', function() {
+    it.skip('has correct beatCount');
   });
 });

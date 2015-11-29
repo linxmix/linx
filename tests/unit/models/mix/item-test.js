@@ -8,46 +8,42 @@ import {
 import { expect } from 'chai';
 
 import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
-import makeTransition from 'linx/tests/helpers/make-transition';
 import describeAttrs from 'linx/tests/helpers/describe-attrs';
-
 import { asResolvedPromise } from 'linx/lib/utils';
 
-describe('MixItemModel', function() {
+describe.skip('MixItemModel', function() {
   setupTestEnvironment();
 
   let mixItem;
-  let fromTrack, toTrack, transition;
 
   beforeEach(function() {
+    console.log("before factory make");
     mixItem = this.factory.make('mix/item');
-
-    let results = makeTransition.call(this);
-    transition = results.transition;
-    fromTrack = results.fromTrack;
-    toTrack = results.toTrack;
-
-    Ember.run(() => {
-      mixItem.setProperties({
-        transition,
-        isReady: true,
-        listReadyPromise: asResolvedPromise(),
-      });
-    });
+    console.log("after factory make");
   });
 
-  describeAttrs('mixItem', {
-    subject() { return mixItem; },
-    'transitionClip.transition.content': () => transition,
-    'fromTrackClip.model.content': () => fromTrack,
-    'toTrackClip.model.content': () => toTrack,
+  describeAttrs('fromTrackClip', {
+    subject() { console.log('subject'); let x = mixItem.get('fromTrackClip.content'); console.log('after subject'); return x},
+    track() { return mixItem.get('fromTrack.content'); },
+    arrangement() { return mixItem.get('mix.content'); },
+    toTransitionClip() { return mixItem.get('transitionClip'); },
+  });
+
+  describeAttrs('toTrackClip', {
+    subject() { return mixItem.get('toTrackClip.content'); },
+    track() { return mixItem.get('toTrack.content'); },
+    arrangement() { return mixItem.get('mix.content'); },
+    fromTransitionClip() { return mixItem.get('transitionClip'); },
   });
 
   describe('#generateTransition', function() {
-    let generatedTransition;
+    let generatedTransition, fromTrack, toTrack;
 
+    // TODO(TRANSITION): make this work for passing in only one track?
     describe('without constraints', function() {
       beforeEach(function() {
+        fromTrack = this.factory.make('track');
+        toTrack = this.factory.make('track');
         Ember.run(() => {
           wait(mixItem.generateTransition({ fromTrack, toTrack }).then((_transition) => {
             generatedTransition = _transition;
@@ -72,5 +68,8 @@ describe('MixItemModel', function() {
         expect(transition.get('constructor.modelName')).to.equal('transition');
       });
     });
+
+    // TODO(TRANSITION): write these tests with algorithm
+    describe.skip('with constraints', function() {});
   });
 });

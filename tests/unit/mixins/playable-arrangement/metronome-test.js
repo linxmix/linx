@@ -10,7 +10,7 @@ import { expect } from 'chai';
 import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 import describeAttrs from 'linx/tests/helpers/describe-attrs';
 import Metronome from 'linx/mixins/playable-arrangement/metronome';
-import { beatToTime, timeToBeat } from 'linx/lib/utils'
+import { beatToTime, timeToBeat } from 'linx/lib/utils';
 
 const EPSILON = 0.0005;
 
@@ -28,7 +28,7 @@ describe('PlayableMetronome', function() {
 
   describeAttrs('basic metronome', {
     subject() { return metronome; },
-    bpm() { return bpm },
+    bpm() { return bpm; },
     isPlaying: false,
     seekBeat: 0,
     absSeekTime: 0,

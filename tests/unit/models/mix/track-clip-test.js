@@ -11,19 +11,19 @@ import Faker from 'npm:faker';
 import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 import MixTrackClip from 'linx/models/mix/track-clip';
 import describeAttrs from 'linx/tests/helpers/describe-attrs';
-import { DummyArrangement } from '../playable-arrangement-test';
+import { DummyArrangement } from 'linx/tests/unit/mixins/playable-arrangement-test';
 
-describe.skip('MixTrackClip', function() {
+describe('MixTrackClip', function() {
   setupTestEnvironment();
 
-  let arrangement, clip, track, audioStartBeat, audioEndBeat;
+  let metronome, arrangement, clip, track, audioStartBeat, audioEndBeat;
 
   beforeEach(function() {
     track = this.factory.make('track');
     arrangement = DummyArrangement.create({
       audioContext: this.audioContext,
     });
-
+    metronome = arrangement.get('metronome');
     clip = MixTrackClip.create({
       arrangement,
       track,
@@ -33,91 +33,52 @@ describe.skip('MixTrackClip', function() {
   it('exists', function() {
     expect(clip).to.be.ok;
   });
+
+  describe('without transitions', function() {
+    describeAttrs('clip', {
+      subject() { return clip; },
+      startBeat: 0,
+      audioStartBeat() { return clip.get('audioStartBeatWithoutTransition'); },
+      audioEndBeat() { return clip.get('audioEndBeatWithoutTransition'); },
+      audioStartBeatWithoutTransition: 0,
+      audioEndBeatWithoutTransition() { return clip.get('audioMeta.endBeat'); },
+    });
+  });
+
+  describe.skip('with valid prevTransition', function() {
+    beforeEach(function() {
+      // TODO
+    });
+
+    describeAttrs('clip', {
+      subject() { return clip; },
+      startBeat() { return prevTransitionClip.get('startBeat'); },
+      audioStartBeat() { return clip.get('audioStartBeatWithTransition'); },
+      audioEndBeat() { return clip.get('audioEndBeatWithoutTransition'); },
+      audioStartBeatWithTransition() { return prevTransition.get('toTrackStartBeat'); },
+    });
+  });
+
+  describe.skip('with valid nextTransition', function() {
+    beforeEach(function() {
+      // TODO
+    });
+
+    describeAttrs('clip', {
+      subject() { return clip; },
+      startBeat: 0,
+      audioStartBeat() { return clip.get('audioStartBeatWithoutTransition'); },
+      audioEndBeat() { return clip.get('audioEndBeatWithTransition'); },
+      audioEndBeatWithTransition() { return nextTransition.get('fromTrackEndBeat'); },
+    });
+  });
+
+  describe.skip('with invalid transitions', function() {
+    describeAttrs('clip', {
+      subject() { return clip; },
+      startBeat: 0,
+      audioStartBeat() { return clip.get('audioStartBeatWithoutTransition'); },
+      audioEndBeat() { return clip.get('audioEndBeatWithoutTransition'); },
+    });
+  });
 });
-
-//   describe('with valid prevTransition', function() {
-//     let prevClip, prevTransition;
-
-//     beforeEach(function() {
-//       let results = makeTransitionClip.call(this, { toTrackClip: trackClip });
-//       prevClip = results.fromTrackClip;
-//       prevTransition = results.transition;
-
-//       Ember.run(() => {
-//         trackClip.setProperties({
-//           isFirstClip: false,
-//         });
-
-//         prevClip.setProperties({
-//           isFirstClip: true,
-//         });
-//       });
-//     });
-
-//     describeAttrs('trackClip', {
-//       subject() { return trackClip; },
-//       startBeat() { return prevClip.get('endBeat') - prevTransition.get('numBeats'); },
-//       numBeats() { return track.get('audioMeta.endBeat') - prevTransition.get('toTrackStartBeat'); },
-//       audioStartBeatWithTransition() { return prevTransition.get('toTrackStartBeat'); },
-//       audioStartBeat() { return trackClip.get('audioStartBeatWithTransition'); },
-//       audioEndBeat() { return trackClip.get('audioEndBeatWithoutTransition'); },
-//     });
-//   });
-
-//   describe('with valid nextTransition', function() {
-//     let nextClip, nextTransition;
-
-//     beforeEach(function() {
-//       let results = makeTransitionClip.call(this, { fromTrackClip: trackClip });
-//       nextClip = results.transitionClip;
-//       nextTransition = results.transition;
-
-//       Ember.run(() => {
-//         trackClip.setProperties({
-//           isFirstClip: true,
-//         });
-//       });
-//     });
-
-//     describeAttrs('trackClip', {
-//       subject() { return trackClip; },
-//       startBeat: 0,
-//       numBeats() { return nextTransition.get('fromTrackEndBeat') - track.get('audioMeta.startBeat'); },
-//       audioEndBeatWithTransition() { return nextTransition.get('fromTrackEndBeat'); },
-//       audioStartBeat() { return trackClip.get('audioStartBeatWithoutTransition'); },
-//       audioEndBeat() { return trackClip.get('audioEndBeatWithTransition'); },
-//     });
-//   });
-
-//   describe('with valid transitions', function() {
-//     let prevClip, prevTransition, nextClip, nextTransition;
-
-//     beforeEach(function() {
-
-//       Ember.run(() => {
-//         // setup prevClip
-//         let prevResults = makeTransitionClip.call(this, { toTrackClip: trackClip });
-//         prevClip = prevResults.fromTrackClip;
-//         prevTransition = prevResults.transition;
-//         prevClip.setProperties({
-//           isFirstClip: true,
-//         });
-
-//         // setup nextClip
-//         let nextResults = makeTransitionClip.call(this, { fromTrackClip: trackClip });
-//         nextClip = nextResults.toTrackClip;
-//         nextTransition = nextResults.transition;
-//       });
-//     });
-
-//     describeAttrs('trackClip', {
-//       subject() { return trackClip; },
-//       startBeat() { return prevClip.get('endBeat') - prevTransition.get('numBeats'); },
-//       numBeats() { return nextTransition.get('fromTrackEndBeat') - prevTransition.get('toTrackStartBeat'); },
-//       audioStartBeatWithTransition() { return prevTransition.get('toTrackStartBeat'); },
-//       audioEndBeatWithTransition() { return nextTransition.get('fromTrackEndBeat'); },
-//       audioStartBeat() { return trackClip.get('audioStartBeatWithTransition'); },
-//       audioEndBeat() { return trackClip.get('audioEndBeatWithTransition'); },
-//     });
-//   });
-// });

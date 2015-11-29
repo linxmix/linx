@@ -8,13 +8,28 @@ import { expect } from 'chai';
 
 import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 import describeAttrs from 'linx/tests/helpers/describe-attrs';
+import MixTransitionClip from 'linx/models/mix/transition-clip';
+import { DummyArrangement } from 'linx/tests/unit/mixins/playable-arrangement-test';
 
 describe.skip('MixTransitionClip', function() {
   setupTestEnvironment();
 
+  let metronome, arrangement, clip, mixItem, transition;
+
   beforeEach(function() {
-    // TODO(DBSTUB)
-    // this.factoryHelper.handleCreate('transition-mix-event');
+    transition = this.factory.make('transition');
+    arrangement = DummyArrangement.create({
+      audioContext: this.audioContext,
+    });
+    metronome = arrangement.get('metronome');
+    clip = MixTransitionClip.create({
+      arrangement,
+      mixItem,
+    });
+  });
+
+  it('exists', function() {
+    expect(clip).to.be.ok;
   });
 
   describeAttrs('empty transitionClip', {
@@ -66,13 +81,5 @@ describe.skip('MixTransitionClip', function() {
   describe.skip('with invalid toTrackClip', function() {
   });
   describe.skip('with valid toTrackClip', function() {
-  });
-
-  describe.skip('with valid mixEvent', function() {
-
-  });
-
-  describe.skip('with invalid mixEvent', function() {
-
   });
 });

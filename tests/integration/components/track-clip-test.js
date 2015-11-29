@@ -1,13 +1,12 @@
 /* jshint expr:true */
+import hbs from 'htmlbars-inline-precompile';
 import { expect } from 'chai';
 import {
   describeComponent,
   it
 } from 'ember-mocha';
 import { beforeEach, describe } from 'mocha';
-import hbs from 'htmlbars-inline-precompile';
 
-import makeTrackClip from 'linx/tests/helpers/make-track-clip';
 import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 
 describeComponent(
