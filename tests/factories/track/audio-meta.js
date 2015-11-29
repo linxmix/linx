@@ -1,4 +1,5 @@
 import FactoryGuy from 'ember-data-factory-guy';
+import Faker from 'npm:faker';
 
 FactoryGuy.define('track/audio-meta', {
   default: {

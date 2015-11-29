@@ -11,16 +11,15 @@ import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 import describeAttrs from 'linx/tests/helpers/describe-attrs';
 import Metronome from 'linx/mixins/playable-arrangement/metronome';
 import { beatToTime, timeToBeat } from 'linx/lib/utils'
-import setupWebAudioStub from 'linx/tests/helpers/setup-web-audio-stub';
+
+const EPSILON = 0.0005;
 
 describe('PlayableMetronome', function() {
   setupTestEnvironment();
-  setupWebAudioStub();
 
-  let metronome, bpm;
+  let metronome, bpm = 120.214;
 
   beforeEach(function() {
-    bpm = 120.000;
     metronome = Metronome.create({
       audioContext: this.audioContext,
       bpm,
@@ -124,7 +123,7 @@ describe('PlayableMetronome', function() {
     let time = 60;
 
     it('is correct initially', function() {
-      expect(metronome.getCurrentBeat()).to.equal(0);
+      expect(metronome.getCurrentBeat()).to.be.closeTo(0, EPSILON);
     });
 
     it('is correct while playing and clock moves', function() {
@@ -133,7 +132,7 @@ describe('PlayableMetronome', function() {
         this.audioContext.$processTo(time);
       });
 
-      expect(metronome.getCurrentBeat()).to.equal(timeToBeat(time, bpm));
+      expect(metronome.getCurrentBeat()).to.be.closeTo(timeToBeat(time, bpm), EPSILON);
     });
 
     it('is correct while paused and clock moves', function() {
@@ -141,7 +140,7 @@ describe('PlayableMetronome', function() {
         this.audioContext.$processTo(time);
       });
 
-      expect(metronome.getCurrentBeat()).to.equal(0);
+      expect(metronome.getCurrentBeat()).to.be.closeTo(0, EPSILON);
     });
   });
 
@@ -149,7 +148,7 @@ describe('PlayableMetronome', function() {
     let beat = 10.5, time = 30;
 
     it('is correct initially', function() {
-      expect(metronome.beatToTime(beat)).to.equal(beatToTime(beat, bpm));
+      expect(metronome.beatToTime(beat)).to.be.closeTo(beatToTime(beat, bpm), EPSILON);
     });
 
     it('is correct while playing and clock moves', function() {
@@ -158,7 +157,7 @@ describe('PlayableMetronome', function() {
         this.audioContext.$processTo(time);
       });
 
-      expect(metronome.beatToTime(beat)).to.equal(beatToTime(beat, bpm));
+      expect(metronome.beatToTime(beat)).to.be.closeTo(beatToTime(beat, bpm), EPSILON);
     });
 
     it('is correct while paused and clock moves', function() {
@@ -166,7 +165,7 @@ describe('PlayableMetronome', function() {
         this.audioContext.$processTo(time);
       });
 
-      expect(metronome.beatToTime(beat)).to.equal(this.getCurrentTime() + beatToTime(beat, bpm));
+      expect(metronome.beatToTime(beat)).to.be.closeTo(this.getCurrentTime() + beatToTime(beat, bpm), EPSILON);
     });
   });
 });

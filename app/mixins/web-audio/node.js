@@ -16,14 +16,14 @@ export default Ember.Mixin.create(
     return this.get('controls').findBy('name', controlName);
   },
 
-  connectOutput: Ember.observer('node', 'outputNode.content', function() {
+  connectOutput: Ember.observer('node', 'outputNode', function() {
     let node = this.get('node');
-    let outputNode = this.get('outputNode.content');
+    let outputNode = this.get('outputNode');
 
     if (node && outputNode) {
       node.connect(outputNode);
     }
-  }),
+  }).on('init'),
 
   disconnect() {
     let node = this.get('node');

@@ -1,6 +1,6 @@
 import Ember from 'ember';
 
-// TODO: have to import faker for some reason
+// TODO: have to import faker here to get it to load into the tests
 import Faker from 'npm:faker';
 
 import Migrate from 'linx/lib/migrations/linx-meteor';

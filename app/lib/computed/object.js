@@ -6,9 +6,9 @@ export default function computedObject(constructor, attributes) {
 
   args.push({
     get(key) {
-      let attributes = keysToAttrs(this, keys, attributes);
-      attributes.parentPropertyPath = key;
-      return Constructor.create(attributes);
+      let attrs = keysToAttrs(this, keys, attributes);
+      attrs.parentPropertyPath = key;
+      return constructor.create(attrs);
     },
   });
 

@@ -9,39 +9,24 @@ import subtract from 'linx/lib/computed/subtract';
 import { isNumber } from 'linx/lib/utils';
 
 // Interface for playable arrangement clips
-// Events: 'schedule', 'unschedule'
-// Methods: getCurrentBeat, getCurrentAbsTime
-// Properties: seekBeat
+// Methods: getCurrentBeat
+// Properties: audioContext, metronome, outputNode
 export default Ember.Mixin.create({
 
   // necessary params
   componentName: null, // used to render arrangement-grid clip component
   arrangement: null,
+  startBeat: null,
 
   outputNode: Ember.computed.reads('arrangement.inputNode'),
   metronome: Ember.computed.reads('arrangement.metronome'),
   audioContext: Ember.computed.reads('metronome.audioContext'),
 
-  // returns current beat within this clip's bounds
-  getCurrentClipBeat() {
-    let currentClipBeat = this.get('metronome').getCurrentBeat() - this.get('startBeat');
-    return clamp(0, currentClipBeat, this.get('beatCount'));
+  // returns current beat from clip's frame of reference
+  getCurrentBeat() {
+    // TODO(REFACTOR)
   },
 
-  // TODO(REFACTOR): needs to change with metronome beatgrid
-  schedulingDidChange: Ember.observer('startBeat', 'beatCount', 'metronome.isPlaying', 'metronome.absSeekTime', 'metronome.bpm', function() {
-    Ember.run.once(this, 'triggerSchedulingEvent');
-  }),
-
-  triggerSchedulingEvent() {
-    if (this.get('metronome.isPlaying')) {
-      this.trigger('schedule');
-    } else {
-      this.trigger('unschedule');
-    }
-  },
-
-  startBeat: null,
   endBeat: add('startBeat', 'beatCount'),
   beatCount: subtract('endBeat', 'startBeat'),
   halfBeatCount: Ember.computed('beatCount', function() {

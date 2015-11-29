@@ -7,12 +7,9 @@ import {
 import { expect } from 'chai';
 
 import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
-import makeTrack from 'linx/tests/helpers/make-track';
-import makeTransition from 'linx/tests/helpers/make-transition';
-import makeTransitionClip from 'linx/tests/helpers/make-transition-clip';
 import describeAttrs from 'linx/tests/helpers/describe-attrs';
 
-describe('TransitionClipModel', function() {
+describe.skip('MixTransitionClip', function() {
   setupTestEnvironment();
 
   beforeEach(function() {

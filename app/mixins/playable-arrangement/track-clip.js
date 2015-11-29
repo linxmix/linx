@@ -67,7 +67,7 @@ export default Ember.Mixin.create(
   }),
 
   getCurrentAudioBeat() {
-    let currentClipBeat = this.getCurrentClipBeat();
+    let currentClipBeat = this.getCurrentBeat();
     let audioStartBeat = this.get('audioStartBeat');
     return currentClipBeat + audioStartBeat;
   },
@@ -90,6 +90,10 @@ export default Ember.Mixin.create(
     this.get('trackSourceNode').start(when, offset, duration);
   },
 
+  unschedule: function() {
+    this.get('trackSourceNode').stop();
+  }.on('metronome.unschedule'),
+
   //
   // Web Audio Nodes
   //
@@ -100,7 +104,7 @@ export default Ember.Mixin.create(
     'audioContext': 'audioContext',
     'track': 'track',
     // 'outputNode': 'trackGainNode',
-    'outputNode': 'outputNode',
+    'outputNode': 'outputNode.content',
   }),
 
   // trackGainNode: computedObject(TrackGainNode, {

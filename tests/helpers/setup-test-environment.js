@@ -1,10 +1,14 @@
 import Ember from 'ember';
+
 import { default as FactoryGuy, make } from 'ember-data-factory-guy';
 import FactoryGuyTestHelper from 'ember-data-factory-guy/factory-guy-test-helper';
-import startApp from 'linx/tests/helpers/start-app';
 import {
   beforeEach,
+  afterEach,
 } from 'mocha';
+
+import setupWebAudioStub from 'linx/tests/helpers/setup-web-audio-stub';
+import startApp from 'linx/tests/helpers/start-app';
 
 function setProperties() {
   this.store = FactoryGuy.getStore();
@@ -15,9 +19,11 @@ function setProperties() {
 
 export default function() {
   startApp();
+  setupWebAudioStub();
+
   beforeEach(setProperties);
 
-  beforeEach(function(done) {
+  afterEach(function(done) {
     // TODO(DBSTUB)
     // reset firebase
     this.timeout(5000);

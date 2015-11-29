@@ -1,5 +1,4 @@
 import FactoryGuy from 'ember-data-factory-guy';
-
 import Faker from 'npm:faker';
 
 FactoryGuy.define('arrangement/track-clip', {

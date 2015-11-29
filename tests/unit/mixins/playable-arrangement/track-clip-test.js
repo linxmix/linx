@@ -6,185 +6,61 @@ import {
   it
 } from 'mocha';
 import { expect } from 'chai';
+import Faker from 'npm:faker';
+
 import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
-
-import makeTrackClip from 'linx/tests/helpers/make-track-clip';
-import makeTransitionClip from 'linx/tests/helpers/make-transition-clip';
+import PlayableTrackClipMixin from 'linx/mixins/playable-arrangement/track-clip';
 import describeAttrs from 'linx/tests/helpers/describe-attrs';
+import { DummyArrangement } from '../playable-arrangement-test';
 
-import asResolvedPromise from 'linx/lib/utils';
+export const DummyClip = Ember.Object.extend(PlayableTrackClipMixin);
 
 describe('PlayableTrackClipMixin', function() {
   setupTestEnvironment();
 
-  let track, trackClip;
+  let arrangement, clip, track, audioStartBeat, audioEndBeat;
 
   beforeEach(function() {
-    let results = makeTrackClip.call(this);
-    track = results.track;
-    trackClip = results.trackClip;
-  });
-
-  describe('persisting attributes', function() {
-    it('can persist _startBeat', function() {
-      Ember.run(function() {
-        trackClip.set('_startBeat', 3);
-        wait(trackClip.save());
-      });
-
-      // TODO(DBSTUB): make this actually check payload
-      andThen(function() {
-        expect(trackClip.get('startBeat')).to.equal(3);
-        expect(trackClip.get('_startBeat')).to.equal(3);
-      });
+    track = this.factory.make('track');
+    arrangement = DummyArrangement.create({
+      audioContext: this.audioContext,
     });
+    let trackStartBeat = track.get('audioMeta.startBeat');
+    let trackCenterBeat = track.get('audioMeta.centerBeat');
+    let trackEndBeat = track.get('audioMeta.endBeat');
+    audioStartBeat = Faker.random.number({ min: trackStartBeat, max: trackCenterBeat });
+    audioEndBeat = Faker.random.number({ min: trackCenterBeat, max: trackEndBeat });
 
-    it('can persist _audioStartBeat', function() {
-      Ember.run(function() {
-        trackClip.set('_audioStartBeat', 3);
-        wait(trackClip.save());
-      });
-
-      // TODO(DBSTUB): make this actually check payload
-      andThen(function() {
-        expect(trackClip.get('audioStartBeat')).to.equal(3);
-        expect(trackClip.get('_audioStartBeat')).to.equal(3);
-      });
-    });
-
-    it('can persist _audioEndBeat', function() {
-      Ember.run(function() {
-        trackClip.set('_audioEndBeat', 0);
-        wait(trackClip.save());
-      });
-
-      // TODO(DBSTUB): make this actually check payload
-      andThen(function() {
-        expect(trackClip.get('_audioEndBeat')).to.equal(0);
-        expect(trackClip.get('audioEndBeat')).to.equal(0);
-      });
+    clip = DummyClip.create({
+      arrangement,
+      track,
+      audioStartBeat,
+      audioEndBeat
     });
   });
 
-  describe('with custom startBeat', function() {
-    beforeEach(function() {
-      Ember.run(() => {
-        trackClip.setProperties({
-          _startBeat: 3,
-        });
-      });
-    });
-
-    describeAttrs('trackClip', {
-      subject() { return trackClip; },
-      startBeat: 3,
-    });
-  });
-
-  // TODO: refactor into mixable clip behaviours
-  describe('without other clips', function() {
-    beforeEach(function() {
-      Ember.run(() => {
-        trackClip.setProperties({
-          isFirstClip: true,
-        });
-      });
-    });
-
-    describeAttrs('trackClip', {
-      subject() { return trackClip; },
-      startBeat: 0,
-      numBeats() { return track.get('audioMeta.numBeats'); },
-      audioStartBeatWithoutTransition() { return track.get('audioMeta.startBeat'); },
-      audioEndBeatWithoutTransition() { return track.get('audioMeta.endBeat'); },
-      audioStartBeat() { return trackClip.get('audioStartBeatWithoutTransition'); },
-      audioEndBeat() { return trackClip.get('audioEndBeatWithoutTransition'); },
-    });
-  });
-
-  describe('with valid prevTransition', function() {
-    let prevClip, prevTransition;
-
-    beforeEach(function() {
-      let results = makeTransitionClip.call(this, { toTrackClip: trackClip });
-      prevClip = results.fromTrackClip;
-      prevTransition = results.transition;
-
-      Ember.run(() => {
-        trackClip.setProperties({
-          isFirstClip: false,
-        });
-
-        prevClip.setProperties({
-          isFirstClip: true,
-        });
-      });
-    });
-
-    describeAttrs('trackClip', {
-      subject() { return trackClip; },
-      startBeat() { return prevClip.get('endBeat') - prevTransition.get('numBeats'); },
-      numBeats() { return track.get('audioMeta.endBeat') - prevTransition.get('toTrackStartBeat'); },
-      audioStartBeatWithTransition() { return prevTransition.get('toTrackStartBeat'); },
-      audioStartBeat() { return trackClip.get('audioStartBeatWithTransition'); },
-      audioEndBeat() { return trackClip.get('audioEndBeatWithoutTransition'); },
-    });
-  });
-
-  describe('with valid nextTransition', function() {
-    let nextClip, nextTransition;
-
-    beforeEach(function() {
-      let results = makeTransitionClip.call(this, { fromTrackClip: trackClip });
-      nextClip = results.transitionClip;
-      nextTransition = results.transition;
-
-      Ember.run(() => {
-        trackClip.setProperties({
-          isFirstClip: true,
-        });
-      });
-    });
-
-    describeAttrs('trackClip', {
-      subject() { return trackClip; },
-      startBeat: 0,
-      numBeats() { return nextTransition.get('fromTrackEndBeat') - track.get('audioMeta.startBeat'); },
-      audioEndBeatWithTransition() { return nextTransition.get('fromTrackEndBeat'); },
-      audioStartBeat() { return trackClip.get('audioStartBeatWithoutTransition'); },
-      audioEndBeat() { return trackClip.get('audioEndBeatWithTransition'); },
-    });
-  });
-
-  describe('with valid transitions', function() {
-    let prevClip, prevTransition, nextClip, nextTransition;
-
-    beforeEach(function() {
-
-      Ember.run(() => {
-        // setup prevClip
-        let prevResults = makeTransitionClip.call(this, { toTrackClip: trackClip });
-        prevClip = prevResults.fromTrackClip;
-        prevTransition = prevResults.transition;
-        prevClip.setProperties({
-          isFirstClip: true,
-        });
-
-        // setup nextClip
-        let nextResults = makeTransitionClip.call(this, { fromTrackClip: trackClip });
-        nextClip = nextResults.toTrackClip;
-        nextTransition = nextResults.transition;
-      });
-    });
-
-    describeAttrs('trackClip', {
-      subject() { return trackClip; },
-      startBeat() { return prevClip.get('endBeat') - prevTransition.get('numBeats'); },
-      numBeats() { return nextTransition.get('fromTrackEndBeat') - prevTransition.get('toTrackStartBeat'); },
-      audioStartBeatWithTransition() { return prevTransition.get('toTrackStartBeat'); },
-      audioEndBeatWithTransition() { return nextTransition.get('fromTrackEndBeat'); },
-      audioStartBeat() { return trackClip.get('audioStartBeatWithTransition'); },
-      audioEndBeat() { return trackClip.get('audioEndBeatWithTransition'); },
-    });
+  it('exists', function() {
+    expect(clip).to.be.ok;
   });
 });
+
+//   // TODO: refactor into mixable clip behaviours
+//   describe('without other clips', function() {
+//     beforeEach(function() {
+//       Ember.run(() => {
+//         trackClip.setProperties({
+//           isFirstClip: true,
+//         });
+//       });
+//     });
+
+//     describeAttrs('trackClip', {
+//       subject() { return trackClip; },
+//       startBeat: 0,
+//       numBeats() { return track.get('audioMeta.numBeats'); },
+//       audioStartBeatWithoutTransition() { return track.get('audioMeta.startBeat'); },
+//       audioEndBeatWithoutTransition() { return track.get('audioMeta.endBeat'); },
+//       audioStartBeat() { return trackClip.get('audioStartBeatWithoutTransition'); },
+//       audioEndBeat() { return trackClip.get('audioEndBeatWithoutTransition'); },
+//     });
+//   });

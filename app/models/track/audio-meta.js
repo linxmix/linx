@@ -22,6 +22,7 @@ import {
 import { roundTo, clamp } from 'linx/lib/utils';
 import withDefault from 'linx/lib/computed/with-default';
 import subtract from 'linx/lib/computed/subtract';
+import add from 'linx/lib/computed/add';
 
 export const BEAT_LEAD_TIME = 0.5;
 
@@ -60,7 +61,11 @@ export default DS.Model.extend(
   startBar: computedTimeToBar('beatGrid', 0),
   endBeat: computedTimeToBeat('beatGrid', 'duration'),
   endBar: computedTimeToBar('beatGrid', 'duration'),
-  numBeats: subtract('endBeat', 'startBeat'),
+  beatCount: subtract('endBeat', 'startBeat'),
+  halfBeatCount: Ember.computed('beatCount', function() {
+    return this.get('beatCount') / 2.0;
+  }),
+  centerBeat: add('startBeat', 'halfBeatCount'),
 
   // TODO: implement this, and move to audio-meta/beat-grid?
   // amount by which echonest analysis is off from the downbeats

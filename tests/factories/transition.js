@@ -1,4 +1,5 @@
 import FactoryGuy from 'ember-data-factory-guy';
+import Faker from 'npm:faker';
 
 import { isNumber } from 'linx/lib/utils';
 
