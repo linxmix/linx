@@ -1,8 +1,8 @@
 import Ember from 'ember';
-import ENV from 'linx/config/environment';
 
 import _ from 'npm:underscore';
 
+import ENV from 'linx/config/environment';
 import { executePromisesInSeries } from 'linx/lib/utils';
 
 export default Ember.Route.extend({
@@ -84,7 +84,7 @@ export default Ember.Route.extend({
     let store = this.get('store');
     return Ember.RSVP.hash({
       mixes: store.findAll('mix'),
-      me: store.findRecord('soundcloud/me'),
+      // me: store.findRecord('soundcloud/me'),
       tracks: store.findAll('track'),
     });
   }

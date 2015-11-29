@@ -14,7 +14,7 @@ import describeAttrs from 'linx/tests/helpers/describe-attrs';
 
 import asResolvedPromise from 'linx/lib/utils';
 
-describe('TrackClipModel', function() {
+describe('MixTrackClipModel', function() {
   setupTestEnvironment();
 
   let track, trackClip;

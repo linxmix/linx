@@ -9,6 +9,7 @@ import Clock from 'linx/lib/clock';
 // Holds rhythym based on clock
 // TODO(REFACTOR): TODO(MULTIGRID): refactor metronome to have a beatgrid?
 export default Ember.Object.extend(
+  Ember.Evented,
   RequireAttributes('audioContext'), {
 
   // params
@@ -18,22 +19,22 @@ export default Ember.Object.extend(
   bpm: 128.000,
   isPlaying: false,
 
-  clock: Ember.computed('audioContext', function() {
-    let clock = Clock.create({ audioContext: this.get('audioContext') });
-    clock.start();
-    return clock;
-  }),
+  // clock: Ember.computed('audioContext', function() {
+  //   let clock = Clock.create({ audioContext: this.get('audioContext') });
+  //   clock.start();
+  //   return clock;
+  // }),
 
   setBpm(bpm) {
     this.seekToBeat(this.getCurrentBeat());
     this.set('bpm', bpm);
   },
 
-  createEvent(options = {}) {
-    return this.get('clock').createEvent(options);
-  },
+  // createEvent(options = {}) {
+  //   return this.get('clock').createEvent(options);
+  // },
 
-  seekToBeat(beat) {
+  seekToBeat(beat, silent = false) {
     console.log("metronome seekToBeat", beat);
     let prevBeat = this.get('seekBeat');
 
@@ -46,6 +47,11 @@ export default Ember.Object.extend(
       seekBeat: beat,
       absSeekTime: this._getAbsTime()
     });
+    this.trigger('seek');
+
+    if (this.get('isPlaying')) {
+      this.trigger('schedule');
+    }
   },
 
   playpause(beat) {
@@ -61,25 +67,34 @@ export default Ember.Object.extend(
       this.seekToBeat(beat);
     }
 
-    // synchronously update times
-    this.setProperties({
-      absSeekTime: this._getAbsTime(),
-      lastPlayBeat: this.get('seekBeat'),
-      isPlaying: true,
-    });
+    if (!this.get('isPlaying')) {
+      // synchronously update times
+      this.setProperties({
+        absSeekTime: this._getAbsTime(),
+        lastPlayBeat: this.get('seekBeat'),
+        isPlaying: true,
+      });
+      this.trigger('play');
+      this.trigger('schedule');
+    }
   },
 
   pause() {
-    this.setProperties({
-      seekBeat: this.getCurrentBeat(),
-      isPlaying: false,
-    });
+    if (!this.get('isPaused')) {
+      this.setProperties({
+        seekBeat: this.getCurrentBeat(),
+        isPlaying: false,
+      });
+      this.trigger('pause');
+      this.trigger('unschedule');
+    }
   },
 
   // TODO(REFACTOR): turn into beatgrid
   // returns absolute time at which given beat will occur in audioContext
   beatToTime(beat) {
-    return this.getCurrentAbsTime() + beatToTime(absTime, this.get('bpm'));
+    beat -= this.getCurrentBeat();
+    return this._getAbsTime() + beatToTime(beat, this.get('bpm'));
   },
 
   // Returns current metronome beat
@@ -87,13 +102,8 @@ export default Ember.Object.extend(
     return this.get('seekBeat') + this._getPlayedBeats();
   },
 
-  // Returns metronome's current absolute time
-  getCurrentAbsTime() {
-    return this.get('absSeekTime') + this._getPlayedTime();
-  },
-
   _getAbsTime() {
-    return this.get('clock').getCurrentTime();
+    return this.get('audioContext').currentTime;
   },
 
   _getPlayedTime() {
@@ -109,7 +119,7 @@ export default Ember.Object.extend(
   },
 
   destroy() {
-    this.get('clock').destroy();
+    // this.get('clock').destroy();
     this._super.apply(this, arguments);
   },
 });

@@ -1,4 +1,8 @@
 import Ember from 'ember';
+
+// TODO: have to import faker for some reason
+import Faker from 'npm:faker';
+
 import Migrate from 'linx/lib/migrations/linx-meteor';
 
 export default Ember.Route.extend({

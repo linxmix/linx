@@ -7,8 +7,6 @@ import {
 import { expect } from 'chai';
 import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 
-import makeAudioMeta from 'linx/tests/helpers/make-audio-meta';
-
 import {
   BAR_QUANTIZATION,
   BEAT_QUANTIZATION,
@@ -24,7 +22,7 @@ describe('BeatGrid', function() {
   let audioMeta, beatGrid;
 
   beforeEach(function() {
-    audioMeta = makeAudioMeta.call(this);
+    audioMeta = this.factory.make('track/audio-meta');
     beatGrid = audioMeta.get('beatGrid');
   });
 

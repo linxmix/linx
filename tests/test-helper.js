@@ -1,5 +1,6 @@
-import Ember from 'ember';
-import resolver from './helpers/resolver';
-import { setResolver } from 'ember-mocha';
+// TODO: remove this?
+// import Ember from 'ember';
+// import resolver from './helpers/resolver';
+// import { setResolver } from 'ember-mocha';
 
-setResolver(resolver);
+// setResolver(resolver);

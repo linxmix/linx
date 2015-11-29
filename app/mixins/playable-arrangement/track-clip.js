@@ -80,7 +80,7 @@ export default Ember.Mixin.create(
 
   schedulingDidChange: Ember.observer('audioStartBeat', 'audioBeatCount', function() {
     Ember.run.once(this, 'scheduleStart');
-  }).on('schedule'),
+  }).on('metronome.schedule'),
 
   scheduleStart() {
     let metronome = this.get('metronome');

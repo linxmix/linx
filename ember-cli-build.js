@@ -27,6 +27,9 @@ module.exports = function(defaults) {
   // along with the exports of each module as its value.
 
   app.import('vendor/js/soundtouch.min.js');
+  app.import({
+    development: 'bower_components/web-audio-test-api/build/web-audio-test-api.js'
+  });
 
   // Hack webworker support
   // http://stackoverflow.com/questions/24175120/ember-cli-project-and-web-workers

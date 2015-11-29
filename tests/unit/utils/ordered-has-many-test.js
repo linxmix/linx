@@ -20,7 +20,7 @@ describe('OrderedHasManyMixin', function() {
 
   beforeEach(function() {
     Ember.run(() => {
-      list = this.store.createRecord('ordered-has-many');
+      list = this.factory.make('ordered-has-many');
     });
   });
 
