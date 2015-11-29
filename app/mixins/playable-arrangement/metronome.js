@@ -13,9 +13,9 @@ export default Ember.Object.extend(
   RequireAttributes('audioContext'), {
 
   // params
-  seekBeat: 0,        // last seeked beat of the metronome
-  absSeekTime: 0,     // [s] last seeked time of metronome in clock frame of reference
-  lastPlayBeat: 0,    // beat at which metronome was last played
+  seekBeat: 0,        // [b] last seeked beat
+  absSeekTime: 0,     // [s] time of last seek in clock frame of reference
+  lastPlayBeat: 0,    // [b] beat at which metronome was last played
   bpm: 128.000,
   isPlaying: false,
 
@@ -34,24 +34,14 @@ export default Ember.Object.extend(
   //   return this.get('clock').createEvent(options);
   // },
 
-  seekToBeat(beat, silent = false) {
+  seekToBeat(beat) {
     console.log("metronome seekToBeat", beat);
-    let prevBeat = this.get('seekBeat');
-
-    // TODO: hack to make sure to trigger property changes
-    // if (beat === prevBeat) {
-    //   beat += 0.00000000001;
-    // }
 
     this.setProperties({
       seekBeat: beat,
       absSeekTime: this._getAbsTime()
     });
     this.trigger('seek');
-
-    if (this.get('isPlaying')) {
-      this.trigger('schedule');
-    }
   },
 
   playpause(beat) {
@@ -63,19 +53,15 @@ export default Ember.Object.extend(
   },
 
   play(beat) {
-    if (isNumber(beat)) {
-      this.seekToBeat(beat);
-    }
+    beat = isNumber(beat) ? beat : this.getCurrentBeat();
+    this.seekToBeat(beat);
 
     if (!this.get('isPlaying')) {
-      // synchronously update times
       this.setProperties({
-        absSeekTime: this._getAbsTime(),
         lastPlayBeat: this.get('seekBeat'),
         isPlaying: true,
       });
       this.trigger('play');
-      this.trigger('schedule');
     }
   },
 
@@ -86,7 +72,6 @@ export default Ember.Object.extend(
         isPlaying: false,
       });
       this.trigger('pause');
-      this.trigger('unschedule');
     }
   },
 

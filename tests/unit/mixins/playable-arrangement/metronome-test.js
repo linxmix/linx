@@ -40,17 +40,19 @@ describe('PlayableMetronome', function() {
   });
 
   describe('events', function() {
-    let scheduleSpy, unscheduleSpy, playSpy, pauseSpy, seekSpy;
+    let playSpy, pauseSpy, seekSpy, time = 60;
+    let prevSeekTime, prevIsPlaying;
 
     beforeEach(function() {
-      scheduleSpy = this.sinon.spy();
-      unscheduleSpy = this.sinon.spy();
       playSpy = this.sinon.spy();
       pauseSpy = this.sinon.spy();
       seekSpy = this.sinon.spy();
+      prevIsPlaying = metronome.get('isPlaying');
+      prevSeekTime = metronome.get('absSeekTime');
 
-      metronome.on('schedule', scheduleSpy);
-      metronome.on('unschedule', unscheduleSpy);
+      // advance time to make tests interesting
+      this.audioContext.$processTo(time);
+
       metronome.on('play', playSpy);
       metronome.on('seek', seekSpy);
       metronome.on('pause', pauseSpy);
@@ -62,59 +64,52 @@ describe('PlayableMetronome', function() {
       });
 
       it('fires correct events', function() {
-        expect(scheduleSpy.calledOnce).to.be.true;
-        expect(unscheduleSpy.called).to.be.false;
         expect(playSpy.calledOnce).to.be.true;
         expect(pauseSpy.called).to.be.false;
-        expect(seekSpy.called).to.be.false;
+        expect(seekSpy.calledOnce).to.be.true;
+      });
+
+      it('updates correct properties', function() {
+        expect(metronome.get('absSeekTime')).not.to.be.closeTo(prevSeekTime, EPSILON);
+        expect(metronome.get('isPlaying')).not.to.equal(prevIsPlaying);
       });
     });
 
-    describe('seek while paused', function() {
+    describe('on seek', function() {
       beforeEach(function() {
         Ember.run(metronome, 'seekToBeat', 1);
       });
 
       it('fires correct events', function() {
-        expect(scheduleSpy.called).to.be.false;
-        expect(unscheduleSpy.called).to.be.false;
         expect(playSpy.called).to.be.false;
         expect(pauseSpy.called).to.be.false;
         expect(seekSpy.calledOnce).to.be.true;
       });
-    });
 
-    describe('seek while playing', function() {
-      beforeEach(function() {
-        Ember.run(() => {
-          metronome.set('isPlaying', true);
-          metronome.seekToBeat(1);
-        });
-      });
-
-      it('fires correct events', function() {
-        expect(scheduleSpy.calledOnce).to.be.true;
-        expect(unscheduleSpy.called).to.be.false;
-        expect(playSpy.called).to.be.false;
-        expect(pauseSpy.called).to.be.false;
-        expect(seekSpy.calledOnce).to.be.true;
+      it('updates correct properties', function() {
+        expect(metronome.get('absSeekTime')).not.to.be.closeTo(prevSeekTime, EPSILON);
+        expect(metronome.get('isPlaying')).to.equal(prevIsPlaying);
       });
     });
 
     describe('on pause', function() {
       beforeEach(function() {
         Ember.run(() => {
+          prevIsPlaying = true;
           metronome.set('isPlaying', true);
           metronome.pause();
         });
       });
 
       it('fires correct events', function() {
-        expect(scheduleSpy.called).to.be.false;
-        expect(unscheduleSpy.calledOnce).to.be.true;
         expect(playSpy.called).to.be.false;
         expect(pauseSpy.calledOnce).to.be.true;
         expect(seekSpy.called).to.be.false;
+      });
+
+      it('updates correct properties', function() {
+        expect(metronome.get('absSeekTime')).to.be.closeTo(prevSeekTime, EPSILON);
+        expect(metronome.get('isPlaying')).not.to.equal(prevIsPlaying);
       });
     });
   });

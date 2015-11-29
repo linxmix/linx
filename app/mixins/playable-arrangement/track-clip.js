@@ -49,13 +49,13 @@ export default Ember.Mixin.create(
 
   // offset of this clip wrt the audioBeatGrid
   // TODO(REFACTOR): figure out which offset direction is correct
-  audioOffset: subtract('audioBeatGrid.firstBarOffset', 'audioStartBeat'),
+  audioOffset: subtract('audioBeatGrid.firstBarOffset', 'audioStartTime'),
 
   // TODO(REFACTOR): need to somehow make sourceNode.playbackRate observe tempo
   // TODO(MULTIGRID): make this depend on ex seekTime and audioBeatGrid.beatScale
   // TODO(MULTIGRID): need to be able to multiply beatgrids together
   audioBpm: Ember.computed.reads('audioMeta.bpm'),
-  syncBpm: Ember.computed.reads('metronomeBpm'),
+  syncBpm: Ember.computed.reads('metronome.bpm'),
   tempo: Ember.computed('audioBpm', 'syncBpm', function() {
     let audioBpm = this.get('audioBpm');
     let syncBpm = this.get('syncBpm');
@@ -78,11 +78,11 @@ export default Ember.Mixin.create(
     return audioBeatGrid && audioBeatGrid.beatToTime(currentAudioBeat);
   },
 
-  schedulingDidChange: Ember.observer('audioStartBeat', 'audioBeatCount', function() {
-    Ember.run.once(this, 'scheduleStart');
-  }).on('metronome.schedule'),
+  audioScheduleDidChange: Ember.observer('audioStartBeat', 'audioBeatCount', function() {
+    Ember.run.once(this, 'startSource');
+  }).on('schedule'),
 
-  scheduleStart() {
+  startSource() {
     let metronome = this.get('metronome');
     let when = metronome.beatToTime(this.get('startBeat'));
     let offset = this.getCurrentAudioTime();
@@ -90,9 +90,9 @@ export default Ember.Mixin.create(
     this.get('trackSourceNode').start(when, offset, duration);
   },
 
-  unschedule: function() {
+  stopSource: function() {
     this.get('trackSourceNode').stop();
-  }.on('metronome.unschedule'),
+  }.on('unschedule'),
 
   //
   // Web Audio Nodes

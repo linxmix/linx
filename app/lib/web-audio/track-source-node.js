@@ -5,10 +5,11 @@ import RequireAttributes from 'linx/lib/require-attributes';
 
 // TODO(REFACTOR): create base track FX chain + audio source node + soundtouch node
 export default BufferSourceNode.extend(
-  RequireAttributes('trackAudioBinary'), {
+  RequireAttributes('track'), {
 
   // implement audio-source-node
-  decodedArrayBuffer: Ember.computed.reads('trackAudioBinary.decodedArrayBuffer.content'),
+  audioBinary: Ember.computed.reads('track.audioBinary'),
+  decodedArrayBuffer: Ember.computed.reads('audioBinary.decodedArrayBuffer.content'),
 });
 
 

@@ -2,21 +2,22 @@ import Ember from 'ember';
 
 import RequireAttributes from 'linx/lib/require-attributes';
 import OrderedHasManyItemMixin from '../models/ordered-has-many/item';
-import ReadinessMixin from '../readiness';
 
 import add from 'linx/lib/computed/add';
 import subtract from 'linx/lib/computed/subtract';
-import { isNumber } from 'linx/lib/utils';
+import { isNumber, clamp } from 'linx/lib/utils';
 
 // Interface for playable arrangement clips
+// Events: schedule, unschedule
 // Methods: getCurrentBeat
 // Properties: audioContext, metronome, outputNode
-export default Ember.Mixin.create({
+export default Ember.Mixin.create(Ember.Evented, {
 
-  // necessary params
+  // params
   componentName: null, // used to render arrangement-grid clip component
   arrangement: null,
   startBeat: null,
+  isMuted: false,
 
   outputNode: Ember.computed.reads('arrangement.inputNode'),
   metronome: Ember.computed.reads('arrangement.metronome'),
@@ -24,7 +25,8 @@ export default Ember.Mixin.create({
 
   // returns current beat from clip's frame of reference
   getCurrentBeat() {
-    // TODO(REFACTOR)
+    let currentBeat = this.get('metronome').getCurrentBeat() - this.get('startBeat');
+    return clamp(0, currentBeat, this.get('beatCount'));
   },
 
   endBeat: add('startBeat', 'beatCount'),
@@ -49,5 +51,18 @@ export default Ember.Mixin.create({
     return isNumber(beatCount) && beatCount > 0;
   }),
 
+  // TODO(REFACTOR): turn isValid into validness mixin?
   isValid: Ember.computed.and('isValidStartBeat', 'isValidEndBeat', 'isValidBeatCount'),
+
+  clipScheduleDidChange: Ember.observer('isValid', 'isMuted', 'startBeat', 'beatCount', 'metronome.absSeekTime', 'metronome.isPlaying', function() {
+    Ember.run.once(this, 'triggerScheduleEvents');
+  }),
+
+  triggerScheduleEvents() {
+    this.trigger('unschedule');
+
+    if (this.get('metronome.isPlaying')) {
+      this.trigger('schedule');
+    }
+  },
 });
