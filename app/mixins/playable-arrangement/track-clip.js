@@ -1,5 +1,6 @@
 import Ember from 'ember';
 
+import RequireAttributes from 'linx/lib/require-attributes';
 import PlayableClipMixin from './clip';
 import TrackSourceNode from 'linx/lib/web-audio/track-source-node';
 import TrackGainNode from 'linx/lib/web-audio/track-gain-node';

@@ -11,26 +11,27 @@ import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 import describeAttrs from 'linx/tests/helpers/describe-attrs';
 import { asResolvedPromise } from 'linx/lib/utils';
 
-describe.skip('MixItemModel', function() {
+describe('MixItemModel', function() {
   setupTestEnvironment();
 
-  let mixItem;
+  let mix, mixItem;
 
   beforeEach(function() {
-    console.log("before factory make");
-    mixItem = this.factory.make('mix/item');
-    console.log("after factory make");
+    mix = this.factory.make('mix', {
+      _mixItems: this.factory.makeList('mix/item', 1),
+    });
+    mixItem = mix.objectAt(0);
   });
 
   describeAttrs('fromTrackClip', {
-    subject() { console.log('subject'); let x = mixItem.get('fromTrackClip.content'); console.log('after subject'); return x},
+    subject() { return mixItem.get('fromTrackClip'); },
     track() { return mixItem.get('fromTrack.content'); },
     arrangement() { return mixItem.get('mix.content'); },
     toTransitionClip() { return mixItem.get('transitionClip'); },
   });
 
   describeAttrs('toTrackClip', {
-    subject() { return mixItem.get('toTrackClip.content'); },
+    subject() { return mixItem.get('toTrackClip'); },
     track() { return mixItem.get('toTrack.content'); },
     arrangement() { return mixItem.get('mix.content'); },
     fromTransitionClip() { return mixItem.get('transitionClip'); },

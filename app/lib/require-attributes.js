@@ -13,14 +13,25 @@
 
 import Ember from 'ember';
 
+import { asResolvedPromise } from 'linx/lib/utils';
+
 export default function(...attributes) {
   return Ember.Mixin.create({
     _assertRequiredAttributes: function() {
-      attributes.forEach((attribute) => {
-        Ember.assert('Must specify a ' + attribute + ' when creating a ' + this.get('constructor'),
-          !Ember.isNone(this.get(attribute)));
+      let readyPromise;
+
+      asResolvedPromise(readyPromise).then(() => {
+        assertRequiredAttributes(this, attributes);
       });
+
       this._super.apply(this, arguments);
     }.on('init')
+  });
+}
+
+function assertRequiredAttributes(context, attributes) {
+  attributes.forEach((attribute) => {
+    Ember.assert('Must specify a ' + attribute + ' when creating a ' + context.get('constructor'),
+      !Ember.isNone(context.get(attribute)));
   });
 }

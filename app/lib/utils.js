@@ -35,6 +35,10 @@ export const isObject = function(object) {
   return Ember.typeOf(object) === 'object';
 };
 
+export const isFunction = function(object) {
+  return Ember.typeOf(object) === 'function';
+};
+
 export const isString = function(str) {
   return Ember.typeOf(str) === 'string';
 };

@@ -8,7 +8,6 @@ import {
 import { expect } from 'chai';
 
 import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
-import makeTransition from 'linx/tests/helpers/make-transition';
 import describeAttrs from 'linx/tests/helpers/describe-attrs';
 
 describe('MixModel', function() {
@@ -20,18 +19,20 @@ describe('MixModel', function() {
     mix = this.factory.make('mix');
   });
 
+  it('exists', function() {
+    expect(mix).to.be.ok;
+  });
+
   describe('without matching transitions', function() {
     let transitions, tracks, numTransitions = 10;
 
     beforeEach(function() {
-      transitions = [];
-      tracks = [];
-      for (let i = 0; i < numTransitions; i++) {
-        let { transition, fromTrack, toTrack } = makeTransition.call(this);
-
-        transitions.push(transition);
-        tracks.addObjects([fromTrack, toTrack]);
-      }
+      transitions = this.factory.makeList('transition', numTransitions);
+      tracks = transitions.reduce((tracks, transition) => {
+        tracks.push(transition.get('fromTrack.content'));
+        tracks.push(transition.get('toTrack.content'));
+        return tracks;
+      }, []);
 
       mix.appendTransitions(transitions);
 
@@ -82,17 +83,15 @@ describe('MixModel', function() {
     let prevItem, item, nextItem;
 
     beforeEach(function() {
-      let prevResults = makeTransition.call(this);
-      prevTransition = prevResults.transition;
+      prevTransition = this.factory.make('transition');
+      nextTransition = this.factory.make('transition');
 
-      let nextResults = makeTransition.call(this);
-      nextTransition = nextResults.transition;
-
-      let results = makeTransition.call(this, {
-        fromTrack: prevResults.toTrack,
-        toTrack: nextResults.fromTrack
+      console.log("pre make transitoin", prevTransition.get('toTrack.content'), nextTransition.get('fromTrack.content'));
+      transition = this.factory.make('transition', {
+        fromTrack: prevTransition.get('toTrack.content'),
+        toTrack: nextTransition.get('fromTrack.content'),
       });
-      transition = results.transition;
+      console.log("post make transitoin");
 
       prevItem = mix.appendTransition(prevTransition);
       item = mix.appendTransition(transition);

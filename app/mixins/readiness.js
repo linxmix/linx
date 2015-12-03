@@ -34,7 +34,8 @@ export default function(propertyPath) {
 
     isReady: false,
 
-    _logReadiness() {
+    // debugging helper
+    logReadiness() {
       console.log('isReady', this.get('isReady'));
 
       this.get('_readinessPaths').map((path) => {
