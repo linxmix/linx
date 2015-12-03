@@ -38,7 +38,9 @@ export default DS.Model.extend(
     return arrangement;
   }),
 
-  // TODO(REFACTOR): don't store markers, store times, and generate markers from those timestamp
+  // TODO(REFACTOR): instead of withDefaultModel for these, define them as normal relationships.
+  // then provide methods setFromTrack, setToTrack which call setFromTrackMarker, setToTrackMarker
+  // that solves the below TODO's
   // TODO: what if tracks are switched out after the transition has been made?
   // TODO: what if tracks are not present when transition is made?
   _fromTrackMarker: DS.belongsTo('track/audio-meta/marker', { async: true }),
@@ -61,54 +63,14 @@ export default DS.Model.extend(
     });
   }),
 
-  fromTrackEndBeat: Ember.computed.reads('fromTrackMarker.startBeat'),
-  toTrackStartBeat: Ember.computed.reads('toTrackMarker.startBeat'),
-
-  // TODO(TRANSITION): figure out what else is necessary
+  fromTrackEndBeat: Ember.computed.alias('fromTrackMarker.startBeat'),
+  toTrackStartBeat: Ember.computed.alias('toTrackMarker.startBeat'),
+  fromTrackEnd: Ember.computed.alias('fromTrackMarker.start'),
+  toTrackStart: Ember.computed.alias('toTrackMarker.start'),
 
   // TODO(TRANSITION): fix this
   setTransitionNumBeats(numBeats) {
     this.get('arrangement.clips.lastObject').set('numBeats', numBeats);
-  },
-
-  // sets fromTrackMarker to given time in fromTrack
-  setFromTrackEnd: function(time) {
-    Ember.assert('Transition.setFromTrackEnd requires a valid number', isNumber(time));
-
-    return this.get('fromTrackMarker').then((marker) => {
-      marker.set('start', time);
-      return marker;
-    });
-  },
-
-  // sets fromTrackMarker to given beat in fromTrack
-  setFromTrackEndBeat: function(beat) {
-    Ember.assert('Transition.setFromTrackEndBeat requires a valid number', isNumber(beat));
-
-    return this.get('fromTrackMarker').then((marker) => {
-      marker.set('startBeat', beat);
-      return marker;
-    });
-  },
-
-  // sets toTrackMarker to given time in toTrack
-  setToTrackStart: function(time) {
-    Ember.assert('Transition.setToTrackStart requires a valid number', isNumber(time));
-
-    return this.get('toTrackMarker').then((marker) => {
-      marker.set('start', time);
-      return marker;
-    });
-  },
-
-  // sets toTrackMarker to given beat in toTrack
-  setToTrackStartBeat: function(beat) {
-    Ember.assert('Transition.setToTrackStartBeat requires a valid number', isNumber(beat));
-
-    return this.get('toTrackMarker').then((marker) => {
-      marker.set('startBeat', beat);
-      return marker;
-    });
   },
 
   // create partial mix with fromTrack, transition, toTrack

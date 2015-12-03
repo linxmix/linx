@@ -119,8 +119,8 @@ export default DS.Model.extend(
 
       return Ember.RSVP.all([
         // TODO(REFACTOR): this should ideally be first and last quantized bar
-        transition.setFromTrackEndBeat(Math.round(fromTrack.get('audioMeta.endBeat'))),
-        transition.setToTrackStartBeat(Math.round(toTrack.get('audioMeta.startBeat'))),
+        transition.set('fromTrackEndBeat', Math.round(fromTrack.get('audioMeta.endBeat'))),
+        transition.set('toTrackStartBeat', Math.round(toTrack.get('audioMeta.startBeat'))),
         transition.get('arrangement').then((arrangement) => {
           let automationClip = this.get('store').createRecord('arrangement/automation-clip', {
             numBeats: 16,
