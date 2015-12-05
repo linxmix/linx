@@ -31,14 +31,13 @@ export default DS.Model.extend(
 
   isArrangementReady: Ember.computed.bool('_hasManiesAreFulfilled'),
 
-  _hasManiesAreFulfilled: Ember.computed.and('trackClips.isFulfilled', 'transitionClips.isFulfilled', 'mixClips.isFulfilled', 'automationClips.isFulfilled'),
+  // _hasManiesAreFulfilled: Ember.computed.and('trackClips.isFulfilled', 'transitionClips.isFulfilled', 'mixClips.isFulfilled', 'automationClips.isFulfilled'),
+  _hasManiesAreFulfilled: Ember.computed.and('trackClips.isFulfilled', 'automationClips.isFulfilled'),
 
   clips: Ember.computed(() => { return []; }),
   updateClips: function() {
     if (this.get('_hasManiesAreFulfilled')) {
-      Ember.run.next(() => {
-        Ember.run.once(this, '_updateClips');
-      });
+      Ember.run.once(this, '_updateClips');
     }
   }.observes('_hasManiesAreFulfilled', 'trackClips.[]', 'transitionClips.[]', 'mixClips.[]', 'automationClips.[]'),
 

@@ -43,6 +43,8 @@ describe('MixItemModel', function() {
     // TODO(TRANSITION): make this work for passing in only one track?
     describe('without constraints', function() {
       beforeEach(function() {
+        this.timeout(5000); // lots of saving going on in generateTransition
+
         fromTrack = this.factory.make('track');
         toTrack = this.factory.make('track');
         Ember.run(() => {
@@ -52,21 +54,21 @@ describe('MixItemModel', function() {
         });
       });
 
-      describeAttrs('generatedTransition', {
-        subject() { return generatedTransition; },
-        'fromTrack.content': () => fromTrack,
-        'toTrack.content': () => toTrack,
-        fromTrackEndBeat() { return ~~fromTrack.get('audioMeta.endBeat'); },
-        toTrackStartBeat() { return ~~toTrack.get('audioMeta.startBeat'); },
-        numBeats: 16,
-      });
-
       it('set transition on item model', function() {
         expect(mixItem.get('transition.content')).to.equal(generatedTransition);
       });
 
       it('returns a transition', function() {
-        expect(transition.get('constructor.modelName')).to.equal('transition');
+        expect(generatedTransition.get('constructor.modelName')).to.equal('transition');
+      });
+
+      describeAttrs('generatedTransition', {
+        subject() { return generatedTransition; },
+        'fromTrack.content': () => fromTrack,
+        'toTrack.content': () => toTrack,
+        fromTrackEndBeat() { return fromTrack.get('audioMeta.lastWholeBeat'); },
+        toTrackStartBeat() { return toTrack.get('audioMeta.firstWholeBeat'); },
+        beatCount: 16,
       });
     });
 

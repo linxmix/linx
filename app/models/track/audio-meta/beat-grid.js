@@ -172,3 +172,7 @@ export const computedBarToBeat = beatGridPropertyGenerator('barToBeat');
 // bar | time
 export const computedBarToTime = beatGridPropertyGenerator('barToTime');
 export const computedTimeToBar = beatGridPropertyGenerator('timeToBar');
+
+// quantize
+export const computedQuantizeBeat = beatGridPropertyGenerator('quantizeBeat');
+export const computedQuantizeBar = beatGridPropertyGenerator('quantizeBar');

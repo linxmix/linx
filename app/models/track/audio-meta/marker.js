@@ -2,6 +2,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import { isNumber } from 'linx/lib/utils';
+import { computedQuantizeBeat, computedQuantizeBar } from './beat-grid';
 
 export const GRID_MARKER_TYPE = 'grid';
 export const SECTION_MARKER_TYPE = 'section';
@@ -41,6 +42,7 @@ export default DS.Model.extend({
       return beat;
     }
   }),
+  quantizeStartBeat: computedQuantizeBeat('beatGrid', 'startBeat'),
 
   startBar: Ember.computed('beatGrid.barScale', 'start', {
     get(key) {
@@ -58,4 +60,5 @@ export default DS.Model.extend({
       return bar;
     }
   }),
+  quantizeStartBar: computedQuantizeBar('beatGrid', 'startBar'),
 });

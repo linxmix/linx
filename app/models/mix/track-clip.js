@@ -26,9 +26,8 @@ export default Ember.Object.extend(
     'audioEndBeatWithoutTransition'
   ),
 
-  // TODO(REFACTOR): better defaults for these? in theory we want to snap to first and last bar
-  audioStartBeatWithoutTransition: 0,
-  audioEndBeatWithoutTransition: Ember.computed.reads('audioMeta.endBeat'),
+  audioStartBeatWithoutTransition: Ember.computed.reads('audioMeta.firstWholeBeat'),
+  audioEndBeatWithoutTransition: Ember.computed.reads('audioMeta.lastWholeBeat'),
 
   audioStartBeatWithTransition: Ember.computed.reads('prevTransition.toTrackStartBeat'),
   audioEndBeatWithTransition: Ember.computed.reads('nextTransition.fromTrackEndBeat'),

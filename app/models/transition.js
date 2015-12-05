@@ -25,8 +25,10 @@ export default DS.Model.extend(
   fromTrack: DS.belongsTo('track', { async: true }),
   toTrack: DS.belongsTo('track', { async: true }),
 
+  beatCount: Ember.computed.reads('arrangement.beatCount'),
+
+  // implement readiness
   isTransitionReady: Ember.computed.and('fromTrack.isReady', 'toTrack.isReady'),
-  numBeats: Ember.computed.reads('arrangement.numBeats'),
 
   // the transition's arrangement
   _arrangement: DS.belongsTo('arrangement', { async: true }),
@@ -69,8 +71,8 @@ export default DS.Model.extend(
   toTrackStart: Ember.computed.alias('toTrackMarker.start'),
 
   // TODO(TRANSITION): fix this
-  setTransitionNumBeats(numBeats) {
-    this.get('arrangement.clips.lastObject').set('numBeats', numBeats);
+  setTransitionBeatCount(beatCount) {
+    this.get('arrangement.clips.lastObject').set('beatCount', beatCount);
   },
 
   // create partial mix with fromTrack, transition, toTrack

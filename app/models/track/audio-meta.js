@@ -9,7 +9,9 @@ import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationshi
 import {
   default as BeatGrid,
   computedTimeToBeat,
-  computedTimeToBar
+  computedTimeToBar,
+  computedBarToBeat,
+  computedQuantizeBar,
 } from './audio-meta/beat-grid';
 import {
   GRID_MARKER_TYPE,
@@ -65,7 +67,15 @@ export default DS.Model.extend(
   halfBeatCount: Ember.computed('beatCount', function() {
     return this.get('beatCount') / 2.0;
   }),
-  centerBeat: add('startBeat', 'halfBeatCount'),
+  halfBarCount: Ember.computed('halfBeatCount', 'timeSignature', function() {
+    return this.get('halfBeatCount') / this.get('timeSignature');
+  }),
+  centerBeat: add('firstBeat', 'halfBeatCount'),
+
+  firstWholeBeat: 0,
+  firstWholeBar: 0,
+  lastWholeBeat: computedBarToBeat('beatGrid', 'lastWholeBar'),
+  lastWholeBar: computedQuantizeBar('beatGrid', 'endBar'),
 
   // TODO: implement this, and move to audio-meta/beat-grid?
   // amount by which echonest analysis is off from the downbeats

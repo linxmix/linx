@@ -117,23 +117,21 @@ export default DS.Model.extend(
         toTrack,
       });
 
-      return Ember.RSVP.all([
-        // TODO(REFACTOR): this should ideally be first and last quantized bar
-        transition.set('fromTrackEndBeat', Math.round(fromTrack.get('audioMeta.endBeat'))),
-        transition.set('toTrackStartBeat', Math.round(toTrack.get('audioMeta.startBeat'))),
-        transition.get('arrangement').then((arrangement) => {
+      return transition.get('readyPromise').then(() => {
+        transition.set('fromTrackEndBeat', fromTrack.get('audioMeta.lastWholeBeat'));
+        transition.set('toTrackStartBeat', toTrack.get('audioMeta.firstWholeBeat'));
+        return transition.get('arrangement').then((arrangement) => {
           let automationClip = this.get('store').createRecord('arrangement/automation-clip', {
-            numBeats: 16,
+            beatCount: 16,
           });
           arrangement.get('automationClips').addObject(automationClip);
           return arrangement.save().then(() => {
             return automationClip.save();
           });
-        })
-      ]).then(() => {
+        });
+      }).then(() => {
         return transition;
       });
     });
   },
-
 });

@@ -1,6 +1,7 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
+import ReadinessMixin from 'linx/mixins/readiness';
 import RequireAttributes from 'linx/lib/require-attributes';
 import ArrangementClipMixin from 'linx/mixins/playable-arrangement/arrangement-clip';
 import { isNumber } from 'linx/lib/utils';
@@ -10,6 +11,7 @@ import { propertyOrDefault } from 'linx/lib/computed/ternary';
 
 export default Ember.Object.extend(
   ArrangementClipMixin,
+  ReadinessMixin('isTransitionClipReady'),
   RequireAttributes('mixItem'), {
 
   // implementing Clip
@@ -19,6 +21,9 @@ export default Ember.Object.extend(
 
   // implementing arrangement-clip
   nestedArrangement: Ember.computed.reads('transition.arrangement'),
+
+  // implementing readiness
+  isTransitionClipReady: Ember.computed.reads('transition.isReady'),
 
   // params
   transition: Ember.computed.reads('mixItem.transition'),

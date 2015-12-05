@@ -13,5 +13,8 @@ export default Clip.extend(
   audioStartBeat: DS.attr('number'),
   audioEndBeat: DS.attr('number'),
 
+  // audioStartBeatWithoutTransition: Ember.computed.reads('audioMeta.firstWholeBeat'),
+  // audioEndBeatWithoutTransition: Ember.computed.reads('audioMeta.lastWholeBeat'),
+
   track: DS.belongsTo('track', { async: true }),
 });

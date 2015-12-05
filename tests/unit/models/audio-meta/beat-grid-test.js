@@ -107,7 +107,7 @@ describe('BeatGrid', function() {
     let beat;
 
     beforeEach(function() {
-      beat = audioMeta.get('halfBeatCount');
+      beat = audioMeta.get('halfBeatCount') + 1.2345;
     });
 
     it('operates correctly', function() {
@@ -120,7 +120,7 @@ describe('BeatGrid', function() {
     let bar;
 
     beforeEach(function() {
-      bar = audioMeta.get('startBar');
+      bar = audioMeta.get('halfBarCount') + 1.2345;
     });
 
     it('operates correctly', function() {

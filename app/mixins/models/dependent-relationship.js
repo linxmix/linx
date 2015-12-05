@@ -96,10 +96,10 @@ export default function(propertyPath) {
     },
 
     // implement readiness mixin
-    _areDependentModelsReady: Ember.computed('dependentModels.@each.isLoaded', 'dependentModels.@each.id', function() {
+    _areDependentModelsReady: Ember.computed('dependentModels.@each.isLoaded', function() {
       return this.get('dependentModels').every((dependentModel) => {
         // console.log("dependent model isReady", this.constructor.modelName, !dependentModel || !dependentModel.get('id') || dependentModel.get('isLoaded'), dependentModel)
-        return !dependentModel || !dependentModel.get('id') || dependentModel.get('isLoaded');
+        return !dependentModel || dependentModel.get('isLoaded');
       });
     }),
   };

@@ -4,6 +4,7 @@ import {
   it
 } from 'mocha';
 import { expect } from 'chai';
+
 import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 import describeAttrs from 'linx/tests/helpers/describe-attrs';
 
@@ -13,7 +14,7 @@ import {
   FADE_IN_MARKER_TYPE,
   FADE_OUT_MARKER_TYPE,
   USER_MARKER_TYPE,
-} from 'linx/models/marker';
+} from 'linx/models/track/audio-meta/marker';
 
 describe('AudioMetaModel', function() {
   setupTestEnvironment();
@@ -49,9 +50,17 @@ describe('AudioMetaModel', function() {
       key() { return analysis.get('key'); },
       mode() { return analysis.get('mode'); },
       loudness() { return analysis.get('loudness'); },
-      startBeat: -3.505014027252512,
-      endBeat() { return audioMeta.get('numBeats') - Math.abs(audioMeta.get('startBeat')); },
-      numBeats: 783.7039690866668,
+
+      startBeat: -0.29966005267229856,
+      startBar: -0.07491501316807464,
+      endBeat() { return audioMeta.get('beatCount') - Math.abs(audioMeta.get('startBeat')); },
+      beatCount: 783.7039690866668,
+
+      firstWholeBeat: 0,
+      firstWholeBar: 0,
+      lastWholeBeat: 776,
+      lastWholeBar: 194,
+
       // TODO(MULTIGRID): this needs to change
       'sortedGridMarkers.length': 1,
       'sortedSectionMarkers.length': function() { return analysis.get('confidentSections.length'); },

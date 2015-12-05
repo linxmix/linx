@@ -10,6 +10,7 @@ export default Ember.Mixin.create(
   content: Ember.computed.reads('node'),
   node: null,
   outputNode: null,
+  isConnected: false,
   controls: Ember.computed(() => []),
 
   getControl(controlName) {
@@ -22,12 +23,14 @@ export default Ember.Mixin.create(
 
     if (node && outputNode) {
       node.connect(outputNode);
+      this.set('isConnected', true);
     }
   }).on('init'),
 
   disconnect() {
     let node = this.get('node');
     node && node.disconnect();
+    this.set('isConnected', false);
   },
 
   destroy() {

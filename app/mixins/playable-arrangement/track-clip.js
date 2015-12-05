@@ -27,7 +27,7 @@ export default Ember.Mixin.create(
   audioEndBeat: null,
 
   // implementing readiness
-  isTrackClipReady: Ember.computed.and('trackSourceNode.isReady', 'track.isReady'),
+  isTrackClipReady: Ember.computed.and('trackSourceNode.isReady', 'trackSourceNode.isConnected', 'track.isReady'),
 
   // implement playable-clip
   componentName: 'arrangement-grid/track-clip',

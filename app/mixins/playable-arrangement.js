@@ -21,9 +21,11 @@ export default Ember.Mixin.create(
     return Metronome.create({ audioContext: this.get('audioContext') });
   }),
 
-  isPlayableArrangementReady: Ember.computed('readyClips.length', 'validClips.length', function() {
-    return this.get('readyClips.length') >= this.get('validClips.length');
-  }),
+  // TODO(REFACTOR): arrangement shouldn't have to wait on clips? clips will just update when loaded
+  isPlayableArrangementReady: true,
+  // isPlayableArrangementReady: Ember.computed('readyClips.length', 'validClips.length', function() {
+  //   return this.get('readyClips.length') >= this.get('validClips.length');
+  // }),
 
   validClips: Ember.computed.filterBy('clips', 'isValid', true),
   readyClips: Ember.computed.filterBy('clips', 'isReady', true),
