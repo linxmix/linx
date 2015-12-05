@@ -1,8 +1,10 @@
 import Ember from 'ember';
+import d3 from 'd3';
 
 import LinearScale from 'linx/lib/linear-scale';
+import QuantizeScale from 'linx/lib/quantize-scale';
 import RequireAttributes from 'linx/lib/require-attributes';
-
+import computedObject from 'linx/lib/computed/object';
 import { timeToBeat, bpmToSpb, isNumber } from 'linx/lib/utils';
 
 export const BAR_QUANTIZATION = 'bar';
@@ -45,54 +47,60 @@ export default Ember.Object.extend(
     return this.get('barScale').getInverse(bar);
   },
 
-  // TODO(QUANTIZATION): refactor into quantile scales
-  getQuantizedBar(bar, quantization) {
-    let beat = this.barToBeat(bar);
-    let quantizedBeat = this.getQuantizedBeat(beat, quantization);
-    return this.beatToBar(quantizedBeat);
+  quantizeBeat(beat) {
+    return this.get('quantizeBeatScale').getPoint(beat);
   },
 
-  getQuantizedBeat(beat, quantization) {
-    switch (quantization) {
-      case BAR_QUANTIZATION:
-        return this.barToBeat(Math.round(this.beatToBar(beat)));
-      case BEAT_QUANTIZATION:
-        return Math.round(beat);
-      default:
-        return beat;
-    }
+  quantizeBar(bar) {
+    return this.get('quantizeBarScale').getPoint(bar);
   },
 
-  getQuantizedTime(time, quantization) {
-    let beat = this.timeToBeat(time);
-    let quantizedBeat = this.getQuantizedBeat(beat, quantization);
-    return this.beatToTime(quantizedBeat);
-  },
-
+  // Beat Scale
   // domain is time [s]
   // range is beats [b]
-  beatScale: Ember.computed('firstBarOffset', 'duration', 'numBeats', function() {
-    let { duration, firstBarOffset, bpm } = this.getProperties('duration', 'firstBarOffset', 'bpm');
+  beatScaleDomain: Ember.computed('duration', function() {
+    return [0, this.get('duration')];
+  }),
+  beatScaleRange: Ember.computed('firstBarOffset', 'beatCount', function() {
+    let { firstBarOffset, beatCount } = this.getProperties('firstBarOffset', 'beatCount');
+    return [-firstBarOffset, beatCount - firstBarOffset];
+  }),
+  beatScale: computedObject(LinearScale, {
+    'domain': 'beatScaleDomain',
+    'range': 'beatScaleRange',
+  }),
+  quantizeBeatScaleRange: Ember.computed('beatScaleRange', function() {
+    let beatScale = this.get('beatScale');
+    let [rangeMin, rangeMax] = beatScale.get('range');
+    return d3.range(Math.ceil(rangeMin), Math.floor(rangeMax), 1);
+  }),
+  quantizeBeatScale: computedObject(QuantizeScale, {
+    'domain': 'beatScaleRange',
+    'range': 'quantizeBeatScaleRange',
+  }),
 
-    return LinearScale.create({
-      domain: [0, duration],
-      range: [-firstBarOffset, this.get('numBeats') - firstBarOffset],
-    });
-  }).readOnly(),
-
+  // Bar Scale
   // domain is time [s]
   // range is bars [ba]
-  barScale: Ember.computed('beatScale.domain', 'beatScale.range', 'timeSignature', function() {
-    let timeSignature = this.get('timeSignature');
-    let beatScale = this.get('beatScale');
-    let domain = beatScale.get('domain');
+  barScaleRange: Ember.computed('beatScaleRange', 'timeSignature', function() {
+    let { beatScale, timeSignature } = this.getProperties('beatScale', 'timeSignature');
     let [rangeMin, rangeMax] = beatScale.get('range');
 
-    return LinearScale.create({
-      domain,
-      range: [rangeMin / timeSignature, rangeMax / timeSignature]
-    });
-  }).readOnly(),
+    return [rangeMin / timeSignature, rangeMax / timeSignature];
+  }),
+  barScale: computedObject(LinearScale, {
+    'domain': 'beatScaleDomain',
+    'range': 'barScaleRange',
+  }),
+  quantizeBarScaleRange: Ember.computed('barScaleRange', function() {
+    let barScale = this.get('barScale');
+    let [rangeMin, rangeMax] = barScale.get('range');
+    return d3.range(Math.ceil(rangeMin), Math.floor(rangeMax), 1);
+  }),
+  quantizeBarScale: computedObject(QuantizeScale, {
+    'domain': 'barScaleRange',
+    'range': 'quantizeBarScaleRange',
+  }),
 
   // TODO(MULTIGRID): adapt for multiple grid markers. Piecewise-Scale? or a long domain/range?
   gridMarker: Ember.computed.reads('audioMeta.sortedGridMarkers.firstObject'),
@@ -105,7 +113,7 @@ export default Ember.Object.extend(
   },
 
   // TODO(MULTIGRID): this will depend on the grid markers and bpm
-  numBeats: Ember.computed('duration', 'bpm', function() {
+  beatCount: Ember.computed('duration', 'bpm', function() {
     return timeToBeat(this.get('duration'), this.get('bpm'));
   }),
 

@@ -1,20 +1,17 @@
 import Ember from 'ember';
+
 import {
   beforeEach,
   describe,
   it
 } from 'mocha';
 import { expect } from 'chai';
-import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 
-import {
-  BAR_QUANTIZATION,
-  BEAT_QUANTIZATION,
-  TICK_QUANTIZATION,
-  MS10_QUANTIZATION,
-  MS1_QUANTIZATION,
-  SAMPLE_QUANTIZATION,
-} from 'linx/models/track/audio-meta/beat-grid';
+import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
+import describeAttrs from 'linx/tests/helpers/describe-attrs';
+import { timeToBeat } from 'linx/lib/utils';
+
+const EPSILON = 0.005;
 
 describe('BeatGrid', function() {
   setupTestEnvironment();
@@ -26,16 +23,38 @@ describe('BeatGrid', function() {
     beatGrid = audioMeta.get('beatGrid');
   });
 
+  describeAttrs('beatGrid', {
+    subject() { return beatGrid; },
+    beatCount() { return timeToBeat(audioMeta.get('duration'), audioMeta.get('bpm')); },
+  });
+
   it('has correct firstBarOffset', function() {
-    expect(beatGrid.get('firstBarOffset')).to.be.closeTo(0.2991750347962758, 0.005);
+    Ember.run(() => {
+      // test with specific numbers
+      beatGrid.get('gridMarker').set('start', 50.34);
+      beatGrid.setProperties({
+        bpm: 128.005,
+        timeSignature: 4,
+      });
+    });
+
+    expect(beatGrid.get('firstBarOffset')).to.be.closeTo(2.984703827177979, EPSILON);
   });
 
   it('has valid beatScale', function() {
     expect(beatGrid.get('beatScale')).to.be.ok;
   });
 
+  it('has valid quantizedBeatScale', function() {
+    expect(beatGrid.get('quantizedBeatScale')).to.equal(beatGrid.get('beatScale.quantizedScale'));
+  });
+
   it('has valid barScale', function() {
     expect(beatGrid.get('barScale')).to.be.ok;
+  });
+
+  it('has valid quantizedBarScale', function() {
+    expect(beatGrid.get('quantizedBarScale')).to.equal(beatGrid.get('barScale.quantizedScale'));
   });
 
   describe('#timeToBeat', function() {
@@ -44,7 +63,7 @@ describe('BeatGrid', function() {
     });
 
     it('upper bound is correct', function() {
-      expect(beatGrid.timeToBeat(audioMeta.get('duration'))).to.equal(audioMeta.get('numBeats') - beatGrid.get('firstBarOffset'));
+      expect(beatGrid.timeToBeat(audioMeta.get('duration'))).to.equal(audioMeta.get('beatCount') - beatGrid.get('firstBarOffset'));
     });
   });
 
@@ -84,29 +103,29 @@ describe('BeatGrid', function() {
     });
   });
 
-  describe('#getQuantizedBeat', function() {
-    let beat = 1234.56789, timeSignature;
+  describe('#quantizeBeat', function() {
+    let beat;
 
     beforeEach(function() {
-      timeSignature = audioMeta.get('timeSignature');
+      beat = audioMeta.get('halfBeatCount');
     });
 
-    it('BAR_QUANTIZATION is correct', function() {
-      let quantizedBeat = beatGrid.getQuantizedBeat(beat, BAR_QUANTIZATION);
+    it('operates correctly', function() {
+      let quantizeBeat = beatGrid.quantizeBeat(beat);
+      expect(quantizeBeat).to.be.closeTo(Math.round(beat), 1);
+    });
+  });
 
-      expect(quantizedBeat).to.equal(Math.round(beat / timeSignature) * timeSignature);
+  describe('#quantizeBar', function() {
+    let bar;
+
+    beforeEach(function() {
+      bar = audioMeta.get('startBar');
     });
 
-    it('BEAT_QUANTIZATION is correct', function() {
-      let quantizedBeat = beatGrid.getQuantizedBeat(beat, BEAT_QUANTIZATION);
-
-      expect(quantizedBeat).to.equal(Math.round(beat));
-    });
-
-    it('SAMPLE_QUANTIZATION is correct', function() {
-      let quantizedBeat = beatGrid.getQuantizedBeat(beat, SAMPLE_QUANTIZATION);
-
-      expect(quantizedBeat).to.equal(beat);
+    it('operates correctly', function() {
+      let quantizeBar = beatGrid.quantizeBar(bar);
+      expect(quantizeBar).to.be.closeTo(Math.round(bar), 1);
     });
   });
 });
