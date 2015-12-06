@@ -15,7 +15,7 @@ function getOrCreateModel(key, relPath, createModelFn) {
         this.set(relPath, model);
         return model;
 
-        // TODO: make save optional?
+        // TODO(CLEANUP): make save optional?
         // return model.save().then(() => {
           // return this.save().then(() => {
             // return model;

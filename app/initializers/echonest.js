@@ -28,15 +28,14 @@ var Echonest = Ember.Object.extend({
   fetchTrack: function(track) {
     return DS.PromiseObject.create({
       promise: this.uploadTrack(track).then((response) => {
-        var store = this.get('store');
         return this.get('store').findRecord('echonest/track', response.id);
       }),
     });
   },
 
   uploadTrack: function(track) {
-    console.log("fetching track from echonest", track);
-    var streamUrl = track.get('streamUrl');
+    let streamUrl = track.get('audioBinary.streamUrl');
+    console.log("uploading track to echonest", track, streamUrl);
 
     Ember.assert('Track must have streamUrl to upload', streamUrl);
 

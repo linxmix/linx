@@ -1,4 +1,4 @@
-import EchonestAdapter from './echonest';
+import EchonestAdapter from '../echonest';
 
 export default EchonestAdapter.extend({
   // force no cache

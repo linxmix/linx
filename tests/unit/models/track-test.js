@@ -16,6 +16,7 @@ describe('TrackModel', function() {
     track = this.factory.make('giveitupforlove');
   });
 
+  // there are mockjaxes setup for upload to, profile from, and analysis from echonest
   describe('fetching audio-meta', function() {
     let echonestTrack, audioMeta;
 
@@ -27,6 +28,7 @@ describe('TrackModel', function() {
     });
 
     it('fetched echonest/track', function() {
+      let store = this.store;
       expect(echonestTrack).to.be.ok;
       expect(echonestTrack.get('id')).to.equal('TRAWOGC14E8320817F');
     });

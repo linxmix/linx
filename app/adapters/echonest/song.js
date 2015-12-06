@@ -1,5 +1,5 @@
 // credits to https://github.com/robwebdev/ember-cli-echonest
-import EchonestAdapter from './echonest';
+import EchonestAdapter from '../echonest';
 
 /**
   @module Adapters

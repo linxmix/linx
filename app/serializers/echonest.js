@@ -22,7 +22,7 @@ export default DS.RESTSerializer.extend({
     delete payload.response.status;
 
     Object.keys(payload.response).forEach(function (key) {
-      normalized['echonest_%@'.fmt(key)] = payload.response[key];
+      normalized['echonest/%@'.fmt(key)] = payload.response[key];
     });
 
     return this._super(store, primaryModelClass, normalized, id, requestType);

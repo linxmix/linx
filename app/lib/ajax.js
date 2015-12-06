@@ -2,6 +2,7 @@ import Ember from 'ember';
 
 import RequireAttributes from 'linx/lib/require-attributes';
 
+// TODO(REFACTOR): can use ic-ajax here?
 // Low level ajax request, used where responseType: 'arraybuffer' is needed (which jQuery does not support).
 export default Ember.ObjectProxy.extend(
   Ember.PromiseProxyMixin,
@@ -54,8 +55,10 @@ export default Ember.ObjectProxy.extend(
   }),
 
   updateProgress(e) {
+    let percentComplete;
+
     if (e.lengthComputable) {
-      let percentComplete = e.loaded / e.total;
+      percentComplete = e.loaded / e.total;
     } else {
       // Approximate progress with an asymptotic
       // function, and assume downloads in the 1-3 MB range.
