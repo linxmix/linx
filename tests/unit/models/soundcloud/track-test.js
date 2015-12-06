@@ -21,7 +21,7 @@ describe('SoundcloudTrackModel', function() {
       // don't hit their API more times than necessary
       let promise;
       if (!soundcloudTrack) {
-        promise = this.store.find('soundcloudTrack', '89087927').then((model) => {
+        promise = this.store.find('soundcloud/track', '89087927').then((model) => {
           soundcloudTrack = model;
         });
       }
@@ -54,7 +54,7 @@ describe('SoundcloudTrackModel', function() {
       // don't hit their API more times than necessary
       let promise;
       if (!models) {
-        promise = this.store.query('soundcloudTrack', { q: 'beatfn' }).then((_models) => {
+        promise = this.store.query('soundcloud/track', { q: 'beatfn' }).then((_models) => {
           models = _models;
         });
       }
