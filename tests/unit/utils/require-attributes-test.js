@@ -59,4 +59,7 @@ describe('RequireAttributes', function() {
   DescribeRequiredAttributesBehaviours(Ember.Component);
   DescribeRequiredAttributesBehaviours(Ember.Controller);
   DescribeRequiredAttributesBehaviours(Ember.Object);
+
+  // TODO(CLEANUP): make this work. need to think more abstractly
+  // DescribeRequiredAttributesBehaviours(DS.Model);
 });

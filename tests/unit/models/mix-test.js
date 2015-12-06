@@ -71,12 +71,10 @@ describe('MixModel', function() {
       prevTransition = this.factory.make('transition');
       nextTransition = this.factory.make('transition');
 
-      console.log("pre make transitoin", prevTransition.get('toTrack.content'), nextTransition.get('fromTrack.content'));
       transition = this.factory.make('transition', {
         fromTrack: prevTransition.get('toTrack.content'),
         toTrack: nextTransition.get('fromTrack.content'),
       });
-      console.log("post make transitoin");
 
       prevItem = mix.appendTransition(prevTransition);
       item = mix.appendTransition(transition);

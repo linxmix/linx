@@ -29,6 +29,7 @@ export default function(propertyPath) {
           }]))
         );
       }
+    // TODO(CLEANUP): is 'ready' necessary here?
     // 'ready' is built into DS.Model
     }.on('init', 'ready'),
 

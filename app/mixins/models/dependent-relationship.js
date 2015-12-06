@@ -37,6 +37,8 @@ export default function(propertyPath) {
           }]))
         );
       }
+    // TODO(CLEANUP): do we need 'ready' here?
+    // 'ready' is built into DS.Model
     }.on('init', 'ready'),
 
     dependentModels: null,

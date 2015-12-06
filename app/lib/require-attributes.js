@@ -12,17 +12,20 @@
 // });
 
 import Ember from 'ember';
-
-import { asResolvedPromise } from 'linx/lib/utils';
+import DS from 'ember-data';
 
 export default function(...attributes) {
   return Ember.Mixin.create({
     _assertRequiredAttributes: function() {
-      let readyPromise;
 
-      asResolvedPromise(readyPromise).then(() => {
+      // if the object we're mixing into is a model, wait till it's ready
+      if (this instanceof DS.Model) {
+        this.one('ready', () => {
+          assertRequiredAttributes(this, attributes);
+        });
+      } else {
         assertRequiredAttributes(this, attributes);
-      });
+      }
 
       this._super.apply(this, arguments);
     }.on('init')

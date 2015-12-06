@@ -8,8 +8,6 @@ export default function computedObject(constructor, attributes) {
 
   args.push({
     get(key) {
-      // debugger
-      console.log('computedObject get', key, attributes);
       let attrs = keysToAttrs(this, keys, attributes);
       attrs.parentPropertyPath = key;
       return constructor.create(attrs);
