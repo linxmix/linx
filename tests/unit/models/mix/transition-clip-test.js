@@ -14,19 +14,12 @@ import { DummyArrangement } from 'linx/tests/unit/mixins/playable-arrangement-te
 describe('MixTransitionClip', function() {
   setupTestEnvironment();
 
-  let metronome, arrangement, transitionClip, mixItem, transition;
+  let transitionClip, mixItem, transition;
 
   beforeEach(function() {
-    transition = this.factory.make('transition');
-    mixItem = this.factory.make('mix/item', {
-      transition,
-    });
-    arrangement = DummyArrangement.create({
-      audioContext: this.audioContext,
-    });
-    metronome = arrangement.get('metronome');
+    mixItem = this.factory.make('mix/item');
+    transition = mixItem.get('transition.content');
     transitionClip = MixTransitionClip.create({
-      arrangement,
       mixItem,
     });
   });
@@ -35,35 +28,18 @@ describe('MixTransitionClip', function() {
     expect(transitionClip).to.be.ok;
   });
 
-  describeAttrs('basic transitionClip', {
-    subject() { return transitionClip; },
-    hasTransition: true,
-    isValid: true,
-    beatCount() { return transitionClip.get('transition.beatCount'); },
-  });
-
-  // TODO(REFACTOR): this doesnt maek sense.
   describe('with valid fromTrackClip and toTrackClip', function() {
-    let fromTrack, toTrack;
-
     beforeEach(function() {
-      fromTrack = this.factory.make('track');
-      toTrack = this.factory.make('track');
-
-      Ember.run(() => {
-        transition.setProperties({
-          fromTrack,
-          toTrack,
-        });
-      });
+      // debugger
     });
 
     describeAttrs('transitionClip', {
       subject() { return transitionClip; },
-      isReady: true,
+      hasTransition: true,
       isValid: true,
+      isReady: true,
       isReadyAndValid: true,
-      nestedArrangement() { return transition.get('arrangement'); },
+      'nestedArrangement.id'() { return transition.get('arrangement.id'); },
       fromTrackClip() { return mixItem.get('fromTrackClip'); },
       toTrackClip() { return mixItem.get('toTrackClip'); },
       startBeat() { return transition.get('toTrackClip.startBeat'); },

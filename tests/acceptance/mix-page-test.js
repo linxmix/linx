@@ -1,3 +1,5 @@
+import Ember from 'ember';
+
 import {
   describe,
   it,
@@ -5,12 +7,8 @@ import {
   afterEach
 } from 'mocha';
 import { expect } from 'chai';
-import Ember from 'ember';
 
 import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
-import makeTrack from 'linx/tests/helpers/make-track';
-import makeTransition from 'linx/tests/helpers/make-transition';
-
 import { asResolvedPromise } from 'linx/lib/utils';
 
 describe('Acceptance: MixPage', function() {

@@ -40,8 +40,8 @@ describe('MixTrackClip', function() {
       startBeat: 0,
       audioStartBeat() { return clip.get('audioStartBeatWithoutTransition'); },
       audioEndBeat() { return clip.get('audioEndBeatWithoutTransition'); },
-      audioStartBeatWithoutTransition: 0,
-      audioEndBeatWithoutTransition() { return clip.get('audioMeta.endBeat'); },
+      audioStartBeatWithoutTransition() { return clip.get('audioMeta.firstWholeBeat'); },
+      audioEndBeatWithoutTransition() { return clip.get('audioMeta.lastWholeBeat'); },
     });
   });
 
