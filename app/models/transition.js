@@ -3,28 +3,19 @@ import DS from 'ember-data';
 
 import ReadinessMixin from 'linx/mixins/readiness';
 import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
-
 import OrderedHasManyItemMixin from 'linx/mixins/models/ordered-has-many/item';
-
+import TrackPropertiesMixin from 'linx/mixins/models/transition/track-properties';
 import withDefaultModel from 'linx/lib/computed/with-default-model';
 import { isNumber } from 'linx/lib/utils';
-import {
-  TRANSITION_IN_MARKER_TYPE,
-  TRANSITION_OUT_MARKER_TYPE,
-} from './track/audio-meta/marker';
 
 export default DS.Model.extend(
-  DependentRelationshipMixin('fromTrackMarker'),
-  DependentRelationshipMixin('toTrackMarker'),
   DependentRelationshipMixin('arrangement'),
-  ReadinessMixin('isTransitionReady'), {
+  ReadinessMixin('isTransitionReady'),
+  TrackPropertiesMixin('fromTrack'),
+  TrackPropertiesMixin('toTrack'), {
 
   title: DS.attr('string'),
-
   mixItems: DS.hasMany('mix/item', { async: true }),
-  fromTrack: DS.belongsTo('track', { async: true }),
-  toTrack: DS.belongsTo('track', { async: true }),
-
   beatCount: Ember.computed.reads('arrangement.beatCount'),
 
   // implement readiness
@@ -40,41 +31,12 @@ export default DS.Model.extend(
     return arrangement;
   }),
 
-  // TODO(REFACTOR): instead of withDefaultModel for these, define them as normal relationships.
-  // then provide methods setFromTrack, setToTrack which call setFromTrackMarker, setToTrackMarker
-  // that solves the below TODO's
-  // TODO: what if tracks are switched out after the transition has been made?
-  // TODO: what if tracks are not present when transition is made?
-  _fromTrackMarker: DS.belongsTo('track/audio-meta/marker', { async: true }),
-  fromTrackMarker: withDefaultModel('_fromTrackMarker', function() {
-    return this.get('fromTrack.audioMeta').then((audioMeta) => {
-      return audioMeta && audioMeta.createMarker({
-        audioMeta,
-        type: TRANSITION_OUT_MARKER_TYPE,
-      });
-    });
-  }),
-
-  _toTrackMarker: DS.belongsTo('track/audio-meta/marker', { async: true }),
-  toTrackMarker: withDefaultModel('_toTrackMarker', function() {
-    return this.get('toTrack.audioMeta').then((audioMeta) => {
-      return audioMeta && audioMeta.createMarker({
-        audioMeta,
-        type: TRANSITION_IN_MARKER_TYPE,
-      });
-    });
-  }),
-
-  fromTrackEndBeat: Ember.computed.alias('fromTrackMarker.startBeat'),
-  toTrackStartBeat: Ember.computed.alias('toTrackMarker.startBeat'),
-  fromTrackEnd: Ember.computed.alias('fromTrackMarker.start'),
-  toTrackStart: Ember.computed.alias('toTrackMarker.start'),
-
   // TODO(TRANSITION): fix this
   setTransitionBeatCount(beatCount) {
     this.get('arrangement.clips.lastObject').set('beatCount', beatCount);
   },
 
+  // TODO(REFACTOR): this will change (i hope)
   // create partial mix with fromTrack, transition, toTrack
   generateMix() {
     return DS.PromiseObject.create({
@@ -84,5 +46,60 @@ export default DS.Model.extend(
         return mix;
       }),
     });
+  },
+
+  // optimizes this model as a transition between two tracks, with given constraints
+  // possible constraints:
+  // {
+  //   fromTrack,
+  //   toTrack,
+  //   preset,
+  //   minFromTrackEndBeat,
+  //   maxToTrackStartBeat,
+  //   fromTrackEnd,
+  //   toTrackStart,
+  // }
+  optimize(options = {}) {
+    return this.get('readyPromise').then(() => {
+      let { fromTrack, toTrack } = options;
+      fromTrack = fromTrack || this.get('fromTrack.content');
+      toTrack = toTrack || this.get('toTrack.content');
+
+      Ember.assert('Must have fromTrack and toTrack to optimizeTransition', Ember.isPresent(fromTrack) && Ember.isPresent(toTrack));
+
+      return Ember.RSVP.all([
+        fromTrack.get('readyPromise'),
+        toTrack.get('readyPromise'),
+      ]).then(() => {
+
+        let {
+          preset,
+          minFromTrackEndBeat,
+          maxToTrackStartBeat,
+          fromTrackEnd,
+          toTrackStart,
+        } = options;
+
+        // TODO(TRANSITION): improve this algorithm, add options and presets
+        this.set('fromTrackEndBeat', fromTrack.get('audioMeta.lastWholeBeat'));
+        this.set('toTrackStartBeat', toTrack.get('audioMeta.firstWholeBeat'));
+
+        // TODO(REFACTOR): do we need to destroy and recreate arrangement / automation-clip?
+        let arrangement = this.get('arrangement.content');
+        let automationClip = this.get('store').createRecord('arrangement/automation-clip', {
+          beatCount: 16,
+        });
+        arrangement.get('automationClips').addObject(automationClip);
+
+        return this;
+        // TODO(REFACTOR): does it makes sense to save here? probably not, so we can revert
+        // return arrangement.save().then(() => {
+        //   return automationClip.save().then(() => {
+        //     return this;
+        //   });
+        // });
+      });
+
+    })
   },
 });

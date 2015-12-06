@@ -61,21 +61,6 @@ describe('MixModel', function() {
         expect(mix.transitionAt(i)).to.equal(transition);
       });
     });
-
-    it('adjacent items do not share track clips', function() {
-      let prevItem = mix.objectAt(0);
-      let item = mix.objectAt(1);
-      let nextItem = mix.objectAt(2);
-
-      expect(prevItem.get('toTrackClip')).not.to.equal(item.get('fromTrackClip'));
-      expect(item.get('toTrackClip')).not.to.equal(nextItem.get('fromTrackClip'));
-    });
-
-    describeAttrs('item', {
-      subject() { return mix.objectAt(1); },
-      prevTransitionIsMatch: false,
-      nextTransitionIsMatch: false,
-    });
   });
 
   describe('with matching transitions', function() {
@@ -86,6 +71,7 @@ describe('MixModel', function() {
       prevTransition = this.factory.make('transition');
       nextTransition = this.factory.make('transition');
 
+      // TODO(REFACTORNOW)
       console.log("pre make transitoin", prevTransition.get('toTrack.content'), nextTransition.get('fromTrack.content'));
       transition = this.factory.make('transition', {
         fromTrack: prevTransition.get('toTrack.content'),
@@ -112,17 +98,6 @@ describe('MixModel', function() {
 
       'transitionClips.length': 3,
       'clips.length': () => 7,
-    });
-
-    it('adjacent items do share track clips', function() {
-      expect(prevItem.get('toTrackClip')).to.equal(item.get('fromTrackClip'));
-      expect(item.get('toTrackClip')).to.equal(nextItem.get('fromTrackClip'));
-    });
-
-    describeAttrs('item', {
-      subject() { return item; },
-      prevTransitionIsMatch: true,
-      nextTransitionIsMatch: true,
     });
   });
 });

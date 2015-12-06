@@ -10,16 +10,24 @@ import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationshi
 import equalProps from 'linx/lib/computed/equal-props';
 import computedObject from 'linx/lib/computed/object';
 import { variableTernary } from 'linx/lib/computed/ternary';
+import withDefaultModel from 'linx/lib/computed/with-default-model';
 
 export default DS.Model.extend(
   OrderedHasManyItemMixin('mix'),
   DependentRelationshipMixin('transition'), {
 
   mix: DS.belongsTo('mix', { async: true }),
-  transition: DS.belongsTo('transition', { async: true }),
+  _transition: DS.belongsTo('transition', { async: true }),
+  transition: withDefaultModel('_transition', function() {
+    // TODO(FIREBASE): have to fake title for Firebase to accept record
+    let transition = this.get('store').createRecord('transition', {
+      title: 'test title'
+    });
+    return transition;
+  }),
 
-  fromTrack: Ember.computed.reads('transition.fromTrack'),
-  toTrack: Ember.computed.reads('transition.toTrack'),
+  fromTrack: Ember.computed.alias('transition.fromTrack'),
+  toTrack: Ember.computed.alias('transition.toTrack'),
   hasValidTransition: Ember.computed.reads('transitionClip.isValid'),
 
   prevTransition: Ember.computed.reads('prevItem.transition'),
@@ -50,24 +58,10 @@ export default DS.Model.extend(
     'toTransitionClip': 'nextTransitionClip',
   }),
 
-  //
-  // Transition generation
-  //
-
-  assertTransition(options) {
+  // optimizes transition within this mix
+  optimizeTransition(options = {}) {
     return this.get('listReadyPromise').then(() => {
-      if (this.get('hasValidTransition')) {
-        return this.get('transition');
-      } else {
-        return this.generateTransition(options);
-      }
-    });
-  },
-
-  // generates and returns valid transition, if possible
-  generateTransition(options = {}) {
-    return this.get('listReadyPromise').then(() => {
-      let { prevTransition, nextTransition, hasValidTransition } = this.getProperties('prevTransition', 'nextTransition', 'hasValidTransition');
+      let { prevTransition, nextTransition } = this.getProperties('prevTransition', 'nextTransition');
 
       // add default constraints to options
       options = _.defaults({}, options, {
@@ -78,59 +72,8 @@ export default DS.Model.extend(
         maxToTrackStartBeat: nextTransition && nextTransition.get('fromTrackEndBeat'),
       });
 
-      if (hasValidTransition) {
-        console.log("generateTransition: replacing a valid transition", this.get('transition'));
-      }
-
-      return this._generateTransition(options).then((transition) => {
-        this.set('transition', transition);
-        return transition;
-      });
-    });
-  },
-
-  // returns a new transition model between two given tracks, with options
-  _generateTransition(options = {}) {
-    let { fromTrack, toTrack } = options;
-
-    Ember.assert('Must have fromTrack and toTrack to generateTransition', Ember.isPresent(fromTrack) && Ember.isPresent(toTrack));
-
-    console.log("_generateTransition", fromTrack, toTrack);
-
-    return Ember.RSVP.all([
-      this.get('readyPromise'),
-      fromTrack.get('readyPromise'),
-      toTrack.get('readyPromise'),
-    ]).then(() => {
-
-      let {
-        preset,
-        minFromTrackEndBeat,
-        maxToTrackStartBeat,
-        fromTrackEnd,
-        toTrackStart,
-      } = options;
-
-      // TODO(TRANSITION): improve this algorithm, add options and presets
-      let transition = this.get('store').createRecord('transition', {
-        fromTrack,
-        toTrack,
-      });
-
-      return transition.get('readyPromise').then(() => {
-        transition.set('fromTrackEndBeat', fromTrack.get('audioMeta.lastWholeBeat'));
-        transition.set('toTrackStartBeat', toTrack.get('audioMeta.firstWholeBeat'));
-        return transition.get('arrangement').then((arrangement) => {
-          let automationClip = this.get('store').createRecord('arrangement/automation-clip', {
-            beatCount: 16,
-          });
-          arrangement.get('automationClips').addObject(automationClip);
-          return arrangement.save().then(() => {
-            return automationClip.save();
-          });
-        });
-      }).then(() => {
-        return transition;
+      return this.get('transition').then((transition) => {
+        return transition.optimize(options);
       });
     });
   },

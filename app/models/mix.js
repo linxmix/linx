@@ -60,6 +60,7 @@ export default DS.Model.extend(
     return this.insertTransitionsAt(this.get('length'), transitions);
   },
 
+  // TODO(REFACTOR): these need to change
   generateTransitionAt(index, options) {
     let item = this.getOrCreateAt(index);
 

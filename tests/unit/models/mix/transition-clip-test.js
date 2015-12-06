@@ -11,61 +11,63 @@ import describeAttrs from 'linx/tests/helpers/describe-attrs';
 import MixTransitionClip from 'linx/models/mix/transition-clip';
 import { DummyArrangement } from 'linx/tests/unit/mixins/playable-arrangement-test';
 
-describe.skip('MixTransitionClip', function() {
+describe('MixTransitionClip', function() {
   setupTestEnvironment();
 
-  let metronome, arrangement, clip, mixItem, transition;
+  let metronome, arrangement, transitionClip, mixItem, transition;
 
   beforeEach(function() {
     transition = this.factory.make('transition');
+    mixItem = this.factory.make('mix/item', {
+      transition,
+    });
     arrangement = DummyArrangement.create({
       audioContext: this.audioContext,
     });
     metronome = arrangement.get('metronome');
-    clip = MixTransitionClip.create({
+    transitionClip = MixTransitionClip.create({
       arrangement,
       mixItem,
     });
   });
 
   it('exists', function() {
-    expect(clip).to.be.ok;
+    expect(transitionClip).to.be.ok;
   });
 
-  describeAttrs('empty transitionClip', {
-    subject() { return this.factory.make('transition-clip'); },
-    hasTransition: false,
-    fromTrackIsValid: false,
-    toTrackIsValid: false,
-    // timesAreValid: false,
-    isValid: false,
+  describeAttrs('basic transitionClip', {
+    subject() { return transitionClip; },
+    hasTransition: true,
+    isValid: true,
+    beatCount() { return transitionClip.get('transition.beatCount'); },
   });
 
+  // TODO(REFACTOR): this doesnt maek sense.
   describe('with valid fromTrackClip and toTrackClip', function() {
-    let fromTrackClip, transitionClip, toTrackClip, transition;
+    let fromTrack, toTrack;
 
     beforeEach(function() {
-      let results = makeTransitionClip.call(this);
-      fromTrackClip = results.fromTrackClip;
-      toTrackClip = results.toTrackClip;
-      transitionClip = results.transitionClip;
-      transition = results.transition;
+      fromTrack = this.factory.make('track');
+      toTrack = this.factory.make('track');
 
       Ember.run(() => {
-        transition.set('numBeats', 30);
-        fromTrackClip.set('isFirstClip', true);
+        transition.setProperties({
+          fromTrack,
+          toTrack,
+        });
       });
     });
 
     describeAttrs('transitionClip', {
       subject() { return transitionClip; },
-      hasTransition: true,
-      fromTrackIsValid: true,
-      toTrackIsValid: true,
-      // timesAreValid: true,
+      isReady: true,
       isValid: true,
-      startBeat() { return toTrackClip.get('startBeat'); },
-      numBeats() { return transition.get('numBeats'); }
+      isReadyAndValid: true,
+      nestedArrangement() { return transition.get('arrangement'); },
+      fromTrackClip() { return mixItem.get('fromTrackClip'); },
+      toTrackClip() { return mixItem.get('toTrackClip'); },
+      startBeat() { return transition.get('toTrackClip.startBeat'); },
+      beatCount() { return transition.get('beatCount'); }
     });
   });
 

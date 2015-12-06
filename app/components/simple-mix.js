@@ -45,6 +45,7 @@ export default Ember.Component.extend(
     selectTrack(track) {
       let mix = this.get('mix');
 
+      // TODO(REFACTOR): this changed
       mix.generateAndAppendTransition({
         toTrack: track
       });
@@ -55,6 +56,7 @@ export default Ember.Component.extend(
       let tracks = this.get('searchTracks.content');
       let randomTrack = _.sample(tracks.toArray());
 
+      // TODO(REFACTOR): this changed
       mix.generateAndAppendTransition({
         toTrack: randomTrack
       });

@@ -1,10 +1,12 @@
 import Ember from 'ember';
 
+import RequireAttributes from 'linx/lib/require-attributes';
 import ClipMixin from './clip';
 import ReadinessMixin from '../readiness';
 
 export default Ember.Mixin.create(
   ClipMixin,
+  RequireAttributes('nestedArrangement'),
   ReadinessMixin('isArrangementClipReady'), {
 
   // implementing readiness mixin
