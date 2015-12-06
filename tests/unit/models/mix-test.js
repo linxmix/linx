@@ -71,7 +71,6 @@ describe('MixModel', function() {
       prevTransition = this.factory.make('transition');
       nextTransition = this.factory.make('transition');
 
-      // TODO(REFACTORNOW)
       console.log("pre make transitoin", prevTransition.get('toTrack.content'), nextTransition.get('fromTrack.content'));
       transition = this.factory.make('transition', {
         fromTrack: prevTransition.get('toTrack.content'),

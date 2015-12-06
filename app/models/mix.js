@@ -45,12 +45,12 @@ export default DS.Model.extend(
   },
 
   insertTransitionAt(index, transition) {
-    return this.createAt(index, { transition });
+    return this.createAt(index, { _transition: transition });
   },
 
   insertTransitionsAt(index, transitions) {
     let items = transitions.map((transition) => {
-      return this.createItem({ transition });
+      return this.createItem({ _transition: transition });
     });
 
     return this.replace(index, 0, items);
