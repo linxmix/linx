@@ -30,7 +30,10 @@ describe('MixTransitionClip', function() {
 
   describe('with valid fromTrackClip and toTrackClip', function() {
     beforeEach(function() {
-      // debugger
+      Ember.run(() => {
+        // TODO(CLEANUP): why?
+        transition.get('arrangement.content').set('isReady', true);
+      });
     });
 
     describeAttrs('transitionClip', {
@@ -42,7 +45,7 @@ describe('MixTransitionClip', function() {
       'nestedArrangement.id'() { return transition.get('arrangement.id'); },
       fromTrackClip() { return mixItem.get('fromTrackClip'); },
       toTrackClip() { return mixItem.get('toTrackClip'); },
-      startBeat() { return transition.get('toTrackClip.startBeat'); },
+      startBeat() { return transitionClip.get('fromTrackClip.endBeat'); },
       beatCount() { return transition.get('beatCount'); }
     });
   });
