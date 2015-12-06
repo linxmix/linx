@@ -5,7 +5,7 @@ import OrderedHasManyItemMixin from '../models/ordered-has-many/item';
 
 import add from 'linx/lib/computed/add';
 import subtract from 'linx/lib/computed/subtract';
-import { isNumber, clamp } from 'linx/lib/utils';
+import { isValidNumber, clamp } from 'linx/lib/utils';
 
 // Interface for playable arrangement clips
 // Events: schedule, unschedule
@@ -38,17 +38,17 @@ export default Ember.Mixin.create(Ember.Evented, {
 
   isValidStartBeat: Ember.computed('startBeat', function() {
     let startBeat = this.get('startBeat');
-    return isNumber(startBeat);
+    return isValidNumber(startBeat);
   }),
 
   isValidEndBeat: Ember.computed('endBeat', function() {
     let endBeat = this.get('endBeat');
-    return isNumber(endBeat);
+    return isValidNumber(endBeat);
   }),
 
   isValidBeatCount: Ember.computed('beatCount', function() {
     let beatCount = this.get('beatCount');
-    return isNumber(beatCount) && beatCount > 0;
+    return isValidNumber(beatCount) && beatCount > 0;
   }),
 
   // TODO(REFACTOR): turn isValid into validness mixin?

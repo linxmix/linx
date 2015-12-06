@@ -70,7 +70,7 @@ export default DS.Model.extend(
   halfBarCount: Ember.computed('halfBeatCount', 'timeSignature', function() {
     return this.get('halfBeatCount') / this.get('timeSignature');
   }),
-  centerBeat: add('firstBeat', 'halfBeatCount'),
+  centerBeat: add('startBeat', 'halfBeatCount'),
 
   firstWholeBeat: 0,
   firstWholeBar: 0,

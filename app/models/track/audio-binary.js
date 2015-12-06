@@ -55,8 +55,8 @@ export default Ember.Object.extend(
   decodedArrayBuffer: Ember.computed('audioContext', 'arrayBuffer', function() {
     let { arrayBuffer, audioContext } = this.getProperties('arrayBuffer', 'audioContext');
 
-    return DS.PromiseArray.create({
-      promise: arrayBuffer && arrayBuffer.then((arrayBuffer) => {
+    return arrayBuffer && DS.PromiseArray.create({
+      promise: arrayBuffer.then((arrayBuffer) => {
         return audioContext.decodeAudioData(arrayBuffer).catch((error) => {
           console.log('AudioSource Decoding Error: ' + error.err);
           throw error;

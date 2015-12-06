@@ -2,7 +2,7 @@ import Ember from 'ember';
 
 import ReadinessMixin from 'linx/mixins/readiness';
 import WebAudioNodeMixin from 'linx/mixins/web-audio/node';
-import { isNumber } from 'linx/lib/utils';
+import { isValidNumber } from 'linx/lib/utils';
 
 export default Ember.ObjectProxy.extend(
   WebAudioNodeMixin,
@@ -19,11 +19,13 @@ export default Ember.ObjectProxy.extend(
   isAudioLoaded: Ember.computed.bool('decodedArrayBuffer'),
 
   start(when, offset, duration) {
+    let args = [when, offset, duration].filter(isValidNumber);
+
     // web audio buffer sources can only be played once
     // therefore we must recreate source on each playback
     this.stop();
     let node = this.createBufferSource();
-    node.start(when, offset, duration);
+    node.start(...args);
   },
 
   stop() {

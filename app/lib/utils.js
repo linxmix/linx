@@ -31,6 +31,10 @@ export const isNumber = function(number) {
   return Ember.typeOf(number) === 'number';
 };
 
+export const isValidNumber = function(number) {
+  return isNumber(number) && !isNaN(number);
+};
+
 export const isObject = function(object) {
   return Ember.typeOf(object) === 'object';
 };
