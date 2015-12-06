@@ -16,27 +16,29 @@ import { DummyArrangement } from 'linx/tests/unit/mixins/playable-arrangement-te
 describe('MixTrackClip', function() {
   setupTestEnvironment();
 
-  let metronome, arrangement, clip, track, audioStartBeat, audioEndBeat;
-
-  beforeEach(function() {
-    track = this.factory.make('track');
-    arrangement = DummyArrangement.create({
-      audioContext: this.audioContext,
-    });
-    metronome = arrangement.get('metronome');
-    clip = MixTrackClip.create({
-      arrangement,
-      track,
-    });
-  });
-
-  it('exists', function() {
-    expect(clip).to.be.ok;
-  });
-
   describe('without transitions', function() {
+    let metronome, arrangement, clip, track;
+
+    beforeEach(function() {
+      track = this.factory.make('track');
+      arrangement = DummyArrangement.create({
+        audioContext: this.audioContext,
+      });
+      metronome = arrangement.get('metronome');
+      clip = MixTrackClip.create({
+        arrangement,
+        track,
+      });
+    });
+
+    it('exists', function() {
+      expect(clip).to.be.ok;
+    });
+
     describeAttrs('clip', {
       subject() { return clip; },
+      fromTransitionClip: null,
+      toTransitionClip: null,
       startBeat: 0,
       audioStartBeat() { return clip.get('audioStartBeatWithoutTransition'); },
       audioEndBeat() { return clip.get('audioEndBeatWithoutTransition'); },
@@ -45,31 +47,36 @@ describe('MixTrackClip', function() {
     });
   });
 
-  describe.skip('with valid prevTransition', function() {
+  describe('with valid transitions', function() {
+    let mix, item, nextItem, clip;
+
     beforeEach(function() {
-      // TODO
+
+      // setup transitions
+      mix = this.factory.make('mix', {
+        _mixItems: this.factory.makeList('mix/item', 2),
+      });
+
+      item = mix.objectAt(0);
+      nextItem = mix.objectAt(1);
+
+      item.get('transition.content').setProperties({
+        toTrack: nextItem.get('transition.fromTrack.content'),
+      });
+
+      // we want the track clip between the transitions
+      clip = item.get('toTrackClip');
     });
 
     describeAttrs('clip', {
       subject() { return clip; },
-      startBeat() { return prevTransitionClip.get('startBeat'); },
+      fromTransitionClip() { return item.get('transitionClip'); },
+      toTransitionClip() { return nextItem.get('transitionClip'); },
+      startBeat() { return item.get('transitionClip.startBeat'); },
       audioStartBeat() { return clip.get('audioStartBeatWithTransition'); },
-      audioEndBeat() { return clip.get('audioEndBeatWithoutTransition'); },
-      audioStartBeatWithTransition() { return prevTransition.get('toTrackStartBeat'); },
-    });
-  });
-
-  describe.skip('with valid nextTransition', function() {
-    beforeEach(function() {
-      // TODO
-    });
-
-    describeAttrs('clip', {
-      subject() { return clip; },
-      startBeat: 0,
-      audioStartBeat() { return clip.get('audioStartBeatWithoutTransition'); },
       audioEndBeat() { return clip.get('audioEndBeatWithTransition'); },
-      audioEndBeatWithTransition() { return nextTransition.get('fromTrackEndBeat'); },
+      audioStartBeatWithTransition() { return item.get('transition.toTrackStartBeat'); },
+      audioEndBeatWithTransition() { return nextItem.get('transition.fromTrackEndBeat'); },
     });
   });
 
