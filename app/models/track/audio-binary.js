@@ -14,7 +14,7 @@ export default Ember.Object.extend(
 
   streamUrl: Ember.computed.or('s3StreamUrl', 'scStreamUrl', 'soundcloudTrack.streamUrl'),
   proxyStreamUrl: Ember.computed('streamUrl', function() {
-    return `/${this.get('_streamUrl')}`;
+    return `/${this.get('streamUrl')}`;
   }),
 
   s3Url: Ember.computed.reads('track.s3Url'),
@@ -56,7 +56,7 @@ export default Ember.Object.extend(
     let { arrayBuffer, audioContext } = this.getProperties('arrayBuffer', 'audioContext');
 
     return DS.PromiseArray.create({
-      promise: arrayBuffer.then((arrayBuffer) => {
+      promise: arrayBuffer && arrayBuffer.then((arrayBuffer) => {
         return audioContext.decodeAudioData(arrayBuffer).catch((error) => {
           console.log('AudioSource Decoding Error: ' + error.err);
           throw error;

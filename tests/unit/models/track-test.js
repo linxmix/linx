@@ -13,7 +13,7 @@ describe('TrackModel', function() {
   let track;
 
   beforeEach(function() {
-    track = this.factory.make('giveitupforlove');
+    track = this.factory.make('giveitupforlove', 'withoutAudioMeta');
   });
 
   // there are mockjaxes setup for upload to, profile from, and analysis from echonest

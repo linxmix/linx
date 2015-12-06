@@ -17,10 +17,15 @@ FactoryGuy.define('track', {
     _echonestTrack: {},
   },
 
+  traits: {
+    'withoutAudioMeta': {
+      _audioMeta: null,
+      _echonestTrack: null,
+    }
+  },
+
   'giveitupforlove': {
     title: 'giveitupforlove',
     s3Url: 'songs/2aa83018ce0bb7ca44e9263ed5d25817.mp3',
-    _audioMeta: null,
-    _echonestTrack: null,
   },
 });
