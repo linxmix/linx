@@ -1,6 +1,7 @@
 import Ember from 'ember';
 
 import RequireAttributes from 'linx/lib/require-attributes';
+import { flatten } from 'linx/lib/utils';
 
 // Interface for chains of Web Audio Nodes
 export default Ember.Mixin.create({

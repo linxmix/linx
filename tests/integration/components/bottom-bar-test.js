@@ -6,7 +6,7 @@ import {
 } from 'ember-mocha';
 import hbs from 'htmlbars-inline-precompile';
 
-describeComponent(
+describeComponent.skip(
   'bottom-bar',
   'Integration: BottomBarComponent',
   {

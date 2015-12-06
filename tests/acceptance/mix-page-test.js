@@ -102,26 +102,19 @@ describe('Acceptance: MixPage', function() {
 
   });
 
-  describe.skip('with track and transition items', function() {
-    let track1, transition, track2;
+  describe.skip('with items', function() {
+    let items, itemsLength = 10;
 
     beforeEach(function() {
-      track1 = makeTrack.call(this);
-      track2 = makeTrack.call(this);
-
-      let results = makeTransition.call(this, {
-        fromTrack: track1,
-        toTrack: track2,
+      items = this.factory.makeList('mix/item', itemsLength);
+      Ember.run(() => {
+        mix.set('_mixItems', items);
       });
-
-      transition = results.transition;
-
-      wait(mix.appendTransitionWithTracks(transition));
     });
 
     it('shows items', function() {
       expect($('.MixList')).to.be.visible;
-      expect($('.MixListItem')).to.have.length(mix.get('length'));
+      expect($('.MixListItem')).to.have.length(itemsLength);
     });
 
     it('shows items in correct order', function() {
@@ -130,7 +123,7 @@ describe('Acceptance: MixPage', function() {
       expect($('.MixListItem:nth(2)').text()).to.contain('3');
     });
 
-    it('can navigate to track items', function() {
+    it.skip('can navigate to track items', function() {
       click('.MixListItem:nth(0) a');
 
       andThen(function() {
@@ -139,7 +132,7 @@ describe('Acceptance: MixPage', function() {
       });
     });
 
-    it('can navigate to transition items', function() {
+    it.skip('can navigate to transition items', function() {
       click('.MixListItem:nth(1) a');
 
       andThen(function() {

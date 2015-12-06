@@ -81,6 +81,8 @@ describe('MixTrackClip', function() {
   });
 
   describe.skip('with invalid transitions', function() {
+    let clip;
+
     describeAttrs('clip', {
       subject() { return clip; },
       startBeat: 0,

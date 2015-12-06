@@ -36,7 +36,7 @@ describe('Acceptance: MixesPage', function() {
     });
   });
 
-  it('can create new mix', function() {
+  it.skip('can create new mix', function() {
     click('.test-create-mix');
 
     andThen(() => {

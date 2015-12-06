@@ -40,7 +40,7 @@ export default Ember.ObjectProxy.extend(
   },
 
   loadBuffer: Ember.observer('node', 'decodedArrayBuffer', function() {
-    let { sourceNode, decodedArrayBuffer } = this.getProperties('node', 'decodedArrayBuffer');
+    let { node, decodedArrayBuffer } = this.getProperties('node', 'decodedArrayBuffer');
 
     if (node && decodedArrayBuffer) {
       node.buffer = decodedArrayBuffer;

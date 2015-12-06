@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import DS from 'ember-data';
+
 import {
   beforeEach,
   describe,
@@ -24,7 +25,7 @@ describe('MixItemModel', function() {
 
     it('exists', function() {
       expect(mixItem).to.be.ok;
-    })
+    });
 
     it('generates transition', function() {
       expect(mixItem.get('transition.content')).to.be.ok;

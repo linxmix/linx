@@ -8,12 +8,14 @@ import {
 import { expect } from 'chai';
 
 import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
-import makeTrack from 'linx/tests/helpers/make-track';
-import makeTransition from 'linx/tests/helpers/make-transition';
+// import makeTrack from 'linx/tests/helpers/make-track';
+// import makeTransition from 'linx/tests/helpers/make-transition';
 import describeAttrs from 'linx/tests/helpers/describe-attrs';
 
+// TODO(CLEANUP)
 let makeMix = {};
-
+let makeTrack = {};
+let makeTransition = {};
 describe.skip('MixModel#insertTransitionAtWithTracks', function() {
   setupTestEnvironment();
 

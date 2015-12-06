@@ -41,7 +41,7 @@ export default Ember.Mixin.create(
 
   _scheduleAutomations() {
     this._cancelAutomations();
-    this.get('automations')
+    this.get('automations');
   },
 
   _cancelAutomations() {

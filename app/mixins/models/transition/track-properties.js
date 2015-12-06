@@ -1,4 +1,5 @@
 import Ember from 'ember';
+import DS from 'ember-data';
 
 import withDefaultModel from 'linx/lib/computed/with-default-model';
 import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
@@ -52,4 +53,4 @@ export default function TrackPropertiesMixin(trackPath) {
       });
     }).on('ready'),
   });
-};
+}
