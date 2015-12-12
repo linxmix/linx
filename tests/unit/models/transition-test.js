@@ -102,6 +102,32 @@ describe('TransitionModel', function() {
       });
     });
 
+    describe('with tracks constraints', function() {
+      let newFromTrack, newToTrack;
+
+      beforeEach(function() {
+        newFromTrack = this.factory.make('track');
+        newToTrack = this.factory.make('track');
+
+        Ember.run(() => {
+          wait(transition.optimize({
+            fromTrack: newFromTrack,
+            toTrack: newToTrack,
+          }));
+        });
+      });
+
+      describeAttrs('optimized transition', {
+        subject: () => transition,
+        'fromTrack.content': () => newFromTrack,
+        'toTrack.content': () => newToTrack,
+        'fromTrackMarker.audioMeta.content': () => newFromTrack.get('audioMeta.content'),
+        'toTrackMarker.audioMeta.content': () => newToTrack.get('audioMeta.content'),
+        fromTrackEndBeat: () => newFromTrack.get('audioMeta.lastWholeBeat'),
+        toTrackStartBeat: () => newToTrack.get('audioMeta.firstWholeBeat'),
+      });
+    });
+
     // TODO(TRANSITION): write these tests when algorithm matters
     describe.skip('with constraints', function() {});
   });

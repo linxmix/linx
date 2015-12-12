@@ -19,7 +19,11 @@ export default DS.Model.extend(
   beatCount: Ember.computed.reads('arrangement.beatCount'),
 
   // implement readiness
-  isTransitionReady: Ember.computed.and('fromTrack.isReady', 'toTrack.isReady'),
+  isTransitionReady: Ember.computed.and('fromTrackIsReady', 'toTrackIsReady'),
+  fromTrackIsReady: Ember.computed.or('noFromTrack', 'fromTrack.isLoaded'),
+  toTrackIsReady: Ember.computed.or('noToTrack', 'toTrack.isLoaded'),
+  noFromTrack: Ember.computed.not('fromTrack.content'),
+  noToTrack: Ember.computed.not('toTrack.content'),
 
   // the transition's arrangement
   _arrangement: DS.belongsTo('arrangement', { async: true }),
@@ -60,8 +64,18 @@ export default DS.Model.extend(
   //   toTrackStart,
   // }
   optimize(options = {}) {
+    let {
+      fromTrack,
+      toTrack,
+      preset,
+      minFromTrackEndBeat,
+      maxToTrackStartBeat,
+      fromTrackEnd,
+      toTrackStart,
+    } = options;
+
     return this.get('readyPromise').then(() => {
-      let { fromTrack, toTrack } = options;
+      console.log('transitionReady', options)
       fromTrack = fromTrack || this.get('fromTrack.content');
       toTrack = toTrack || this.get('toTrack.content');
 
@@ -72,17 +86,21 @@ export default DS.Model.extend(
         toTrack.get('readyPromise'),
       ]).then(() => {
 
-        let {
-          preset,
-          minFromTrackEndBeat,
-          maxToTrackStartBeat,
-          fromTrackEnd,
-          toTrackStart,
-        } = options;
+        // update tracks
+        this.setProperties({
+          fromTrack,
+          toTrack,
+        });
 
         // TODO(TRANSITION): improve this algorithm, add options and presets
-        this.set('fromTrackEndBeat', fromTrack.get('audioMeta.lastWholeBeat'));
-        this.set('toTrackStartBeat', toTrack.get('audioMeta.firstWholeBeat'));
+        // update markers
+        this.setProperties({
+          fromTrackEndBeat: fromTrack.get('audioMeta.lastWholeBeat'),
+          toTrackStartBeat: toTrack.get('audioMeta.firstWholeBeat'),
+        });
+
+        console.log('tracksReady', this.getProperties('fromTrackEndBeat', 'toTrackStartBeat'));
+
 
         // TODO(REFACTOR): do we need to destroy and recreate arrangement / automation-clip?
         let arrangement = this.get('arrangement.content');

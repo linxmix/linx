@@ -60,7 +60,9 @@ export default DS.Model.extend(
 
   // optimizes transition within this mix
   optimizeTransition(options = {}) {
+    console.log('optimizeTransition', options)
     return this.get('listReadyPromise').then(() => {
+    console.log('listReadyPromise', options)
       let { prevTransition, nextTransition } = this.getProperties('prevTransition', 'nextTransition');
 
       // add default constraints to options
@@ -73,6 +75,7 @@ export default DS.Model.extend(
       });
 
       return this.get('transition').then((transition) => {
+    console.log('transition', options)
         return transition.optimize(options);
       });
     });
