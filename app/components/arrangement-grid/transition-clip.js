@@ -2,14 +2,10 @@ import Ember from 'ember';
 
 import BubbleActions from 'linx/lib/bubble-actions';
 import RequireAttributes from 'linx/lib/require-attributes';
-import ClipPlayerMixin from 'linx/mixins/components/arrangement-player/clip';
 import { clamp, isNumber } from 'linx/lib/utils';
 
-
-
 export default Ember.Component.extend(
-  ClipPlayerMixin,
-  BubbleActions(), RequireAttributes(), {
+  BubbleActions(), RequireAttributes('clip'), {
 
   actions: {},
   classNames: ['ArrangementGridTransitionClip'],
@@ -28,11 +24,11 @@ export default Ember.Component.extend(
   // TODO(REFACTOR): anything that needs to update continually can requestAnimationFrame
   curve: null,
   control: null,
-  updateControl: Ember.observer('curve', 'control', 'isPlaying', 'seekTime', 'syncBpm', function() {
-    let { isPlaying, curve, control, syncBpm } = this.getProperties('curve', 'control', 'isPlaying', 'syncBpm');
-    let seekTime = this.getCurrentAudioTime();
+  // updateControl: Ember.observer('curve', 'control', 'isPlaying', 'seekTime', 'syncBpm', function() {
+  //   let { isPlaying, curve, control, syncBpm } = this.getProperties('curve', 'control', 'isPlaying', 'syncBpm');
+  //   let seekTime = this.getCurrentAudioTime();
 
-  }),
+  // }),
 
 
   // called with x in range [0, 1]

@@ -14,16 +14,16 @@ export default Ember.Component.extend(
   foo: 'bar',
 
   // TODO: can this remove dependence on audioBpm?
-  updateZoom: function() {
-    var wavesurfer = this.get('wavesurfer');
-    var pxPerBeat = this.get('pxPerBeat');
-    var audioBpm = this.get('audioBpm');
-    var isLoaded = this.get('isLoaded');
-    if (isLoaded && wavesurfer && isNumber(pxPerBeat) && isNumber(audioBpm)) {
-      var pxPerSec = pxPerBeat * bpmToBps(audioBpm);
-      wavesurfer.zoom(pxPerSec);
-    }
-  }.observes('wavesurfer', 'isLoaded', 'pxPerBeat', 'audioBpm').on('init'),
+  // updateZoom: function() {
+  //   var wavesurfer = this.get('wavesurfer');
+  //   var pxPerBeat = this.get('pxPerBeat');
+  //   var audioBpm = this.get('audioBpm');
+  //   var isLoaded = this.get('isLoaded');
+  //   if (isLoaded && wavesurfer && isNumber(pxPerBeat) && isNumber(audioBpm)) {
+  //     var pxPerSec = pxPerBeat * bpmToBps(audioBpm);
+  //     wavesurfer.zoom(pxPerSec);
+  //   }
+  // }.observes('wavesurfer', 'isLoaded', 'pxPerBeat', 'audioBpm'),
 
 });
 

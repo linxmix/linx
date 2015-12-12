@@ -16,7 +16,7 @@ export default Ember.Component.extend(
   BubbleActions(), RequireAttributes('marker', 'pxPerBeat'), {
 
   actions: {},
-  classNames: ['ClipMarker'],
+  classNames: ['TrackClipMarker'],
   classNameBindings: [],
   attributeBindings: ['componentStyle:style'],
 

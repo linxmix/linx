@@ -12,8 +12,10 @@ import toPixels from 'linx/lib/computed/to-pixels';
 import { variableTernary } from 'linx/lib/computed/ternary';
 import { flatten } from 'linx/lib/utils';
 
-export default Ember.Component.extend({
-  classNames: ['ArrangementGridTrackClip'],
+export default Ember.Component.extend(
+  RequireAttributes('clip'), {
+
+  classNames: ['TrackClip'],
 
   // params
   track: Ember.computed.reads('clip.track'),

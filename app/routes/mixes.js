@@ -25,6 +25,7 @@ export default Ember.Route.extend({
         fromTrack,
         toTrack,
       }).then(() => {
+    console.log('transitionTo')
         this.transitionTo('mix', mix);
       });
     },

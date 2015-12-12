@@ -6,7 +6,8 @@ import ReadinessMixin from '../readiness';
 
 export default Ember.Mixin.create(
   ClipMixin,
-  RequireAttributes('nestedArrangement'),
+  // TODO(REFACTOR)
+  // RequireAttributes('nestedArrangement'),
   ReadinessMixin('isArrangementClipReady'), {
 
   // implementing readiness mixin

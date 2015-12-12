@@ -46,7 +46,7 @@
 
 <hr/>
 
-{{#arrangement-grid
+{{#playable-arrangement
   arrangement=arrangement
   isReady=isReady
   pxPerBeat=pxPerBeat
@@ -55,33 +55,47 @@
 }}
   {{#arrangement-grid/row}}
     {{#each mix.items as |item|}}
-      {{arrangement-grid/event
+      {{#arrangement-grid/track-clip
         clip=item.fromTrackClip
-        sinkNode=arrangementInputNode
         pxPerBeat=pxPerBeat
+        as |clipComponent|
       }}
+      {{!-- TODO(REFACTOR): can this be done in track clip? --}}
+        {{#each clipComponent.visibleMarkers as |marker|}}
+          {{arrangement-grid/track-clip/marker
+            marker=marker
+            pxPerBeat=pxPerBeat
+          }}
+        {{/each}}
+      {{/arrangement-grid/track-clip}}
 
       {{#if item.isLastItem}}
-        {{arrangement-grid/event
+        {{#arrangement-grid/track-clip
           clip=item.toTrackClip
-          sinkNode=arrangementInputNode
           pxPerBeat=pxPerBeat
+          as |clipComponent|
         }}
+        {{!-- TODO(REFACTOR): can this be done in track clip? --}}
+          {{#each clipComponent.visibleMarkers as |marker|}}
+            {{arrangement-grid/track-clip/marker
+              marker=marker
+              pxPerBeat=pxPerBeat
+            }}
+          {{/each}}
+        {{/arrangement-grid/track-clip}}
       {{/if}}
     {{/each}}
   {{/arrangement-grid/row}}
 
   {{#arrangement-grid/row}}
     {{#each mix.transitionClips as |clip|}}
-      {{arrangement-grid/event
+      {{arrangement-grid/transition-clip
         clip=clip
-        metronome=metronome
-        sinkNode=arrangementInputNode
         pxPerBeat=pxPerBeat
       }}
     {{/each}}
   {{/arrangement-grid/row}}
-{{/arrangement-grid}}
+{{/playable-arrangement}}
 
 {{play-buttons
   isDisabled=notReady
