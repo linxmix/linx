@@ -20,13 +20,13 @@ describe('PlayableArrangementMixin', function() {
 
   let arrangement;
 
-  beforeEach(function() {
-    arrangement = DummyArrangement.create({
-      audioContext: this.audioContext,
-    });
-  });
-
   describe('without clips', function() {
+    beforeEach(function() {
+      arrangement = DummyArrangement.create({
+        audioContext: this.audioContext,
+      });
+    });
+
     it('exists', function() {
       expect(arrangement).to.be.ok;
     });
@@ -57,7 +57,32 @@ describe('PlayableArrangementMixin', function() {
     });
   });
 
-  describe.skip('with clips', function() {
-    it.skip('has correct beatCount');
+  describe.skip('with track clips', function() {
+    let trackClips, trackClipsLength = 5;
+
+    // TODO: requireAttributes is asking for audioContext before we're ready
+    beforeEach(function() {
+      trackClips = this.factory.makeList('arrangement/track-clip', trackClipsLength);
+      arrangement = this.factory.make('arrangement', {
+        trackClips,
+      });
+    });
+
+    it('has correct audioGraph', function() {
+      Ember.run(() => {
+        // trigger input node
+        arrangement.get('inputNode');
+      });
+
+      expect(this.audioContext.toJSON()).to.deep.equal({
+        "name": "AudioDestinationNode",
+        "inputs": [
+          {
+            "name": "ChannelMergerNode",
+            "inputs": [[], [], [], [], [], [], [], [], [], []],
+          }
+        ]
+      });
+    });
   });
 });
