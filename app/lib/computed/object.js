@@ -5,20 +5,30 @@ import { isString } from 'linx/lib/utils';
 export default function computedObject(constructor, attributes) {
   let keys = Object.keys(attributes);
   let args = keys.map((key) => { return attributes[key]; }).filter(isString).without('this');
+  let prevObject;
 
   args.push({
     get(key) {
+
       let attrs = keysToAttrs(this, keys, attributes);
       attrs.parentPropertyPath = key;
-      return constructor.create(attrs);
+      let object = constructor.create(attrs);
+
+      Ember.run.next(() => {
+        prevObject && prevObject.destroy();
+        prevObject = object;
+      });
+
+      console.log("COMPUTEDOBJECT", object.toString(), attributes);
+
+      return object;
     },
   });
-
 
   return Ember.computed(...args).readOnly();
 }
 
-// TODO: de-dupe with cssStyle functions
+// TODO(CLEANUP): de-dupe with cssStyle functions
 function keysToAttrs(context, keys, attributes) {
   return keys.reduce((attrs, key) => {
     let pathOrValue = attributes[key];

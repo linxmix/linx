@@ -65,5 +65,5 @@ export default function(propertyPath) {
     }),
   };
 
-  return Ember.Mixin.create(mixinParams);
+  return Ember.Mixin.create(Ember.Evented, mixinParams);
 }

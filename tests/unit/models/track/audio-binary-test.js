@@ -1,3 +1,5 @@
+/* global AudioBuffer:true */
+
 import Ember from 'ember';
 import DS from 'ember-data';
 
@@ -45,7 +47,7 @@ describe('AudioBinary', function() {
         expect(decodedArrayBuffer.get('content')).to.be.an.instanceof(AudioBuffer);
       });
     });
-  };
+  }
 
   describe('track from local file', function() {
     beforeEach(function() {

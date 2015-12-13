@@ -67,4 +67,8 @@ export default Ember.Mixin.create(Ember.Evented, {
       this.trigger('schedule');
     }
   },
+
+  toString() {
+    return '<PlayableArrangement.Clip>';
+  },
 });

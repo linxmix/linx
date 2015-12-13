@@ -82,7 +82,6 @@ export default DS.Model.extend(
     } = options;
 
     return this.get('readyPromise').then(() => {
-      console.log('transitionReady', options)
       fromTrack = fromTrack || this.get('fromTrack.content');
       toTrack = toTrack || this.get('toTrack.content');
 
@@ -105,9 +104,6 @@ export default DS.Model.extend(
           fromTrackEndBeat: fromTrack.get('audioMeta.lastWholeBeat'),
           toTrackStartBeat: toTrack.get('audioMeta.firstWholeBeat'),
         });
-
-        console.log('tracksReady', this.getProperties('fromTrackEndBeat', 'toTrackStartBeat'));
-
 
         // TODO(REFACTOR): do we need to destroy and recreate arrangement / automation-clip?
         let arrangement = this.get('arrangement.content');

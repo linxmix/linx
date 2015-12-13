@@ -31,7 +31,7 @@ describe('BeatGrid', function() {
   it('has correct firstBarOffset', function() {
     Ember.run(() => {
       // test with specific numbers
-      beatGrid.get('gridMarker').set('start', 50.34);
+      beatGrid.get('gridMarker').set('time', 50.34);
       beatGrid.setProperties({
         bpm: 128.005,
         timeSignature: 4,
@@ -45,16 +45,16 @@ describe('BeatGrid', function() {
     expect(beatGrid.get('beatScale')).to.be.ok;
   });
 
-  it('has valid quantizedBeatScale', function() {
-    expect(beatGrid.get('quantizedBeatScale')).to.equal(beatGrid.get('beatScale.quantizedScale'));
+  it('has valid quantizeBeatScale', function() {
+    expect(beatGrid.get('quantizeBeatScale')).to.be.ok;
   });
 
   it('has valid barScale', function() {
     expect(beatGrid.get('barScale')).to.be.ok;
   });
 
-  it('has valid quantizedBarScale', function() {
-    expect(beatGrid.get('quantizedBarScale')).to.equal(beatGrid.get('barScale.quantizedScale'));
+  it('has valid quantizeBarScale', function() {
+    expect(beatGrid.get('quantizeBarScale')).to.be.ok;
   });
 
   describe('#timeToBeat', function() {
@@ -83,7 +83,7 @@ describe('BeatGrid', function() {
     let nudgeAmount = 0.005, previousStart;
 
     beforeEach(function() {
-      previousStart = beatGrid.get('gridMarker.start');
+      previousStart = beatGrid.get('gridMarker.time');
     });
 
     it('nudge right works', function() {
@@ -91,7 +91,7 @@ describe('BeatGrid', function() {
         beatGrid.nudge(nudgeAmount);
       });
 
-      expect(beatGrid.get('gridMarker.start')).to.equal(previousStart + nudgeAmount);
+      expect(beatGrid.get('gridMarker.time')).to.equal(previousStart + nudgeAmount);
     });
 
     it('nudge left works', function() {
@@ -99,7 +99,7 @@ describe('BeatGrid', function() {
         beatGrid.nudge(-nudgeAmount);
       });
 
-      expect(beatGrid.get('gridMarker.start')).to.equal(previousStart - nudgeAmount);
+      expect(beatGrid.get('gridMarker.time')).to.equal(previousStart - nudgeAmount);
     });
   });
 

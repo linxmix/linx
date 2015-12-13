@@ -30,11 +30,17 @@ export default Ember.Mixin.create(
   disconnect() {
     let node = this.get('node');
     node && node.disconnect();
-    this.set('isConnected', false);
+    if (!this.get('isDestroyed')) {
+      this.set('isConnected', false);
+    }
   },
 
   destroy() {
     this.disconnect();
     return this._super.apply(this, arguments);
+  },
+
+  toString() {
+    return '<WebAudio.Node>';
   },
 });

@@ -89,6 +89,7 @@ export default Ember.Mixin.create(
       let when = metronome.beatToTime(this.get('startBeat'));
       let offset = this.getCurrentAudioTime();
       let duration = offset - this.get('audioDuration');
+      console.log('startSource', this.get('track'));
       this.get('trackSourceNode').start(when, offset, duration);
     }
   },
@@ -125,17 +126,21 @@ export default Ember.Mixin.create(
   //   'outputNode': 'outputNode',
   // }),
 
-  nodes: Ember.computed.collect('trackSourceNode', 'soundtouchNode', 'gainNode', 'fxNode'),
-  controls: Ember.computed('nodes.@each.controls', function() {
-    return flatten(this.get('nodes').mapBy('controls'));
-  }),
+  // nodes: Ember.computed.collect('trackSourceNode', 'soundtouchNode', 'gainNode', 'fxNode'),
+  // controls: Ember.computed('nodes.@each.controls', function() {
+  //   return flatten(this.get('nodes').mapBy('controls'));
+  // }),
 
-  destroyNodes() {
-    this.get('nodes').map((node) => { return node && node.destroy(); });
-  },
+  // destroyNodes() {
+  //   this.get('nodes').map((node) => { return node && node.destroy(); });
+  // },
 
-  destroy() {
-    this.destroyNodes();
-    return this._super.apply(this, arguments);
+  // destroy() {
+  //   this.destroyNodes();
+  //   return this._super.apply(this, arguments);
+  // },
+
+  toString() {
+    return '<PlayableArrangement.TrackClip>';
   },
 });

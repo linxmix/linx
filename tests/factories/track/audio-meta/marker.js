@@ -13,7 +13,7 @@ import {
 
 FactoryGuy.define('track/audio-meta/marker', {
   default: {
-    start(model) { return Faker.random.number({ min: 0, max: 100 }); },
+    time(model) { return Faker.random.number({ min: 0, max: 100 }); },
     type: GRID_MARKER_TYPE,
   },
 });

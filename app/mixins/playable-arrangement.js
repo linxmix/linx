@@ -52,18 +52,18 @@ export default Ember.Mixin.create(
   //   return FxNode.create({ audioContext, outputNode });
   // }),
 
-  nodes: Ember.computed.collect('inputNode', 'fxNode'),
-  controls: Ember.computed('nodes.@each.controls', function() {
-    return flatten(this.get('nodes').mapBy('controls'));
-  }),
+  // nodes: Ember.computed.collect('inputNode', 'fxNode'),
+  // controls: Ember.computed('nodes.@each.controls', function() {
+  //   return flatten(this.get('nodes').mapBy('controls'));
+  // }),
 
-  destroyNodes() {
-    this.get('nodes').map((node) => { return node && node.destroy(); });
-  },
+  // destroyNodes() {
+  //   this.get('nodes').map((node) => { return node && node.destroy(); });
+  // },
 
-  destroy() {
-    this.get('metronome').destroy();
-    this.destroyNodes();
-    return this._super.apply(this, arguments);
-  },
+  // destroy() {
+  //   this.get('metronome').destroy();
+  //   this.destroyNodes();
+  //   return this._super.apply(this, arguments);
+  // },
 });
