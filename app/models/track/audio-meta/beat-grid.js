@@ -109,7 +109,7 @@ export default Ember.Object.extend(
     Ember.assert('Cannot nudge BeatGrid without numeric value', isNumber(value));
 
     let gridMarker = this.get('gridMarker');
-    gridMarker.set('start', gridMarker.get('start') + value);
+    gridMarker.set('time', gridMarker.get('time') + value);
   },
 
   // TODO(MULTIGRID): this will depend on the grid markers and bpm
@@ -119,13 +119,13 @@ export default Ember.Object.extend(
 
   // the time of the first actual beat in the raw audio file
   // TODO(MULTIGRID): this supposes a constant bpm in the audio file
-  firstBarOffset: Ember.computed('gridMarker.start', 'bpm', 'timeSignature', function() {
+  firstBarOffset: Ember.computed('gridMarker.time', 'bpm', 'timeSignature', function() {
     let bpm = this.get('bpm');
     let timeSignature = this.get('timeSignature');
     let secondsPerBeat = bpmToSpb(bpm);
     let secondsPerBar = secondsPerBeat * timeSignature;
 
-    let firstBarOffsetTime = this.get('gridMarker.start');
+    let firstBarOffsetTime = this.get('gridMarker.time');
     while ((firstBarOffsetTime - secondsPerBar) >= 0) {
       firstBarOffsetTime -= secondsPerBar;
     }

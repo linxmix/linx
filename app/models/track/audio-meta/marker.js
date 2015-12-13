@@ -1,8 +1,7 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
-import { isNumber } from 'linx/lib/utils';
-import { computedQuantizeBeat, computedQuantizeBar } from './beat-grid';
+import TrackTimeMarkerMixin from 'linx/mixins/models/track/audio-meta/beat-grid/time-marker';
 
 export const GRID_MARKER_TYPE = 'grid';
 export const SECTION_MARKER_TYPE = 'section';
@@ -14,51 +13,15 @@ export const TRANSITION_IN_MARKER_TYPE = 'transition-in';
 export const TRANSITION_OUT_MARKER_TYPE = 'transition-out';
 
 // Base marker model
-export default DS.Model.extend({
+export default DS.Model.extend(
+  TrackTimeMarkerMixin, {
+
   type: DS.attr('string'), // one of MARKER_TYPES
-  start: DS.attr('number'), // [s] timestamp in audio
+  time: DS.attr('number', { defaultValue: 0 }), // [s] timestamp in audio
 
   // confidence in this marker's accuracy. used for analysis
   confidence: DS.attr('number'),
 
-  fromTransitions: DS.belongsTo('transition', { async: true, inverse: '_fromTrackMarker' }),
-  toTransitions: DS.belongsTo('transition', { async: true, inverse: '_toTrackMarker' }),
   audioMeta: DS.belongsTo('track/audio-meta', { async: true }),
   beatGrid: Ember.computed.reads('audioMeta.beatGrid'),
-
-  startBeat: Ember.computed('beatGrid.beatScale', 'start', {
-    get(key) {
-      let beatGrid = this.get('beatGrid');
-      return beatGrid && beatGrid.timeToBeat(this.get('start'));
-    },
-
-    set(key, beat) {
-      let beatGrid = this.get('beatGrid');
-
-      Ember.assert('Can only set marker startBeat with numeric beat', isNumber(beat));
-      Ember.assert('Can only set marker startBeat with valid beatGrid', Ember.isPresent(beatGrid));
-
-      this.set('start', beatGrid.beatToTime(beat));
-      return beat;
-    }
-  }),
-  quantizeStartBeat: computedQuantizeBeat('beatGrid', 'startBeat'),
-
-  startBar: Ember.computed('beatGrid.barScale', 'start', {
-    get(key) {
-      let beatGrid = this.get('beatGrid');
-      return beatGrid && beatGrid.timeToBar(this.get('start'));
-    },
-
-    set(key, bar) {
-      let beatGrid = this.get('beatGrid');
-
-      Ember.assert('Can only set marker startBeat with numeric bar', isNumber(bar));
-      Ember.assert('Can only set marker startBeat with valid beatGrid', Ember.isPresent(beatGrid));
-
-      this.set('start', beatGrid.barToTime(bar));
-      return bar;
-    }
-  }),
-  quantizeStartBar: computedQuantizeBar('beatGrid', 'startBar'),
 });

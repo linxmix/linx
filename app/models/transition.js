@@ -20,10 +20,17 @@ export default DS.Model.extend(
 
   // implement readiness
   isTransitionReady: Ember.computed.and('fromTrackIsReady', 'toTrackIsReady'),
-  fromTrackIsReady: Ember.computed.or('noFromTrack', 'fromTrack.isLoaded'),
-  toTrackIsReady: Ember.computed.or('noToTrack', 'toTrack.isLoaded'),
-  noFromTrack: Ember.computed.not('fromTrack.content'),
-  noToTrack: Ember.computed.not('toTrack.content'),
+  // TODO(CLEANUP): computed property? relIsLoaded? rel.isPending ? false : rel.isFulfilled
+  fromTrackIsReady: Ember.computed('fromTrack.isPending', 'fromTrack.isFulfilled', function() {
+    let fromTrack = this.get('fromTrack');
+
+    return fromTrack.get('isPending') ? false : fromTrack.get('isFulfilled');
+  }),
+  toTrackIsReady: Ember.computed('toTrack.isPending', 'toTrack.isFulfilled', function() {
+    let toTrack = this.get('toTrack');
+
+    return toTrack.get('isPending') ? false : toTrack.get('isFulfilled');
+  }),
 
   // the transition's arrangement
   _arrangement: DS.belongsTo('arrangement', { async: true }),

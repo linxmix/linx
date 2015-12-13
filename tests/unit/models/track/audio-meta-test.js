@@ -69,14 +69,14 @@ describe('AudioMetaModel', function() {
     it('has correct fade in marker', function() {
       let fadeInMarker = audioMeta.get('fadeInMarker');
       expect(fadeInMarker).to.be.ok;
-      expect(fadeInMarker.get('start')).to.equal(analysis.get('endOfFadeIn'));
+      expect(fadeInMarker.get('time')).to.equal(analysis.get('endOfFadeIn'));
       expect(fadeInMarker.get('type')).to.equal(FADE_IN_MARKER_TYPE);
     });
 
     it('has correct fade out marker', function() {
       let fadeOutMarker = audioMeta.get('fadeOutMarker');
       expect(fadeOutMarker).to.be.ok;
-      expect(fadeOutMarker.get('start')).to.equal(analysis.get('startOfFadeOut'));
+      expect(fadeOutMarker.get('time')).to.equal(analysis.get('startOfFadeOut'));
       expect(fadeOutMarker.get('type')).to.equal(FADE_OUT_MARKER_TYPE);
     });
   });

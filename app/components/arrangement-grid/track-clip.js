@@ -33,12 +33,12 @@ export default Ember.Component.extend(
   waveOffsetStyle: toPixels('waveOffset'),
 
   markers: Ember.computed.reads('audioMeta.markers'),
-  visibleMarkers: Ember.computed('audioStartBeat', 'audioEndBeat', 'markers.@each.startBeat', function() {
+  visibleMarkers: Ember.computed('audioStartBeat', 'audioEndBeat', 'markers.@each.beat', function() {
     let audioStartBeat = this.get('audioStartBeat');
     let audioEndBeat = this.get('audioEndBeat');
 
     return this.getWithDefault('markers', []).filter((marker) => {
-      let markerStartBeat = marker.get('startBeat');
+      let markerStartBeat = marker.get('beat');
       return markerStartBeat >= audioStartBeat && markerStartBeat <= audioEndBeat;
     });
   }),

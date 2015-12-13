@@ -69,10 +69,4 @@ export default DS.Model.extend(
   generateTransitionAndAppend(options) {
     return this.generateTransitionAt(this.get('length'), options);
   },
-
-  assertTransitionAt(index, options) {
-    let item = this.getOrCreateAt(index);
-
-    return item.assertTransition(options);
-  },
 });

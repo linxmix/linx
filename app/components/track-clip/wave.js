@@ -3,6 +3,7 @@ import BubbleActions from 'linx/lib/bubble-actions';
 import RequireAttributes from 'linx/lib/require-attributes';
 
   // TODO(REFACTOR) write wave component
+  // http://stackoverflow.com/questions/26207636/drawing-a-waveform-with-d3
 export default Ember.Component.extend(
   BubbleActions(), RequireAttributes(), {
 

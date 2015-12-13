@@ -9,10 +9,7 @@ import { expect } from 'chai';
 
 import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 import describeAttrs from 'linx/tests/helpers/describe-attrs';
-import {
-  TRANSITION_IN_MARKER_TYPE,
-  TRANSITION_OUT_MARKER_TYPE,
-} from 'linx/models/track/audio-meta/marker';
+import { TransitionMarker } from 'linx/mixins/models/transition/track-properties';
 
 describe('TransitionModel', function() {
   setupTestEnvironment();
@@ -31,22 +28,22 @@ describe('TransitionModel', function() {
     expect(transition.get('arrangement.content')).to.be.ok;
   });
 
-  it('generates fromTrackMarker', function() {
-    expect(transition.get('fromTrackMarker.content')).to.be.ok;
-    expect(transition.get('fromTrackMarker.audioMeta.content')).to.equal(transition.get('fromTrack.audioMeta.content'));
-    expect(transition.get('fromTrackMarker.type')).to.equal(TRANSITION_OUT_MARKER_TYPE);
+  it('generates fromTrackMarker correctly', function() {
+    expect(transition.get('fromTrackMarker')).to.be.an.instanceof(TransitionMarker);
+    expect(transition.get('fromTrackMarker.beatGrid')).to.equal(transition.get('fromTrack.audioMeta.beatGrid'));
   });
 
-  it('generates toTrackMarker', function() {
-    expect(transition.get('toTrackMarker.content')).to.be.ok;
-    expect(transition.get('toTrackMarker.audioMeta.content')).to.equal(transition.get('toTrack.audioMeta.content'));
-    expect(transition.get('toTrackMarker.type')).to.equal(TRANSITION_IN_MARKER_TYPE);
+  it('generates toTrackMarker correctly', function() {
+    expect(transition.get('toTrackMarker')).to.be.an.instanceof(TransitionMarker);
+    expect(transition.get('toTrackMarker.beatGrid')).to.equal(transition.get('toTrack.audioMeta.beatGrid'));
   });
 
   describeAttrs('transition', {
     subject() { return transition; },
-    fromTrackEndBeat() { return transition.get('fromTrackMarker.startBeat'); },
-    toTrackStartBeat() { return transition.get('toTrackMarker.startBeat'); },
+    fromTrackEndTime() { return transition.get('fromTrackMarker.time'); },
+    fromTrackEndBeat() { return transition.get('fromTrackMarker.beat'); },
+    toTrackStartBeat() { return transition.get('toTrackMarker.beat'); },
+    toTrackStartTime() { return transition.get('toTrackMarker.time'); },
     beatCount() { return transition.get('arrangement.beatCount'); },
   });
 
@@ -71,8 +68,8 @@ describe('TransitionModel', function() {
         expect(transition.get(`${trackPath}.id`)).to.equal(track.get('id'));
       });
 
-      it('updates marker relationship correctly', function() {
-        expect(transition.get(`${markerPath}.audioMeta.id`)).to.equal(track.get('audioMeta.id'));
+      it('updates marker correctly', function() {
+        expect(transition.get(`${markerPath}.beatGrid`)).to.equal(track.get('audioMeta.beatGrid'));
       });
     });
   }
@@ -121,8 +118,8 @@ describe('TransitionModel', function() {
         subject: () => transition,
         'fromTrack.content': () => newFromTrack,
         'toTrack.content': () => newToTrack,
-        'fromTrackMarker.audioMeta.content': () => newFromTrack.get('audioMeta.content'),
-        'toTrackMarker.audioMeta.content': () => newToTrack.get('audioMeta.content'),
+        'fromTrackMarker.beatGrid': () => newFromTrack.get('audioMeta.beatGrid'),
+        'toTrackMarker.beatGrid': () => newToTrack.get('audioMeta.beatGrid'),
         fromTrackEndBeat: () => newFromTrack.get('audioMeta.lastWholeBeat'),
         toTrackStartBeat: () => newToTrack.get('audioMeta.firstWholeBeat'),
       });

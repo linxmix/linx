@@ -36,7 +36,7 @@ export default Ember.Component.extend(
   }.property('marker.type'),
 
   startPx: function() {
-    return (this.get('marker.startBeat') * this.get('pxPerBeat')) + 'px';
-  }.property('marker.startBeat', 'pxPerBeat'),
+    return (this.get('marker.beat') * this.get('pxPerBeat')) + 'px';
+  }.property('marker.beat', 'pxPerBeat'),
 });
 

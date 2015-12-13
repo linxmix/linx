@@ -42,7 +42,7 @@ export default DS.Model.extend(
   track: DS.belongsTo('track', { async: true }),
   markers: DS.hasMany('track/audio-meta/marker', { async: true }),
 
-  timeSort: ['start:asc'],
+  timeSort: ['time:asc'],
   sortedMarkers: Ember.computed.sort('markers', 'timeSort'),
   sortedUserMarkers: Ember.computed.filterBy('sortedMarkers', 'type', USER_MARKER_TYPE),
   sortedGridMarkers: Ember.computed.filterBy('sortedMarkers', 'type', GRID_MARKER_TYPE),
@@ -128,7 +128,7 @@ export default DS.Model.extend(
     let confidentBar = analysis.get('confidenceSortedBeats.firstObject');
     markerParams.push({
       type: GRID_MARKER_TYPE,
-      start: confidentBar.start,
+      time: confidentBar.start,
       confidence: confidentBar.confidence,
     });
 
@@ -136,7 +136,7 @@ export default DS.Model.extend(
     markerParams = markerParams.concat(analysis.get('timeSortedSections').map((section) => {
       return {
         type: SECTION_MARKER_TYPE,
-        start: section.get('start'),
+        time: section.get('start'),
         confidence: section.get('confidence'),
       };
     }));
@@ -144,11 +144,11 @@ export default DS.Model.extend(
     // add fadeIn and fadeOut markers
     markerParams.push({
       type: FADE_IN_MARKER_TYPE,
-      start: analysis.get('endOfFadeIn'),
+      time: analysis.get('endOfFadeIn'),
     });
     markerParams.push({
       type: FADE_OUT_MARKER_TYPE,
-      start: analysis.get('startOfFadeOut'),
+      time: analysis.get('startOfFadeOut'),
     });
 
     // create and save all markers, then set properties and save track
