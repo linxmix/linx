@@ -91,6 +91,7 @@ describe('PlayableClipMixin', function() {
 
       expect(unscheduleSpy.calledOnce).to.be.true;
       expect(scheduleSpy.calledOnce).to.be.true;
+      expect(clip.get('isScheduled')).to.be.true;
     });
 
     it('fires correct events when metronome is paused', function() {
@@ -102,6 +103,7 @@ describe('PlayableClipMixin', function() {
 
       expect(unscheduleSpy.calledOnce).to.be.true;
       expect(scheduleSpy.calledOnce).to.be.false;
+      expect(clip.get('isScheduled')).to.be.false;
     });
   });
 

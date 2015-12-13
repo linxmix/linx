@@ -13,7 +13,6 @@ export default Ember.Mixin.create(
   // setting beat proxies to setting time
   beat: Ember.computed('beatGrid.beatScale', 'time', {
     get(key) {
-      console.log('get TimeMarker.beat', this.get('time'));
       let beatGrid = this.get('beatGrid');
       return beatGrid && beatGrid.timeToBeat(this.get('time'));
     },

@@ -120,15 +120,28 @@ describe('PlayableTrackClipMixin', function() {
       let trackSourceNode = clip.get('trackSourceNode');
       startStub = this.sinon.stub(trackSourceNode, 'start');
 
-      Ember.run(clip, 'startSource');
     });
 
-    it('calls trackSourceNode.start with correct arguments', function() {
-      expect(startStub.calledOnce).to.be.true;
-      let when = metronome.beatToTime(clip.get('startBeat'));
-      let offset = clip.getCurrentAudioTime();
-      let duration = offset - clip.get('audioDuration');
-      expect(startStub.calledWithExactly(when, offset, duration)).to.be.true;
+    describe('when not scheduled', function() {
+      it('does not call trackSourceNode.start', function() {
+        Ember.run(clip, 'startSource');
+        expect(startStub.called).to.be.false;
+      });
+    });
+
+    describe('when scheduled', function() {
+      beforeEach(function() {
+        Ember.run(clip, 'set', 'isScheduled', true);
+        Ember.run(clip, 'startSource');
+      });
+
+      it('calls trackSourceNode.start with correct arguments', function() {
+        expect(startStub.calledOnce).to.be.true;
+        let when = metronome.beatToTime(clip.get('startBeat'));
+        let offset = clip.getCurrentAudioTime();
+        let duration = offset - clip.get('audioDuration');
+        expect(startStub.calledWithExactly(when, offset, duration)).to.be.true;
+      });
     });
   });
 });

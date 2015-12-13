@@ -18,6 +18,7 @@ export default Ember.Mixin.create(Ember.Evented, {
   arrangement: null,
   startBeat: null,
   isMuted: false,
+  isScheduled: false,
 
   outputNode: Ember.computed.reads('arrangement.inputNode'),
   metronome: Ember.computed.reads('arrangement.metronome'),
@@ -55,6 +56,7 @@ export default Ember.Mixin.create(Ember.Evented, {
   isValid: Ember.computed.and('isValidStartBeat', 'isValidEndBeat', 'isValidBeatCount'),
 
   clipScheduleDidChange: Ember.observer('isValid', 'isMuted', 'startBeat', 'beatCount', 'metronome.absSeekTime', 'metronome.isPlaying', function() {
+    this.set('isScheduled', this.get('metronome.isPlaying'));
     Ember.run.once(this, 'triggerScheduleEvents');
   }),
 

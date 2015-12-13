@@ -84,11 +84,13 @@ export default Ember.Mixin.create(
   }).on('schedule'),
 
   startSource() {
-    let metronome = this.get('metronome');
-    let when = metronome.beatToTime(this.get('startBeat'));
-    let offset = this.getCurrentAudioTime();
-    let duration = offset - this.get('audioDuration');
-    this.get('trackSourceNode').start(when, offset, duration);
+    if (this.get('isScheduled')) {
+      let metronome = this.get('metronome');
+      let when = metronome.beatToTime(this.get('startBeat'));
+      let offset = this.getCurrentAudioTime();
+      let duration = offset - this.get('audioDuration');
+      this.get('trackSourceNode').start(when, offset, duration);
+    }
   },
 
   stopSource: function() {

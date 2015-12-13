@@ -35,6 +35,7 @@ export default Ember.Mixin.create(
   },
 
   // params
+  metronome: Ember.computed.reads('arrangement.metronome'),
   isPlaying: Ember.computed.reads('metronome.isPlaying'),
   notReady: Ember.computed.not('isReady'),
   isReady: Ember.computed.reads('arrangement.isReady'),

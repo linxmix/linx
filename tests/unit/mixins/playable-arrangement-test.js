@@ -57,7 +57,7 @@ describe('PlayableArrangementMixin', function() {
     });
   });
 
-  describe.skip('with track clips', function() {
+  describe('with track clips', function() {
     let trackClips, trackClipsLength = 5;
 
     // TODO: requireAttributes is asking for audioContext before we're ready

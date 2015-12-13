@@ -99,7 +99,7 @@ describe('TransitionModel', function() {
       });
     });
 
-    describe('with tracks constraints', function() {
+    describe('with tracks', function() {
       let newFromTrack, newToTrack;
 
       beforeEach(function() {
@@ -126,6 +126,6 @@ describe('TransitionModel', function() {
     });
 
     // TODO(TRANSITION): write these tests when algorithm matters
-    describe.skip('with constraints', function() {});
+    describe.skip('with other constraints', function() {});
   });
 });
