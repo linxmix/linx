@@ -25,5 +25,8 @@ export default Ember.Mixin.create({
 
   bar: computedTimeToBar('beatGrid', 'time'),
   quantizeBar: computedQuantizeBar('beatGrid', 'bar'),
-});
 
+  toString() {
+    return '<linx@mixin:track/audio-meta/beat-grid/marker>';
+  },
+});

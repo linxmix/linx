@@ -66,4 +66,8 @@ export default Ember.Mixin.create(
   //   this.destroyNodes();
   //   return this._super.apply(this, arguments);
   // },
+
+  toString() {
+    return '<linx@mixin:playable-arrangement>';
+  }
 });

@@ -9,4 +9,8 @@ export default Ember.Mixin.create({
   getPoints(arr) {
     throw new Error('curve.getPoints(arr) unimplemented', this);
   },
+
+  toString() {
+    return '<linx@mixin:curve>';
+  },
 });

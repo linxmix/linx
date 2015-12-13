@@ -31,4 +31,8 @@ export default Ember.Object.extend(CurveMixin,
   scale: Ember.computed('domain', 'range', function() {
     return d3.scale.linear().domain(this.get('domain') || []).range(this.get('range') || []);
   }).readOnly(),
+
+  toString() {
+    return '<linx@object:linear-scale>';
+  },
 });

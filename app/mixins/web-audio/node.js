@@ -41,6 +41,6 @@ export default Ember.Mixin.create(
   },
 
   toString() {
-    return '<WebAudio.Node>';
+    return '<linx@mixin:web-audio/node>';
   },
 });

@@ -9,17 +9,17 @@ export default function computedObject(constructor, attributes) {
 
   args.push({
     get(key) {
-
       let attrs = keysToAttrs(this, keys, attributes);
       attrs.parentPropertyPath = key;
       let object = constructor.create(attrs);
 
+      console.log("COMPUTEDOBJECT", key, this.toString(), attributes);
+
+      // cleanup prevObject in next runloop
       Ember.run.next(() => {
         prevObject && prevObject.destroy();
         prevObject = object;
       });
-
-      console.log("COMPUTEDOBJECT", object.toString(), attributes);
 
       return object;
     },

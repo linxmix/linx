@@ -69,6 +69,6 @@ export default Ember.Mixin.create(Ember.Evented, {
   },
 
   toString() {
-    return '<PlayableArrangement.Clip>';
+    return '<linx@mixin:playable-arrangement/clip>';
   },
 });

@@ -73,6 +73,10 @@ export default Ember.Object.extend(
   // TODO(FILE)
   file: null,
   fileUrl: Ember.computed.reads('track.fileUrl'),
+
+  toString() {
+    return '<linx@object:track/audio-binary>';
+  },
 });
 
 /**

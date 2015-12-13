@@ -141,6 +141,6 @@ export default Ember.Mixin.create(
   // },
 
   toString() {
-    return '<PlayableArrangement.TrackClip>';
+    return '<linx@mixin:playable-arrangement/track-clip>';
   },
 });

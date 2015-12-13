@@ -132,6 +132,10 @@ export default Ember.Object.extend(
 
     return firstBarOffsetTime * secondsPerBar;
   }),
+
+  toString() {
+    return '<linx@object:track/audio-meta/beat-grid>';
+  },
 });
 
 // provides dynamically updating beat grid properties
