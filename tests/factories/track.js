@@ -21,7 +21,18 @@ FactoryGuy.define('track', {
     'withoutAudioMeta': {
       _audioMeta: null,
       _echonestTrack: null,
-    }
+    },
+
+    'withSmallS3Url': {
+      title: 'royals:s3',
+      s3Url: 'songs/08042d60-c4d7-4014-bce1-f05e93340a1f.mp3',
+    },
+
+    'withLocalFile': {
+      title: 'royals:file',
+      // TODO: make this random generate from a bunch
+      fileUrl: '/assets/music/royals.mp3',
+    },
   },
 
   'giveitupforlove': {

@@ -6,13 +6,13 @@ import ReadinessMixin from 'linx/mixins/readiness';
 import Ajax from 'linx/lib/ajax';
 
 export default Ember.Object.extend(
-  ReadinessMixin('isArrayBufferLoaded'),
+  ReadinessMixin('isArrayBufferLoadedAndDecoded'),
   RequireAttributes('track'), {
 
   // implement readiness
-  isArrayBufferLoaded: Ember.computed.reads('arrayBuffer.isFulfilled'),
+  isArrayBufferLoadedAndDecoded: Ember.computed.and('arrayBuffer.isFulfilled', 'decodedArrayBuffer.content'),
 
-  streamUrl: Ember.computed.or('s3StreamUrl', 'scStreamUrl', 'soundcloudTrack.streamUrl'),
+  streamUrl: Ember.computed.or('fileUrl', 's3StreamUrl', 'scStreamUrl', 'soundcloudTrack.streamUrl'),
   proxyStreamUrl: Ember.computed('streamUrl', function() {
     return `/${this.get('streamUrl')}`;
   }),
@@ -27,9 +27,6 @@ export default Ember.Object.extend(
 
   session: Ember.computed.reads('track.session'),
   audioContext: Ember.computed.reads('session.audioContext'),
-
-  // TODO(FILE)
-  file: null,
   arrayBuffer: Ember.computed.reads('streamUrlArrayBuffer'),
 
   // TODO(COMPUTEDPROMISE): use that?
@@ -43,9 +40,11 @@ export default Ember.Object.extend(
         responseType: 'arraybuffer',
       });
 
-      return ajax.execute().catch((e) => {
-        console.log('AudioSource XHR error: ' + e.target.statusText);
-        throw e;
+      return DS.PromiseObject.create({
+        promise: ajax.execute().catch((e) => {
+          console.log('AudioSource XHR error: ' + e.target.statusText);
+          throw e;
+        }),
       });
     }
   }),
@@ -55,19 +54,27 @@ export default Ember.Object.extend(
   decodedArrayBuffer: Ember.computed('audioContext', 'arrayBuffer', function() {
     let { arrayBuffer, audioContext } = this.getProperties('arrayBuffer', 'audioContext');
 
-    return arrayBuffer && DS.PromiseArray.create({
-      promise: arrayBuffer.then((arrayBuffer) => {
-        return audioContext.decodeAudioData(arrayBuffer).catch((error) => {
-          console.log('AudioSource Decoding Error: ' + error.err);
-          throw error;
+    if (arrayBuffer) {
+      let promise = arrayBuffer.then((arrayBuffer) => {
+        return new Ember.RSVP.Promise((resolve, reject) => {
+          audioContext.decodeAudioData(arrayBuffer, resolve, (error) => {
+            console.log('AudioSource Decoding Error: ' + error.err);
+            reject(error);
+          });
         });
-      }),
-    });
+      });
+
+      return DS.PromiseObject.create({ promise });
+    }
   }),
-});
 
 // TODO: load from file/blob
 // TODO: handle in web worker
+  // TODO(FILE)
+  file: null,
+  fileUrl: Ember.computed.reads('track.fileUrl'),
+});
+
 /**
      * Loads audio data from a Blob or File object.
      *

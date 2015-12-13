@@ -19,7 +19,7 @@ export default Ember.ObjectProxy.extend(
   // sets promise and sends xhr
   execute() {
     let xhr = this.get('xhr');
-    let promise = Ember.RSVP.Promise.create((resolve, reject) => {
+    let promise = new Ember.RSVP.Promise((resolve, reject) => {
       xhr.addEventListener('load', (e) => {
         if (this.get('progress') !== 100) {
           this.updateProgress(e);
