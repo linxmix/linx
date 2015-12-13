@@ -48,6 +48,11 @@ export default Ember.ObjectProxy.extend(
       node.buffer = decodedArrayBuffer;
     }
   }),
+
+  destroy() {
+    console.log('destroy buffer source node');
+    return this._super.apply(this, arguments);
+  }
 });
 
 // TODO: code to copy section of audiobuffer

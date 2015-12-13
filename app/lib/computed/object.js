@@ -5,7 +5,6 @@ import { isString } from 'linx/lib/utils';
 export default function computedObject(constructor, attributes) {
   let keys = Object.keys(attributes);
   let args = keys.map((key) => { return attributes[key]; }).filter(isString).without('this');
-  let prevObject;
 
   args.push({
     get(key) {
@@ -13,19 +12,17 @@ export default function computedObject(constructor, attributes) {
       attrs.parentPropertyPath = key;
       let object = constructor.create(attrs);
 
-      console.log("COMPUTEDOBJECT", key, this.toString(), attributes);
-
-      // cleanup prevObject in next runloop
-      Ember.run.next(() => {
-        prevObject && prevObject.destroy();
-        prevObject = object;
-      });
+      // cleanup prevObject
+      // TODO(CLEANUP): why does it not work to scope args here?
+      let prevObject = this.get(`_____${key}`);
+      prevObject && Ember.run(prevObject, 'destroy');
+      this.set(`_____${key}`, object);
 
       return object;
     },
   });
 
-  return Ember.computed(...args).readOnly();
+  return Ember.computed(...args);
 }
 
 // TODO(CLEANUP): de-dupe with cssStyle functions
