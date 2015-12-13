@@ -36,6 +36,5 @@ export default Ember.Component.extend(GraphicSupport, {
             .classed('zero', (data) => !data);
         });
     }
-  }
-
+  },
 });

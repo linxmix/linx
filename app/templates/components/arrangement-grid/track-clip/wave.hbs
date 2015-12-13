@@ -1,8 +1,7 @@
-<div class="WaveSurfer-wave {{if wave.isLoaded '' 'hidden'}}"></div>
+{{yield}}
 
 {{progress-bar
-  class="WaveSurfer-progress"
-  isDone=wave.isLoaded
+  class="TrackClipWave-progress"
+  isDone=audioBinary.decodedArrayBuffer.isFulfilled
   text="Loading Wave..."
 }}
-

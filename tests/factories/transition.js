@@ -3,7 +3,7 @@ import Faker from 'npm:faker';
 
 FactoryGuy.define('transition', {
   default: {
-    numBeats(model) { return Faker.random.number({ min: 0, max: 32, precision: 1 }); },
+    beatCount(model) { return Faker.random.number({ min: 0, max: 32, precision: 1 }); },
     fromTrack: {},
     toTrack: {},
     _arrangement: {},

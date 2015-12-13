@@ -63,7 +63,7 @@ export default function(store) {
     //     fromTrack,
     //     toTrack,
     //     // TODO: convert to beats
-    //     numBeats: transition.endTime - transition.startTime
+    //     beatCount: transition.endTime - transition.startTime
     //   });
 
     //   transitionTrack.save().then(() => {

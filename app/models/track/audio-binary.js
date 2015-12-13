@@ -29,6 +29,9 @@ export default Ember.Object.extend(
   audioContext: Ember.computed.reads('session.audioContext'),
   arrayBuffer: Ember.computed.reads('streamUrlArrayBuffer'),
 
+  // TODO(REFACTOR): add test
+  audioBuffer: Ember.computed.reads('decodedArrayBuffer.content'),
+
   // TODO(COMPUTEDPROMISE): use that?
   streamUrlArrayBuffer: Ember.computed('streamUrl', function() {
     let streamUrl = this.get('streamUrl');
@@ -67,6 +70,7 @@ export default Ember.Object.extend(
       return DS.PromiseObject.create({ promise });
     }
   }),
+
 
 // TODO: load from file/blob
 // TODO: handle in web worker

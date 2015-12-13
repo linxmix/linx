@@ -34,7 +34,7 @@ export default function(...attributes) {
 
 function assertRequiredAttributes(context, attributes) {
   attributes.forEach((attribute) => {
-    Ember.assert('Must specify a ' + attribute + ' when creating a ' + context.get('constructor'),
+    Ember.assert('Must specify a ' + attribute + ' when creating a ' + context.toString(),
       !Ember.isNone(context.get(attribute)));
   });
 }

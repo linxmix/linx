@@ -29,8 +29,12 @@ export default Ember.Mixin.create(
 
   validClips: Ember.computed.filterBy('clips', 'isValid', true),
   readyClips: Ember.computed.filterBy('clips', 'isReady', true),
-  clipSort: ['endBeat:asc', 'startBeat:asc'],
-  sortedClips: Ember.computed.sort('clips', 'clipSort'),
+  // TODO(CLEANUP): why?
+  // clipSort: ['endBeat:asc', 'startBeat:asc'],
+  // sortedClips: Ember.computed.sort('clips', 'clipSort'),
+  sortedClips: Ember.computed('clips.@each.endBeat', function() {
+    return this.get('clips').sortBy('endBeat');
+  }),
   timeSignature: Ember.computed.reads('arrangement.timeSignature'),
   endBeat: Ember.computed.reads('sortedClips.lastObject.endBeat'),
   beatCount: withDefault('endBeat', 0),

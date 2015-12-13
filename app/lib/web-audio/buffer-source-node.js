@@ -52,7 +52,11 @@ export default Ember.ObjectProxy.extend(
   destroy() {
     console.log('destroy buffer source node');
     return this._super.apply(this, arguments);
-  }
+  },
+
+  toString() {
+    return '<linx@object-proxy:web-audio/buffer-source-node>';
+  },
 });
 
 // TODO: code to copy section of audiobuffer

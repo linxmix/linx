@@ -86,7 +86,7 @@ export default Ember.Component.extend(ArrangementPlayerMixin,
     this.set('pxPerBeat', parseFloat(this.get('inputZoom')));
   }.observes('inputZoom'),
 
-  inputTransitionLength: Ember.computed.reads('transition.numBeats'),
+  inputTransitionLength: Ember.computed.reads('transition.beatCount'),
 
   _inputTransitionLength: function() {
     let value = parseFloat(this.get('inputTransitionLength'));
@@ -96,7 +96,7 @@ export default Ember.Component.extend(ArrangementPlayerMixin,
     }
 
     this.get('transition.readyPromise').then((transition) => {
-      transition.get('arrangement.clips.firstObject').set('numBeats', value);
+      transition.get('arrangement.clips.firstObject').set('beatCount', value);
     });
   }.observes('inputTransitionLength'),
   // /hacky stuff

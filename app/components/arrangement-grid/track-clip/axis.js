@@ -22,32 +22,32 @@ export default Ember.Component.extend(
   // attributeBindings: ['componentStyle:style'],
 
   track: Ember.computed.reads('clip.track'),
-  numBeats: Ember.computed.reads('clip.numBeats'),
+  beatCount: Ember.computed.reads('clip.beatCount'),
   audioStartBeat: Ember.computed.reads('clip.audioStartBeat'),
   audioEndBeat: Ember.computed.reads('clip.audioEndBeat'),
 
   audioStartBar: Ember.computed.reads('clip.audioStartBar'),
   audioEndBar: Ember.computed.reads('clip.audioEndBar'),
-  numBars: Ember.computed.reads('clip.numBars'),
+  barCount: Ember.computed.reads('clip.barCount'),
 
-  showBeatGrid: Ember.computed.and('clipWidth', 'numBeatsOnScreenIsValid'),
-  numBeatsOnScreenIsValid: Ember.computed.lte('numBeatsOnScreen', MAX_BEATS_ON_SCREEN),
+  showBeatGrid: Ember.computed.and('clipWidth', 'beatCountOnScreenIsValid'),
+  beatCountOnScreenIsValid: Ember.computed.lte('beatCountOnScreen', MAX_BEATS_ON_SCREEN),
 
-  showBarGrid: Ember.computed.and('clipWidth', 'numBarsOnScreenIsValid'),
-  numBarsOnScreenIsValid: Ember.computed.lte('numBarsOnScreen', MAX_BARS_ON_SCREEN),
+  showBarGrid: Ember.computed.and('clipWidth', 'barCountOnScreenIsValid'),
+  barCountOnScreenIsValid: Ember.computed.lte('barCountOnScreen', MAX_BARS_ON_SCREEN),
 
-  numBeatsOnScreen: Ember.computed('clipWidth', 'numBeats', 'arrangementViewWidth', function() {
+  beatCountOnScreen: Ember.computed('clipWidth', 'beatCount', 'arrangementViewWidth', function() {
     let {
-      numBeats,
+      beatCount,
       arrangementViewWidth,
       clipWidth,
-    } = this.getProperties('clipWidth', 'numBeats', 'arrangementViewWidth');
+    } = this.getProperties('clipWidth', 'beatCount', 'arrangementViewWidth');
 
-    return (arrangementViewWidth / clipWidth) * numBeats;
+    return (arrangementViewWidth / clipWidth) * beatCount;
   }),
-  numBarsOnScreen: multiply('numBeatsOnScreen', 0.25),
+  barCountOnScreen: multiply('beatCountOnScreen', 0.25),
 
-  clipWidth: multiply('numBeats', 'pxPerBeat'),
+  clipWidth: multiply('beatCount', 'pxPerBeat'),
   clipWidthStyle: toPixels('clipWidth'),
 
   componentStyle: cssStyle({

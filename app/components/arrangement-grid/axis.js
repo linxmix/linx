@@ -14,7 +14,7 @@ export default Ember.Component.extend(
   classNameBindings: [],
   attributeBindings: ['componentStyle:style'],
 
-  // TODO: figure out playhead
+  // TODO(REFACTOR): figure out playhead
   // playheadStyle: cssStyle({
   //   'left': 'playheadPx'
   // }),
@@ -24,8 +24,8 @@ export default Ember.Component.extend(
   // }.property('metronome.tickBeat', 'pxPerBeat'),
 
   arrangementWidth: function() {
-    return this.get('arrangement.numBeats') * this.get('pxPerBeat');
-  }.property('arrangement.numBeats', 'pxPerBeat'),
+    return this.get('arrangement.beatCount') * this.get('pxPerBeat');
+  }.property('arrangement.beatCount', 'pxPerBeat'),
 
   arrangementWidthStyle: Ember.computed('arrangementWidth', function() {
     return `${this.get('arrangementWidth')}px`;
@@ -35,10 +35,10 @@ export default Ember.Component.extend(
     width: 'arrangementWidthStyle'
   }),
 
-  numBars: Ember.computed.reads('arrangement.numBars'),
-  barScale: Ember.computed('arrangementWidth', 'numBars', function () {
+  barCount: Ember.computed.reads('arrangement.barCount'),
+  barScale: Ember.computed('arrangementWidth', 'barCount', function () {
     let rangeMax = this.get('arrangementWidth');
-    let domainMax = this.get('numBars');
+    let domainMax = this.get('barCount');
 
     return d3.scale.linear().domain([1, domainMax + 1]).range([0, rangeMax]);
   }).readOnly(),

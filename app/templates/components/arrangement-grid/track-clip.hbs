@@ -3,11 +3,17 @@
   pxPerBeat=pxPerBeat
 }}
 
-<div class="ArrangementGridTrackClip-wave" style="{{waveStyle}}">
+{{!-- TODO(REFACTOR): move data-visual into arrangement-grid? --}}
+{{!-- {{#data-visual
+  as |svg width height|
+}}
   {{arrangement-grid/track-clip/wave
+    select=(svg-transition svg)
     clip=clip
     pxPerBeat=pxPerBeat
   }}
-</div>
+{{/data-visual}} --}}
 
-{{yield markerOptions}}
+
+{{!-- TODO(REFACTOR): what's this? --}}
+{{!-- {{yield markerOptions}} --}}
