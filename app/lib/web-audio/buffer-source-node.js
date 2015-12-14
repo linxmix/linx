@@ -9,14 +9,14 @@ export default Ember.ObjectProxy.extend(
   ReadinessMixin('isAudioLoaded'), {
 
   // params
-  decodedArrayBuffer: null,
+  audioBuffer: null, // WebAudioApi.AudioBuffer
 
   // implement web-audio/node
   node: null,
   outputNode: null,
 
   // implmement readiness
-  isAudioLoaded: Ember.computed.bool('decodedArrayBuffer'),
+  isAudioLoaded: Ember.computed.bool('audioBuffer'),
 
   start(when, offset, duration) {
     let args = [when, offset, duration].filter(isValidNumber);
@@ -32,26 +32,26 @@ export default Ember.ObjectProxy.extend(
     this.disconnect();
   },
 
-  createBufferSource() {
+  createBufferSource: Ember.observer('audioBuffer', function() {
+    this.disconnect();
+
     let audioContext = this.get('audioContext');
     let sourceNode = audioContext.createBufferSource();
+
     this.set('node', sourceNode);
     this.loadBuffer();
     this.connectOutput();
+
     return sourceNode;
-  },
+  }).on('init'),
 
-  loadBuffer: Ember.observer('node', 'decodedArrayBuffer', function() {
-    let { node, decodedArrayBuffer } = this.getProperties('node', 'decodedArrayBuffer');
+  loadBuffer() {
+    let { node, audioBuffer } = this.getProperties('node', 'audioBuffer');
 
-    if (node && decodedArrayBuffer) {
-      node.buffer = decodedArrayBuffer;
+    if (node && audioBuffer) {
+      console.log('loadBuffer');
+      node.buffer = audioBuffer;
     }
-  }),
-
-  destroy() {
-    console.log('destroy buffer source node');
-    return this._super.apply(this, arguments);
   },
 
   toString() {

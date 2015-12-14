@@ -88,14 +88,14 @@ export default Ember.Mixin.create(
       let metronome = this.get('metronome');
       let when = metronome.beatToTime(this.get('startBeat'));
       let offset = this.getCurrentAudioTime();
-      let duration = offset - this.get('audioDuration');
-      console.log('startSource', this.get('trackSourceNode.isDestroyed'));
+      let duration = this.get('audioDuration') - offset;
+      console.log('startSource', this.get('track.title'), when, offset, duration);
       this.get('trackSourceNode').start(when, offset, duration);
     }
   },
 
   stopSource: function() {
-    console.log('stopSource', this.get('trackSourceNode.isDestroyed'));
+    console.log('stopSource', this.get('track.title'));
     this.get('trackSourceNode').stop();
   }.on('unschedule'),
 

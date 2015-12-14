@@ -8,8 +8,8 @@
     "test": "tests"
   },
   "scripts": {
-    "postinstall": "bower install",
-    "start": "npm install && ember server --port=3000 --proxy=http://localhost:4004",
+    "start": "ember server --port=3000 --proxy=http://localhost:4004",
+    "start:test": "ember server --port=3000 --proxy=http://localhost:4004 --environment=test",
     "start:proxy": "node cors-server.js",
     "build": "ember build",
     "test": "ember test",

@@ -49,7 +49,7 @@ var Echonest = Ember.Object.extend({
     }).then((response) => {
       // TODO(CLEANUP): better error handling here
       if (!Ember.get(response, 'response.track.id')) {
-        console.log("WARNING: ANALYSIS INCOMPLETE", )
+        console.log("WARNING: ANALYSIS INCOMPLETE", response);
       }
       return response.response.track;
     });

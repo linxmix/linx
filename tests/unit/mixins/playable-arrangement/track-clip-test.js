@@ -139,7 +139,7 @@ describe('PlayableTrackClipMixin', function() {
         expect(startStub.calledOnce).to.be.true;
         let when = metronome.beatToTime(clip.get('startBeat'));
         let offset = clip.getCurrentAudioTime();
-        let duration = offset - clip.get('audioDuration');
+        let duration = clip.get('audioDuration') - offset;
         expect(startStub.calledWithExactly(when, offset, duration)).to.be.true;
       });
     });

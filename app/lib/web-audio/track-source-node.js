@@ -11,7 +11,7 @@ export default BufferSourceNode.extend({
 
   // implement audio-source-node
   audioBinary: Ember.computed.reads('track.audioBinary'),
-  decodedArrayBuffer: Ember.computed.reads('audioBinary.decodedArrayBuffer.content'),
+  audioBuffer: Ember.computed.reads('audioBinary.audioBuffer'),
 
   toString() {
     return '<linx@object-proxy:web-audio/track-source-node>';

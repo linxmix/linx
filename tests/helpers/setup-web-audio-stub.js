@@ -11,6 +11,7 @@ export default function() {
   beforeEach(function() {
     WebAudioTestAPI.use();
 
+    // TODO(CLEANUP): should move this into own file that overrites web audio test api prototype cleanly
     // stub audio context methods that test API does not provide
     AudioContext.prototype.close = Ember.K;
 

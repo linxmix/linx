@@ -75,10 +75,11 @@ export default Ember.Object.extend(
     }
   },
 
-  // TODO(REFACTOR): turn into beatgrid
+  // TODO(MULTIGRID): turn into beatgrid
   // returns absolute time at which given beat will occur in audioContext
   beatToTime(beat) {
     beat -= this.getCurrentBeat();
+
     return this._getAbsTime() + beatToTime(beat, this.get('bpm'));
   },
 

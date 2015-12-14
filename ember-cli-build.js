@@ -27,10 +27,13 @@ module.exports = function(defaults) {
   // along with the exports of each module as its value.
 
   app.import('vendor/js/soundtouch.min.js');
-  app.import({
-    development: 'bower_components/web-audio-test-api/build/web-audio-test-api.js'
-  });
 
+  // WebAudioTestApi overrides native globals; only import when testing
+  if (app.env === 'test') {
+    app.import('bower_components/web-audio-test-api/build/web-audio-test-api.js');
+  }
+
+  // TODO(CLEANUP): is this necessary still?
   // Hack webworker support
   // http://stackoverflow.com/questions/24175120/ember-cli-project-and-web-workers
   var pickFiles = require('broccoli-static-compiler');
