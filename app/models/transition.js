@@ -113,12 +113,6 @@ export default DS.Model.extend(
         arrangement.get('automationClips').addObject(automationClip);
 
         return this;
-        // TODO(REFACTOR): does it makes sense to save here? probably not, so we can revert
-        // return arrangement.save().then(() => {
-        //   return automationClip.save().then(() => {
-        //     return this;
-        //   });
-        // });
       });
 
     });

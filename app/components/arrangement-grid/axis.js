@@ -3,8 +3,8 @@ import d3 from 'd3';
 
 import BubbleActions from 'linx/lib/bubble-actions';
 import RequireAttributes from 'linx/lib/require-attributes';
-
 import cssStyle from 'linx/lib/computed/css-style';
+import { isValidNumber } from 'linx/lib/utils';
 
 export default Ember.Component.extend(
   BubbleActions(), RequireAttributes('arrangement', 'pxPerBeat'), {
@@ -24,7 +24,8 @@ export default Ember.Component.extend(
   // }.property('metronome.tickBeat', 'pxPerBeat'),
 
   arrangementWidth: function() {
-    return this.get('arrangement.beatCount') * this.get('pxPerBeat');
+    let width = this.get('arrangement.beatCount') * this.get('pxPerBeat');
+    return isValidNumber(width) ? width : 0;
   }.property('arrangement.beatCount', 'pxPerBeat'),
 
   arrangementWidthStyle: Ember.computed('arrangementWidth', function() {

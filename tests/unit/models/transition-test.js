@@ -47,6 +47,44 @@ describe('TransitionModel', function() {
     beatCount() { return transition.get('arrangement.beatCount'); },
   });
 
+  describe('setting fromTrackEndBeat', function() {
+    let beat = 78.2093, time;
+
+    beforeEach(function() {
+      time = transition.get('fromTrack.audioMeta.beatGrid').beatToTime(beat);
+
+      Ember.run(() => {
+        transition.set('fromTrackEndBeat', beat);
+      });
+    });
+
+     describeAttrs('transition', {
+      subject: () => transition,
+      fromTrackEndTime: () => time,
+      fromTrackEndBeat: () => beat,
+      hasDirtyAttributes: true,
+    });
+  });
+
+  describe('setting toTrackStartBeat', function() {
+    let beat = 78.2093, time;
+
+    beforeEach(function() {
+      time = transition.get('toTrack.audioMeta.beatGrid').beatToTime(beat);
+
+      Ember.run(() => {
+        transition.set('toTrackStartBeat', beat);
+      });
+    });
+
+     describeAttrs('transition', {
+      subject: () => transition,
+      toTrackStartTime: () => time,
+      toTrackStartBeat: () => beat,
+      hasDirtyAttributes: true,
+    });
+  });
+
   describeSettingTrack('fromTrack');
   describeSettingTrack('toTrack');
 

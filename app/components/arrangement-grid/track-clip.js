@@ -2,11 +2,9 @@ import Ember from 'ember';
 
 import _ from 'npm:underscore';
 
-import RequireAttributes from 'linx/lib/require-attributes';
+import Clip from './clip';
 
-export default Ember.Component.extend(
-  RequireAttributes('clip'), {
-
+export default Clip.extend({
   classNames: ['TrackClip'],
 
   // params

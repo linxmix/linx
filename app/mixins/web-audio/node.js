@@ -30,12 +30,10 @@ export default Ember.Mixin.create(
   disconnect() {
     let node = this.get('node');
     node && node.disconnect();
-    if (!this.get('isDestroyed')) {
-      this.set('isConnected', false);
-    }
+    this.set('isConnected', false);
   },
 
-  destroy() {
+  willDestroy() {
     this.disconnect();
     return this._super.apply(this, arguments);
   },

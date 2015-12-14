@@ -3,8 +3,9 @@ import Ember from 'ember';
 import BubbleActions from 'linx/lib/bubble-actions';
 import RequireAttributes from 'linx/lib/require-attributes';
 import { clamp, isNumber } from 'linx/lib/utils';
+import Clip from './clip';
 
-export default Ember.Component.extend(
+export default Clip.extend(
   BubbleActions(), RequireAttributes('clip'), {
 
   actions: {},

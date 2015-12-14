@@ -47,6 +47,10 @@ var Echonest = Ember.Object.extend({
         url: streamUrl
       },
     }).then((response) => {
+      // TODO(CLEANUP): better error handling here
+      if (!Ember.get(response, 'response.track.id')) {
+        console.log("WARNING: ANALYSIS INCOMPLETE", )
+      }
       return response.response.track;
     });
   },

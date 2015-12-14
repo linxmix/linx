@@ -63,9 +63,15 @@ export default Ember.Mixin.create(Ember.Evented, {
   triggerScheduleEvents() {
     this.trigger('unschedule');
 
-    if (this.get('metronome.isPlaying')) {
+    if (this.get('isScheduled')) {
       this.trigger('schedule');
     }
+  },
+
+  willDestroy() {
+    this.set('isScheduled', false);
+    this.triggerScheduleEvents();
+    return this._super.apply(this, arguments);
   },
 
   toString() {

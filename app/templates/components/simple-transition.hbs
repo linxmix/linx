@@ -29,34 +29,34 @@
   seekToBeat="seekToBeat"
 }}
   {{#arrangement-grid/row}}
-    {{arrangement-grid/event
+    {{!-- {{arrangement-grid/event
       clip=fromTrackClip
       metronome=metronome
       pxPerBeat=pxPerBeat
       isDraggable=true
       onDrag=(action "moveTrackMarker" fromTrackMarker)
       class="SimpleTransition-FromTrackClip"
-    }}
+    }} --}}
   {{/arrangement-grid/row}}
 
   {{#arrangement-grid/row}}
-    {{arrangement-grid/event
+    {{!-- {{arrangement-grid/event
       clip=transitionClip
       metronome=metronome
       pxPerBeat=pxPerBeat
       class="SimpleTransition-TransitionClip"
-    }}
+    }} --}}
   {{/arrangement-grid/row}}
 
   {{#arrangement-grid/row}}
-    {{arrangement-grid/event
+    {{!-- {{arrangement-grid/event
       clip=toTrackClip
       metronome=metronome
       pxPerBeat=pxPerBeat
       isDraggable=true
       onDrag=(action "moveTrackMarker" toTrackMarker -1)
       class="SimpleTransition-ToTrackClip"
-    }}
+    }} --}}
   {{/arrangement-grid/row}}
 {{/arrangement-grid}}
 

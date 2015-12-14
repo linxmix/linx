@@ -35,7 +35,19 @@ export default function TrackPropertiesMixin(trackPath) {
     [trackPath]: DS.belongsTo('track', { async: true }),
 
     [timePath]: DS.attr('number', { defaultValue: 0 }),
-    [beatPath]: Ember.computed.alias(`${markerPath}.beat`),
+
+    // when setting beat, alias to time
+    [beatPath]: Ember.computed(`${markerPath}.beat`, {
+      get(key) {
+        return this.get(`${markerPath}.beat`);
+      },
+      set(key, beat) {
+        let marker = this.get(markerPath);
+        marker.set('beat', beat);
+        this.set(timePath, marker.get('time'));
+        return beat;
+      },
+    }),
 
     // compute marker from time
     [markerPath]: computedObject(TransitionMarker, {

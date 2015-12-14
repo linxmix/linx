@@ -1,4 +1,4 @@
-.ArrangementGridEvent {
+.ArrangementGridClip {
   height: 100%;
   position: absolute;
   display: inline-block;
@@ -10,6 +10,6 @@
   }
 }
 
-// .ArrangementGridEvent.is-draggable {
-//   cursor: move;
-// }
+.ArrangementGridClip.is-draggable {
+  cursor: move;
+}
