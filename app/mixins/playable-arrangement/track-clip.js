@@ -13,7 +13,7 @@ import { flatten } from 'linx/lib/utils';
 
 import {
   computedBeatToTime,
-  computedBarToBeat,
+  computedBeatToBar,
 } from 'linx/models/track/audio-meta/beat-grid';
 
 export default Ember.Mixin.create(
@@ -41,8 +41,8 @@ export default Ember.Mixin.create(
   audioStartTime: computedBeatToTime('audioBeatGrid', 'audioStartBeat'),
   audioEndTime: computedBeatToTime('audioBeatGrid', 'audioEndBeat'),
 
-  audioStartBar: computedBarToBeat('audioBeatGrid', 'audioStartBeat'),
-  audioEndBar: computedBarToBeat('audioBeatGrid', 'audioEndBeat'),
+  audioStartBar: computedBeatToBar('audioBeatGrid', 'audioStartBeat'),
+  audioEndBar: computedBeatToBar('audioBeatGrid', 'audioEndBeat'),
 
   audioBeatCount: subtract('audioEndBeat', 'audioStartBeat'),
   audioDuration: subtract('audioEndTime', 'audioStartTime'),

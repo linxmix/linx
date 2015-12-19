@@ -57,6 +57,8 @@ describe('PlayableTrackClipMixin', function() {
     audioBeatCount() { return audioEndBeat - audioStartBeat; },
     audioStartTime() { return clip.get('audioBeatGrid').beatToTime(audioStartBeat); },
     audioEndTime() { return clip.get('audioBeatGrid').beatToTime(audioEndBeat); },
+    audioStartBar() { return audioStartBeat / clip.get('timeSignature'); },
+    audioBarCount() { return clip.get('audioBeatCount') / clip.get('timeSignature'); },
     audioDuration() { return clip.get('audioEndTime') - clip.get('audioStartTime'); },
     audioOffset() { return clip.get('audioBeatGrid.firstBarOffset') - clip.get('audioStartTime'); },
     tempo() { return metronome.get('bpm') / clip.get('audioMeta.bpm'); },
