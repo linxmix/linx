@@ -11,43 +11,34 @@ import multiply from 'linx/lib/computed/multiply';
 // http://stackoverflow.com/questions/26207636/drawing-a-waveform-with-d3
 export default Ember.Component.extend(
   GraphicSupport,
-  RequireAttributes('clip'), {
+  RequireAttributes('peaks'), {
 
   actions: {},
   classNames: ['TrackClipWave'],
   classNameBindings: [],
 
   // params
-  track: Ember.computed.reads('clip.track'),
-  audioStartBeat: Ember.computed.reads('clip.audioStartBeat'),
-  audioEndBeat: Ember.computed.reads('clip.audioEndBeat'),
-  audioMeta: Ember.computed.reads('track.audioMeta'),
-  audioBuffer: Ember.computed.reads('audioBinary.audioBuffer'),
-
+  // audioBuffer: null,
+  // audioStartTime: Ember.computed.reads('clip.audioStartTime'),
+  // audioEndTime: Ember.computed.reads('clip.audioEndTime'),
+  // TODO(REFACTOR): figure this out (which offset direction is correct?)
   // visually align the segment of audio represented by this clip
-  // TODO(REFACTOR): figure out which offset direction is correct
-  waveOffset: multiply('clip.audioOffset', 'pxPerBeat', -1.0),
+  // waveOffset: multiply('clip.audioOffset', 'pxPerBeat', -1.0),
   // waveOffsetStyle: toPixels('waveOffset'),
-
-  waveformData: Ember.computed('audioBuffer', function() {
-    let audioBuffer = this.get('audioBuffer');
-    if (!audioBuffer) { console.log("EMPTY waveform data"); return []; }
-
-    let data = audioBuffer.getChannelData(0);
-    console.log('waveformData', data);
-    return data;
-  }),
 
   stroke: d3.scale.category10(),
   defaultMargin: { left: 50, right: 0, top: 0, bottom: 50 },
 
-  call: join('waveformData', '.waveform', {
+  call: join('peaks', '.waveform', {
     enter(sel) {
+      console.log("ENTER", this.get('peaks.length'));
+      const scale = 125 / 2;
+      const median = 125 / 2;
       sel.append('line')
-        .attr('y1', function(d) { return d[0]; })
-        .attr('y2', function(d) { return d[1]; })
-        .attr('x1', function(d, i) { return i +0.5; })
-        .attr('x2', function(d, i) { return i +0.5; })
+        .attr('y1', function(d) { return median + scale * d[0]; })
+        .attr('y2', function(d) { return median + scale * d[1]; })
+        .attr('x1', function(d, i) { return i; })
+        .attr('x2', function(d, i) { return i; })
         .attr("stroke-width", 1)
         .attr("stroke", "green");
     },

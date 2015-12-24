@@ -1,3 +1,4 @@
+// TODO(CLEANUP): does this do anything?
 import Ember from 'ember';
 
 export function svgTransition([ sel ], hash) {

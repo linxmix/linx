@@ -5,15 +5,22 @@
 
 {{!-- TODO(REFACTOR): move data-visual into arrangement-grid? --}}
 {{#data-visual
-  as |svg width height|
+  class="TrackClip-wave"
+  as |stg width height|
 }}
-  {{!-- {{arrangement-grid/track-clip/wave
-    select=(svg-transition svg)
-    clip=clip
-    pxPerBeat=pxPerBeat
-  }} --}}
+  {{!-- select=(svg-transition stg.svg.select.waveform) --}}
+  {{arrangement-grid/track-clip/wave
+    select=stg.svg.select
+    peaks=peaks
+  }}
 {{/data-visual}}
 
-
+{{!-- TODO(REFACTOR): add progress notion --}}
+{{!-- {{progress-bar
+  class="TrackClipWave-progress"
+  isDone=audioBinary.audioBuffer
+  text="Loading Wave..."
+}}
+ --}}
 {{!-- TODO(REFACTOR): what's this? --}}
 {{!-- {{yield markerOptions}} --}}

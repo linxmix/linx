@@ -74,6 +74,7 @@ export default Ember.Component.extend(
     // update centerBeat before attrs update, recenter after attrs update
     if (oldPxPerBeat && (oldPxPerBeat.value !== newPxPerBeat.value)) {
       let centerBeat = this.getCenterBeat(oldPxPerBeat.value);
+      console.log('recenterOnZoom', centerBeat);
       this.one('didRender', () => {
         this.scrollToBeat(centerBeat, false);
       });

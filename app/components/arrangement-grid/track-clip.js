@@ -9,9 +9,25 @@ export default Clip.extend({
 
   // params
   track: Ember.computed.reads('clip.track'),
+  audioMeta: Ember.computed.reads('track.audioMeta'),
+  audioBinary: Ember.computed.reads('track.audioBinary'),
+  audioBuffer: Ember.computed.reads('audioBinary.audioBuffer'),
+
   audioStartBeat: Ember.computed.reads('clip.audioStartBeat'),
   audioEndBeat: Ember.computed.reads('clip.audioEndBeat'),
-  audioMeta: Ember.computed.reads('track.audioMeta'),
+  audioStartTime: Ember.computed.reads('clip.audioStartTime'),
+  audioEndTime: Ember.computed.reads('clip.audioEndTime'),
+  audioBeatCount: Ember.computed.reads('clip.audioBeatCount'),
+
+  // TODO(CLEANUP): shouldnt have to depend on audioBuffer
+  peaks: Ember.computed('audioBuffer', 'audioStartTime', 'audioEndTime', 'audioBeatCount', 'pxPerBeat', function() {
+    let audioBinary = this.get('audioBinary');
+    return (audioBinary && audioBinary.getPeaks(
+      this.get('audioStartTime'),
+      this.get('audioEndTime'),
+      this.get('audioBeatCount') * this.get('pxPerBeat')
+    )) || [];
+  }),
 
   markers: Ember.computed.reads('audioMeta.markers'),
   visibleMarkers: Ember.computed('audioStartBeat', 'audioEndBeat', 'markers.@each.beat', function() {
