@@ -1,9 +1,10 @@
+{{!-- TODO(REFACTOR): can these be combined? --}}
 {{#if showBeatGrid}}
   {{#data-visual
-    as |svg width height|
+    as |stg width height|
   }}
     {{d3-axis
-      select=(svg-transition svg.beat-grid)
+      select=(svg-transition stg.svg.select.beat-grid)
       transform=(svg-translate 0 125)
       scale=beatViewScale
       orient="top"
@@ -15,10 +16,10 @@
 
 {{#if showBarGrid}}
   {{#data-visual
-    as |svg width height|
+    as |stg width height|
   }}
     {{d3-axis
-      select=(svg-transition svg.bar-grid)
+      select=(svg-transition stg.svg.select.bar-grid)
       transform=(svg-translate 0 125)
       scale=barViewScale
       orient="top"

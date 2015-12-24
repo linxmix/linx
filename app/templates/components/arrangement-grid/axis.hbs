@@ -1,8 +1,8 @@
 {{#data-visual
-  as |svg width height|
+  as |stg width height|
 }}
   {{d3-axis
-    select=(svg-transition svg.arrangement-axis)
+    select=(svg-transition stg.svg.select.arrangement-axis)
     transform=(svg-translate 0 34)
     scale=barScale
     orient="top"
