@@ -95,7 +95,7 @@ export default Ember.Mixin.create(
   },
 
   stopSource: function() {
-    console.log('stopSource', this.get('track.title'));
+    // console.log('stopSource', this.get('track.title'));
     this.get('trackSourceNode').stop();
   }.on('unschedule'),
 

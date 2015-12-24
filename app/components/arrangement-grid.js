@@ -8,6 +8,9 @@ import PreventMacBackScroll from 'linx/mixins/prevent-mac-back-scroll';
 import cssStyle from 'linx/lib/computed/css-style';
 import { clamp, isNumber } from 'linx/lib/utils';
 
+// used for cancelAnimationFrame
+let playheadAnimationId;
+
 export default Ember.Component.extend(
   // PreventMacBackScroll,
   RequireAttributes('pxPerBeat', 'arrangement'),
@@ -20,6 +23,37 @@ export default Ember.Component.extend(
 
   classNames: ['ArrangementGrid'],
   classNameBindings: ['isReady::ArrangementGrid--loading'],
+
+  // playhead logic
+  metronome: Ember.computed.reads('arrangement.metronome'),
+
+  startPlayheadAnimation: Ember.observer('metronome.isPlaying', 'metronome.seekBeat', function() {
+    let context = this;
+    let $playhead = this.$('.ArrangementGrid-playhead');
+
+    // uses requestAnimationFrame to animate the arrangement-grid's playhead
+    function animatePlayhead() {
+      let metronome = context.get('metronome');
+      let pxPerBeat = context.get('pxPerBeat');
+      let currentBeat = metronome.getCurrentBeat();
+      let currentPx = pxPerBeat * currentBeat;
+
+      $playhead.css('left', currentPx);
+
+      if (metronome.get('isPlaying')) {
+        playheadAnimationId = window.requestAnimationFrame(animatePlayhead);
+      } else {
+        playheadAnimationId = undefined;
+      }
+    }
+
+    this.stopPlayheadAnimation();
+    animatePlayhead();
+  }).on('didInsertElement'),
+
+  stopPlayheadAnimation: function() {
+    window.cancelAnimationFrame(playheadAnimationId);
+  }.on('willDestroyElement'),
 
   // on click, seekToBeat
   click(e) {

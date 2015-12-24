@@ -1,4 +1,5 @@
 .ArrangementGrid {
+  position: relative;
   border: 1px solid orange;
   cursor: crosshair;
   overflow-y: hidden;
@@ -7,4 +8,10 @@
 
 .ArrangementGrid--loading {
   cursor: wait;
+}
+
+.ArrangementGrid-playhead {
+  position: absolute;
+  border-left: 2px solid aqua;
+  height: 100%;
 }

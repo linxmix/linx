@@ -14,15 +14,6 @@ export default Ember.Component.extend(
   classNameBindings: [],
   attributeBindings: ['componentStyle:style'],
 
-  // TODO(REFACTOR): figure out playhead
-  // playheadStyle: cssStyle({
-  //   'left': 'playheadPx'
-  // }),
-
-  // playheadPx: function() {
-  //   return (this.get('metronome.tickBeat') * this.get('pxPerBeat')) + 'px';
-  // }.property('metronome.tickBeat', 'pxPerBeat'),
-
   arrangementWidth: function() {
     let width = this.get('arrangement.beatCount') * this.get('pxPerBeat');
     return isValidNumber(width) ? width : 0;
