@@ -19,6 +19,17 @@ export default Ember.ObjectProxy.extend(
   isAudioLoaded: Ember.computed.bool('audioBuffer'),
 
   start(when, offset, duration) {
+    // if starting before 0, shift to offset
+    if (when < 0) {
+      offset -= when;
+      when = 0;
+    }
+
+    // if no duration, quit
+    if (duration <= 0) {
+      return;
+    }
+
     let args = [when, offset, duration].filter(isValidNumber);
 
     // web audio buffer sources can only be played once
@@ -32,7 +43,7 @@ export default Ember.ObjectProxy.extend(
     this.disconnect();
   },
 
-  createBufferSource: Ember.observer('audioBuffer', function() {
+  createBufferSource() {
     this.disconnect();
 
     let audioContext = this.get('audioContext');
@@ -43,13 +54,12 @@ export default Ember.ObjectProxy.extend(
     this.connectOutput();
 
     return sourceNode;
-  }).on('init'),
+  },
 
   loadBuffer() {
     let { node, audioBuffer } = this.getProperties('node', 'audioBuffer');
 
     if (node && audioBuffer) {
-      console.log('loadBuffer');
       node.buffer = audioBuffer;
     }
   },
