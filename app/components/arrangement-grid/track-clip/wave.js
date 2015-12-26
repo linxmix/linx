@@ -29,18 +29,30 @@ export default Ember.Component.extend(
   stroke: d3.scale.category10(),
   defaultMargin: { left: 50, right: 0, top: 0, bottom: 50 },
 
-  call: join('peaks', '.waveform', {
+  peaksArea: Ember.computed('peaks', function() {
+    return [this.get('peaks') || []];
+  }),
+
+  call: join('peaksArea', 'waveform.area', {
     enter(sel) {
       console.log("ENTER", this.get('peaks.length'));
-      const scale = 125 / 2;
       const median = 125 / 2;
-      sel.append('line')
-        .attr('y1', function(d) { return median + scale * d[0]; })
-        .attr('y2', function(d) { return median + scale * d[1]; })
-        .attr('x1', function(d, i) { return i; })
-        .attr('x2', function(d, i) { return i; })
+      const scale = 125 / 2;
+
+      const area = d3.svg.area()
+        .x((d, i) => i)
+        .y0(median)
+        .y1((d) => d[1] * scale);
+
+      sel.append('path')
+        // .attr('y1', function(d) { return median + scale * d[0]; })
+        // .attr('y2', function(d) { return median + scale * d[1]; })
+        // .attr('x1', function(d, i) { return i; })
+        // .attr('x2', function(d, i) { return i; })
         .attr("stroke-width", 1)
-        .attr("stroke", "green");
+        .attr("stroke", "green")
+        .style("fill", "#ff0000")
+        .attr('d', area);
     },
   })
 });
