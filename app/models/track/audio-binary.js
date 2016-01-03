@@ -73,6 +73,7 @@ export default Ember.Object.extend(
 
   // returns an array of arrays of [min, max] values of the waveform
   // from startTime to endTime when broken into length subranges
+  // TODO(WEBWORKER): handle in web worker
   getPeaks(startTime, endTime, length) {
     let audioBuffer = this.get('audioBuffer');
     if (!audioBuffer) { return []; }
