@@ -46,51 +46,51 @@
 
 <hr/>
 
-{{#arrangement-grid
+{{#arrangement-visual
   arrangement=arrangement
   zoom=zoom
   isReady=isReady
   as |gridSelect height width|
 }}
   {{!-- {{#zip-entries select=select items=mix.trackClips as |item g-tag|}}
-    {{#arrangement-grid/row
+    {{#arrangement-visual/row
       select=select
       as |rowSelect|
     }}
 
       {{#each mix.items as |item|}}
-        {{arrangement-grid/track-clip
+        {{arrangement-visual/track-clip
           select=rowSelect
           clip=item.fromTrackClip
           pxPerBeat=pxPerBeat
         }}
 
         {{#if item.isLastItem}}
-          {{arrangement-grid/track-clip
+          {{arrangement-visual/track-clip
             select=rowSelect
             clip=item.toTrackClip
             pxPerBeat=pxPerBeat
           }}
         {{/if}}
       {{/each}}
-    {{/arrangement-grid/row}}
+    {{/arrangement-visual/row}}
   {{/zip-entries}} --}}
 
 
-  {{#arrangement-grid/row
+  {{#arrangement-visual/row
     select=gridSelect.row
     maxX=arrangement.beatCount
     as |rowSelect|
   }}
     {{!-- {{#each mix.transitionClips as |clip|}}
-      {{arrangement-grid/transition-clip
+      {{arrangement-visual/transition-clip
         select=rowSelect
         clip=clip
         pxPerBeat=pxPerBeat
       }}
     {{/each}} --}}
-  {{/arrangement-grid/row}}
-{{/arrangement-grid}}
+  {{/arrangement-visual/row}}
+{{/arrangement-visual}}
 
 {{play-buttons
   isDisabled=notReady

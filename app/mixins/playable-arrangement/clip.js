@@ -14,7 +14,7 @@ import { isValidNumber, clamp } from 'linx/lib/utils';
 export default Ember.Mixin.create(Ember.Evented, {
 
   // params
-  componentName: null, // used to render arrangement-grid clip component
+  componentName: null, // used to render arrangement-visual clip component
   arrangement: null,
   startBeat: null,
   isMuted: false,

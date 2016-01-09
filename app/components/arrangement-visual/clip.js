@@ -10,7 +10,7 @@ export default Ember.Component.extend(
   // GraphicSupport,
   RequireAttributes('clip', 'pxPerBeat'), {
 
-  classNames: ['ArrangementGridClip'],
+  classNames: ['ArrangementVisualClip'],
   attributeBindings: ['componentStyle:style', 'draggable'],
   classNameBindings: ['isDraggable'],
 

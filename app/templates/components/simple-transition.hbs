@@ -21,15 +21,15 @@
   <i class="play icon"></i>
 </div>
 
-{{#arrangement-grid
+{{#arrangement-visual
   arrangement=arrangement
   isReady=isReady
   pxPerBeat=pxPerBeat
   scrollCenterBeat=scrollCenterBeat
   seekToBeat="seekToBeat"
 }}
-  {{#arrangement-grid/row}}
-    {{!-- {{arrangement-grid/event
+  {{#arrangement-visual/row}}
+    {{!-- {{arrangement-visual/event
       clip=fromTrackClip
       metronome=metronome
       pxPerBeat=pxPerBeat
@@ -37,19 +37,19 @@
       onDrag=(action "moveTrackMarker" fromTrackMarker)
       class="SimpleTransition-FromTrackClip"
     }} --}}
-  {{/arrangement-grid/row}}
+  {{/arrangement-visual/row}}
 
-  {{#arrangement-grid/row}}
-    {{!-- {{arrangement-grid/event
+  {{#arrangement-visual/row}}
+    {{!-- {{arrangement-visual/event
       clip=transitionClip
       metronome=metronome
       pxPerBeat=pxPerBeat
       class="SimpleTransition-TransitionClip"
     }} --}}
-  {{/arrangement-grid/row}}
+  {{/arrangement-visual/row}}
 
-  {{#arrangement-grid/row}}
-    {{!-- {{arrangement-grid/event
+  {{#arrangement-visual/row}}
+    {{!-- {{arrangement-visual/event
       clip=toTrackClip
       metronome=metronome
       pxPerBeat=pxPerBeat
@@ -57,8 +57,8 @@
       onDrag=(action "moveTrackMarker" toTrackMarker -1)
       class="SimpleTransition-ToTrackClip"
     }} --}}
-  {{/arrangement-grid/row}}
-{{/arrangement-grid}}
+  {{/arrangement-visual/row}}
+{{/arrangement-visual}}
 
 <div class="ui grid">
   <div class="five wide column">

@@ -1,20 +1,20 @@
-{{#arrangement-grid
+{{#arrangement-visual
   arrangement=arrangement
   isReady=isReady
   pxPerBeat=pxPerBeat
   scrollCenterBeat=scrollCenterBeat
   seekToBeat="seekToBeat"
 }}
-  {{#arrangement-grid/row}}
+  {{#arrangement-visual/row}}
     {{#each arrangement.clips as |clip|}}
-      {{!-- {{arrangement-grid/event
+      {{!-- {{arrangement-visual/event
         clip=clip
         metronome=metronome
         pxPerBeat=pxPerBeat
       }} --}}
     {{/each}}
-  {{/arrangement-grid/row}}
-{{/arrangement-grid}}
+  {{/arrangement-visual/row}}
+{{/arrangement-visual}}
 
 {{play-buttons
   isDisabled=notReady

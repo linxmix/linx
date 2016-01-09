@@ -3,8 +3,8 @@ import Ember from 'ember';
 import GraphicSupport from 'ember-cli-d3/mixins/d3-support';
 
 export default Ember.Component.extend(GraphicSupport, {
-  // classNames: ['ArrangementGridRow'],
-  // classNameBindings: ['isMini:ArrangementGridRow--mini'],
+  // classNames: ['ArrangementVisualRow'],
+  // classNameBindings: ['isMini:ArrangementVisualRow--mini'],
 
   // optional params
   model: null,
@@ -18,7 +18,7 @@ export default Ember.Component.extend(GraphicSupport, {
   }),
 
   call(selection) {
-    selection.classed('ArrangementGridRow', true)
+    selection.classed('ArrangementVisualRow', true)
       .append("circle")
       .attr("cx", 0)
       .attr("cy", 0)

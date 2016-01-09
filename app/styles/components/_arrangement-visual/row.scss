@@ -1,4 +1,4 @@
-.ArrangementGridRow {
+.ArrangementVisualRow {
   border-bottom: 1px solid gray;
   position: relative;
   // height: 128px;
@@ -6,6 +6,6 @@
   border: 1px solid red;
 }
 
-.ArrangementGridRow.ArrangementGridRow--mini {
+.ArrangementVisualRow.ArrangementVisualRow--mini {
   height: 50px;
 }

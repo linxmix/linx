@@ -10,7 +10,7 @@ import { expect } from 'chai';
 import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 import describeAttrs from 'linx/tests/helpers/describe-attrs';
 
-import TrackClipComponent from 'linx/components/arrangement-grid/track-clip';
+import TrackClipComponent from 'linx/components/arrangement-visual/track-clip';
 
 // TODO(REFACTOR)
 const makeTrackClip = 3;

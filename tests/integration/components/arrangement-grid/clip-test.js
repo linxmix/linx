@@ -7,8 +7,8 @@ import {
 import hbs from 'htmlbars-inline-precompile';
 
 describeComponent.skip(
-  'arrangement-grid/clip',
-  'Integration: ArrangementGridClipComponent',
+  'arrangement-visual/clip',
+  'Integration: ArrangementVisualClipComponent',
   {
     integration: true
   },
@@ -18,12 +18,12 @@ describeComponent.skip(
       // Handle any actions with this.on('myAction', function(val) { ... });
       // Template block usage:
       // this.render(hbs`
-      //   {{#arrangement-grid/clip}}
+      //   {{#arrangement-visual/clip}}
       //     template content
-      //   {{/arrangement-grid/clip}}
+      //   {{/arrangement-visual/clip}}
       // `);
 
-      this.render(hbs`{{arrangement-grid/clip}}`);
+      this.render(hbs`{{arrangement-visual/clip}}`);
       expect(this.$()).to.have.length(1);
     });
   }

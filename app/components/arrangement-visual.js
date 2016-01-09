@@ -50,7 +50,7 @@ export default DataVisual.extend(
   }).readOnly(),
 
   svg: Ember.computed.reads('stage.svg.select'),
-  select: Ember.computed.reads('svg.Arrangement'),
+  select: Ember.computed.reads('svg.ArrangementVisual-arrangement'),
   selection: Ember.computed.reads('select.selection'),
 
   setupZoom: Ember.observer('svg.selection', 'zoom', function() {
@@ -70,9 +70,9 @@ export default DataVisual.extend(
 
   // startPlayheadAnimation: Ember.observer('metronome.isPlaying', 'metronome.seekBeat', function() {
   //   let context = this;
-  //   let $playhead = this.$('.ArrangementGrid-playhead');
+  //   let $playhead = this.$('.ArrangementVisual-playhead');
 
-  //   // uses requestAnimationFrame to animate the arrangement-grid's playhead
+  //   // uses requestAnimationFrame to animate the arrangement-visual's playhead
   //   function animatePlayhead() {
   //     let metronome = context.get('metronome');
   //     let pxPerBeat = context.get('pxPerBeat');
