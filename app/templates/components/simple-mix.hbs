@@ -48,11 +48,9 @@
 
 {{#arrangement-grid
   arrangement=arrangement
+  zoom=zoom
   isReady=isReady
-  pxPerBeat=pxPerBeat
-  scrollCenterBeat=scrollCenterBeat
-  seekToBeat="seekToBeat"
-  as |select height width|
+  as |gridSelect height width|
 }}
   {{!-- {{#zip-entries select=select items=mix.trackClips as |item g-tag|}}
     {{#arrangement-grid/row
@@ -80,7 +78,8 @@
 
 
   {{#arrangement-grid/row
-    select=select.arr-row
+    select=gridSelect.row
+    maxX=arrangement.beatCount
     as |rowSelect|
   }}
     {{!-- {{#each mix.transitionClips as |clip|}}

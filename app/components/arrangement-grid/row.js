@@ -25,6 +25,12 @@ export default Ember.Component.extend(GraphicSupport, {
       .attr("r", 50)
       .style("fill", "#B8DEE6")
 
+    selection.append("circle")
+      .attr("cx", this.get('maxX'))
+      .attr("cy", 0)
+      .attr("r", 50)
+      .style("fill", "#B8DE44")
+
     console.log("ROW CALL", this.get('elementId'));
   },
 });

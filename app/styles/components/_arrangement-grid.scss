@@ -1,16 +1,20 @@
-.ArrangementGrid {
+.ArrangementVisual {
   // position: relative;
-  border: 1px solid orange;
+  border: 1px solid whitesmoke;
   cursor: crosshair;
   // overflow-y: hidden;
   // overflow-x: auto;
 }
 
-.ArrangementGrid--loading {
+.ArrangementVisual-grid {
+  border: 1px solid orange;
+}
+
+.ArrangementVisual--loading {
   cursor: wait;
 }
 
-.ArrangementGrid-playhead {
+.ArrangementVisual-playhead {
   position: absolute;
   border-left: 2px solid aqua;
   height: 100%;

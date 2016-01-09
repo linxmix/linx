@@ -1,5 +1,7 @@
 import Ember from 'ember';
+
 import d3 from 'd3';
+import GraphicSupport from 'ember-cli-d3/mixins/d3-support';
 
 import BubbleActions from 'linx/lib/bubble-actions';
 import RequireAttributes from 'linx/lib/require-attributes';
@@ -7,50 +9,36 @@ import cssStyle from 'linx/lib/computed/css-style';
 import { isValidNumber } from 'linx/lib/utils';
 
 export default Ember.Component.extend(
-  BubbleActions(), RequireAttributes('arrangement', 'pxPerBeat'), {
+  GraphicSupport, BubbleActions(), RequireAttributes('arrangement'), {
 
-  actions: {},
-  classNames: ['ArrangementGridAxis'],
-  classNameBindings: [],
-  attributeBindings: ['componentStyle:style'],
+  // optional params
+  width: null,
+  height: null,
 
-  arrangementWidth: function() {
-    let width = this.get('arrangement.beatCount') * this.get('pxPerBeat');
-    return isValidNumber(width) ? width : 0;
-  }.property('arrangement.beatCount', 'pxPerBeat'),
+  beatCount: Ember.computed.reads('arrangement.beatCount'),
+  beatScale: Ember.computed('beatCount', function () {
+    // let rangeMax = this.get('arrangementWidth');
+    let domainMax = this.get('beatCount');
 
-  arrangementWidthStyle: Ember.computed('arrangementWidth', function() {
-    return `${this.get('arrangementWidth')}px`;
-  }),
-
-  componentStyle: cssStyle({
-    width: 'arrangementWidthStyle'
-  }),
-
-  barCount: Ember.computed.reads('arrangement.barCount'),
-  barScale: Ember.computed('arrangementWidth', 'barCount', function () {
-    let rangeMax = this.get('arrangementWidth');
-    let domainMax = this.get('barCount');
-
-    return d3.scale.linear().domain([1, domainMax + 1]).range([0, rangeMax]);
+    return d3.scale.linear().domain([1, domainMax + 1]).range([0, domainMax]);
   }).readOnly(),
 
-  // scale ticks based on zoom
-  ticksOnScreen: 10,
-  barTicks: Ember.computed('arrangementWidth', 'ticksOnScreen', function() {
-    let ticksOnScreen = this.get('ticksOnScreen');
-    let viewWidth = this._getParentWidth(); // TODO: update on resize
-    let arrangementWidth = this.get('arrangementWidth');
+  // // scale ticks based on zoom
+  // ticksOnScreen: 10,
+  // barTicks: Ember.computed('arrangementWidth', 'ticksOnScreen', function() {
+  //   let ticksOnScreen = this.get('ticksOnScreen');
+  //   let viewWidth = this._getParentWidth(); // TODO: update on resize
+  //   let arrangementWidth = this.get('arrangementWidth');
 
-    let ticks = ticksOnScreen * (arrangementWidth / viewWidth);
-    return ticks;
-  }),
+  //   let ticks = ticksOnScreen * (arrangementWidth / viewWidth);
+  //   return ticks;
+  // }),
 
-  _getParentWidth() {
-    let parentView = this.get('parentView');
+  // _getParentWidth() {
+  //   let parentView = this.get('parentView');
 
-    if (parentView.get('isInDom')) {
-      return parentView.$().width();
-    }
-  },
+  //   if (parentView.get('isInDom')) {
+  //     return parentView.$().width();
+  //   }
+  // },
 });

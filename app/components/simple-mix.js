@@ -4,7 +4,6 @@ import _ from 'npm:underscore';
 
 import BubbleActions from 'linx/lib/bubble-actions';
 import RequireAttributes from 'linx/lib/require-attributes';
-
 import ArrangementPlayerMixin from 'linx/mixins/components/arrangement-player';
 
 export const MIX_ITEM_PREVIEW_DISTANCE = 4;

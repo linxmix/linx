@@ -1,8 +1,7 @@
-.ArrangementGridAxis {
+.ArrangementGrid-Axis {
   height: 30px;
   color: white;
   stroke: white;
-  shape-rendering: crispEdges;
 
   text {
     text-anchor: left;
@@ -15,6 +14,7 @@
 
   .tick line {
     stroke-width: 1;
+    stroke: rgba(#fff, 0.3);
   }
 
   .domain {

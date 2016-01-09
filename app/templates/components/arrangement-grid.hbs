@@ -1,8 +1,20 @@
 {{!-- <div class="ArrangementGrid-playhead"></div> --}}
 
-{{!-- {{arrangement-grid/axis
+{{arrangement-grid/axis
   arrangement=arrangement
-  pxPerBeat=pxPerBeat
-}} --}}
+  select=select.ArrangementGrid
+  width=width
+  height=128
+}}
 
+ {{!--
+{{d3-axis
+  transform=(svg-translate 0 100)
+  select=select.ArrangementVisual-axis
+  scale=beatScale
+  ticks=1000
+  tickSize=(negative-number height)
+  orient="top"
+}}
+ --}}
 {{yield select width height}}

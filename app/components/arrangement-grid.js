@@ -1,7 +1,6 @@
 import Ember from 'ember';
 
 import DataVisual from 'ember-cli-d3/components/data-visual';
-import d3 from 'd3';
 
 import BubbleActions from 'linx/lib/bubble-actions';
 import RequireAttributes from 'linx/lib/require-attributes';
@@ -12,21 +11,62 @@ import { clamp, isNumber } from 'linx/lib/utils';
 // used for cancelAnimationFrame
 let playheadAnimationId;
 
+// TODO(SVG): rename to arrangement-visual
 export default DataVisual.extend(
   // PreventMacBackScroll,
-  RequireAttributes('pxPerBeat', 'arrangement'),
+  RequireAttributes('arrangement'),
   BubbleActions('seekToClick'), {
 
   // optional params
   isReady: false,
-  scrollCenterBeat: 0,
-  pxPerBeat: null,
+  zoom: Ember.computed(() => d3.behavior.zoom()),
 
-  classNames: ['ArrangementGrid'],
-  classNameBindings: ['isReady::ArrangementGrid--loading'],
+  classNames: ['ArrangementVisual'],
+  classNameBindings: ['isReady::ArrangementVisual--loading'],
 
-  // playhead logic
-  metronome: Ember.computed.reads('arrangement.metronome'),
+  didZoom() {
+    const { zoom, minX, maxX, minY, maxY } = this.getProperties('zoom', 'minX', 'maxX', 'minY', 'maxY');
+    const translate = zoom.translate();
+
+    let scale = zoom.scale();
+    translate[0] = clamp(-(maxX * scale), translate[0], 0);
+    // translate[1] = clamp(minY, translate[1], maxY * scale);
+    translate[1] = 0;
+    zoom.translate(translate);
+    console.log('didZoom', translate, scale);
+    this.get('selection').attr('transform', `translate(${translate}) scale(${scale}, 1)`);
+  },
+
+  minX: 0,
+  maxX: Ember.computed.reads('arrangement.beatCount'),
+  minY: 0,
+  maxY: 128, // TODO(SVG)
+
+  beatScale: Ember.computed('maxX', function () {
+    // let rangeMax = this.get('arrangementWidth');
+    let domainMax = this.get('maxX');
+
+    return d3.scale.linear().domain([1, domainMax + 1]);
+  }).readOnly(),
+
+  svg: Ember.computed.reads('stage.svg.select'),
+  select: Ember.computed.reads('svg.Arrangement'),
+  selection: Ember.computed.reads('select.selection'),
+
+  setupZoom: Ember.observer('svg.selection', 'zoom', function() {
+    const { 'svg.selection': selection, zoom } = this.getProperties('svg.selection', 'zoom');
+
+    // TODO(CLEANUP): need to call 'off' on willDestroy. or just destroy zoom and svg?
+    // not easy to undo zoom
+    // http://stackoverflow.com/questions/22302919/unregister-zoom-listener-and-restore-scroll-ability-in-d3-js/22303160?noredirect=1#22303160
+    if (selection && zoom) {
+      zoom.on('zoom', this.didZoom.bind(this));
+      zoom(selection);
+    }
+  }).on('didInsertElement'),
+
+  // // playhead logic
+  // metronome: Ember.computed.reads('arrangement.metronome'),
 
   // startPlayheadAnimation: Ember.observer('metronome.isPlaying', 'metronome.seekBeat', function() {
   //   let context = this;
@@ -55,39 +95,6 @@ export default DataVisual.extend(
   // stopPlayheadAnimation: function() {
   //   window.cancelAnimationFrame(playheadAnimationId);
   // }.on('willDestroyElement'),
-
-  zoom: Ember.computed(function() {
-    return d3.behavior.zoom()
-      .scaleExtent([0.1, 3])
-      .on('zoom', () => {
-        console.log("ZOOM", d3.event.translate, d3.event.scale);
-        this.get('selection').attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")")
-      });
-  }),
-
-  svg: Ember.computed('stage', function() {
-    return this.get('stage.svg.select');
-  }),
-
-  select: Ember.computed('svg', 'zoom', function() {
-    const svg = this.get('svg');
-
-    if (svg) {
-      svg.get('selection').call(this.get('zoom'));
-      return svg.get('.ArrangementGrid');
-    }
-  }),
-  // actual d3 selection
-  selection: Ember.computed.reads('select.selection'),
-
-  setupZoomHandler: Ember.observer('selection', 'zoom', function() {
-    const { selection, zoom } = this.getProperties('selection', 'zoom');
-
-    // TODO(CLEANUP): need to call 'off' on willDestroy
-    if (selection && zoom) {
-      // zoom(selection);
-    }
-  }).on('didInsertElement'),
 
   // on click, seekToBeat
   // click(e) {

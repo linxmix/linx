@@ -6,7 +6,6 @@ import GraphicSupport from 'ember-cli-d3/mixins/d3-support';
 import { assign } from 'ember-cli-d3/utils/d3';
 
 export default Ember.Component.extend(GraphicSupport, {
-  classNames: ['D3Axis'],
   transform: null,
 
   ticks: null,
