@@ -4,8 +4,10 @@ import RequireAttributes from 'linx/lib/require-attributes';
 import cssStyle from 'linx/lib/computed/css-style';
 import subtract from 'linx/lib/computed/subtract';
 import { propertyOrDefault } from 'linx/lib/computed/ternary';
+import GraphicSupport from 'ember-cli-d3/mixins/d3-support';
 
 export default Ember.Component.extend(
+  // GraphicSupport,
   RequireAttributes('clip', 'pxPerBeat'), {
 
   classNames: ['ArrangementGridClip'],

@@ -1,7 +1,9 @@
 .ArrangementGridRow {
   border-bottom: 1px solid gray;
   position: relative;
-  height: 128px;
+  // height: 128px;
+  // width: 100px;
+  border: 1px solid red;
 }
 
 .ArrangementGridRow.ArrangementGridRow--mini {

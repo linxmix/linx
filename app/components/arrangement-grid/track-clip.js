@@ -19,6 +19,15 @@ export default Clip.extend({
   audioEndTime: Ember.computed.reads('clip.audioEndTime'),
   audioBeatCount: Ember.computed.reads('clip.audioBeatCount'),
 
+  call(selection) {
+    let track = this.get('track');
+    console.log("CALL track-clip", track.get('title'));
+
+    if (track) {
+      selection.attr('id', this.elementId)
+    }
+  },
+
   // TODO(CLEANUP): shouldnt have to depend on audioBuffer
   peaks: Ember.computed('audioBuffer', 'audioStartTime', 'audioEndTime', 'audioBeatCount', 'pxPerBeat', function() {
     let audioBinary = this.get('audioBinary');

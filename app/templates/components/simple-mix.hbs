@@ -52,48 +52,44 @@
   pxPerBeat=pxPerBeat
   scrollCenterBeat=scrollCenterBeat
   seekToBeat="seekToBeat"
+  as |select height width|
 }}
-  {{#arrangement-grid/row}}
-    {{#each mix.items as |item|}}
-      {{#arrangement-grid/track-clip
-        clip=item.fromTrackClip
-        pxPerBeat=pxPerBeat
-        as |clipComponent|
-      }}
-      {{!-- TODO(REFACTOR): can this be done in track clip? --}}
-        {{#each clipComponent.visibleMarkers as |marker|}}
-          {{arrangement-grid/track-clip/marker
-            marker=marker
+  {{!-- {{#zip-entries select=select items=mix.trackClips as |item g-tag|}}
+    {{#arrangement-grid/row
+      select=select
+      as |rowSelect|
+    }}
+
+      {{#each mix.items as |item|}}
+        {{arrangement-grid/track-clip
+          select=rowSelect
+          clip=item.fromTrackClip
+          pxPerBeat=pxPerBeat
+        }}
+
+        {{#if item.isLastItem}}
+          {{arrangement-grid/track-clip
+            select=rowSelect
+            clip=item.toTrackClip
             pxPerBeat=pxPerBeat
           }}
-        {{/each}}
-      {{/arrangement-grid/track-clip}}
+        {{/if}}
+      {{/each}}
+    {{/arrangement-grid/row}}
+  {{/zip-entries}} --}}
 
-      {{#if item.isLastItem}}
-        {{#arrangement-grid/track-clip
-          clip=item.toTrackClip
-          pxPerBeat=pxPerBeat
-          as |clipComponent|
-        }}
-        {{!-- TODO(REFACTOR): can this be done in track clip? --}}
-          {{#each clipComponent.visibleMarkers as |marker|}}
-            {{arrangement-grid/track-clip/marker
-              marker=marker
-              pxPerBeat=pxPerBeat
-            }}
-          {{/each}}
-        {{/arrangement-grid/track-clip}}
-      {{/if}}
-    {{/each}}
-  {{/arrangement-grid/row}}
 
-  {{#arrangement-grid/row}}
-    {{#each mix.transitionClips as |clip|}}
+  {{#arrangement-grid/row
+    select=select.arr-row
+    as |rowSelect|
+  }}
+    {{!-- {{#each mix.transitionClips as |clip|}}
       {{arrangement-grid/transition-clip
+        select=rowSelect
         clip=clip
         pxPerBeat=pxPerBeat
       }}
-    {{/each}}
+    {{/each}} --}}
   {{/arrangement-grid/row}}
 {{/arrangement-grid}}
 
