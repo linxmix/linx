@@ -1,20 +1,22 @@
 {{!-- <div class="ArrangementVisual-playhead"></div> --}}
 
-{{arrangement-visual/axis
-  arrangement=arrangement
-  select=select.ArrangementVisual-Axis
-  width=width
-  height=128
+{{!-- {{d3-axis
+  select=select.ArrangementVisual-beatAxis
+  transform=(svg-translate 0 200)
+  scale=beatScale
+  orient="top"
+  ticks=arrangement.beatCount
+  tickSize=200
+}} --}}
+
+{{d3-axis
+  select=select.ArrangementVisual-barAxis
+  transform=(svg-translate 0 200)
+  scale=barScale
+  orient="top"
+  ticks=arrangement.barCount
+  tickSize=200
 }}
 
- {{!--
-{{d3-axis
-  transform=(svg-translate 0 100)
-  select=select.ArrangementVisual-axis
-  scale=beatScale
-  ticks=1000
-  tickSize=(negative-number height)
-  orient="top"
-}}
- --}}
+
 {{yield select width height}}

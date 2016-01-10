@@ -1,13 +1,6 @@
 .ArrangementVisual {
-  // position: relative;
   border: 1px solid whitesmoke;
   cursor: crosshair;
-  // overflow-y: hidden;
-  // overflow-x: auto;
-}
-
-.ArrangementVisual-arrangement {
-  border: 1px solid orange;
 }
 
 .ArrangementVisual--loading {
@@ -18,4 +11,32 @@
   position: absolute;
   border-left: 2px solid aqua;
   height: 100%;
+}
+
+.ArrangementVisual-beatAxis, .ArrangementVisual-barAxis {
+  height: 30px;
+  color: white;
+  stroke: white;
+
+  text {
+    display: none;
+  }
+
+  .data-visual {
+    width: 100%;
+    height: 100%;
+  }
+
+  .tick line {
+    stroke-width: 1;
+    stroke: rgba(#fff, 0.2);
+  }
+
+  .domain {
+    fill: none;
+  }
+}
+
+.ArrangementVisual-barAxis {
+  stroke: rgba(#fff, 0.3);
 }

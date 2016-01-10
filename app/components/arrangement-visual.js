@@ -46,7 +46,14 @@ export default DataVisual.extend(
     // let rangeMax = this.get('arrangementWidth');
     let domainMax = this.get('maxX');
 
-    return d3.scale.linear().domain([1, domainMax + 1]);
+    return d3.scale.linear().domain([1, domainMax + 1]).range([0, domainMax]);
+  }).readOnly(),
+
+  barScale: Ember.computed('arrangement.barCount', 'minX', 'maxX', function () {
+    // let rangeMax = this.get('arrangementWidth');
+    let domainMax = this.get('arrangement.barCount');
+
+    return d3.scale.linear().domain([1, domainMax + 1]).range([this.get('minX'), this.get('maxX')]);
   }).readOnly(),
 
   svg: Ember.computed.reads('stage.svg.select'),
