@@ -35,6 +35,8 @@ export default Ember.Mixin.create(
     }
   },
 
+  pxPerBeat: 20,
+
   // params
   metronome: Ember.computed.reads('arrangement.metronome'),
   isPlaying: Ember.computed.reads('metronome.isPlaying'),

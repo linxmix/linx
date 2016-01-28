@@ -7,7 +7,9 @@ import Clip from './clip';
 export default Clip.extend({
   classNames: ['TrackClip'],
 
-  // params
+  // optional params
+  audioResolution: 40, // number o
+
   track: Ember.computed.reads('clip.track'),
   audioMeta: Ember.computed.reads('track.audioMeta'),
   audioBinary: Ember.computed.reads('track.audioBinary'),
@@ -19,22 +21,14 @@ export default Clip.extend({
   audioEndTime: Ember.computed.reads('clip.audioEndTime'),
   audioBeatCount: Ember.computed.reads('clip.audioBeatCount'),
 
-  call(selection) {
-    let track = this.get('track');
-    console.log("CALL track-clip", track.get('title'));
-
-    if (track) {
-      selection.attr('id', this.elementId)
-    }
-  },
-
   // TODO(CLEANUP): shouldnt have to depend on audioBuffer
-  peaks: Ember.computed('audioBuffer', 'audioStartTime', 'audioEndTime', 'audioBeatCount', 'pxPerBeat', function() {
+  peaks: Ember.computed('audioBuffer', 'audioStartTime', 'audioEndTime', 'audioBeatCount', 'audioResolution', function() {
     let audioBinary = this.get('audioBinary');
+    console.log('track clip peaks', this.getProperties('audioBuffer', 'audioStartTime', 'audioEndTime', 'audioBeatCount', 'audioResolution'))
     return (audioBinary && audioBinary.getPeaks(
       this.get('audioStartTime'),
       this.get('audioEndTime'),
-      this.get('audioBeatCount') * this.get('pxPerBeat')
+      this.get('audioBeatCount') * this.get('audioResolution')
     )) || [];
   }),
 

@@ -52,44 +52,38 @@
   isReady=isReady
   as |gridSelect height width|
 }}
-  {{!-- {{#zip-entries select=select items=mix.trackClips as |item g-tag|}}
-    {{#arrangement-visual/row
-      select=select
-      as |rowSelect|
+  {{#zip-entries select=gridSelect.trackClips items=mix.trackClips as |trackClip tag|}}
+    {{log tag}}
+
+    {{arrangement-visual/track-clip
+      select=tag
+      clip=trackClip
+      pxPerBeat=pxPerBeat
     }}
+  {{/zip-entries}}
 
-      {{#each mix.items as |item|}}
-        {{arrangement-visual/track-clip
-          select=rowSelect
-          clip=item.fromTrackClip
-          pxPerBeat=pxPerBeat
-        }}
-
-        {{#if item.isLastItem}}
-          {{arrangement-visual/track-clip
-            select=rowSelect
-            clip=item.toTrackClip
-            pxPerBeat=pxPerBeat
-          }}
-        {{/if}}
-      {{/each}}
-    {{/arrangement-visual/row}}
-  {{/zip-entries}} --}}
+  {{!-- {{#each mix.trackClips as |clip|}}
+    {{arrangement-visual/track-clip
+      select=gridSelect
+      clip=clip
+      pxPerBeat=pxPerBeat
+    }}
+  {{/each}} --}}
 
 
-  {{#arrangement-visual/row
+  {{!-- {{#arrangement-visual/row
     select=gridSelect.row
     maxX=arrangement.beatCount
     as |rowSelect|
   }}
-    {{!-- {{#each mix.transitionClips as |clip|}}
+    {{#each mix.transitionClips as |clip|}}
       {{arrangement-visual/transition-clip
         select=rowSelect
         clip=clip
         pxPerBeat=pxPerBeat
       }}
-    {{/each}} --}}
-  {{/arrangement-visual/row}}
+    {{/each}}
+  {{/arrangement-visual/row}} --}}
 {{/arrangement-visual}}
 
 {{play-buttons

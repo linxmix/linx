@@ -33,7 +33,7 @@ export default DataVisual.extend(
     // translate[1] = clamp(minY, translate[1], maxY * scale);
     translate[1] = 0;
     zoom.translate(translate);
-    console.log('didZoom', translate, scale);
+    // console.log('didZoom', translate, scale);
     this.get('selection').attr('transform', `translate(${translate}) scale(${scale}, 1)`);
   },
 
