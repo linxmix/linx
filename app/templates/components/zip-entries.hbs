@@ -1,0 +1,5 @@
+{{#each entries as |entry|}}
+  {{#if entry.tag}}
+    {{yield entry.item entry.tag}}
+  {{/if}}
+{{/each}}

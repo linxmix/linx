@@ -9,7 +9,7 @@ export default Clip.extend(
   BubbleActions(), RequireAttributes('clip'), {
 
   actions: {},
-  classNames: ['ArrangementGridTransitionClip'],
+  classNames: ['ArrangementVisualTransitionClip'],
   classNameBindings: [],
 
   // params

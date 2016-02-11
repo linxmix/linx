@@ -1,6 +1,7 @@
 import Ember from 'ember';
 
 import _ from 'npm:underscore';
+import d3 from 'd3';
 
 import RequireAttributes from 'linx/lib/require-attributes';
 
@@ -34,13 +35,19 @@ export default Ember.Mixin.create(
     }
   },
 
+  pxPerBeat: 20,
+
   // params
   metronome: Ember.computed.reads('arrangement.metronome'),
   isPlaying: Ember.computed.reads('metronome.isPlaying'),
   notReady: Ember.computed.not('isReady'),
   isReady: Ember.computed.reads('arrangement.isReady'),
 
-  pxPerBeat: 5,
+  zoom: Ember.computed(function() {
+    return d3.behavior.zoom();
+  }),
+
+  // TODO(SVG): this is deprecated
   _scrollCenterBeat: 0,
   scrollCenterBeat: Ember.computed({
     get(key) {

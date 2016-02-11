@@ -1,0 +1,11 @@
+.ArrangementVisualRow {
+  border-bottom: 1px solid gray;
+  position: relative;
+  // height: 128px;
+  // width: 100px;
+  border: 1px solid red;
+}
+
+.ArrangementVisualRow.ArrangementVisualRow--mini {
+  height: 50px;
+}

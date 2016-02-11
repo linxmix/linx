@@ -46,56 +46,45 @@
 
 <hr/>
 
-{{#arrangement-grid
+{{#arrangement-visual
   arrangement=arrangement
+  zoom=zoom
   isReady=isReady
-  pxPerBeat=pxPerBeat
-  scrollCenterBeat=scrollCenterBeat
-  seekToBeat="seekToBeat"
+  as |gridSelect height width|
 }}
-  {{#arrangement-grid/row}}
-    {{#each mix.items as |item|}}
-      {{#arrangement-grid/track-clip
-        clip=item.fromTrackClip
-        pxPerBeat=pxPerBeat
-        as |clipComponent|
-      }}
-      {{!-- TODO(REFACTOR): can this be done in track clip? --}}
-        {{#each clipComponent.visibleMarkers as |marker|}}
-          {{arrangement-grid/track-clip/marker
-            marker=marker
-            pxPerBeat=pxPerBeat
-          }}
-        {{/each}}
-      {{/arrangement-grid/track-clip}}
+  {{#zip-entries select=gridSelect.trackClips items=mix.trackClips as |trackClip tag|}}
+    {{log tag}}
 
-      {{#if item.isLastItem}}
-        {{#arrangement-grid/track-clip
-          clip=item.toTrackClip
-          pxPerBeat=pxPerBeat
-          as |clipComponent|
-        }}
-        {{!-- TODO(REFACTOR): can this be done in track clip? --}}
-          {{#each clipComponent.visibleMarkers as |marker|}}
-            {{arrangement-grid/track-clip/marker
-              marker=marker
-              pxPerBeat=pxPerBeat
-            }}
-          {{/each}}
-        {{/arrangement-grid/track-clip}}
-      {{/if}}
-    {{/each}}
-  {{/arrangement-grid/row}}
+    {{arrangement-visual/track-clip
+      select=tag
+      clip=trackClip
+      pxPerBeat=pxPerBeat
+    }}
+  {{/zip-entries}}
 
-  {{#arrangement-grid/row}}
+  {{!-- {{#each mix.trackClips as |clip|}}
+    {{arrangement-visual/track-clip
+      select=gridSelect
+      clip=clip
+      pxPerBeat=pxPerBeat
+    }}
+  {{/each}} --}}
+
+
+  {{!-- {{#arrangement-visual/row
+    select=gridSelect.row
+    maxX=arrangement.beatCount
+    as |rowSelect|
+  }}
     {{#each mix.transitionClips as |clip|}}
-      {{arrangement-grid/transition-clip
+      {{arrangement-visual/transition-clip
+        select=rowSelect
         clip=clip
         pxPerBeat=pxPerBeat
       }}
     {{/each}}
-  {{/arrangement-grid/row}}
-{{/arrangement-grid}}
+  {{/arrangement-visual/row}} --}}
+{{/arrangement-visual}}
 
 {{play-buttons
   isDisabled=notReady

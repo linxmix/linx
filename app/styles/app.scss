@@ -6,15 +6,14 @@ $site-nav-height: 35px;
 @import 'components/page-drop';
 @import 'components/progress-bar';
 
-@import 'components/arrangement-grid';
-@import 'components/_arrangement-grid/axis';
-@import 'components/_arrangement-grid/row';
-@import 'components/_arrangement-grid/clip';
-@import 'components/_arrangement-grid/track-clip';
-@import 'components/_arrangement-grid/transition-clip';
-@import 'components/_arrangement-grid/track-clip/marker';
-@import 'components/_arrangement-grid/track-clip/axis';
-@import 'components/_arrangement-grid/track-clip/wave';
+@import 'components/arrangement-visual';
+@import 'components/_arrangement-visual/row';
+@import 'components/_arrangement-visual/clip';
+@import 'components/_arrangement-visual/track-clip';
+@import 'components/_arrangement-visual/transition-clip';
+@import 'components/_arrangement-visual/track-clip/marker';
+@import 'components/_arrangement-visual/track-clip/axis';
+@import 'components/_arrangement-visual/track-clip/wave';
 
 @import 'components/simple-mix';
 @import 'components/simple-arrangement';

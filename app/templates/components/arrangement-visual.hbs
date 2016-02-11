@@ -1,0 +1,22 @@
+{{!-- <div class="ArrangementVisual-playhead"></div> --}}
+
+{{!-- {{d3-axis
+  select=select.ArrangementVisual-beatAxis
+  transform=(svg-translate 0 200)
+  scale=beatScale
+  orient="top"
+  ticks=arrangement.beatCount
+  tickSize=200
+}} --}}
+
+{{d3-axis
+  select=select.ArrangementVisual-barAxis
+  transform=(svg-translate 0 200)
+  scale=barScale
+  orient="top"
+  ticks=arrangement.barCount
+  tickSize=200
+}}
+
+
+{{yield select width height}}

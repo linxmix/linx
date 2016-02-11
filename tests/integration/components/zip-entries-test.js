@@ -6,9 +6,9 @@ import {
 } from 'ember-mocha';
 import hbs from 'htmlbars-inline-precompile';
 
-describeComponent.skip(
-  'arrangement-visual/clip',
-  'Integration: ArrangementVisualClipComponent',
+describeComponent(
+  'zip-entries',
+  'Integration: ZipEntriesComponent',
   {
     integration: true
   },
@@ -18,12 +18,12 @@ describeComponent.skip(
       // Handle any actions with this.on('myAction', function(val) { ... });
       // Template block usage:
       // this.render(hbs`
-      //   {{#arrangement-visual/clip}}
+      //   {{#zip-entries}}
       //     template content
-      //   {{/arrangement-visual/clip}}
+      //   {{/zip-entries}}
       // `);
 
-      this.render(hbs`{{arrangement-visual/clip}}`);
+      this.render(hbs`{{zip-entries}}`);
       expect(this.$()).to.have.length(1);
     });
   }

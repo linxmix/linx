@@ -71,9 +71,53 @@ export default Ember.Object.extend(
     }
   }),
 
+  // returns an array of arrays of [min, max] values of the waveform
+  // from startTime to endTime when broken into length subranges
+  // TODO(WEBWORKER): handle in web worker
+  getPeaks(startTime, endTime, length) {
+    let audioBuffer = this.get('audioBuffer');
+    if (!audioBuffer) { return []; }
 
-// TODO: load from file/blob
-// TODO: handle in web worker
+    let sampleRate = audioBuffer.sampleRate;
+    let startSample = startTime * sampleRate;
+    let endSample = endTime * sampleRate;
+
+    let sampleSize = (endSample - startSample) / length;
+    let sampleStep = ~~(sampleSize / 10) || 1; // reduce granularity with small length
+    let peaks = [];
+
+    console.log('getPeaks', length, startTime, endTime, sampleSize, sampleRate, startSample, endSample, audioBuffer.length);
+
+    // TODO(REFACTOR): update to use multiple channels
+    let samples = audioBuffer.getChannelData(0);
+
+    for (let i = 0; i < length; i++) {
+      let start = ~~(startSample + i * sampleSize);
+      let end = ~~(start + sampleSize);
+      let min = samples[start];
+      let max = samples[start];
+
+      // calculate max and min in this sample
+      for (let j = start; j < end; j += sampleStep) {
+        let value = samples[j];
+
+        if (value > max) {
+          max = value;
+        }
+        if (value < min) {
+          min = value;
+        }
+      }
+
+      // add to peaks
+      peaks[i] = [min, max];
+    }
+
+    return peaks;
+  },
+
+  // TODO: load from file/blob
+  // TODO: handle in web worker
   // TODO(FILE)
   file: null,
   fileUrl: Ember.computed.reads('track.fileUrl'),
