@@ -53,11 +53,10 @@
   as |gridSelect height width|
 }}
   {{#zip-entries select=gridSelect.trackClips items=mix.trackClips as |trackClip tag|}}
-    {{log tag}}
-
     {{arrangement-visual/track-clip
       select=tag
       clip=trackClip
+      startBeat=trackClip.startBeat
       pxPerBeat=pxPerBeat
     }}
   {{/zip-entries}}
@@ -96,5 +95,5 @@
 
 <hr/>
 
-<div>Zoom: {{input type="range" value=inputZoom min="0.5" max="30" step="0.5"}}</div>
+<div>pxPerBeat: {{input type="range" value=inputZoom min="0.5" max="30" step="0.5"}}</div>
 <div>BPM: {{input type="number" value=inputBpm min="0" max="200" }}</div>

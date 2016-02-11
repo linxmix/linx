@@ -35,34 +35,15 @@ export default Ember.Mixin.create(
     }
   },
 
+  // TODO(REFACTOR): does pxPerBeat make sense?
   pxPerBeat: 20,
+  zoom: Ember.computed(function() {
+    return d3.behavior.zoom();
+  }),
 
   // params
   metronome: Ember.computed.reads('arrangement.metronome'),
   isPlaying: Ember.computed.reads('metronome.isPlaying'),
   notReady: Ember.computed.not('isReady'),
   isReady: Ember.computed.reads('arrangement.isReady'),
-
-  zoom: Ember.computed(function() {
-    return d3.behavior.zoom();
-  }),
-
-  // TODO(SVG): this is deprecated
-  _scrollCenterBeat: 0,
-  scrollCenterBeat: Ember.computed({
-    get(key) {
-      return this.get('_scrollCenterBeat');
-    },
-    set(key, beat) {
-      let prevBeat = this.get('_scrollCenterBeat');
-
-      // hack to make sure to trigger property changes
-      if (beat === prevBeat) {
-        beat += 0.00000000001;
-      }
-
-      this.set('_scrollCenterBeat', beat);
-      return beat;
-    }
-  }),
 });

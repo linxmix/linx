@@ -29,18 +29,19 @@ export default DataVisual.extend(
     const translate = zoom.translate();
 
     let scale = zoom.scale();
-    translate[0] = clamp(-(maxX * scale), translate[0], 0);
+    // translate[0] = clamp(-(maxX * scale), translate[0], 0);
     // translate[1] = clamp(minY, translate[1], maxY * scale);
-    translate[1] = 0;
-    zoom.translate(translate);
+    // translate[1] = 0;
+    // zoom.translate(translate);
     // console.log('didZoom', translate, scale);
-    this.get('selection').attr('transform', `translate(${translate}) scale(${scale}, 1)`);
+    this.get('selection').attr('transform', `translate(${translate}) scale(${scale})`);
   },
 
-  minX: 0,
+  // used for constraining zoom
+  minX: 1,
   maxX: Ember.computed.reads('arrangement.beatCount'),
   minY: 0,
-  maxY: 128, // TODO(SVG)
+  maxY: 128, // TODO(REFACTOR): how to handle y scale for arrangement?
 
   beatScale: Ember.computed('maxX', function () {
     // let rangeMax = this.get('arrangementWidth');

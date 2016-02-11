@@ -8,7 +8,8 @@ export default Clip.extend({
   classNames: ['TrackClip'],
 
   // optional params
-  audioResolution: 40, // number o
+  // TODO(REFACTOR): make this vary on isInView and pxPerBeat. zoom in if clip is in viewport
+  audioPxPerBeat: Ember.computed.reads('pxPerBeat'),
 
   track: Ember.computed.reads('clip.track'),
   audioMeta: Ember.computed.reads('track.audioMeta'),
@@ -22,13 +23,13 @@ export default Clip.extend({
   audioBeatCount: Ember.computed.reads('clip.audioBeatCount'),
 
   // TODO(CLEANUP): shouldnt have to depend on audioBuffer
-  peaks: Ember.computed('audioBuffer', 'audioStartTime', 'audioEndTime', 'audioBeatCount', 'audioResolution', function() {
+  peaks: Ember.computed('audioBuffer', 'audioStartTime', 'audioEndTime', 'audioBeatCount', 'audioPxPerBeat', function() {
     let audioBinary = this.get('audioBinary');
-    console.log('track clip peaks', this.getProperties('audioBuffer', 'audioStartTime', 'audioEndTime', 'audioBeatCount', 'audioResolution'))
+    console.log('track clip peaks', this.getProperties('audioBuffer', 'audioStartTime', 'audioEndTime', 'audioBeatCount', 'audioPxPerBeat'))
     return (audioBinary && audioBinary.getPeaks(
       this.get('audioStartTime'),
       this.get('audioEndTime'),
-      this.get('audioBeatCount') * this.get('audioResolution')
+      this.get('audioBeatCount') * this.get('audioPxPerBeat')
     )) || [];
   }),
 
