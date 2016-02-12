@@ -13,52 +13,41 @@ export default Ember.Component.extend(
   GraphicSupport,
   RequireAttributes('peaks'), {
 
-  actions: {},
-  classNames: ['TrackClipWave'],
-  classNameBindings: [],
+  call(selection) {
+    const median = 125 / 2;
+    const scale = 125 / 2;
+    const transform = this.get('transform');
 
-  // params
-  // audioBuffer: null,
-  // audioStartTime: Ember.computed.reads('clip.audioStartTime'),
-  // audioEndTime: Ember.computed.reads('clip.audioEndTime'),
-  // TODO(REFACTOR): figure this out (which offset direction is correct?)
-  // visually align the segment of audio represented by this clip
-  // waveOffset: multiply('clip.audioOffset', 'pxPerBeat', -1.0),
-  // waveOffsetStyle: toPixels('waveOffset'),
+    const area = d3.svg.area()
+      .x(([ x, [ ymin, ymax ] ]) => x)
+      .y0(([ x, [ ymin, ymax ] ]) => median + ymin * scale)
+      .y1(([ x, [ ymin, ymax ] ]) => median + ymax * scale);
 
-  stroke: d3.scale.category10(),
-  defaultMargin: { left: 50, right: 0, top: 0, bottom: 50 },
+    const peaks = this.get('peaks');
 
-  peaksArea: Ember.computed('peaks', function() {
-    return [this.get('peaks') || []];
-  }),
+    if (peaks.length) {
+      selection.append('path')
+        .style("fill", "green")
+        .attr('d', area(peaks));
+    }
+  },
 
-  call: join('peaks', 'waveform.area', {
-    enter(sel) {
-      console.log("ENTER", this.get('peaks.length'));
-      const median = 125 / 2;
-      const scale = 125 / 2;
+  // call: join('peaks', '.TrackClip-wave.area', {
+  //   enter(sel) {
+  //     const median = 125 / 2;
+  //     const scale = 125 / 2;
+  //     const transform = this.get('transform');
 
-      sel.append('line')
-        .attr('y1', function(d) { return median + scale * d[0]; })
-        .attr('y2', function(d) { return median + scale * d[1]; })
-        .attr('x1', function(d, i) { return i; })
-        .attr('x2', function(d, i) { return i; })
-        .attr("stroke-width", 1)
-        .attr("stroke", "green")
-
-      // const area = d3.svg.area()
-      //   .x((d, i) => i)
-      //   .y0(median)
-      //   .y1((d) => d[1] * scale);
-
-      // sel.append('path')
-      //   .attr("stroke-width", 1)
-      //   .attr("stroke", "green")
-      //   .style("fill", "#ff0000")
-      //   .attr('d', area);
-    },
-  })
+  //     sel.attr('transform', transform)
+  //       .append('line')
+  //       .attr('y1', function(d) { return median + scale * d[0]; })
+  //       .attr('y2', function(d) { return median + scale * d[1]; })
+  //       .attr('x1', function(d, i) { return i; })
+  //       .attr('x2', function(d, i) { return i; })
+  //       .attr("stroke-width", 1)
+  //       .attr("stroke", "green")
+  //   },
+  // })
 });
 
 // TODO: can this remove dependence on audioBpm?

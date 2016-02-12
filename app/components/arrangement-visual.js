@@ -38,29 +38,28 @@ export default DataVisual.extend(
   },
 
   // used for constraining zoom
-  minX: 1,
+  minX: 0,
   maxX: Ember.computed.reads('arrangement.beatCount'),
   minY: 0,
   maxY: 128, // TODO(REFACTOR): how to handle y scale for arrangement?
 
   beatScale: Ember.computed('maxX', function () {
-    // let rangeMax = this.get('arrangementWidth');
     let domainMax = this.get('maxX');
 
-    return d3.scale.linear().domain([1, domainMax + 1]).range([0, domainMax]);
+    return d3.scale.linear().domain([0, domainMax + 0]).range([0, domainMax]);
   }).readOnly(),
 
   barScale: Ember.computed('arrangement.barCount', 'minX', 'maxX', function () {
-    // let rangeMax = this.get('arrangementWidth');
     let domainMax = this.get('arrangement.barCount');
 
-    return d3.scale.linear().domain([1, domainMax + 1]).range([this.get('minX'), this.get('maxX')]);
+    return d3.scale.linear().domain([0, domainMax + 0]).range([this.get('minX'), this.get('maxX')]);
   }).readOnly(),
 
   svg: Ember.computed.reads('stage.svg.select'),
   select: Ember.computed.reads('svg.ArrangementVisual-arrangement'),
   selection: Ember.computed.reads('select.selection'),
 
+  // NOTE: have to use svg.selection explicitly to zoom correct piece
   setupZoom: Ember.observer('svg.selection', 'zoom', function() {
     const { 'svg.selection': selection, zoom } = this.getProperties('svg.selection', 'zoom');
 
