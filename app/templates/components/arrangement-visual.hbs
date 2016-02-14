@@ -15,14 +15,14 @@
 
 {{d3-axis
   select=select.ArrangementVisual-barAxis
-  transform=(svg-translate 0 200)
+  transform=(svg-translate 0 height)
   scale=barScale
   orient="top"
   ticks=arrangement.barCount
-  tickSize=200
+  tickSize=height
 }}
 
-{{yield select width height}}
+{{yield select maxX maxY}}
 
 {{arrangement-visual/backdrop
   select=select.ArrangementVisual-backdrop

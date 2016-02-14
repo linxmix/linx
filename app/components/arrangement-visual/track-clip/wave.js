@@ -13,41 +13,26 @@ export default Ember.Component.extend(
   GraphicSupport,
   RequireAttributes('peaks'), {
 
-  call(selection) {
-    const median = 125 / 2;
-    const scale = 125 / 2;
-    const transform = this.get('transform');
+  height: 125,
 
-    const area = d3.svg.area()
-      .x(([ x, [ ymin, ymax ] ]) => x)
-      .y0(([ x, [ ymin, ymax ] ]) => median + ymin * scale)
-      .y1(([ x, [ ymin, ymax ] ]) => median + ymax * scale);
+  call: join([0], 'path', {
+    update(selection) {
+      const median = this.get('height') / 2.0;
 
-    const peaks = this.get('peaks');
+      const area = d3.svg.area()
+        .x(([ x, [ ymin, ymax ] ]) => x)
+        .y0(([ x, [ ymin, ymax ] ]) => median + ymin * median)
+        .y1(([ x, [ ymin, ymax ] ]) => median + ymax * median);
 
-    if (peaks.length) {
-      selection.append('path')
-        .style("fill", "green")
-        .attr('d', area(peaks));
+      const peaks = this.get('peaks');
+
+      if (peaks.length) {
+        selection
+          .style("fill", "green")
+          .attr('d', area(peaks));
+      }
     }
-  },
-
-  // call: join('peaks', '.TrackClip-wave.area', {
-  //   enter(sel) {
-  //     const median = 125 / 2;
-  //     const scale = 125 / 2;
-  //     const transform = this.get('transform');
-
-  //     sel.attr('transform', transform)
-  //       .append('line')
-  //       .attr('y1', function(d) { return median + scale * d[0]; })
-  //       .attr('y2', function(d) { return median + scale * d[1]; })
-  //       .attr('x1', function(d, i) { return i; })
-  //       .attr('x2', function(d, i) { return i; })
-  //       .attr("stroke-width", 1)
-  //       .attr("stroke", "green")
-  //   },
-  // })
+  }),
 });
 
 // TODO: can this remove dependence on audioBpm?

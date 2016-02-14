@@ -45,7 +45,7 @@ export default DataVisual.extend(
   minX: 0,
   maxX: Ember.computed.reads('arrangement.beatCount'),
   minY: 0,
-  maxY: 128, // TODO(REFACTOR): how to handle y scale for arrangement?
+  maxY: Ember.computed.reads('height'),
 
   beatScale: Ember.computed('maxX', function () {
     let domainMax = this.get('maxX');

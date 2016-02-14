@@ -11,6 +11,8 @@ export default Ember.Component.extend(
   GraphicSupport,
   RequireAttributes('clip'), {
 
+  height: 0,
+
   startBeat: null,
   // TODO(REFACTOR): make similar to cssStyle, transformStyle({ attrs })
   // TODO(REFACTOR): or use different transofmrs here https://www.dashingd3js.com/svg-group-element-and-d3js#svg-mini-language-div
