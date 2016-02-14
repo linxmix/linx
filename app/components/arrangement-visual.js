@@ -30,9 +30,9 @@ export default DataVisual.extend(
     let scale = zoom.scale();
     // translate[0] = clamp(-(maxX * scale), translate[0], 0);
     // translate[1] = clamp(minY, translate[1], maxY * scale);
-    // translate[1] = 0;
+    translate[1] = 0;
     // zoom.translate(translate);
-    this.get('selection').attr('transform', `translate(${translate}) scale(${scale})`);
+    this.get('selection').attr('transform', `translate(${translate}) scale(${scale}, 1)`);
 
     const event = Ember.get(d3, 'event.sourceEvent');
     if (event) {
