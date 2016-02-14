@@ -32,14 +32,8 @@ export default Ember.Mixin.create(
 
     seekToBeat(beat) {
       this.get('metronome').seekToBeat(beat);
-    }
+    },
   },
-
-  // TODO(REFACTOR): does pxPerBeat make sense?
-  pxPerBeat: 20,
-  zoom: Ember.computed(function() {
-    return d3.behavior.zoom();
-  }),
 
   // params
   metronome: Ember.computed.reads('arrangement.metronome'),

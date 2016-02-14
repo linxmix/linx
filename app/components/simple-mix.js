@@ -5,11 +5,13 @@ import _ from 'npm:underscore';
 import BubbleActions from 'linx/lib/bubble-actions';
 import RequireAttributes from 'linx/lib/require-attributes';
 import ArrangementPlayerMixin from 'linx/mixins/components/arrangement-player';
+import ArrangementVisualMixin from 'linx/mixins/components/arrangement-visual';
 
 export const MIX_ITEM_PREVIEW_DISTANCE = 4;
 
 export default Ember.Component.extend(
   ArrangementPlayerMixin,
+  ArrangementVisualMixin,
   BubbleActions('saveMix', 'deleteMix'), RequireAttributes('mix', 'store'), {
 
   classNames: ['SimpleMix'],
@@ -32,17 +34,17 @@ export default Ember.Component.extend(
 
     viewItem(mixItem) {
       mixItem.get('transitionClip.readyPromise').then((clip) => {
-        this.set('scrollCenterBeat', clip.get('centerBeat'));
+        this.send('zoomToClip', clip);
       });
     },
 
     removeItem(mixItem) {
-      let mix = this.get('mix');
+      const mix = this.get('mix');
       mix.removeObject(mixItem);
     },
 
     selectTrack(track) {
-      let mix = this.get('mix');
+      const mix = this.get('mix');
 
       mix.generateTransitionAndAppend({
         toTrack: track
