@@ -49,10 +49,10 @@ export default Ember.Component.extend(
       });
     },
 
-    addRandomTrack() {
-      let mix = this.get('mix');
-      let tracks = this.get('searchTracks.content');
-      let randomTrack = _.sample(tracks.toArray());
+    appendRandomTrack() {
+      const mix = this.get('mix');
+      const tracks = this.get('searchTracks.content');
+      const randomTrack = _.sample(tracks.toArray());
 
       mix.generateTransitionAndAppend({
         toTrack: randomTrack

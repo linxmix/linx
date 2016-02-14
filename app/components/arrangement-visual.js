@@ -1,12 +1,16 @@
 import Ember from 'ember';
 
 import d3 from 'd3';
+import _ from 'npm:underscore';
 import DataVisual from 'ember-cli-d3/components/data-visual';
 
 import RequireAttributes from 'linx/lib/require-attributes';
 import PreventMacBackScroll from 'linx/mixins/prevent-mac-back-scroll';
 import cssStyle from 'linx/lib/computed/css-style';
 import { clamp, isNumber } from 'linx/lib/utils';
+
+// ms to wait between zoom events
+const ZOOM_THROTTLE_DELAY = 100;
 
 // used for cancelAnimationFrame
 let playheadAnimationId;
@@ -22,7 +26,7 @@ export default DataVisual.extend(
   classNames: ['ArrangementVisual'],
   classNameBindings: ['isReady::ArrangementVisual--loading'],
 
-  didZoom() {
+  didZoom: _.throttle(function() {
     const { zoom, minX, maxX, minY, maxY } = this.getProperties('zoom', 'minX', 'maxX', 'minY', 'maxY');
     const translate = zoom.translate();
 
@@ -38,7 +42,7 @@ export default DataVisual.extend(
       event.preventDefault();
       event.stopPropagation();
     }
-  },
+  }, ZOOM_THROTTLE_DELAY),
 
   updatePlayhead() {
     const currentBeat = this.get('metronome').getCurrentBeat();
