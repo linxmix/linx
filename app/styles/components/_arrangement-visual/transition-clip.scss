@@ -1,5 +1,10 @@
 .ArrangementVisualTransitionClip {
   .ArrangementVisualClip-backdrop {
     fill: rgba(#fff, 0.2);
+    cursor: pointer;
+
+    &:hover {
+      fill: rgba(#fff, 0.4);
+    }
   }
 }

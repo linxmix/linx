@@ -32,7 +32,8 @@ export default Ember.Component.extend(
     update(selection) {
       selection
         .attr('height', this.get('height'))
-        .attr('width', this.get('width'));
+        .attr('width', this.get('width'))
+        .on('click', () => this.sendAction('onClick', this.get('clip')));
     }
   }),
 

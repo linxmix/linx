@@ -60,6 +60,10 @@ export default Ember.Component.extend(
         toTrack: randomTrack
       });
     },
+
+    onTransitionClipClick(clip) {
+      this.sendAction('transitionToTransition', clip.get('transition'));
+    }
   },
 
   // implement ArrangementPlayerMixin

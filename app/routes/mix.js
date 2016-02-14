@@ -33,6 +33,10 @@ export default Ember.Route.extend(PreventDirtyTransitionMixin, {
         this.send('appendTrack', track);
       });
     },
+
+    transitionToTransition(transition) {
+      this.transitionTo('transition', transition);
+    },
   },
 
   model: function(params) {
