@@ -1,5 +1,6 @@
 import Ember from 'ember';
 
+import d3 from 'd3';
 import DataVisual from 'ember-cli-d3/components/data-visual';
 
 import RequireAttributes from 'linx/lib/require-attributes';
@@ -30,8 +31,23 @@ export default DataVisual.extend(
     // translate[1] = clamp(minY, translate[1], maxY * scale);
     // translate[1] = 0;
     // zoom.translate(translate);
-    // console.log('didZoom', translate, scale);
     this.get('selection').attr('transform', `translate(${translate}) scale(${scale})`);
+
+    const event = Ember.get(d3, 'event.sourceEvent');
+    if (event) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  },
+
+  updatePlayhead() {
+    const currentBeat = this.get('metronome').getCurrentBeat();
+    const playheadSelection = this.get('playheadSelection');
+
+    playheadSelection && playheadSelection
+      .attr('transform', `translate(${currentBeat})`)
+      .attr('y1', this.get('minY'))
+      .attr('y2', this.get('maxY'))
   },
 
   // used for constraining zoom
@@ -72,8 +88,10 @@ export default DataVisual.extend(
   setupClickHandler: Ember.observer('selection', function() {
     const { selection } = this.getProperties('selection');
     const context = this;
-    selection && selection.on('click', function(e) {
-      context.sendAction('seekToBeat', d3.mouse(this)[0]);
+    selection && selection.on('click', function() {
+      if (!d3.event.defaultPrevented) {
+        context.sendAction('seekToBeat', d3.mouse(this)[0]);
+      }
     });
   }).on('didInsertElement'),
 
@@ -84,11 +102,10 @@ export default DataVisual.extend(
   }),
   metronome: Ember.computed.reads('arrangement.metronome'),
 
-  // TODO(SVG) this doesnt work
-  initPlayhead: Ember.on('init', function() {
-    // trigger playhead element
-    this.get('playheadSelection');
-  }),
+  initPlayhead: Ember.observer('playheadSelection', function() {
+    // trigger playhead element to ensure it's drawn
+    this.updatePlayhead();
+  }).on('didInsertElement'),
 
   startPlayheadAnimation: Ember.observer('metronome.isPlaying', 'metronome.seekBeat', function() {
     const context = this;
@@ -96,20 +113,13 @@ export default DataVisual.extend(
     // uses requestAnimationFrame to animate the arrangement-visual's playhead
     function animatePlayhead() {
       const metronome = context.get('metronome');
-      const currentBeat = metronome.getCurrentBeat();
-      const playheadSelection = context.get('playheadSelection');
 
-      if (playheadSelection) {
-        playheadSelection
-          .attr('transform', `translate(${currentBeat})`)
-          .attr('y1', context.get('minY'))
-          .attr('y2', context.get('maxY'))
+      context.updatePlayhead();
 
-        if (metronome.get('isPlaying')) {
-          playheadAnimationId = window.requestAnimationFrame(animatePlayhead);
-        } else {
-          playheadAnimationId = undefined;
-        }
+      if (metronome.get('isPlaying')) {
+        playheadAnimationId = window.requestAnimationFrame(animatePlayhead);
+      } else {
+        playheadAnimationId = undefined;
       }
     }
 
