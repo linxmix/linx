@@ -130,16 +130,4 @@ export default DataVisual.extend(
   stopPlayheadAnimation: Ember.on('willDestroyElement', function() {
     window.cancelAnimationFrame(playheadAnimationId);
   }),
-
-  // TODO(SVG) implement this?
-  // on click, seekToBeat
-  // click(e) {
-  //   let $el = this.$();
-  //   let offsetX = e.pageX - ($el.offset().left);
-  //   let scrollLeft = ($el.scrollLeft());
-  //   let x = offsetX + scrollLeft;
-  //   let beat = x / this.get('pxPerBeat');
-
-  //   this.sendAction('seekToBeat', beat);
-  // },
 });
