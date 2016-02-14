@@ -2,7 +2,7 @@
   border: 1px solid whitesmoke;
   cursor: crosshair;
 
-  height: 1000px;
+  height: 300px;
   width: 100%;
 }
 
@@ -11,9 +11,8 @@
 }
 
 .ArrangementVisual-playhead {
-  position: absolute;
-  border-left: 2px solid aqua;
-  height: 100%;
+  stroke-width: 0.5;
+  stroke: rgba(#ff0000, 0.8);
 }
 
 .ArrangementVisual-beatAxis, .ArrangementVisual-barAxis {
