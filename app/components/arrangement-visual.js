@@ -2,7 +2,6 @@ import Ember from 'ember';
 
 import DataVisual from 'ember-cli-d3/components/data-visual';
 
-import BubbleActions from 'linx/lib/bubble-actions';
 import RequireAttributes from 'linx/lib/require-attributes';
 import PreventMacBackScroll from 'linx/mixins/prevent-mac-back-scroll';
 import cssStyle from 'linx/lib/computed/css-style';
@@ -13,8 +12,7 @@ let playheadAnimationId;
 
 export default DataVisual.extend(
   // PreventMacBackScroll,
-  RequireAttributes('arrangement'),
-  BubbleActions('seekToClick'), {
+  RequireAttributes('arrangement'), {
 
   // optional params
   isReady: false,
@@ -71,6 +69,14 @@ export default DataVisual.extend(
     }
   }).on('didInsertElement'),
 
+  setupClickHandler: Ember.observer('selection', function() {
+    const { selection } = this.getProperties('selection');
+    const context = this;
+    selection && selection.on('click', function(e) {
+      context.sendAction('seekToBeat', d3.mouse(this)[0]);
+    });
+  }).on('didInsertElement'),
+
   // playhead logic
   playheadSelection: Ember.computed('selection', function() {
     const selection = this.get('selection');
@@ -78,6 +84,7 @@ export default DataVisual.extend(
   }),
   metronome: Ember.computed.reads('arrangement.metronome'),
 
+  // TODO(SVG) this doesnt work
   initPlayhead: Ember.on('init', function() {
     // trigger playhead element
     this.get('playheadSelection');

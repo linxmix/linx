@@ -9,7 +9,7 @@ import GraphicSupport from 'ember-cli-d3/mixins/d3-support';
 // TODO(REFACTOR): do we need this anymore? mixin?
 export default Ember.Component.extend(
   GraphicSupport,
-  RequireAttributes('clip', ), {
+  RequireAttributes('clip'), {
 
   startBeat: null,
   // TODO(REFACTOR): make similar to cssStyle, transformStyle({ attrs })
