@@ -4,11 +4,6 @@
   arrangement=arrangement
 }}
 
-
-{{!-- {{arrangement-visual/backdrop
-  select=select.ArrangementVisual-backdrop
-}} --}}
-
 {{!-- {{d3-axis
   select=select.ArrangementVisual-beatAxis
   transform=(svg-translate 0 200)
@@ -28,3 +23,9 @@
 }}
 
 {{yield select width height}}
+
+{{arrangement-visual/backdrop
+  select=select.ArrangementVisual-backdrop
+  height=maxY
+  width=maxX
+}}

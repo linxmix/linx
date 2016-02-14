@@ -8,6 +8,7 @@ import RequireAttributes from 'linx/lib/require-attributes';
 let playheadAnimationId;
 
 export default Ember.Component.extend(
+  GraphicSupport,
   RequireAttributes('arrangement'), {
 
   metronome: Ember.computed.reads('arrangement.metronome'),
