@@ -11,6 +11,11 @@ export default Clip.extend({
   // TODO(REFACTOR): make this vary on isInView and pxPerBeat. zoom in if clip is in viewport?
   audioPxPerBeat: 20,
 
+  call(selection) {
+    this._super.apply(this, arguments);
+    selection.classed('ArrangementVisualTrackClip', true);
+  },
+
   track: Ember.computed.reads('clip.track'),
   audioMeta: Ember.computed.reads('track.audioMeta'),
   audioBinary: Ember.computed.reads('track.audioBinary'),

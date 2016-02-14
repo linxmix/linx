@@ -1,15 +1,9 @@
 .ArrangementVisualClip {
-  height: 100%;
-  position: absolute;
-  display: inline-block;
-  border: 1px solid blue;
-  overflow: hidden;
-
-  &:hover {
-    border: 1px solid orange;
-  }
 }
 
+.ArrangementVisualClip-backdrop {
+  fill: transparent;
+}
 // .ArrangementVisualClip.is-draggable {
 //   cursor: move;
 // }

@@ -1,10 +1,10 @@
 import Ember from 'ember';
 
-import RequireAttributes from 'linx/lib/require-attributes';
-import cssStyle from 'linx/lib/computed/css-style';
-import multiply from 'linx/lib/computed/multiply';
-import { propertyOrDefault } from 'linx/lib/computed/ternary';
+import d3 from 'd3';
 import GraphicSupport from 'ember-cli-d3/mixins/d3-support';
+import { join } from 'ember-cli-d3/utils/d3';
+
+import RequireAttributes from 'linx/lib/require-attributes';
 
 // TODO(REFACTOR): do we need this anymore? mixin?
 export default Ember.Component.extend(
@@ -12,6 +12,7 @@ export default Ember.Component.extend(
   RequireAttributes('clip'), {
 
   height: 0,
+  width: Ember.computed.reads('clip.beatCount'),
 
   startBeat: null,
   // TODO(REFACTOR): make similar to cssStyle, transformStyle({ attrs })
@@ -23,7 +24,17 @@ export default Ember.Component.extend(
   call(selection) {
     selection.classed('ArrangementVisualClip', true)
       .attr('transform', this.get('transform'));
+
+    this.backdrop(selection);
   },
+
+  backdrop: join([0], 'rect.ArrangementVisualClip-backdrop', {
+    update(selection) {
+      selection
+        .attr('height', this.get('height'))
+        .attr('width', this.get('width'));
+    }
+  }),
 
   // TODO(REFACTOR): how to handle dragging? can we do with d3?
 });

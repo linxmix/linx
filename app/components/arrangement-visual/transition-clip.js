@@ -1,16 +1,15 @@
 import Ember from 'ember';
 
-import BubbleActions from 'linx/lib/bubble-actions';
 import RequireAttributes from 'linx/lib/require-attributes';
 import { clamp, isNumber } from 'linx/lib/utils';
 import Clip from './clip';
 
-export default Clip.extend(
-  BubbleActions(), RequireAttributes('clip'), {
+export default Clip.extend({
 
-  actions: {},
-  classNames: ['ArrangementVisualTransitionClip'],
-  classNameBindings: [],
+  call(selection) {
+    this._super.apply(this, arguments);
+    selection.classed('ArrangementVisualTransitionClip', true);
+  },
 
   // params
   fromTrackClip: Ember.computed.reads('clip.fromTrackClip'),
