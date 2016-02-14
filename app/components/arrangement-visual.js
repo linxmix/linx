@@ -12,9 +12,6 @@ import { clamp, isNumber } from 'linx/lib/utils';
 // ms to wait between zoom events
 const ZOOM_THROTTLE_DELAY = 100;
 
-// used for cancelAnimationFrame
-let playheadAnimationId;
-
 export default DataVisual.extend(
   // PreventMacBackScroll,
   RequireAttributes('arrangement'), {
@@ -43,16 +40,6 @@ export default DataVisual.extend(
       event.stopPropagation();
     }
   }, ZOOM_THROTTLE_DELAY),
-
-  updatePlayhead() {
-    const currentBeat = this.get('metronome').getCurrentBeat();
-    const playheadSelection = this.get('playheadSelection');
-
-    playheadSelection && playheadSelection
-      .attr('transform', `translate(${currentBeat})`)
-      .attr('y1', this.get('minY'))
-      .attr('y2', this.get('maxY'))
-  },
 
   // used for constraining zoom
   minX: 0,
@@ -99,39 +86,15 @@ export default DataVisual.extend(
     });
   }).on('didInsertElement'),
 
-  // playhead logic
-  playheadSelection: Ember.computed('selection', function() {
-    const selection = this.get('selection');
-    return selection && selection.append('line').classed('ArrangementVisual-playhead', true);
-  }),
-  metronome: Ember.computed.reads('arrangement.metronome'),
-
-  initPlayhead: Ember.observer('playheadSelection', function() {
-    // trigger playhead element to ensure it's drawn
-    this.updatePlayhead();
-  }).on('didInsertElement'),
-
-  startPlayheadAnimation: Ember.observer('metronome.isPlaying', 'metronome.seekBeat', function() {
-    const context = this;
-
-    // uses requestAnimationFrame to animate the arrangement-visual's playhead
-    function animatePlayhead() {
-      const metronome = context.get('metronome');
-
-      context.updatePlayhead();
-
-      if (metronome.get('isPlaying')) {
-        playheadAnimationId = window.requestAnimationFrame(animatePlayhead);
-      } else {
-        playheadAnimationId = undefined;
-      }
-    }
-
-    this.stopPlayheadAnimation();
-    animatePlayhead();
-  }).on('didInsertElement'),
-
-  stopPlayheadAnimation: Ember.on('willDestroyElement', function() {
-    window.cancelAnimationFrame(playheadAnimationId);
-  }),
+  //
+  // backdrop
+  //
+  // playheadSelection: Ember.computed('selection', function() {
+  //   const selection = this.get('selection');
+  //   return selection && selection.append('line').classed('ArrangementVisual-playhead', true);
+  // }),
+  // initPlayhead: Ember.observer('playheadSelection', function() {
+  //   // trigger playhead element to ensure it's drawn
+  //   this.updatePlayhead();
+  // }).on('didInsertElement'),
 });

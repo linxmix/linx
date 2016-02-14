@@ -53,6 +53,8 @@
   seekToBeat=(action "seekToBeat")
   as |gridSelect height width|
 }}
+
+  {{!-- Track Clips --}}
   {{#zip-entries select=gridSelect.trackClips items=mix.trackClips as |trackClip tag|}}
     {{arrangement-visual/track-clip
       select=tag
@@ -61,28 +63,14 @@
     }}
   {{/zip-entries}}
 
-  {{!-- {{#each mix.trackClips as |clip|}}
-    {{arrangement-visual/track-clip
-      select=gridSelect
-      clip=clip
-      pxPerBeat=pxPerBeat
+  {{!-- Transition Clips --}}
+  {{#zip-entries select=gridSelect.transitionClips items=mix.transitionClips as |transitionClip tag|}}
+    {{arrangement-visual/transition-clip
+      select=tag
+      clip=transitionClip
+      startBeat=transitionClip.startBeat
     }}
-  {{/each}} --}}
-
-
-  {{!-- {{#arrangement-visual/row
-    select=gridSelect.row
-    maxX=arrangement.beatCount
-    as |rowSelect|
-  }}
-    {{#each mix.transitionClips as |clip|}}
-      {{arrangement-visual/transition-clip
-        select=rowSelect
-        clip=clip
-        pxPerBeat=pxPerBeat
-      }}
-    {{/each}}
-  {{/arrangement-visual/row}} --}}
+  {{/zip-entries}}
 {{/arrangement-visual}}
 
 {{play-buttons
