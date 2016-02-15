@@ -9,11 +9,11 @@ Router.map(function() {
   this.route('tracks');
   this.route('track', { path: 'tracks/:id' });
 
-  this.route('transitions');
-  this.route('transition', { path: 'transitions/:id' });
-
-  this.route('mixes');
-  this.route('mix', { path: 'mixes/:id' });
+  this.route('mixes', function() {
+    this.route('mix', { path: ':mix_id' }, function() {
+      this.route('transition', { path: 'transitions/:transition_id' });
+    });
+  });
 
   // TODO - delete fakes
   this.route('upload');

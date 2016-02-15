@@ -25,7 +25,7 @@ export default Ember.Route.extend({
         fromTrack,
         toTrack,
       }).then(() => {
-        this.transitionTo('mix', mix);
+        this.transitionTo('mixes.mix', mix);
       });
     },
 
@@ -67,7 +67,7 @@ export default Ember.Route.extend({
           executePromisesInSeries(tracks.map((track) => {
             mix.appendModelWithTransition(track);
           })).then(() => {
-            this.transitionTo('mix', mix);
+            this.transitionTo('mixes.mix', mix);
           });
         });
       });

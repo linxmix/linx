@@ -5,12 +5,16 @@ import PreventDirtyTransitionMixin from 'linx/mixins/routes/prevent-dirty-transi
 export default Ember.Route.extend({
   actions: {
     saveTransition() {
-      let transition = this.get('controller.model');
+      const transition = this.get('controller.transition');
       transition.save();
     },
 
+    closeModal() {
+      this.transitionTo('mixes.mix');
+    },
+
     deleteTransition() {
-      let transition = this.get('controller.model');
+      const transition = this.get('controller.transition');
 
       if (window.confirm("Are you sure you want to delete this transition? It cannot be restored once deleted.")) {
         // clean up relationships on parent very manually
@@ -20,20 +24,22 @@ export default Ember.Route.extend({
         // mix.removeTransition(transition);
 
         transition.destroyRecord().then(() => {
-          this.transitionTo('transitions');
+          this.sendAction('closeModal');
         });
       }
     },
   },
 
-  setupController(controller, model) {
-    return this._super.apply(this, arguments);
+  setupController(controller, models) {
+    return controller.setProperties(models);
   },
 
   model: function(params) {
-    return this.get('store').find('transition', params.id).catch((reason) => {
-      // if transition not found, redirect to transitions
-      this.replaceWith('transitions');
+    return Ember.RSVP.hash({
+      transition: this.get('store').find('transition', params.transition_id).catch((reason) => {
+        // if transition not found, redirect to mix
+        this.closeModal();
+      }),
     });
   }
 });

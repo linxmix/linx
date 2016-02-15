@@ -1,4 +1,4 @@
-<div class="inverted orange ui icon button {{if model.anyDirty "" "basic disabled"}}" {{action "saveTransition"}}>
+<div class="inverted orange ui icon button {{if transition.anyDirty "" "basic disabled"}}" {{action "saveTransition"}}>
   <i class="cloud upload icon"></i>
   Save Transition
 </div>
@@ -7,4 +7,4 @@
   Delete Transition
 </div>
 
-{{simple-transition transition=model}}
+{{simple-transition transition=transition}}

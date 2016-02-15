@@ -7,11 +7,11 @@ import PreventDirtyTransitionMixin from 'linx/mixins/routes/prevent-dirty-transi
 export default Ember.Route.extend(PreventDirtyTransitionMixin, {
   actions: {
     saveMix() {
-      this.get('controller.model').save();
+      this.get('controller.mix').save();
     },
 
     deleteMix() {
-      let mix = this.get('controller.model');
+      let mix = this.get('controller.mix');
 
       if (window.confirm("Are you sure you want to delete this mix? It cannot be restored once deleted.")) {
         mix.destroyRecord();
@@ -39,9 +39,13 @@ export default Ember.Route.extend(PreventDirtyTransitionMixin, {
     },
   },
 
+  setupController(controller, models) {
+    return controller.setProperties(models);
+  },
+
   model: function(params) {
-    return this.get('store').find('mix', params.id).then((mix) => {
-      return mix;
+    return this.get('store').find('mix', params.mix_id).then((mix) => {
+      return { mix };
     }, (reason) => {
       this.transitionTo('mixes');
     });
