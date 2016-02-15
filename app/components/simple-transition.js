@@ -76,28 +76,28 @@ export default Ember.Component.extend(ArrangementPlayerMixin,
   toTrackStartBeat: Ember.computed.reads('transition.toTrackStartBeat'),
 
   // Hacky stuff to convert <input type="number"> values to numbers
-  inputBpm: Ember.computed.oneWay('metronome.bpm'),
-  inputZoom: Ember.computed.oneWay('pxPerBeat'),
-  _inputBpmDidChange: function() {
-    this.get('metronome').setBpm(parseFloat(this.get('inputBpm')));
-  }.observes('inputBpm'),
-  _inputZoomDidChange: function() {
-    // update pxPerBeat
-    this.set('pxPerBeat', parseFloat(this.get('inputZoom')));
-  }.observes('inputZoom'),
+  // inputBpm: Ember.computed.oneWay('metronome.bpm'),
+  // inputZoom: Ember.computed.oneWay('pxPerBeat'),
+  // _inputBpmDidChange: function() {
+  //   this.get('metronome').setBpm(parseFloat(this.get('inputBpm')));
+  // }.observes('inputBpm'),
+  // _inputZoomDidChange: function() {
+  //   // update pxPerBeat
+  //   this.set('pxPerBeat', parseFloat(this.get('inputZoom')));
+  // }.observes('inputZoom'),
 
-  inputTransitionLength: Ember.computed.reads('transition.beatCount'),
+  // inputTransitionLength: Ember.computed.reads('transition.beatCount'),
 
-  _inputTransitionLength: function() {
-    let value = parseFloat(this.get('inputTransitionLength'));
+  // _inputTransitionLength: function() {
+  //   let value = parseFloat(this.get('inputTransitionLength'));
 
-    if (isNaN(value)) {
-      return;
-    }
+  //   if (isNaN(value)) {
+  //     return;
+  //   }
 
-    this.get('transition.readyPromise').then((transition) => {
-      transition.get('arrangement.clips.firstObject').set('beatCount', value);
-    });
-  }.observes('inputTransitionLength'),
+  //   this.get('transition.readyPromise').then((transition) => {
+  //     transition.get('arrangement.clips.firstObject').set('beatCount', value);
+  //   });
+  // }.observes('inputTransitionLength'),
   // /hacky stuff
 });

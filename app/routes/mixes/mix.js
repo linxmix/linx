@@ -4,7 +4,8 @@ import _ from 'npm:underscore';
 
 import PreventDirtyTransitionMixin from 'linx/mixins/routes/prevent-dirty-transition';
 
-export default Ember.Route.extend(PreventDirtyTransitionMixin, {
+// export default Ember.Route.extend(PreventDirtyTransitionMixin, {
+export default Ember.Route.extend({
   actions: {
     saveMix() {
       this.get('controller.mix').save();
@@ -34,9 +35,13 @@ export default Ember.Route.extend(PreventDirtyTransitionMixin, {
       });
     },
 
-    transitionToTransition(transition) {
-      this.transitionTo('transition', transition);
+    openTransitionModal(transition) {
+      this.transitionTo('mixes.mix.transition', transition.get('id'));
     },
+
+    closeModal() {
+      this.transitionTo('mixes.mix');
+    }
   },
 
   setupController(controller, models) {

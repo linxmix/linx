@@ -1,10 +1,6 @@
-<div class="inverted orange ui icon button {{if transition.anyDirty "" "basic disabled"}}" {{action "saveTransition"}}>
-  <i class="cloud upload icon"></i>
-  Save Transition
-</div>
-<div class="inverted red ui icon button" {{action "deleteTransition"}}>
-  <i class="remove icon"></i>
-  Delete Transition
+<div class="inverted basic ui icon button" {{action "closeModal"}}>
+  <i class="left caret icon"></i>
+  Back To Mix
 </div>
 
 {{simple-transition transition=transition}}

@@ -17,6 +17,9 @@ export default Ember.Component.extend(
   classNames: ['SimpleMix'],
   classNameBindings: [],
 
+  // optional params
+  showArrangement: true,
+
   actions: {
     resetMix() {
       // TODO: dependentRelationship.rollbackAttributes

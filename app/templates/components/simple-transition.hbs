@@ -12,7 +12,7 @@
 
 <div>
   {{#with mixItem.mix as |mix|}}
-    Mix &middot; {{#link-to "mix" mix}}{{mix.id}}{{/link-to}}
+    Mix &middot; {{#link-to "mixes.mix"}}{{mix.id}}{{/link-to}}
   {{/with}}
 </div>
 
@@ -45,7 +45,7 @@
   }}
 
   {{!-- To Track Clip --}}
-  {{arrangement-visual/transition-clip
+  {{arrangement-visual/track-clip
     select=gridSelect.SimpleMix-ToTrackClip
     clip=toTrackClip
     startBeat=toTrackClip.startBeat

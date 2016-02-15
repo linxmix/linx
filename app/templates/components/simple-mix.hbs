@@ -46,46 +46,49 @@
 
 <hr/>
 
-{{#arrangement-visual
-  arrangement=arrangement
-  zoom=zoom
-  isReady=isReady
-  seekToBeat=(action "seekToBeat")
-  class="SimpleMix-arrangementVisual"
-  as |gridSelect width height|
-}}
+{{!-- TODO(REFACTOR): move to nested component? --}}
+{{#if showArrangement}}
+  {{#arrangement-visual
+    arrangement=arrangement
+    zoom=zoom
+    isReady=isReady
+    seekToBeat=(action "seekToBeat")
+    class="SimpleMix-arrangementVisual"
+    as |gridSelect width height|
+  }}
 
-  {{!-- Track Clips --}}
-  {{#zip-entries select=gridSelect.SimpleMix-trackClips items=mix.trackClips as |trackClip tag|}}
-    {{arrangement-visual/track-clip
-      select=tag
-      clip=trackClip
-      startBeat=trackClip.startBeat
-      height=height
-    }}
-  {{/zip-entries}}
+    {{!-- Track Clips --}}
+    {{#zip-entries select=gridSelect.SimpleMix-trackClips items=mix.trackClips as |trackClip tag|}}
+      {{arrangement-visual/track-clip
+        select=tag
+        clip=trackClip
+        startBeat=trackClip.startBeat
+        height=height
+      }}
+    {{/zip-entries}}
 
-  {{!-- Transition Clips --}}
-  {{#zip-entries select=gridSelect.SimpleMix-transitionClips items=mix.transitionClips as |transitionClip tag|}}
-    {{arrangement-visual/transition-clip
-      select=tag
-      clip=transitionClip
-      startBeat=transitionClip.startBeat
-      height=height
-      onClick=(action 'onTransitionClipClick')
-    }}
-  {{/zip-entries}}
-{{/arrangement-visual}}
+    {{!-- Transition Clips --}}
+    {{#zip-entries select=gridSelect.SimpleMix-transitionClips items=mix.transitionClips as |transitionClip tag|}}
+      {{arrangement-visual/transition-clip
+        select=tag
+        clip=transitionClip
+        startBeat=transitionClip.startBeat
+        height=height
+        onClick=(action 'onTransitionClipClick')
+      }}
+    {{/zip-entries}}
+  {{/arrangement-visual}}
 
-{{play-buttons
-  isDisabled=notReady
-  isPlaying=isPlaying
-  playpause="playpause"
-  skipBack="skipBack"
-  skipForth="skipForth"
-}}
+  {{play-buttons
+    isDisabled=notReady
+    isPlaying=isPlaying
+    playpause="playpause"
+    skipBack="skipBack"
+    skipForth="skipForth"
+  }}
 
-<hr/>
+  <hr/>
 
-<div>pxPerBeat: {{input type="range" value=inputZoom min="0.5" max="30" step="0.5"}}</div>
-<div>BPM: {{input type="number" value=inputBpm min="0" max="200" }}</div>
+  <div>pxPerBeat: {{input type="range" value=inputZoom min="0.5" max="30" step="0.5"}}</div>
+  <div>BPM: {{input type="number" value=inputBpm min="0" max="200" }}</div>
+{{/if}}

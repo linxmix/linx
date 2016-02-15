@@ -9,10 +9,6 @@ export default Ember.Route.extend({
       transition.save();
     },
 
-    closeModal() {
-      this.transitionTo('mixes.mix');
-    },
-
     deleteTransition() {
       const transition = this.get('controller.transition');
 
@@ -34,11 +30,20 @@ export default Ember.Route.extend({
     return controller.setProperties(models);
   },
 
+  _hideMixArrangementOnActivate: Ember.on('activate', function() {
+    this.controllerFor('mixes.mix').set('showArrangement', false);
+  }),
+
+  _showMixArrangementOnDeactivate: Ember.on('deactivate', function() {
+    this.controllerFor('mixes.mix').set('showArrangement', true);
+  }),
+
+
   model: function(params) {
     return Ember.RSVP.hash({
       transition: this.get('store').find('transition', params.transition_id).catch((reason) => {
         // if transition not found, redirect to mix
-        this.closeModal();
+        this.sendAction('closeModal');
       }),
     });
   }
