@@ -10,6 +10,51 @@
   {{/link-to}}
 </div>
 
+<div>
+  {{#with mixItem.mix as |mix|}}
+    Mix &middot; {{#link-to "mix" mix}}{{mix.id}}{{/link-to}}
+  {{/with}}
+</div>
+
+{{#arrangement-visual
+  arrangement=arrangement
+  zoom=zoom
+  isReady=isReady
+  seekToBeat=(action "seekToBeat")
+  class="SimpleMix-arrangementVisual"
+  as |gridSelect width height|
+}}
+
+  {{!-- From Track Clip --}}
+  {{arrangement-visual/track-clip
+    select=gridSelect.SimpleMix-FromTrackClip
+    clip=fromTrackClip
+    startBeat=fromTrackClip.startBeat
+    height=height
+    row=1
+  }}
+
+  {{!-- Transition Clip --}}
+  {{arrangement-visual/transition-clip
+    select=gridSelect.SimpleMix-TransitionClip
+    clip=transitionClip
+    startBeat=transitionClip.startBeat
+    height=height
+    onClick=(action 'onTransitionClipClick')
+    row=2
+  }}
+
+  {{!-- To Track Clip --}}
+  {{arrangement-visual/transition-clip
+    select=gridSelect.SimpleMix-ToTrackClip
+    clip=toTrackClip
+    startBeat=toTrackClip.startBeat
+    height=height
+    onClick=(action 'onTransitionClipClick')
+    row=3
+  }}
+{{/arrangement-visual}}
+
 <div>FromTrack EndBeat: {{transition.fromTrackEndBeat}}</div>
 <div>ToTrack StartBeat: {{transition.toTrackStartBeat}}</div>
 <div>Transition Length: {{transition.beatCount}}</div>
@@ -20,45 +65,6 @@
 <div class="tiny inverted basic circular green ui icon button" {{action "playTransition"}}>
   <i class="play icon"></i>
 </div>
-
-{{#arrangement-visual
-  arrangement=arrangement
-  isReady=isReady
-  pxPerBeat=pxPerBeat
-  scrollCenterBeat=scrollCenterBeat
-  seekToBeat="seekToBeat"
-}}
-  {{#arrangement-visual/row}}
-    {{!-- {{arrangement-visual/event
-      clip=fromTrackClip
-      metronome=metronome
-      pxPerBeat=pxPerBeat
-      isDraggable=true
-      onDrag=(action "moveTrackMarker" fromTrackMarker)
-      class="SimpleTransition-FromTrackClip"
-    }} --}}
-  {{/arrangement-visual/row}}
-
-  {{#arrangement-visual/row}}
-    {{!-- {{arrangement-visual/event
-      clip=transitionClip
-      metronome=metronome
-      pxPerBeat=pxPerBeat
-      class="SimpleTransition-TransitionClip"
-    }} --}}
-  {{/arrangement-visual/row}}
-
-  {{#arrangement-visual/row}}
-    {{!-- {{arrangement-visual/event
-      clip=toTrackClip
-      metronome=metronome
-      pxPerBeat=pxPerBeat
-      isDraggable=true
-      onDrag=(action "moveTrackMarker" toTrackMarker -1)
-      class="SimpleTransition-ToTrackClip"
-    }} --}}
-  {{/arrangement-visual/row}}
-{{/arrangement-visual}}
 
 <div class="ui grid">
   <div class="five wide column">

@@ -15,7 +15,7 @@ export default DS.Model.extend(
   TrackPropertiesMixin('toTrack'), {
 
   title: DS.attr('string'),
-  mixItems: DS.hasMany('mix/item', { async: true }),
+  mixItem: DS.belongsTo('mix/item', { async: true }),
   beatCount: Ember.computed.reads('arrangement.beatCount'),
 
   // implement readiness
@@ -45,18 +45,6 @@ export default DS.Model.extend(
   // TODO(TRANSITION): fix this
   setTransitionBeatCount(beatCount) {
     this.get('arrangement.clips.lastObject').set('beatCount', beatCount);
-  },
-
-  // TODO(REFACTOR): this will change (i hope)
-  // create partial mix with fromTrack, transition, toTrack
-  generateMix() {
-    return DS.PromiseObject.create({
-      promise: this.get('readyPromise').then(() => {
-        let mix = this.get('store').createRecord('mix');
-        mix.appendTransition(this);
-        return mix;
-      }),
-    });
   },
 
   // optimizes this model as a transition between two tracks, with given constraints

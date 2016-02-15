@@ -48,6 +48,10 @@ export default Ember.Component.extend(ArrangementPlayerMixin,
     selectQuantization(quantization) {
       this.set('selectedQuantizations', [quantization]);
     },
+
+    onTransitionClipClick(clip) {
+      // this.sendAction('transitionToTransition', clip.get('transition'));
+    }
   },
 
   selectedQuantizations: [BAR_QUANTIZATION],
@@ -57,17 +61,13 @@ export default Ember.Component.extend(ArrangementPlayerMixin,
   arrangement: Ember.computed.reads('mix'),
 
   // simple-transition specific stuff
-  mix: Ember.computed('transition', function() {
-    let transition = this.get('transition');
-    return transition && transition.generateMix();
-  }),
-
   fromTrack: Ember.computed.reads('transition.fromTrack'),
   fromTrackMarker: Ember.computed.reads('transition.fromTrackMarker'),
   toTrack: Ember.computed.reads('transition.toTrack'),
   toTrackMarker: Ember.computed.reads('transition.toTrackMarker'),
 
-  mixItem: Ember.computed.reads('mix.items.firstObject'),
+  mixItem: Ember.computed.reads('transition.mixItem'),
+  mix: Ember.computed.reads('mixItem.mix'),
   transitionClip: Ember.computed.reads('mixItem.transitionClip'),
   fromTrackClip: Ember.computed.reads('mixItem.fromTrackClip'),
   toTrackClip: Ember.computed.reads('mixItem.toTrackClip'),

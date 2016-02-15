@@ -19,7 +19,8 @@ export default Ember.Component.extend(
   }),
 
   updatePlayhead() {
-    const currentBeat = this.get('metronome').getCurrentBeat();
+    const metronome = this.get('metronome');
+    const currentBeat = (metronome && metronome.getCurrentBeat()) || 0;
     const playheadSelection = this.get('playheadSelection');
 
     playheadSelection && playheadSelection
@@ -32,8 +33,9 @@ export default Ember.Component.extend(
     this.updatePlayhead();
   },
 
-  startPlayheadAnimation: Ember.observer('metronome.isPlaying', 'metronome.seekBeat', function() {
+  startPlayheadAnimation: Ember.observer('metronome.{isPlaying,seekBeat}', function() {
     const context = this;
+    if (!this.get('metronome')) { return; }
 
     // uses requestAnimationFrame to animate the arrangement-visual's playhead
     function animatePlayhead() {
