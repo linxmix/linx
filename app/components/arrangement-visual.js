@@ -8,13 +8,14 @@ import RequireAttributes from 'linx/lib/require-attributes';
 import PreventMacBackScroll from 'linx/mixins/prevent-mac-back-scroll';
 import cssStyle from 'linx/lib/computed/css-style';
 import { clamp, isNumber } from 'linx/lib/utils';
+import multiply from 'linx/lib/computed/multiply';
 
 // ms to wait between zoom events
-const ZOOM_THROTTLE_DELAY = 100;
+const ZOOM_THROTTLE_DELAY = 0;
 
 export default DataVisual.extend(
   // PreventMacBackScroll,
-  RequireAttributes('arrangement'), {
+  RequireAttributes('arrangement', 'pxPerBeat'), {
 
   // optional params
   isReady: false,
@@ -43,7 +44,7 @@ export default DataVisual.extend(
 
   // used for constraining zoom
   minX: 0,
-  maxX: Ember.computed.reads('arrangement.beatCount'),
+  maxX: multiply('arrangement.beatCount', 'pxPerBeat'),
   minY: 0,
   maxY: Ember.computed.reads('height'),
 

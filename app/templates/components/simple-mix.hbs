@@ -49,6 +49,7 @@
 {{!-- TODO(REFACTOR): move to nested component? --}}
 {{#if showArrangement}}
   {{#arrangement-visual
+    pxPerBeat=pxPerBeat
     arrangement=arrangement
     zoom=zoom
     isReady=isReady
@@ -64,6 +65,7 @@
         clip=trackClip
         startBeat=trackClip.startBeat
         height=height
+        pxPerBeat=pxPerBeat
       }}
     {{/zip-entries}}
 
@@ -75,6 +77,7 @@
         startBeat=transitionClip.startBeat
         height=height
         onClick=(action 'onTransitionClipClick')
+        pxPerBeat=pxPerBeat
       }}
     {{/zip-entries}}
   {{/arrangement-visual}}

@@ -8,6 +8,10 @@ import RequireAttributes from 'linx/lib/require-attributes';
 // Interface for controlling Arrangement Visuals
 export default Ember.Mixin.create({
 
+  // optional params
+  pxPerBeat: 20,
+  rowHeight: 128,
+
   // params
   zoom: Ember.computed(function() {
     return d3.behavior.zoom();
@@ -37,10 +41,13 @@ export default Ember.Mixin.create({
 
       // calculate desired center
       const svgWidth = this._getSvgWidth();
-      translateX = (svgWidth / 2.0) - beat;
+      translateX = ((svgWidth / 2.0) - beat) * this.get('pxPerBeat');
 
       // animate zoom on svg selection
-      svgSelection.transition()
+      // TODO(SVG): figure this out
+      svgSelection
+        .transition()
+        .duration(1000)
         .call(zoom.translate([ translateX, translateY ]).event);
     }
   },

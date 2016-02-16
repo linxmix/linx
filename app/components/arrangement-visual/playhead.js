@@ -9,7 +9,7 @@ let playheadAnimationId;
 
 export default Ember.Component.extend(
   GraphicSupport,
-  RequireAttributes('arrangement'), {
+  RequireAttributes('arrangement', 'pxPerBeat'), {
 
   metronome: Ember.computed.reads('arrangement.metronome'),
   selection: Ember.computed.reads('select.selection'),
@@ -21,6 +21,7 @@ export default Ember.Component.extend(
   updatePlayhead() {
     const metronome = this.get('metronome');
     const currentBeat = (metronome && metronome.getCurrentBeat()) || 0;
+    const currentPx = currentBeat * this.get('pxPerBeat');
     const playheadSelection = this.get('playheadSelection');
 
     playheadSelection && playheadSelection

@@ -19,6 +19,7 @@
 {{#arrangement-visual
   arrangement=arrangement
   zoom=zoom
+  pxPerBeat=pxPerBeat
   isReady=isReady
   seekToBeat=(action "seekToBeat")
   class="SimpleMix-arrangementVisual"
@@ -30,8 +31,9 @@
     select=gridSelect.SimpleMix-FromTrackClip
     clip=fromTrackClip
     startBeat=fromTrackClip.startBeat
-    height=height
+    height=rowHeight
     row=1
+    pxPerBeat=pxPerBeat
   }}
 
   {{!-- Transition Clip --}}
@@ -39,9 +41,9 @@
     select=gridSelect.SimpleMix-TransitionClip
     clip=transitionClip
     startBeat=transitionClip.startBeat
-    height=height
+    height=rowHeight
     onClick=(action 'onTransitionClipClick')
-    row=2
+    pxPerBeat=pxPerBeat
   }}
 
   {{!-- To Track Clip --}}
@@ -49,9 +51,10 @@
     select=gridSelect.SimpleMix-ToTrackClip
     clip=toTrackClip
     startBeat=toTrackClip.startBeat
-    height=height
+    height=rowHeight
     onClick=(action 'onTransitionClipClick')
-    row=3
+    row=2
+    pxPerBeat=pxPerBeat
   }}
 {{/arrangement-visual}}
 

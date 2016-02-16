@@ -19,6 +19,7 @@ export default Ember.Component.extend(
 
   // optional params
   showArrangement: true,
+  pxPerBeat: 1,
 
   actions: {
     resetMix() {

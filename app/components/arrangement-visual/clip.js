@@ -5,20 +5,23 @@ import GraphicSupport from 'ember-cli-d3/mixins/d3-support';
 import { join } from 'ember-cli-d3/utils/d3';
 
 import RequireAttributes from 'linx/lib/require-attributes';
+import multiply from 'linx/lib/computed/multiply';
 
 // TODO(REFACTOR): do we need this anymore? mixin?
 export default Ember.Component.extend(
   GraphicSupport,
-  RequireAttributes('clip'), {
+  RequireAttributes('clip', 'pxPerBeat'), {
 
   height: 0,
   width: Ember.computed.reads('clip.beatCount'),
 
+  width: multiply('beatCount', 'pxPerBeat'),
   startBeat: null,
   // TODO(REFACTOR): make similar to cssStyle, transformStyle({ attrs })
   // TODO(REFACTOR): or use different transofmrs here https://www.dashingd3js.com/svg-group-element-and-d3js#svg-mini-language-div
-  transform: Ember.computed('startBeat', function() {
-    return `translate(${this.get('startBeat')})`;
+  transform: Ember.computed('startBeat', 'pxPerBeat', function() {
+    const translateX = this.get('startBeat') * this.get('pxPerBeat');
+    return `translate(${translateX})`;
   }),
 
   call(selection) {
