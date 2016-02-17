@@ -9,7 +9,14 @@ import subtract from 'linx/lib/computed/subtract';
 import { isNumber } from 'linx/lib/utils';
 
 import { MIX_ITEM_PREVIEW_DISTANCE } from 'linx/components/simple-mix';
-import { BAR_QUANTIZATION } from 'linx/models/track/audio-meta/beat-grid';
+import {
+  BAR_QUANTIZATION,
+  BEAT_QUANTIZATION,
+  TICK_QUANTIZATION,
+  MS10_QUANTIZATION,
+  MS1_QUANTIZATION,
+  SAMPLE_QUANTIZATION,
+} from 'linx/models/track/audio-meta/beat-grid';
 
 export default Ember.Component.extend(
   ArrangementPlayerMixin,
@@ -23,19 +30,6 @@ export default Ember.Component.extend(
   pxPerBeat: 25,
 
   actions: {
-
-    // TODO(REFACTOR): update this to new quantization
-    moveTrackMarker(marker, beat, direction = 1) {
-      let beatGrid = marker.get('beatGrid');
-      let quantization = this.get('selectedQuantization');
-      let oldStartBeat = marker.get('beat');
-      let newStartBeat = beatGrid.getQuantizedBeat(direction * beat, quantization);
-
-      // TODO(REFACTOR): tolerance, not exact equality
-      if (oldStartBeat !== newStartBeat) {
-        marker.set('beat', newStartBeat);
-      }
-    },
 
     playTransition() {
       this.send('viewTransition');
@@ -57,6 +51,31 @@ export default Ember.Component.extend(
 
     onTransitionClipClick(clip) {
       // this.sendAction('transitionToTransition', clip.get('transition'));
+    },
+
+    onTrackClipDrag(clip) {
+      const dx = d3.event.dx;
+      const beatDifference = dx / this.get('pxPerBeat') / this.get('zoom').scale();
+      const beat = this.get('toTrackStartBeat') - beatDifference; // switch direcdtion for toTrack vs fromTrack
+      console.log('trackClipDrag', beat, beatDifference);
+      Ember.run.throttle(this, 'moveTrackMarker', this.get('toTrackMarker'), beat, 100, true);
+      // this.moveTrackMarker(this.get('toTrackMarker'), beat);
+    },
+  },
+
+  moveTrackMarker(marker, beat) {
+    const beatGrid = marker.get('beatGrid');
+    const quantization = this.get('selectedQuantization');
+    const oldStartBeat = marker.get('beat');
+
+    // TODO(REFACTOR): implement quantization
+    // let newStartBeat = beatGrid.quantizeBeat(beat);
+    let newStartBeat = beat;
+    console.log('newStartBeat', beat);
+
+    // TODO(REFACTOR): tolerance, not exact equality
+    if (oldStartBeat !== newStartBeat) {
+      marker.set('beat', newStartBeat);
     }
   },
 

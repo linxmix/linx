@@ -2,6 +2,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import RequireAttributes from 'linx/lib/require-attributes';
+import { isNumber } from 'linx/lib/utils';
 import ReadinessMixin from 'linx/mixins/readiness';
 import Ajax from 'linx/lib/ajax';
 
@@ -77,6 +78,9 @@ export default Ember.Object.extend(
   getPeaks({ startTime, endTime, length }) {
     let audioBuffer = this.get('audioBuffer');
     if (!audioBuffer) { return []; }
+
+    Ember.assert('Cannot AudioBinary.getPeaks without endTime', isNumber(endTime));
+    startTime = startTime || 0;
 
     let sampleRate = audioBuffer.sampleRate;
     let startSample = startTime * sampleRate;

@@ -25,7 +25,7 @@ export default Ember.Component.extend(
     const playheadSelection = this.get('playheadSelection');
 
     playheadSelection && playheadSelection
-      .attr('transform', `translate(${currentBeat})`)
+      .attr('transform', `translate(${currentPx})`)
       .attr('y1', 0)
       .attr('y2', this.get('height'))
   },

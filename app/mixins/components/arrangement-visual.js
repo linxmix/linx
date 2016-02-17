@@ -26,16 +26,16 @@ export default Ember.Mixin.create({
   }).volatile(),
 
   actions: {
-    zoomToClip(clip) {
+    zoomToClip(clip, doTransition) {
       const centerBeat = clip.get('centerBeat');
       const pxPerBeat = this.get('pxPerBeat');
       const clipWidthPx = clip.get('beatCount') * pxPerBeat;
       const viewWidthPx = this._getSvgWidth();
       const scale = viewWidthPx / clipWidthPx;
-      this.send('zoomToBeat', centerBeat, scale);
+      this.send('zoomToBeat', centerBeat, scale, doTransition);
     },
 
-    zoomToBeat(beat, scale) {
+    zoomToBeat(beat, scale, doTransition = true) {
       const zoom = this.get('zoom');
       const prevScale = zoom.scale();
       scale = scale || prevScale;
@@ -49,14 +49,20 @@ export default Ember.Mixin.create({
       const svgWidth = this._getSvgWidth();
       translateX = (svgWidth / 2.0) - (beat * pxPerBeat * scale);
 
-      // animate zoom on svg selection
-      svgSelection
-        .call(zoom.translate(zoom.translate()).event)
-        .call(zoom.scale(prevScale).event)
-        .transition()
-        .duration(500) // TODO(SVG) make duration base off trnslate difference
-        .call(zoom.scale(scale).event)
-        .call(zoom.translate([ translateX, translateY ]).event);
+      // possibly animate zoom on svg selection
+      if (doTransition) {
+        svgSelection
+          .call(zoom.translate(zoom.translate()).event)
+          .call(zoom.scale(prevScale).event)
+          .transition()
+          .duration(500) // TODO(SVG) make duration base off trnslate difference
+          .call(zoom.scale(scale).event)
+          .call(zoom.translate([ translateX, translateY ]).event);
+      } else {
+        svgSelection
+          .call(zoom.scale(scale).event)
+          .call(zoom.translate([ translateX, translateY ]).event);
+      }
     }
   },
 

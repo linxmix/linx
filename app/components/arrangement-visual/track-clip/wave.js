@@ -13,9 +13,21 @@ export default Ember.Component.extend(
   GraphicSupport,
   RequireAttributes('peaks'), {
 
+  // optional params
   height: 125,
 
-  call: join([0], 'path', {
+  call(selection) {
+    const transform = this.get('transform');
+
+    selection
+      .classed('TrackClipWave', true)
+      .attr('transform', this.get('transform'));
+
+    this.drawWaveform(selection);
+  },
+
+
+  drawWaveform: join([0], 'path', {
     update(selection) {
       const median = this.get('height') / 2.0;
 

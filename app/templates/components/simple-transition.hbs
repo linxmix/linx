@@ -30,9 +30,23 @@
   {{arrangement-visual/track-clip
     select=gridSelect.SimpleMix-FromTrackClip
     clip=fromTrackClip
+    beatCount=fromTrackClip.beatCount
     startBeat=fromTrackClip.startBeat
     height=rowHeight
+    onDrag=(action "onTrackClipDrag")
     row=1
+    pxPerBeat=pxPerBeat
+  }}
+
+  {{!-- To Track Clip --}}
+  {{arrangement-visual/track-clip
+    select=gridSelect.SimpleMix-ToTrackClip
+    clip=toTrackClip
+    startBeat=toTrackClip.startBeat
+    beatCount=toTrackClip.beatCount
+    height=rowHeight
+    onDrag=(action "onTrackClipDrag")
+    row=2
     pxPerBeat=pxPerBeat
   }}
 
@@ -43,17 +57,6 @@
     startBeat=transitionClip.startBeat
     height=rowHeight
     onClick=(action 'onTransitionClipClick')
-    pxPerBeat=pxPerBeat
-  }}
-
-  {{!-- To Track Clip --}}
-  {{arrangement-visual/track-clip
-    select=gridSelect.SimpleMix-ToTrackClip
-    clip=toTrackClip
-    startBeat=toTrackClip.startBeat
-    height=rowHeight
-    onClick=(action 'onTransitionClipClick')
-    row=2
     pxPerBeat=pxPerBeat
   }}
 {{/arrangement-visual}}

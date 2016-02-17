@@ -1,8 +1,10 @@
-.TrackClip {
-}
+.ArrangementVisualTrackClip {
+  .ArrangementVisualClip-backdrop {
+    fill: rgba(#00f, 0.2);
+    cursor: pointer;
 
-.TrackClip-wave {
-}
-
-.TrackClip-axis {
+    &:hover {
+      fill: rgba(#00f, 0.4);
+    }
+  }
 }

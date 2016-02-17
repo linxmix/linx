@@ -14,7 +14,6 @@ export default Clip.extend({
   // params
   fromTrackClip: Ember.computed.reads('clip.fromTrackClip'),
   toTrackClip: Ember.computed.reads('clip.toTrackClip'),
-  beatCount: Ember.computed.reads('clip.beatCount'),
 
   // TODO(MULTIGRID): calculate control curve timing off metronome's beatgrid
   // TODO(REFACTOR): TODO(AUTOMATION): finish this, move this to sensible place in automation-clip

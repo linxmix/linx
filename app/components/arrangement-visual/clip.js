@@ -13,9 +13,9 @@ export default Ember.Component.extend(
   RequireAttributes('clip', 'pxPerBeat'), {
 
   height: 0,
-  width: Ember.computed.reads('clip.beatCount'),
-
   width: multiply('beatCount', 'pxPerBeat'),
+
+  beatCount: Ember.computed.reads('clip.beatCount'),
   startBeat: null,
   // TODO(REFACTOR): make similar to cssStyle, transformStyle({ attrs })
   // TODO(REFACTOR): or use different transofmrs here https://www.dashingd3js.com/svg-group-element-and-d3js#svg-mini-language-div
@@ -31,47 +31,34 @@ export default Ember.Component.extend(
     this.backdrop(selection);
   },
 
+  drag: Ember.computed(function() {
+    return d3.behavior.drag();
+  }),
+
+  _initDragHandlers: Ember.on('init', function() {
+    const drag = this.get('drag');
+    const context = this;
+
+    drag.on('drag', function() {
+      context.sendAction('onDrag', context.get('clip'));
+    });
+
+    drag.on('dragstart', function() {
+      d3.event.sourceEvent.stopPropagation(); // silence other listeners
+    });
+  }),
+
   backdrop: join([0], 'rect.ArrangementVisualClip-backdrop', {
     update(selection) {
       selection
         .attr('height', this.get('height'))
         .attr('width', this.get('width'))
-        .on('click', () => this.sendAction('onClick', this.get('clip')));
+        .on('click', () => this.sendAction('onClick', this.get('clip')))
+        .call(this.get('drag'));
+    },
+    exit(selection) {
+      selection
+        .on('.drag', null);
     }
   }),
-
-  // TODO(REFACTOR): how to handle dragging? can we do with d3?
 });
-
-
-// // TODO(CLEANUP): create draggable mixin for normal DOM elements, as follows?
-//   isDraggable: false,
-//   draggable: Ember.computed.reads('isDraggable'),
-
-//   getHoverBeat(e) {
-//     if (!e) { return; }
-
-//     let $this = this.$();
-//     let offsetX = e.originalEvent.pageX - $this.offset().left;
-
-//     return offsetX / this.get('pxPerBeat');
-//   },
-
-//   // WIP: trying to get rid of ghosting
-//   // dragStart(e) {
-//   //   e.originalEvent.dataTransfer.setDragImage('', 10, 10);
-//   // },
-
-//   drag(e) {
-//     Ember.run.throttle(this, '_drag', e, 50, true);
-//   },
-
-//   _drag(e = {}) {
-//     let originalEvent = e.originalEvent;
-//     let { x, y } = originalEvent;
-
-//     // ignore final drag event because it's at 0,0 (why?)
-//     if (!(x === 0 && y === 0)) {
-//      this.sendAction('onDrag', this.getHoverBeat(e));
-//     }
-//   }
