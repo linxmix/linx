@@ -73,7 +73,8 @@ export default DataVisual.extend(
     // http://stackoverflow.com/questions/22302919/unregister-zoom-listener-and-restore-scroll-ability-in-d3-js/22303160?noredirect=1#22303160
     if (selection && zoom) {
       zoom.on('zoom', this.didZoom.bind(this));
-      zoom(selection);
+      selection.call(zoom); // delete this line to disable free zooming
+      selection.call(zoom.event);
     }
   }).on('didInsertElement'),
 
@@ -81,10 +82,13 @@ export default DataVisual.extend(
     const { selection } = this.getProperties('selection');
     const context = this;
     selection && selection.on('click', function() {
-      if (!d3.event.defaultPrevented) {
-        context.sendAction('seekToBeat', d3.mouse(this)[0]);
-      }
-    });
+
+      // If the drag behavior prevents the default click,
+      // also stop propagation so we don’t click-to-zoom.
+      if (d3.event.defaultPrevented) { d3.event.stopPropagation(); }
+
+      if (!d3.event.defaultPrevented) { context.sendAction('seekToBeat', d3.mouse(this)[0]); }
+    }, true);
   }).on('didInsertElement'),
 
   //

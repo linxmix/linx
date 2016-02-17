@@ -22,32 +22,41 @@ export default Ember.Mixin.create({
   }).volatile(),
 
   svgSelection: Ember.computed('$svg', function() {
-    return d3.select(this.get('$svg'));
+    console.log('svgSelection', this.get('$svg'));
+    return d3.select('.ArrangementVisual svg');
   }).volatile(),
 
   actions: {
-    // TODO(SVG): upgrade this to zoomToBoundingBox
     zoomToClip(clip) {
       const centerBeat = clip.get('centerBeat');
-      this.send('zoomToBeat', centerBeat);
+      const pxPerBeat = this.get('pxPerBeat');
+      const clipWidthPx = clip.get('beatCount') * pxPerBeat;
+      const viewWidthPx = this._getSvgWidth();
+      const scale = viewWidthPx / clipWidthPx;
+      this.send('zoomToBeat', centerBeat, scale);
     },
 
-    zoomToBeat(beat) {
+    zoomToBeat(beat, scale) {
       const zoom = this.get('zoom');
+      const prevScale = zoom.scale();
+      scale = scale || prevScale;
       let [ translateX, translateY ] = zoom.translate();
+      const pxPerBeat = this.get('pxPerBeat');
       const svgSelection = this.get('svgSelection');
 
       Ember.assert('Must have svgSelection to zoom', !!svgSelection);
 
       // calculate desired center
       const svgWidth = this._getSvgWidth();
-      translateX = ((svgWidth / 2.0) - beat) * this.get('pxPerBeat');
+      translateX = (svgWidth / 2.0) - (beat * pxPerBeat * scale);
 
       // animate zoom on svg selection
-      // TODO(SVG): figure this out
       svgSelection
+        .call(zoom.translate(zoom.translate()).event)
+        .call(zoom.scale(prevScale).event)
         .transition()
-        .duration(1000)
+        .duration(500) // TODO(SVG) make duration base off trnslate difference
+        .call(zoom.scale(scale).event)
         .call(zoom.translate([ translateX, translateY ]).event);
     }
   },
