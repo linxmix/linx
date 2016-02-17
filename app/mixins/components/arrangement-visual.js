@@ -22,7 +22,6 @@ export default Ember.Mixin.create({
   }).volatile(),
 
   svgSelection: Ember.computed('$svg', function() {
-    console.log('svgSelection', this.get('$svg'));
     return d3.select('.ArrangementVisual svg');
   }).volatile(),
 

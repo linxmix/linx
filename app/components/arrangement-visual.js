@@ -87,7 +87,10 @@ export default DataVisual.extend(
       // also stop propagation so we don’t click-to-zoom.
       if (d3.event.defaultPrevented) { d3.event.stopPropagation(); }
 
-      if (!d3.event.defaultPrevented) { context.sendAction('seekToBeat', d3.mouse(this)[0]); }
+      if (!d3.event.defaultPrevented) {
+        const beat = d3.mouse(this)[0] / context.get('pxPerBeat');
+        context.sendAction('seekToBeat', beat);
+      }
     }, true);
   }).on('didInsertElement'),
 
