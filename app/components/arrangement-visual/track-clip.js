@@ -3,6 +3,7 @@ import Ember from 'ember';
 import _ from 'npm:underscore';
 
 import Clip from './clip';
+import { timeToBeat as staticTimeToBeat } from 'linx/lib/utils';
 
 export default Clip.extend({
   classNames: ['TrackClip'],
@@ -17,6 +18,7 @@ export default Clip.extend({
 
   track: Ember.computed.reads('clip.track'),
   audioMeta: Ember.computed.reads('track.audioMeta'),
+  trackBpm: Ember.computed.reads('audioMeta.bpm'),
   trackBeatCount: Ember.computed.reads('audioMeta.beatCount'),
   trackDuration: Ember.computed.reads('audioMeta.duration'),
   audioBinary: Ember.computed.reads('track.audioBinary'),
@@ -28,8 +30,10 @@ export default Clip.extend({
   audioEndTime: Ember.computed.reads('clip.audioEndTime'),
   audioBeatCount: Ember.computed.reads('clip.audioBeatCount'),
 
-  waveTransform: Ember.computed('audioStartBeat', 'pxPerBeat', function() {
-    const translateX = this.get('audioStartBeat') * this.get('pxPerBeat');
+  waveTransform: Ember.computed('trackBpm', 'audioStartTime', 'pxPerBeat', function() {
+    // NOTE: calculate actual raw audio time offset for waveform
+    const offsetBeats = -staticTimeToBeat(this.get('audioStartTime'), this.get('trackBpm'));
+    const translateX = offsetBeats * this.get('pxPerBeat');
     return `translate(${translateX})`;
   }),
 
@@ -52,17 +56,6 @@ export default Clip.extend({
     });
 
     return peaks || [];
-  }),
-
-  clipPeaks: Ember.computed('trackPeaks', 'audioStartBeat', 'audioEndBeat', 'pxPerBeat', function() {
-    const { trackPeaks, audioStartBeat, audioEndBeat, pxPerBeat } = this.getProperties('trackPeaks', 'audioStartBeat', 'audioEndBeat', 'pxPerBeat');
-
-    console.log('clip peaks 1', Date.now())
-    const peaks = (trackPeaks || []).slice(audioStartBeat * pxPerBeat, audioEndBeat * pxPerBeat);
-    console.log('clip peaks 2', Date.now())
-    console.log('/n')
-
-    return peaks;
   }),
 
   markers: Ember.computed.reads('audioMeta.markers'),

@@ -16,7 +16,6 @@ export default Ember.Component.extend(
   // optional params
   height: 125,
 
-
   prevPeaks: null,
   call(selection) {
     const transform = this.get('transform');

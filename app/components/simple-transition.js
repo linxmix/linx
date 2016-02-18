@@ -56,7 +56,7 @@ export default Ember.Component.extend(
     onTrackClipDrag(clip) {
       const dx = d3.event.dx;
       const beatDifference = dx / this.get('pxPerBeat') / this.get('zoom').scale();
-      const beat = this.get('toTrackStartBeat') + beatDifference; // switch direcdtion for toTrack vs fromTrack
+      const beat = this.get('toTrackStartBeat') - beatDifference; // switch direcdtion for toTrack vs fromTrack
       console.log('trackClipDrag', beat, beatDifference);
       Ember.run.throttle(this, 'moveTrackMarker', this.get('toTrackMarker'), beat, 10, true);
       // this.moveTrackMarker(this.get('toTrackMarker'), beat);

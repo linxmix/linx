@@ -19,23 +19,24 @@ export default Ember.ObjectProxy.extend(
   isAudioLoaded: Ember.computed.bool('audioBuffer'),
 
   start(when, offset, duration) {
-    // if starting before 0, shift to offset
     if (when < 0) {
-      offset -= when;
       when = 0;
     }
 
-    // if no duration, quit
-    if (duration <= 0) {
-      return;
+    // if offset is negative, shift to when
+    if (offset < 0) {
+      when -= offset;
+      offset = 0;
     }
 
-    let args = [when, offset, duration].filter(isValidNumber);
+    console.log('currentTime', this.get('audioContext.currentTime'));
+    console.log('startSource', when, offset);
+    const args = [when, offset, duration].filter(isValidNumber);
 
     // web audio buffer sources can only be played once
     // therefore we must recreate source on each playback
     this.stop();
-    let node = this.createBufferSource();
+    const node = this.createBufferSource();
     node.start(...args);
   },
 
@@ -46,8 +47,8 @@ export default Ember.ObjectProxy.extend(
   createBufferSource() {
     this.disconnect();
 
-    let audioContext = this.get('audioContext');
-    let sourceNode = audioContext.createBufferSource();
+    const audioContext = this.get('audioContext');
+    const sourceNode = audioContext.createBufferSource();
 
     this.set('node', sourceNode);
     this.loadBuffer();
@@ -57,7 +58,7 @@ export default Ember.ObjectProxy.extend(
   },
 
   loadBuffer() {
-    let { node, audioBuffer } = this.getProperties('node', 'audioBuffer');
+    const { node, audioBuffer } = this.getProperties('node', 'audioBuffer');
 
     if (node && audioBuffer) {
       node.buffer = audioBuffer;

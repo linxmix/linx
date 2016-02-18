@@ -8,6 +8,7 @@ import SoundtouchNode from 'linx/lib/web-audio/soundtouch-node';
 import FxNode from 'linx/lib/web-audio/fx-node';
 import ReadinessMixin from '../readiness';
 import subtract from 'linx/lib/computed/subtract';
+import multiply from 'linx/lib/computed/multiply';
 import computedObject from 'linx/lib/computed/object';
 import { flatten } from 'linx/lib/utils';
 
@@ -48,10 +49,6 @@ export default Ember.Mixin.create(
   audioDuration: subtract('audioEndTime', 'audioStartTime'),
   audioBarCount: subtract('audioEndBar', 'audioStartBar'),
 
-  // offset of this clip wrt the audioBeatGrid
-  // TODO(REFACTOR): figure out which offset direction is correct
-  audioOffset: subtract('audioBeatGrid.firstBarOffset', 'audioStartTime'),
-
   // TODO(REFACTOR): need to somehow make sourceNode.playbackRate observe tempo
   // TODO(MULTIGRID): make this depend on ex seekTime and audioBeatGrid.beatScale
   // TODO(MULTIGRID): need to be able to multiply beatgrids together
@@ -89,7 +86,7 @@ export default Ember.Mixin.create(
       let when = metronome.beatToTime(this.get('startBeat'));
       let offset = this.getCurrentAudioTime();
 
-      console.log('startSource', this.get('track.title'), when, offset);
+      console.log('startTrack', this.get('track.title'), when, offset);
       this.get('trackSourceNode').start(when, offset);
     }
   },
