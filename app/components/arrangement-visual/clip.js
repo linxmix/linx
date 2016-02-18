@@ -13,15 +13,17 @@ export default Ember.Component.extend(
   RequireAttributes('clip', 'pxPerBeat'), {
 
   height: 0,
+  row: 0,
   width: multiply('beatCount', 'pxPerBeat'),
 
   beatCount: Ember.computed.reads('clip.beatCount'),
   startBeat: null,
   // TODO(REFACTOR): make similar to cssStyle, transformStyle({ attrs })
   // TODO(REFACTOR): or use different transofmrs here https://www.dashingd3js.com/svg-group-element-and-d3js#svg-mini-language-div
-  transform: Ember.computed('startBeat', 'pxPerBeat', function() {
+  transform: Ember.computed('startBeat', 'pxPerBeat', 'height', 'row', function() {
     const translateX = this.get('startBeat') * this.get('pxPerBeat');
-    return `translate(${translateX})`;
+    const translateY = this.get('height') * this.get('row');
+    return `translate(${translateX}, ${translateY})`;
   }),
 
   call(selection) {

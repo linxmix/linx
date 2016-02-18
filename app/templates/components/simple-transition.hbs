@@ -22,25 +22,25 @@
   pxPerBeat=pxPerBeat
   isReady=isReady
   seekToBeat=(action "seekToBeat")
-  class="SimpleMix-arrangementVisual"
+  class="SimpleTransition-ArrangementVisual"
   as |gridSelect width height|
 }}
 
   {{!-- From Track Clip --}}
   {{arrangement-visual/track-clip
-    select=gridSelect.SimpleMix-FromTrackClip
+    select=gridSelect.SimpleTransition-FromTrackClip
     clip=fromTrackClip
     beatCount=fromTrackClip.beatCount
     startBeat=fromTrackClip.startBeat
     height=rowHeight
     onDrag=(action "onTrackClipDrag")
-    row=1
+    row=0
     pxPerBeat=pxPerBeat
   }}
 
   {{!-- To Track Clip --}}
   {{arrangement-visual/track-clip
-    select=gridSelect.SimpleMix-ToTrackClip
+    select=gridSelect.SimpleTransition-ToTrackClip
     clip=toTrackClip
     startBeat=toTrackClip.startBeat
     beatCount=toTrackClip.beatCount
@@ -52,10 +52,11 @@
 
   {{!-- Transition Clip --}}
   {{arrangement-visual/transition-clip
-    select=gridSelect.SimpleMix-TransitionClip
+    select=gridSelect.SimpleTransition-TransitionClip
     clip=transitionClip
     startBeat=transitionClip.startBeat
     height=rowHeight
+    row=1
     onClick=(action 'onTransitionClipClick')
     pxPerBeat=pxPerBeat
   }}

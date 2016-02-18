@@ -16,6 +16,8 @@ export default Ember.Component.extend(
   // optional params
   height: 125,
 
+
+  prevPeaks: null,
   call(selection) {
     const transform = this.get('transform');
 
@@ -23,9 +25,12 @@ export default Ember.Component.extend(
       .classed('TrackClipWave', true)
       .attr('transform', this.get('transform'));
 
-    this.drawWaveform(selection);
+    const newPeaks = this.get('peaks');
+    if (newPeaks !== this.get('prevPeaks')) {
+      this.drawWaveform(selection);
+      this.set('prevPeaks', newPeaks);
+    }
   },
-
 
   drawWaveform: join([0], 'path', {
     update(selection) {

@@ -8,7 +8,7 @@ export default Clip.extend({
   classNames: ['TrackClip'],
 
   // optional params
-  pxPerBeat: 20,
+  pxPerBeat: 5,
 
   call(selection) {
     this._super.apply(this, arguments);
@@ -17,6 +17,8 @@ export default Clip.extend({
 
   track: Ember.computed.reads('clip.track'),
   audioMeta: Ember.computed.reads('track.audioMeta'),
+  trackBeatCount: Ember.computed.reads('audioMeta.beatCount'),
+  trackDuration: Ember.computed.reads('audioMeta.duration'),
   audioBinary: Ember.computed.reads('track.audioBinary'),
   audioBuffer: Ember.computed.reads('audioBinary.audioBuffer'),
 
@@ -26,25 +28,41 @@ export default Clip.extend({
   audioEndTime: Ember.computed.reads('clip.audioEndTime'),
   audioBeatCount: Ember.computed.reads('clip.audioBeatCount'),
 
-  // TODO(CLEANUP): shouldnt have to depend on audioBuffer
-  peaks: Ember.computed('audioBinary', 'audioBuffer', 'audioStartTime', 'audioEndTime', 'audioBeatCount', 'pxPerBeat', function() {
-    const { audioBinary, audioStartTime, audioEndTime, audioBeatCount, pxPerBeat } = this.getProperties('audioBinary', 'audioStartTime', 'audioEndTime', 'audioBeatCount', 'pxPerBeat');
+  waveTransform: Ember.computed('audioStartBeat', 'pxPerBeat', function() {
+    const translateX = this.get('audioStartBeat') * this.get('pxPerBeat');
+    return `translate(${translateX})`;
+  }),
 
-    // console.log('track clip peaks', this.getProperties('audioBuffer', 'audioStartTime', 'audioEndTime', 'audioBeatCount', 'pxPerBeat'))
-    const peaksLength = audioBeatCount * pxPerBeat;
+  // TODO(CLEANUP): shouldnt have to depend on audioBuffer
+  trackPeaks: Ember.computed('audioBinary', 'audioBuffer', 'pxPerBeat', 'trackBeatCount', 'trackDuration', function() {
+    const { audioBinary, audioBuffer, pxPerBeat, trackBeatCount, trackDuration } = this.getProperties('audioBinary', 'audioBuffer', 'pxPerBeat', 'trackBeatCount', 'trackDuration');
+
+    console.log('track clip peaks', this.getProperties('audioBinary', 'audioBuffer', 'pxPerBeat', 'trackBeatCount', 'trackDuration'));
+    const peaksLength = trackBeatCount * pxPerBeat;
     const peaks = audioBinary && audioBinary.getPeaks({
-      startTime: audioStartTime,
-      endTime: audioEndTime,
+      startTime: 0,
+      endTime: trackDuration,
       length: peaksLength,
 
     // scale peaks to track-clip
     }).map((peak, i) => {
       const percent = i / peaksLength;
-      const beat = percent * audioBeatCount * pxPerBeat;
+      const beat = percent * trackBeatCount * pxPerBeat;
       return [beat, peak];
     });
 
     return peaks || [];
+  }),
+
+  clipPeaks: Ember.computed('trackPeaks', 'audioStartBeat', 'audioEndBeat', 'pxPerBeat', function() {
+    const { trackPeaks, audioStartBeat, audioEndBeat, pxPerBeat } = this.getProperties('trackPeaks', 'audioStartBeat', 'audioEndBeat', 'pxPerBeat');
+
+    console.log('clip peaks 1', Date.now())
+    const peaks = (trackPeaks || []).slice(audioStartBeat * pxPerBeat, audioEndBeat * pxPerBeat);
+    console.log('clip peaks 2', Date.now())
+    console.log('/n')
+
+    return peaks;
   }),
 
   markers: Ember.computed.reads('audioMeta.markers'),
