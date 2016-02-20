@@ -1,6 +1,6 @@
 import Ember from 'ember';
-import d3 from 'd3';
 
+import d3 from 'd3';
 import GraphicSupport from 'ember-cli-d3/mixins/d3-support';
 import { join } from 'ember-cli-d3/utils/d3';
 
@@ -31,7 +31,7 @@ export default Ember.Component.extend(
     }
   },
 
-  drawWaveform: join([0], 'path', {
+  drawWaveform: join([0], 'path.TrackClipWave-waveform', {
     update(selection) {
       const median = this.get('height') / 2.0;
 

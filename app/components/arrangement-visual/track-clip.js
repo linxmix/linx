@@ -8,9 +8,6 @@ import { timeToBeat as staticTimeToBeat } from 'linx/lib/utils';
 export default Clip.extend({
   classNames: ['TrackClip'],
 
-  // optional params
-  pxPerBeat: 5,
-
   call(selection) {
     this._super.apply(this, arguments);
     selection.classed('ArrangementVisualTrackClip', true);

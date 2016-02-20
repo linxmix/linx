@@ -26,8 +26,16 @@ export default DS.Model.extend(PlayableClipMixin, {
         value: 0,
       },
       {
-        startBeat: 9,
+        startBeat: 4,
         value: 0.5,
+      },
+      {
+        startBeat: 12,
+        value: 0.5,
+      },
+      {
+        startBeat: 8,
+        value: 0.2,
       },
       {
         startBeat: 16,
