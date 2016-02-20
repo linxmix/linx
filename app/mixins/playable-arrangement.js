@@ -15,6 +15,7 @@ export default Ember.Mixin.create(
 
   // params
   // TODO(REFACTOR): who connects arrangement to output?
+  // (update 2/19/16) i think it makes sense to provide this as a default, overridable
   outputNode: Ember.computed.reads('audioContext.destination'),
 
   metronome: Ember.computed('audioContext', function() {
@@ -35,7 +36,7 @@ export default Ember.Mixin.create(
   sortedClips: Ember.computed('clips.@each.endBeat', function() {
     return this.get('clips').sortBy('endBeat');
   }),
-  timeSignature: Ember.computed.reads('arrangement.timeSignature'),
+  timeSignature: 4,
   endBeat: Ember.computed.reads('sortedClips.lastObject.endBeat'),
   beatCount: withDefault('endBeat', 0),
 

@@ -2,21 +2,22 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import ReadinessMixin from 'linx/mixins/readiness';
-import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 import OrderedHasManyItemMixin from 'linx/mixins/models/ordered-has-many/item';
 import TrackPropertiesMixin from 'linx/mixins/models/transition/track-properties';
 import withDefaultModel from 'linx/lib/computed/with-default-model';
 import { isNumber } from 'linx/lib/utils';
+import PlayableArrangementMixin from 'linx/mixins/playable-arrangement';
+import concat from 'linx/lib/computed/concat';
 
 export default DS.Model.extend(
-  DependentRelationshipMixin('arrangement'),
+  PlayableArrangementMixin,
   ReadinessMixin('isTransitionReady'),
   TrackPropertiesMixin('fromTrack'),
   TrackPropertiesMixin('toTrack'), {
 
   title: DS.attr('string'),
   mixItem: DS.belongsTo('mix/item', { async: true }),
-  beatCount: Ember.computed.reads('arrangement.beatCount'),
+  beatCount: DS.attr('number', { defaultValue: 16 }),
 
   // implement readiness
   isTransitionReady: Ember.computed.and('fromTrackIsReady', 'toTrackIsReady'),
@@ -32,20 +33,14 @@ export default DS.Model.extend(
     return toTrack.get('isPending') ? false : toTrack.get('isFulfilled');
   }),
 
-  // the transition's arrangement
-  _arrangement: DS.belongsTo('arrangement', { async: true }),
-  arrangement: withDefaultModel('_arrangement', function() {
-    // TODO: have to fake title for Firebase to accept record
-    let arrangement = this.get('store').createRecord('arrangement', {
-      title: 'test title'
-    });
-    return arrangement;
-  }),
-
-  // TODO(TRANSITION): fix this
-  setTransitionBeatCount(beatCount) {
-    this.get('arrangement.clips.lastObject').set('beatCount', beatCount);
-  },
+  // implement playable-arrangement
+  mix: Ember.computed.reads('mixItem.mix'),
+  endBeat: Ember.computed.reads('beatCount'),
+  automationClips: concat('fromTrackAutomationClips', 'toTrackAutomationClips'),
+  clips: Ember.computed.reads('automationClips'),
+  outputNode: Ember.computed.reads('mix.inputNode'),
+  metronome: Ember.computed.reads('mix.metronome'),
+  audioContext: Ember.computed.reads('mix.audioContext'),
 
   // optimizes this model as a transition between two tracks, with given constraints
   // possible constraints:
@@ -91,14 +86,8 @@ export default DS.Model.extend(
         this.setProperties({
           fromTrackEndBeat: fromTrack.get('audioMeta.lastWholeBeat'),
           toTrackStartBeat: toTrack.get('audioMeta.firstWholeBeat'),
-        });
-
-        // TODO(REFACTOR): do we need to destroy and recreate arrangement / automation-clip?
-        let arrangement = this.get('arrangement.content');
-        let automationClip = this.get('store').createRecord('arrangement/automation-clip', {
           beatCount: 16,
         });
-        arrangement.get('automationClips').addObject(automationClip);
 
         return this;
       });

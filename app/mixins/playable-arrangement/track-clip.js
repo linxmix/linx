@@ -82,9 +82,8 @@ export default Ember.Mixin.create(
 
   startSource() {
     if (this.get('isScheduled')) {
-      let metronome = this.get('metronome');
-      let when = metronome.beatToTime(this.get('startBeat'));
-      let offset = this.getCurrentAudioTime();
+      const when = this.getAbsoluteStartTime()
+      const offset = this.getCurrentAudioTime();
 
       console.log('startTrack', this.get('track.title'), when, offset);
       this.get('trackSourceNode').start(when, offset);

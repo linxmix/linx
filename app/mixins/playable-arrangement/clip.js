@@ -17,7 +17,7 @@ export default Ember.Mixin.create(Ember.Evented, {
   componentName: null, // used to render arrangement-visual clip component
   arrangement: null,
   startBeat: null,
-  isMuted: false,
+  isDisabled: false,
   isScheduled: false,
 
   outputNode: Ember.computed.reads('arrangement.inputNode'),
@@ -28,6 +28,11 @@ export default Ember.Mixin.create(Ember.Evented, {
   getCurrentBeat() {
     let currentBeat = this.get('metronome').getCurrentBeat() - this.get('startBeat');
     return clamp(0, currentBeat, this.get('beatCount'));
+  },
+
+  // returns absolute start time from metronome's frame of reference
+  getAbsoluteStartTime() {
+    return this.get('metronome').beatToTime(this.get('startBeat'));
   },
 
   endBeat: add('startBeat', 'beatCount'),
@@ -55,7 +60,7 @@ export default Ember.Mixin.create(Ember.Evented, {
   // TODO(REFACTOR): turn isValid into validness mixin?
   isValid: Ember.computed.and('isValidStartBeat', 'isValidEndBeat', 'isValidBeatCount'),
 
-  clipScheduleDidChange: Ember.observer('isValid', 'isMuted', 'startBeat', 'beatCount', 'metronome.absSeekTime', 'metronome.isPlaying', function() {
+  clipScheduleDidChange: Ember.observer('isValid', 'isDisabled', 'startBeat', 'beatCount', 'metronome.absSeekTime', 'metronome.isPlaying', function() {
     this.set('isScheduled', this.get('metronome.isPlaying'));
     Ember.run.once(this, 'triggerScheduleEvents');
   }),

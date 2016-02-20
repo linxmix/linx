@@ -18,9 +18,10 @@ export const TransitionMarker = Ember.Object.extend(TrackTimeMarkerMixin, {
 //   fromTrackEndTime,
 // }
 export default function TrackPropertiesMixin(trackPath) {
-  let markerPath = `${trackPath}Marker`;
-  let audioMetaPath = `${trackPath}.audioMeta`;
-  let beatGridPath = `${audioMetaPath}.beatGrid`;
+  const markerPath = `${trackPath}Marker`;
+  const audioMetaPath = `${trackPath}.audioMeta`;
+  const beatGridPath = `${audioMetaPath}.beatGrid`;
+  const automationsPath = `${trackPath}AutomationClips`;
 
   let beatPath, timePath;
   if (trackPath === 'fromTrack') {
@@ -33,6 +34,7 @@ export default function TrackPropertiesMixin(trackPath) {
 
   return Ember.Mixin.create({
     [trackPath]: DS.belongsTo('track', { async: true }),
+    [automationsPath]: DS.belongsTo('arrangement/automation-clip', { async: true }),
 
     [timePath]: DS.attr('number', { defaultValue: 0 }),
 
@@ -42,7 +44,7 @@ export default function TrackPropertiesMixin(trackPath) {
         return this.get(`${markerPath}.beat`);
       },
       set(key, beat) {
-        let marker = this.get(markerPath);
+        const marker = this.get(markerPath);
         marker.set('beat', beat);
         this.set(timePath, marker.get('time'));
         return beat;
