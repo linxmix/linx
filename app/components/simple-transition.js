@@ -30,7 +30,6 @@ export default Ember.Component.extend(
   pxPerBeat: 25,
 
   actions: {
-
     playTransition() {
       this.send('viewTransition');
 
@@ -57,25 +56,36 @@ export default Ember.Component.extend(
       console.log('onAutomationClipClick');
     },
 
-    onTrackClipDrag(clip) {
-      const dx = d3.event.dx;
-      const beatDifference = dx / this.get('pxPerBeat') / this.get('zoom').scale();
-      const beat = this.get('toTrackStartBeat') - beatDifference; // switch direcdtion for toTrack vs fromTrack
-      console.log('trackClipDrag', beat, beatDifference);
-      Ember.run.throttle(this, 'moveTrackMarker', this.get('toTrackMarker'), beat, 10, true);
-      // this.moveTrackMarker(this.get('toTrackMarker'), beat);
+    // TODO(REFACTOR): move to simple-transition/track-clip?
+    onTrackClipDrag(marker, clip, beats) {
+      const newBeat = this.get('_markerStartBeat') - beats;
+      Ember.run.throttle(this, 'moveTrackMarker', marker, newBeat, 10, true);
+    },
+
+    onTrackClipDragStart(marker, clip) {
+      this.set('_markerStartBeat', marker.get('beat'));
     },
   },
+
+  // used to keep track of where marker was when track drag started
+  _markerStartBeat: 0,
 
   moveTrackMarker(marker, beat) {
     const beatGrid = marker.get('beatGrid');
     const quantization = this.get('selectedQuantization');
     const oldStartBeat = marker.get('beat');
 
-    // TODO(REFACTOR): implement quantization
-    // let newStartBeat = beatGrid.quantizeBeat(beat);
-    let newStartBeat = beat;
-    console.log('newStartBeat', beat);
+    let newStartBeat;
+    switch (quantization) {
+      case BEAT_QUANTIZATION:
+        newStartBeat = beatGrid.quantizeBeat(beat);
+        break;
+      case BAR_QUANTIZATION:
+        newStartBeat = beatGrid.barToBeat(beatGrid.quantizeBar(beatGrid.beatToBar(beat)));
+        break;
+      default: newStartBeat = beat;
+    };
+    console.log('moveTrackMarker', beat, newStartBeat);
 
     // TODO(REFACTOR): tolerance, not exact equality
     if (oldStartBeat !== newStartBeat) {

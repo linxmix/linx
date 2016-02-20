@@ -33,7 +33,8 @@
     beatCount=fromTrackClip.beatCount
     startBeat=fromTrackClip.startBeat
     height=rowHeight
-    onDrag=(action "onTrackClipDrag")
+    onDrag=(action "onTrackClipDrag" fromTrackMarker)
+    onDragStart=(action "onTrackClipDragStart" fromTrackMarker)
     row=0
     pxPerBeat=pxPerBeat
   }}
@@ -45,7 +46,8 @@
     startBeat=toTrackClip.startBeat
     beatCount=toTrackClip.beatCount
     height=rowHeight
-    onDrag=(action "onTrackClipDrag")
+    onDrag=(action "onTrackClipDrag" toTrackMarker)
+    onDragStart=(action "onTrackClipDragStart" toTrackMarker)
     row=2
     pxPerBeat=pxPerBeat
   }}
@@ -57,7 +59,7 @@
     startBeat=transitionClip.startBeat
     height=rowHeight
     row=1
-    onClick=(action 'onTransitionClipClick')
+    onClick=(action "onTransitionClipClick")
     pxPerBeat=pxPerBeat
   }}
 
@@ -73,7 +75,7 @@
       startBeat=automationClip.startBeat
       height=rowHeight
       row=0
-      onClick=(action 'onAutomationClipClick')
+      onClick=(action "onAutomationClipClick")
       pxPerBeat=pxPerBeat
     }}
   {{/zip-entries}}
@@ -90,7 +92,7 @@
       startBeat=automationClip.startBeat
       height=rowHeight
       row=2
-      onClick=(action 'onAutomationClipClick')
+      onClick=(action "onAutomationClipClick")
       pxPerBeat=pxPerBeat
     }}
   {{/zip-entries}}

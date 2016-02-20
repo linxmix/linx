@@ -37,16 +37,30 @@ export default Ember.Component.extend(
     return d3.behavior.drag();
   }),
 
+  _dragBeatCount: 0,
   _initDragHandlers: Ember.on('init', function() {
     const drag = this.get('drag');
     const context = this;
 
     drag.on('drag', function() {
-      context.sendAction('onDrag', context.get('clip'));
+      let dragBeatCount = context.get('_dragBeatCount');
+      dragBeatCount += d3.event.dx / context.get('pxPerBeat');
+      context.set('_dragBeatCount', dragBeatCount);
+
+      context.sendAction('onDrag', context.get('clip'), dragBeatCount);
     });
 
     drag.on('dragstart', function() {
       d3.event.sourceEvent.stopPropagation(); // silence other listeners
+
+      context.sendAction('onDragStart', context.get('clip'));
+    });
+
+    drag.on('dragend', function() {
+      d3.event.sourceEvent.stopPropagation(); // silence other listeners
+      context.set('_dragBeatCount', 0);
+
+      context.sendAction('onDragEnd', context.get('clip'));
     });
   }),
 

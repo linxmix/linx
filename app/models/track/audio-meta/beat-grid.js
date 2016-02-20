@@ -72,7 +72,8 @@ export default Ember.Object.extend(
   quantizeBeatScaleRange: Ember.computed('beatScaleRange', function() {
     let beatScale = this.get('beatScale');
     let [rangeMin, rangeMax] = beatScale.get('range');
-    return d3.range(Math.ceil(rangeMin), Math.floor(rangeMax), 1);
+    // return d3.range(Math.ceil(rangeMin), Math.floor(rangeMax), 1);
+    return [Math.ceil(rangeMin), Math.floor(rangeMax)];
   }),
   quantizeBeatScale: computedObject(QuantizeScale, {
     'domain': 'beatScaleRange',
@@ -95,7 +96,8 @@ export default Ember.Object.extend(
   quantizeBarScaleRange: Ember.computed('barScaleRange', function() {
     let barScale = this.get('barScale');
     let [rangeMin, rangeMax] = barScale.get('range');
-    return d3.range(Math.ceil(rangeMin), Math.floor(rangeMax), 1);
+    // return d3.range(Math.ceil(rangeMin), Math.floor(rangeMax), 1);
+    return [Math.ceil(rangeMin), Math.floor(rangeMax)];
   }),
   quantizeBarScale: computedObject(QuantizeScale, {
     'domain': 'barScaleRange',
