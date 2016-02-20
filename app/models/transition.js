@@ -15,6 +15,20 @@ export default DS.Model.extend(
   TrackPropertiesMixin('fromTrack'),
   TrackPropertiesMixin('toTrack'), {
 
+  fromTrackAutomationClips: Ember.computed(function() {
+    return [this.store.createRecord('transition/track-automation-clip', {
+      transition: this,
+      controlName: 'volume',
+    })];
+  }),
+
+  toTrackAutomationClips: Ember.computed(function() {
+    return [this.store.createRecord('transition/track-automation-clip', {
+      transition: this,
+      controlName: 'volume',
+    })];
+  }),
+
   title: DS.attr('string'),
   mixItem: DS.belongsTo('mix/item', { async: true }),
   beatCount: DS.attr('number', { defaultValue: 16 }),

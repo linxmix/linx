@@ -53,6 +53,10 @@ export default Ember.Component.extend(
       // this.sendAction('transitionToTransition', clip.get('transition'));
     },
 
+    onAutomationClipClick(clip) {
+      console.log('onAutomationClipClick');
+    },
+
     onTrackClipDrag(clip) {
       const dx = d3.event.dx;
       const beatDifference = dx / this.get('pxPerBeat') / this.get('zoom').scale();

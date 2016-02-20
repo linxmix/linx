@@ -1,0 +1,10 @@
+.ArrangementVisualAutomationClip {
+  .ArrangementVisualClip-backdrop {
+    fill: rgba(#0ff, 0.2);
+    cursor: pointer;
+
+    &:hover {
+      fill: rgba(#0ff, 0.4);
+    }
+  }
+}

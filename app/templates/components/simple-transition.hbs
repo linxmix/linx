@@ -60,6 +60,40 @@
     onClick=(action 'onTransitionClipClick')
     pxPerBeat=pxPerBeat
   }}
+
+  {{!-- From Track Automation Clips --}}
+  {{#zip-entries
+    select=gridSelect.SimpleTransition-FromTrackAutomationClips
+    items=transition.fromTrackAutomationClips
+    as |automationClip tag|
+  }}
+    {{arrangement-visual/automation-clip
+      select=tag
+      clip=automationClip
+      startBeat=automationClip.startBeat
+      height=rowHeight
+      row=0
+      onClick=(action 'onAutomationClipClick')
+      pxPerBeat=pxPerBeat
+    }}
+  {{/zip-entries}}
+
+  {{!-- To Track Automation Clips --}}
+  {{#zip-entries
+    select=gridSelect.SimpleTransition-ToTrackAutomationClips
+    items=transition.toTrackAutomationClips
+    as |automationClip tag|
+  }}
+    {{arrangement-visual/automation-clip
+      select=tag
+      clip=automationClip
+      startBeat=automationClip.startBeat
+      height=rowHeight
+      row=2
+      onClick=(action 'onAutomationClipClick')
+      pxPerBeat=pxPerBeat
+    }}
+  {{/zip-entries}}
 {{/arrangement-visual}}
 
 <div>FromTrack EndBeat: {{transition.fromTrackEndBeat}}</div>

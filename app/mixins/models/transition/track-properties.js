@@ -21,7 +21,7 @@ export default function TrackPropertiesMixin(trackPath) {
   const markerPath = `${trackPath}Marker`;
   const audioMetaPath = `${trackPath}.audioMeta`;
   const beatGridPath = `${audioMetaPath}.beatGrid`;
-  const automationsPath = `${trackPath}AutomationClips`;
+  const automationClipsPath = `${trackPath}AutomationClips`;
 
   let beatPath, timePath;
   if (trackPath === 'fromTrack') {
@@ -34,7 +34,7 @@ export default function TrackPropertiesMixin(trackPath) {
 
   return Ember.Mixin.create({
     [trackPath]: DS.belongsTo('track', { async: true }),
-    [automationsPath]: DS.belongsTo('arrangement/automation-clip', { async: true }),
+    [automationClipsPath]: DS.belongsTo('transition/track-automation-clip', { async: true }),
 
     [timePath]: DS.attr('number', { defaultValue: 0 }),
 

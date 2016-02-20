@@ -1,20 +1,10 @@
 import Ember from 'ember';
 import DS from 'ember-data';
+
 import Clip from './clip';
+import subtract from 'linx/lib/computed/subtract';
 
 // Clip that controls an automatable of another clip
-// TODO(TRANSITION)
+// TODO(REFACTOR): share from AutomationClipMixin
 export default Clip.extend({
-  componentName: 'automation-clip',
-
-  startAutomation: Ember.on('schedule', function() {
-    // TODO(TRANSITION)
-    // const startTime = this.getAbsoluteStartTime();
-    // audioParam.setValueCurveAtTime(this.get('curve').values)
-  }),
-
-  stopAutomation: Ember.on('unschedule', function() {
-    // TODO(TRANSITION)
-    // audioParam.cancelScheduledValues()
-  }),
 });

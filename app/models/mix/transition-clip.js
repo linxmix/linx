@@ -19,7 +19,7 @@ export default Ember.Object.extend(
   arrangement: Ember.computed.reads('mixItem.mix'),
 
   // implementing arrangement-clip
-  nestedArrangement: Ember.computed.reads('transition.arrangement'),
+  nestedArrangement: Ember.computed.reads('transition'),
 
   // implementing readiness
   isTransitionClipReady: Ember.computed.reads('transition.isReady'),
