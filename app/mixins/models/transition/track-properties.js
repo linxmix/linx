@@ -37,7 +37,7 @@ export default function TrackPropertiesMixin(trackPath) {
     // DependentRelationshipMixin(automationClipsPath), {
 
     [trackPath]: DS.belongsTo('track', { async: true }),
-    [automationClipsPath]: DS.belongsTo('transition/track-automation-clip', { async: true }),
+    // [automationClipsPath]: DS.belongsTo('transition/track-automation-clip', { async: true }),
 
     [timePath]: DS.attr('number', { defaultValue: 0 }),
 

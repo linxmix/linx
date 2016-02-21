@@ -15,6 +15,9 @@ export default DS.Model.extend(
   TrackPropertiesMixin('fromTrack'),
   TrackPropertiesMixin('toTrack'), {
 
+  // TODO: convert to 'automation' models
+  // automation-clip is mixin (has targetClip) (and controlName?)
+  // special transient automation-clip objects for transition-clip
   fromTrackAutomationClips: Ember.computed(function() {
     return [this.store.createRecord('transition/track-automation-clip', {
       transition: this,
@@ -22,12 +25,13 @@ export default DS.Model.extend(
     })];
   }),
 
-  toTrackAutomationClips: Ember.computed(function() {
-    return [this.store.createRecord('transition/track-automation-clip', {
-      transition: this,
-      controlName: 'volume',
-    })];
-  }),
+  toTrackAutomationClips: [],
+  // toTrackAutomationClips: Ember.computed(function() {
+  //   return [this.store.createRecord('transition/track-automation-clip', {
+  //     transition: this,
+  //     controlName: 'volume',
+  //   })];
+  // }),
 
   title: DS.attr('string'),
   mixItem: DS.belongsTo('mix/item', { async: true }),

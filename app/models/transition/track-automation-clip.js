@@ -13,6 +13,8 @@ export default DS.Model.extend(PlayableClipMixin, {
 
   transition: DS.belongsTo('transition', { async: true }),
 
+  targetClip: Ember.computed.reads('transition.mixItem.fromTrackClip'),
+
   // implement clip
   // TODO(REFACTOR): startBeat is code smell
   startBeat: Ember.computed.reads('transition.mixItem.transitionClip.startBeat'),
@@ -47,18 +49,31 @@ export default DS.Model.extend(PlayableClipMixin, {
   }),
   // controlPoints: DS.hasMany('arrangement/automation-clip/control-point', { async: true }),
 
-  line: Ember.computed('controlPoints.[]', function() {
-    return line = d3.svg.line()
+  scale: Ember.computed('controlPoints.@each.{beat,value}', function() {
+    return scale = d3.scale.linear()
       .x((d) => d.beat)
       .y((d) => d.value)
       .interpolate('monotone')
-      .data(this.get('controlPoints'));
+      .domain(this.get('controlPoints').mapBy('beat'))
+      .range(this.get('controlPoints').mapBy('value'));
   }),
 
   startAutomation: Ember.on('schedule', function() {
-    // TODO(TRANSITION)
     // const startTime = this.getAbsoluteStartTime();
-    // audioParam.setValueCurveAtTime(this.get('curve').values)
+    // const scale = this.get('scale');
+    // const targetClip = this.get('targetClip');
+    // console.log('startAutomation', startTime, scale, targetClip);
+
+    // if (scale && targetClip) {
+    //   const audioParam = null;
+    //   const duration = 0;
+    //   audioParam.setValueCurveAtTime(scale.ticks(duration), startTime, duration);
+    // }
+
+  }),
+
+  audioParam: Ember.computed('targetClip.inputNode', function() {
+
   }),
 
   stopAutomation: Ember.on('unschedule', function() {
