@@ -1,9 +1,19 @@
 import Ember from 'ember';
+
 import RequireAttributes from 'linx/lib/require-attributes';
 import ArrangementPlayerMixin from 'linx/mixins/components/arrangement-player';
+import ArrangementVisualMixin from 'linx/mixins/components/arrangement-visual';
 
-export default Ember.Component.extend(ArrangementPlayerMixin,
+export default Ember.Component.extend(
+  ArrangementPlayerMixin,
+  ArrangementVisualMixin,
   RequireAttributes('arrangement'), {
+
+  classNames: ['SimpleArrangement'],
+
+  trackClips: Ember.computed('arrangement.trackClips.[]', function() {
+    return this.get('arrangement.trackClips').toArray();
+  }),
 
   actions: {
     toggleEditing() {
@@ -13,11 +23,8 @@ export default Ember.Component.extend(ArrangementPlayerMixin,
     seekToBeat(beat) {
       // TODO: round to beat, round to bar, no round. based on config + UI control
       this.get('metronome').seekToBeat(Math.round(beat));
-    }
+    },
   },
-
-  isEditing: true,
-  scrollCenterBeat: 0,
 
   // Hacky stuff to convert <input type="number"> values to numbers
   inputBpm: Ember.computed.oneWay('metronome.bpm'),
@@ -30,7 +37,4 @@ export default Ember.Component.extend(ArrangementPlayerMixin,
     this.set('pxPerBeat', parseFloat(this.get('inputZoom')));
   }.observes('inputZoom'),
   // /hacky stuff
-
-  classNames: ['SimpleArrangement'],
-
 });

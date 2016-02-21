@@ -29,6 +29,15 @@ export default Ember.Component.extend(
     nudgeRight(scalar = 1) {
       this.get('beatGrid').nudge(scalar * NUDGE_VALUE);
     },
+
+    onTrackClipDrag(clip, beats) {
+      const newBeat = this.get('_markerStartBeat') - beats;
+      Ember.run.throttle(this, 'moveTrackMarker', newBeat, 10, true);
+    },
+
+    onTrackClipDragStart(clip) {
+      this.set('_markerStartBeat', marker.get('beat'));
+    },
   },
 
   beatGrid: Ember.computed.reads('track.audioMeta.beatGrid'),
@@ -39,8 +48,8 @@ export default Ember.Component.extend(
 
     if (store && track) {
       let arrangement = store.createRecord('arrangement');
-      let trackClip = store.createRecord('track-clip', {
-        model: track,
+      let trackClip = store.createRecord('arrangement/track-clip', {
+        track,
         startBeat: 0,
       });
 
