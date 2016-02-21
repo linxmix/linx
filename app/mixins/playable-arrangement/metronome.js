@@ -30,6 +30,11 @@ export default Ember.Object.extend(
     this.set('bpm', bpm);
   },
 
+  // TODO(MULTIRGID) TODO(REFACTOR)
+  getClipDuration(startBeat, beatCount) {
+    return beatToTime(beatCount, this.get('bpm'));
+  },
+
   // createEvent(options = {}) {
   //   return this.get('clock').createEvent(options);
   // },

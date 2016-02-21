@@ -49,36 +49,42 @@ export default DS.Model.extend(PlayableClipMixin, {
   }),
   // controlPoints: DS.hasMany('arrangement/automation-clip/control-point', { async: true }),
 
-  scale: Ember.computed('controlPoints.@each.{beat,value}', function() {
-    return scale = d3.scale.linear()
-      .x((d) => d.beat)
-      .y((d) => d.value)
-      .interpolate('monotone')
-      .domain(this.get('controlPoints').mapBy('beat'))
-      .range(this.get('controlPoints').mapBy('value'));
+  scale: Ember.computed('sortedControlPoints.@each.{beat,value}', function() {
+    return d3.scale.linear()
+      // .interpolate('monotone')
+      .domain(this.get('sortedControlPoints').mapBy('beat'))
+      .range(this.get('sortedControlPoints').mapBy('value'));
   }),
 
+  // TODO: depend on all these things. accurately cancel and reschedule
+  // should audio param store references to the automations...? and manage its own scheduling?
   startAutomation: Ember.on('schedule', function() {
-    // const startTime = this.getAbsoluteStartTime();
-    // const scale = this.get('scale');
-    // const targetClip = this.get('targetClip');
-    // console.log('startAutomation', startTime, scale, targetClip);
+    const startTime = this.getAbsoluteStartTime();
+    const scale = this.get('scale');
+    const duration = this.get('duration');
+    const beatCount = this.get('beatCount');
+    const audioParam = this.get('audioParam');
 
-    // if (scale && targetClip) {
-    //   const audioParam = null;
-    //   const duration = 0;
-    //   audioParam.setValueCurveAtTime(scale.ticks(duration), startTime, duration);
-    // }
-
+    if (scale && audioParam) {
+      const numTicks = 10;
+      const values = new Float32Array(numTicks);
+      for (let i = 0; i < numTicks; i++) {
+        let beat = (i / numTicks) * beatCount;
+        values[i] = scale(beat);
+      }
+      console.log('startAutomation', startTime, duration, values, audioParam);
+      audioParam.setValueCurveAtTime(values, startTime, duration);
+    }
   }),
 
-  audioParam: Ember.computed('targetClip.inputNode', function() {
-
+  // TODO: cleaner way to reference audio param?
+  audioParam: Ember.computed('targetClip.trackGainNode', function() {
+    return this.get('targetClip.trackGainNode.gain');
   }),
 
   stopAutomation: Ember.on('unschedule', function() {
-    // TODO(TRANSITION)
-    // audioParam.cancelScheduledValues()
+    const audioParam = this.get('audioParam');
+    audioParam && audioParam.cancelScheduledValues(0)
   }),
 
   controlPointSort: ['beat:asc'],

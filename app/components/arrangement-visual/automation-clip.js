@@ -25,8 +25,8 @@ export default Clip.extend({
       const pxPerBeat = this.get('pxPerBeat');
       const line = d3.svg.line()
         .x((d) => d.beat * pxPerBeat)
-        .y((d) => d.value * height)
-        .interpolate('monotone');
+        .y((d) => (1 - d.value) * height)
+        .interpolate('linear');
 
       if (controlPoints.length) {
         selection
@@ -44,7 +44,7 @@ export default Clip.extend({
 
       selection
         .attr('cx', (d) => d.beat * pxPerBeat)
-        .attr('cy', (d) => d.value * height)
+        .attr('cy', (d) => (1 - d.value) * height)
         .attr('r', 10)
         .style('fill', '#B8DE44')
     }
