@@ -24,6 +24,16 @@ export default Ember.Route.extend({
         });
       }
     },
+
+    backToMix() {
+      this.send('saveTransition');
+      this.send('closeModal');
+    },
+
+    resetTransition() {
+      // TODO: dependentRelationship.rollbackAttributes
+      this.get('controller.transition').rollbackAttributes();
+    },
   },
 
   setupController(controller, models) {

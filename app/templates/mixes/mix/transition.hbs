@@ -1,6 +1,15 @@
-<div class="inverted basic ui icon button" {{action "closeModal"}}>
+<div class="inverted basic ui icon button" {{action "backToMix"}}>
   <i class="left caret icon"></i>
   Back To Mix
+</div>
+
+<div class="inverted green ui icon button test-save-transition {{if transition.hasDirtyAttributes "" "basic disabled"}}" {{action "saveTransition"}}>
+  <i class="cloud upload icon"></i>
+  Save Transition
+</div>
+<div class="inverted orange ui icon button {{if transition.hasDirtyAttributes "" "basic disabled"}}" {{action "resetTransition"}}>
+  <i class="refresh icon"></i>
+  Undo Changes
 </div>
 
 {{simple-transition transition=transition}}

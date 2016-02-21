@@ -1,6 +1,8 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
+import d3 from 'd3';
+
 import PlayableClipMixin from 'linx/mixins/playable-arrangement/clip';
 import subtract from 'linx/lib/computed/subtract';
 
@@ -17,33 +19,41 @@ export default DS.Model.extend(PlayableClipMixin, {
   arrangement: Ember.computed.reads('transition'),
 
   // TODO(REFACTOR): move rest to automation clip mixin
-  beatCount: subtract('lastControlPoint.startBeat', 'firstControlPoint.startBeat'),
+  beatCount: subtract('lastControlPoint.beat', 'firstControlPoint.beat'),
   controlName: DS.attr('string', { defaultValue: 'volume' }),
   controlPoints: Ember.computed(function() {
     return [
       {
-        startBeat: 0,
+        beat: 0,
         value: 0,
       },
       {
-        startBeat: 4,
+        beat: 4,
         value: 0.5,
       },
       {
-        startBeat: 12,
+        beat: 12,
         value: 0.5,
       },
       {
-        startBeat: 8,
+        beat: 8,
         value: 0.2,
       },
       {
-        startBeat: 16,
+        beat: 16,
         value: 1,
       },
     ];
   }),
   // controlPoints: DS.hasMany('arrangement/automation-clip/control-point', { async: true }),
+
+  line: Ember.computed('controlPoints.[]', function() {
+    return line = d3.svg.line()
+      .x((d) => d.beat)
+      .y((d) => d.value)
+      .interpolate('monotone')
+      .data(this.get('controlPoints'));
+  }),
 
   startAutomation: Ember.on('schedule', function() {
     // TODO(TRANSITION)
@@ -56,7 +66,7 @@ export default DS.Model.extend(PlayableClipMixin, {
     // audioParam.cancelScheduledValues()
   }),
 
-  controlPointSort: ['startBeat:asc'],
+  controlPointSort: ['beat:asc'],
   sortedControlPoints: Ember.computed.sort('controlPoints', 'controlPointSort'),
 
   firstControlPoint: Ember.computed.reads('sortedControlPoints.firstObject'),

@@ -2,9 +2,9 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import withDefaultModel from 'linx/lib/computed/with-default-model';
-import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 import TrackTimeMarkerMixin from 'linx/mixins/models/track/audio-meta/beat-grid/time-marker';
 import computedObject from 'linx/lib/computed/object';
+import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 
 export const TransitionMarker = Ember.Object.extend(TrackTimeMarkerMixin, {
   beatGrid: null,
@@ -33,6 +33,9 @@ export default function TrackPropertiesMixin(trackPath) {
   }
 
   return Ember.Mixin.create({
+    // TODO(TRANSITION)
+    // DependentRelationshipMixin(automationClipsPath), {
+
     [trackPath]: DS.belongsTo('track', { async: true }),
     [automationClipsPath]: DS.belongsTo('transition/track-automation-clip', { async: true }),
 
