@@ -31,8 +31,8 @@ export default Ember.Mixin.create(Ember.Evented, {
   },
 
   // returns absolute start time from metronome's frame of reference
-  getAbsoluteStartTime() {
-    return this.get('metronome').beatToTime(this.get('startBeat'));
+  getAbsoluteStartTime(beat = 0) {
+    return this.get('metronome').beatToTime(this.get('startBeat') + beat);
   },
 
   // duration of clip in [s]
@@ -65,7 +65,7 @@ export default Ember.Mixin.create(Ember.Evented, {
   // TODO(REFACTOR): turn isValid into validness mixin?
   isValid: Ember.computed.and('isValidStartBeat', 'isValidEndBeat', 'isValidBeatCount'),
 
-  clipScheduleDidChange: Ember.observer('isValid', 'isDisabled', 'startBeat', 'beatCount', 'metronome.{absSeekTime,isPlaying,bpm}', function() {
+  clipScheduleDidChange: Ember.observer('isValid', 'isDisabled', 'startBeat', 'beatCount', 'duration', 'metronome.{absSeekTime,isPlaying,bpm}', function() {
     this.set('isScheduled', this.get('metronome.isPlaying'));
     Ember.run.once(this, 'triggerScheduleEvents');
   }),

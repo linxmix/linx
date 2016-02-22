@@ -3,7 +3,7 @@ import Ember from 'ember';
 import RequireAttributes from 'linx/lib/require-attributes';
 import PlayableClipMixin from './clip';
 import TrackSourceNode from 'linx/lib/web-audio/track-source-node';
-import TrackGainNode from 'linx/lib/web-audio/track-gain-node';
+import GainNode from 'linx/lib/web-audio/gain-node';
 import SoundtouchNode from 'linx/lib/web-audio/soundtouch-node';
 import FxNode from 'linx/lib/web-audio/fx-node';
 import ReadinessMixin from '../readiness';
@@ -107,7 +107,7 @@ export default Ember.Mixin.create(
     'outputNode': 'trackGainNode.content',
   }),
 
-  trackGainNode: computedObject(TrackGainNode, {
+  trackGainNode: computedObject(GainNode, {
     'audioContext': 'audioContext',
     'outputNode': 'outputNode.content',
   }),

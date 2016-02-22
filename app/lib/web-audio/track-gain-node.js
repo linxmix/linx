@@ -1,9 +1,11 @@
 import Ember from 'ember';
 
-import WebAudioNodeMixin from 'linx/mixins/web-audio/node';
+import GainNode from './gain-node';
 
-export default Ember.ObjectProxy.extend(
-  WebAudioNodeMixin, {
+export default GainNode.extend({
+
+  // params
+  track: null,
 
   // implement web-audio/node
   node: Ember.computed('audioContext', function() {
