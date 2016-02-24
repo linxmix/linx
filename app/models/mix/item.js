@@ -48,6 +48,7 @@ export default DS.Model.extend(
     'arrangement': 'mix.content',
     'fromTransitionClip': 'prevTransitionClip',
     'toTransitionClip': 'transitionClip',
+    'automations': 'transition.fromTrackAutomations',
   }),
 
   // share with nextItem, if matches
@@ -57,6 +58,7 @@ export default DS.Model.extend(
     'arrangement': 'mix.content',
     'fromTransitionClip': 'transitionClip',
     'toTransitionClip': 'nextTransitionClip',
+    'automations': 'transition.toTrackAutomations',
   }),
 
   // optimizes transition within this mix

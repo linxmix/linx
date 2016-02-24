@@ -2,10 +2,10 @@ import Ember from 'ember';
 
 import { isValidNumber } from 'linx/lib/utils';
 
-export const GAIN_CONTROL = 'gain';
+export const CONTROL_TYPE_GAIN = 'gain';
 
 export const CONTROL_TYPES = [
-  GAIN_CONTROL
+  CONTROL_TYPE_GAIN
 ];
 
 // Interface for Automatable Controls
@@ -25,17 +25,16 @@ export default function(audioParamPath) {
     value: null,
     defaultValue: null,
 
-    audioParam: Ember.computed(`clip.${audioParamPath}`, function() {
-      return clip.get(this.get('audioParamPath'));
-    }),
+    audioParam: Ember.computed.reads(`clip.${audioParamPath}`),
 
     setValueCurveAtTime(values, startTime, duration) {
       Ember.assert('Must provide values as Float32Array to Control.setValueCurveAtTime',
         values instanceof Float32Array);
       Ember.assert('Must provide valid values, startTime, and duration to Control.setValueCurveAtTime',
-        Ember.notEmpty(values) && isValidNumber(startTime) && isValidNumber(duration));
+        !Ember.isEmpty(values) && isValidNumber(startTime) && isValidNumber(duration));
 
       const audioParam = this.get('audioParam');
+      // console.log('setValueCurveAtTime', audioParam, values, startTime, duration)
       audioParam && audioParam.setValueCurveAtTime(values, startTime, duration);
     },
 

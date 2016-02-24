@@ -4,7 +4,7 @@ const TICKS_PER_BEAT = 10;
 
 // Interface for Automations which manipulate Controls
 // Must provide curve, controlType, controlPoints
-export const Automation = Ember.Mixin.create({
+export default Ember.Mixin.create({
 
   // required params
   startBeat: 0,
@@ -25,7 +25,6 @@ export const Automation = Ember.Mixin.create({
       values[i] = curve.getPoint(beat);
     }
 
-    console.log('automation.values', beatCount, values);
     return values;
   }),
 });

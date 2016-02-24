@@ -28,26 +28,28 @@
 
   {{!-- From Track Clip --}}
   {{arrangement-visual/track-clip
+    track=fromTrackClip.track
     select=gridSelect.SimpleTransition-FromTrackClip
-    clip=fromTrackClip
     beatCount=fromTrackClip.beatCount
     startBeat=fromTrackClip.startBeat
+    audioStartTime=fromTrackClip.audioStartTime
     height=rowHeight
-    onDrag=(action "onTrackClipDrag" fromTrackMarker)
-    onDragStart=(action "onTrackClipDragStart" fromTrackMarker)
+    onDrag=(action "onTrackClipDrag" fromTrackClip fromTrackMarker)
+    onDragStart=(action "onTrackClipDragStart" fromTrackClip fromTrackMarker)
     row=0
     pxPerBeat=pxPerBeat
   }}
 
   {{!-- To Track Clip --}}
   {{arrangement-visual/track-clip
+    track=toTrackClip.track
     select=gridSelect.SimpleTransition-ToTrackClip
-    clip=toTrackClip
     startBeat=toTrackClip.startBeat
     beatCount=toTrackClip.beatCount
+    audioStartTime=toTrackClip.audioStartTime
     height=rowHeight
-    onDrag=(action "onTrackClipDrag" toTrackMarker)
-    onDragStart=(action "onTrackClipDragStart" toTrackMarker)
+    onDrag=(action "onTrackClipDrag" toTrackClip toTrackMarker)
+    onDragStart=(action "onTrackClipDragStart" toTrackClip toTrackMarker)
     row=2
     pxPerBeat=pxPerBeat
   }}
@@ -55,24 +57,25 @@
   {{!-- Transition Clip --}}
   {{arrangement-visual/transition-clip
     select=gridSelect.SimpleTransition-TransitionClip
-    clip=transitionClip
     startBeat=transitionClip.startBeat
+    beatCount=transitionClip.beatCount
     height=rowHeight
     row=1
-    onClick=(action "onTransitionClipClick")
+    onClick=(action "onTransitionClipClick" transitionClip)
     pxPerBeat=pxPerBeat
   }}
 
   {{!-- From Track Automation Clips --}}
   {{#zip-entries
     select=gridSelect.SimpleTransition-FromTrackAutomationClips
-    items=transition.fromTrackAutomationClips
-    as |automationClip tag|
+    items=transition.fromTrackAutomations
+    as |automation tag|
   }}
     {{arrangement-visual/automation-clip
       select=tag
-      clip=automationClip
-      startBeat=automationClip.startBeat
+      controlPoints=automation.sortedControlPoints
+      startBeat=automation.startBeat
+      beatCount=automation.beatCount
       height=rowHeight
       row=0
       onClick=(action "onAutomationClipClick")
@@ -83,15 +86,16 @@
   {{!-- To Track Automation Clips --}}
   {{#zip-entries
     select=gridSelect.SimpleTransition-ToTrackAutomationClips
-    items=transition.toTrackAutomationClips
-    as |automationClip tag|
+    items=transition.toTrackAutomations
+    as |automation tag|
   }}
     {{arrangement-visual/automation-clip
       select=tag
-      clip=automationClip
-      startBeat=automationClip.startBeat
+      controlPoints=automation.sortedControlPoints
+      startBeat=automation.startBeat
+      beatCount=automation.beatCount
       height=rowHeight
-      row=2
+      row=0
       onClick=(action "onAutomationClipClick")
       pxPerBeat=pxPerBeat
     }}

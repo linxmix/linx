@@ -1,7 +1,7 @@
 import Ember from 'ember';
 
 import RequireAttributes from 'linx/lib/require-attributes';
-import PlayableClipMixin from './clip';
+import AutomatableClipMixin from './automatable-clip';
 import TrackSourceNode from 'linx/lib/web-audio/track-source-node';
 import GainNode from 'linx/lib/web-audio/gain-node';
 import SoundtouchNode from 'linx/lib/web-audio/soundtouch-node';
@@ -17,8 +17,20 @@ import {
   computedBeatToBar,
 } from 'linx/models/track/audio-meta/beat-grid';
 
+import {
+  default as AutomatableClipControlMixin,
+  CONTROL_TYPE_GAIN
+} from './automatable-clip/control';
+
+// TODO(CLEANUP): next under track-clip/controls/gain?
+const TrackGainControl = Ember.Object.extend(
+  AutomatableClipControlMixin('trackGainNode.gain'), {
+
+  type: CONTROL_TYPE_GAIN,
+});
+
 export default Ember.Mixin.create(
-  PlayableClipMixin,
+  AutomatableClipMixin,
   ReadinessMixin('isTrackClipReady'), {
 
   // necessary params
@@ -26,6 +38,12 @@ export default Ember.Mixin.create(
   startBeat: null,
   audioStartBeat: null,
   audioEndBeat: null,
+  automations: null,
+
+  // implementing automatable clip mixin
+  controls: Ember.computed(function() {
+    return [TrackGainControl.create({ clip: this })];
+  }),
 
   // implementing readiness
   isTrackClipReady: Ember.computed.and('trackSourceNode.isReady', 'trackSourceNode.isConnected', 'track.isReady'),
@@ -81,6 +99,8 @@ export default Ember.Mixin.create(
   }).on('schedule'),
 
   startSource() {
+    this.stopSource();
+
     if (this.get('isScheduled')) {
       const when = this.getAbsoluteStartTime(this.get('startBeat'));
       const offset = this.getCurrentAudioTime();

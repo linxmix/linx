@@ -8,6 +8,10 @@ import Clip from './clip';
 import { timeToBeat as staticTimeToBeat } from 'linx/lib/utils';
 
 export default Clip.extend({
+
+  // required params
+  controlPoints: Ember.computed.reads('clip.sortedControlPoints'),
+
   call(selection) {
     this._super.apply(this, arguments);
     selection.classed('ArrangementVisualAutomationClip', true);
@@ -15,8 +19,6 @@ export default Clip.extend({
     this.drawPath(selection);
     this.drawControlPoints(selection);
   },
-
-  controlPoints: Ember.computed.reads('clip.sortedControlPoints'),
 
   drawPath: join([0], 'path.ArrangementVisualAutomationClip-path', {
     update(selection) {

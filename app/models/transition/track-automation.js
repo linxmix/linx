@@ -2,8 +2,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import d3 from 'd3';
-
-import AutomationMixin from 'linx/mixins/playable-arrangement/clip';
+import AutomationMixin from 'linx/mixins/playable-arrangement/automatable-clip/automation';
 import CurveMixin from 'linx/mixins/curve';
 import subtract from 'linx/lib/computed/subtract';
 
@@ -19,9 +18,9 @@ export default DS.Model.extend(
   curve: Ember.computed('scale', function() {
     const scale = this.get('scale');
 
-    return Ember.Object.create(CurveMixin, {
+    return Ember.Object.extend(CurveMixin).create({
       getPoint(x) {
-        return scale
+        return scale(x);
       }
     });
   }),

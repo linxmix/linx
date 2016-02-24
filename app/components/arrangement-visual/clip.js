@@ -10,14 +10,17 @@ import multiply from 'linx/lib/computed/multiply';
 // TODO(REFACTOR): do we need this anymore? mixin?
 export default Ember.Component.extend(
   GraphicSupport,
-  RequireAttributes('clip', 'pxPerBeat'), {
+  RequireAttributes('pxPerBeat'), {
 
+  // required params
+  beatCount: null,
+  startBeat: null,
+  pxPerBeat: 0,
   height: 0,
   row: 0,
+
   width: multiply('beatCount', 'pxPerBeat'),
 
-  beatCount: Ember.computed.reads('clip.beatCount'),
-  startBeat: null,
   // TODO(REFACTOR): make similar to cssStyle, transformStyle({ attrs })
   // TODO(REFACTOR): or use different transofmrs here https://www.dashingd3js.com/svg-group-element-and-d3js#svg-mini-language-div
   transform: Ember.computed('startBeat', 'pxPerBeat', 'height', 'row', function() {
@@ -47,20 +50,20 @@ export default Ember.Component.extend(
       dragBeatCount += d3.event.dx / context.get('pxPerBeat');
       context.set('_dragBeatCount', dragBeatCount);
 
-      context.sendAction('onDrag', context.get('clip'), dragBeatCount);
+      context.sendAction('onDrag', dragBeatCount);
     });
 
     drag.on('dragstart', function() {
       d3.event.sourceEvent.stopPropagation(); // silence other listeners
 
-      context.sendAction('onDragStart', context.get('clip'));
+      context.sendAction('onDragStart');
     });
 
     drag.on('dragend', function() {
       d3.event.sourceEvent.stopPropagation(); // silence other listeners
       context.set('_dragBeatCount', 0);
 
-      context.sendAction('onDragEnd', context.get('clip'));
+      context.sendAction('onDragEnd');
     });
   }),
 
@@ -69,7 +72,7 @@ export default Ember.Component.extend(
       selection
         .attr('height', this.get('height'))
         .attr('width', this.get('width'))
-        .on('click', () => this.sendAction('onClick', this.get('clip')))
+        .on('click', () => this.sendAction('onClick'))
         .call(this.get('drag'));
     },
     exit(selection) {

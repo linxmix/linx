@@ -12,6 +12,7 @@ export default Ember.Object.extend(
   arrangement: null,
   fromTransitionClip: null,
   toTransitionClip: null,
+  automations: null,
 
   // implement track-clip mixin
   startBeat: withDefault('fromTransitionClip.startBeat', 0),
