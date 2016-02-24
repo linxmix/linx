@@ -107,7 +107,7 @@ describe('PlayableClipMixin', function() {
     });
   });
 
-  describe('#getCurrentBeat', function() {
+  describe('#getCurrentClipBeat', function() {
     let metronome;
 
     beforeEach(function() {
@@ -116,17 +116,17 @@ describe('PlayableClipMixin', function() {
 
     it('lower bound is correct', function() {
       Ember.run(metronome, 'seekToBeat', -startBeat);
-      expect(clip.getCurrentBeat()).to.equal(0);
+      expect(clip.getCurrentClipBeat()).to.equal(0);
     });
 
     it('upper bound is correct', function() {
       Ember.run(metronome, 'seekToBeat', beatCount * 2);
-      expect(clip.getCurrentBeat()).to.equal(clip.get('beatCount'));
+      expect(clip.getCurrentClipBeat()).to.equal(clip.get('beatCount'));
     });
 
     it('is correct between bounds', function() {
       Ember.run(metronome, 'seekToBeat', clip.get('centerBeat'));
-      expect(clip.getCurrentBeat()).to.equal(clip.get('halfBeatCount'));
+      expect(clip.getCurrentClipBeat()).to.equal(clip.get('halfBeatCount'));
     });
   });
 });

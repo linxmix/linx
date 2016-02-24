@@ -21,7 +21,8 @@ export default DS.Model.extend(
   transition: withDefaultModel('_transition', function() {
     // TODO(FIREBASE): have to fake title for Firebase to accept record
     let transition = this.get('store').createRecord('transition', {
-      title: 'test title'
+      title: 'test title',
+      mixItem: this,
     });
     return transition;
   }),

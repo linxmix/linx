@@ -9,7 +9,7 @@ import { isValidNumber, clamp } from 'linx/lib/utils';
 
 // Interface for playable arrangement clips
 // Events: schedule, unschedule
-// Methods: getCurrentBeat
+// Methods: getCurrentClipBeat
 // Properties: audioContext, metronome, outputNode
 export default Ember.Mixin.create(Ember.Evented, {
 
@@ -25,19 +25,19 @@ export default Ember.Mixin.create(Ember.Evented, {
   audioContext: Ember.computed.reads('metronome.audioContext'),
 
   // returns current beat from clip's frame of reference
-  getCurrentBeat() {
+  getCurrentClipBeat() {
     let currentBeat = this.get('metronome').getCurrentBeat() - this.get('startBeat');
     return clamp(0, currentBeat, this.get('beatCount'));
   },
 
   // returns absolute start time from metronome's frame of reference
   getAbsoluteStartTime(beat = 0) {
-    return this.get('metronome').beatToTime(this.get('startBeat') + beat);
+    return this.get('metronome').beatToTime(beat);
   },
 
   // duration of clip in [s]
   duration: Ember.computed('metronome.bpm', 'startBeat', 'beatCount', function() {
-    return this.get('metronome').getClipDuration(this.get('startBeat'), this.get('beatCount'));
+    return this.get('metronome').getDuration(this.get('startBeat'), this.get('beatCount'));
   }),
 
   endBeat: add('startBeat', 'beatCount'),

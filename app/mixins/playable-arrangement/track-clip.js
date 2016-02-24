@@ -55,8 +55,8 @@ export default Ember.Mixin.create(
   audioBpm: Ember.computed.reads('audioMeta.bpm'),
   syncBpm: Ember.computed.reads('metronome.bpm'),
   tempo: Ember.computed('audioBpm', 'syncBpm', function() {
-    let audioBpm = this.get('audioBpm');
-    let syncBpm = this.get('syncBpm');
+    const audioBpm = this.get('audioBpm');
+    const syncBpm = this.get('syncBpm');
     if (Ember.isNone(syncBpm)) {
       return 1;
     } else {
@@ -65,14 +65,14 @@ export default Ember.Mixin.create(
   }),
 
   getCurrentAudioBeat() {
-    let currentClipBeat = this.getCurrentBeat();
-    let audioStartBeat = this.get('audioStartBeat');
+    const currentClipBeat = this.getCurrentClipBeat();
+    const audioStartBeat = this.get('audioStartBeat');
     return currentClipBeat + audioStartBeat;
   },
 
   getCurrentAudioTime() {
-    let currentAudioBeat = this.getCurrentAudioBeat();
-    let audioBeatGrid = this.get('audioBeatGrid');
+    const currentAudioBeat = this.getCurrentAudioBeat();
+    const audioBeatGrid = this.get('audioBeatGrid');
     return audioBeatGrid && audioBeatGrid.beatToTime(currentAudioBeat);
   },
 
@@ -82,7 +82,7 @@ export default Ember.Mixin.create(
 
   startSource() {
     if (this.get('isScheduled')) {
-      const when = this.getAbsoluteStartTime()
+      const when = this.getAbsoluteStartTime(this.get('startBeat'));
       const offset = this.getCurrentAudioTime();
 
       console.log('startTrack', this.get('track.title'), when, offset);
@@ -91,7 +91,7 @@ export default Ember.Mixin.create(
   },
 
   stopSource: function() {
-    // console.log('stopSource', this.get('track.title'));
+    // console.log('stopTrack', this.get('track.title'));
     this.get('trackSourceNode').stop();
   }.on('unschedule'),
 

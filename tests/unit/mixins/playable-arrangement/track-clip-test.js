@@ -72,7 +72,7 @@ describe('PlayableTrackClipMixin', function() {
   });
 
   it('#getCurrentAudioBeat', function() {
-    expect(clip.getCurrentAudioBeat()).to.equal(clip.getCurrentBeat() + audioStartBeat);
+    expect(clip.getCurrentAudioBeat()).to.equal(clip.getCurrentClipBeat() + audioStartBeat);
   });
 
   it('#getCurrentAudioTime', function() {

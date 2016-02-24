@@ -26,7 +26,7 @@ export default Ember.Mixin.create(PlayableClipMixin, {
         if (values) {
           const automationStartBeat = automation.get('startBeat');
           const automationStartTime = this.getAbsoluteStartTime(automationStartBeat);
-          const automationDuration = metronome.getClipDuration(automationStartBeat, automation.get('beatCount'));
+          const automationDuration = metronome.getDuration(automationStartBeat, automation.get('beatCount'));
 
           console.log('scheduleAutomation', control.get('type'), automation.get('values'), automationStartBeat, automationDuration);
           control.setValueCurveAtTime(values, automationStartBeat, automationDuration);
