@@ -6,10 +6,12 @@ import { join } from 'ember-cli-d3/utils/d3';
 
 import RequireAttributes from 'linx/lib/require-attributes';
 import multiply from 'linx/lib/computed/multiply';
+import DraggableMixin from 'linx/mixins/components/arrangement-visual/draggable';
 
 // TODO(REFACTOR): do we need this anymore? mixin?
 export default Ember.Component.extend(
   GraphicSupport,
+  DraggableMixin,
   RequireAttributes('pxPerBeat'), {
 
   // required params
@@ -35,37 +37,6 @@ export default Ember.Component.extend(
 
     this.backdrop(selection);
   },
-
-  drag: Ember.computed(function() {
-    return d3.behavior.drag();
-  }),
-
-  _dragBeatCount: 0,
-  _initDragHandlers: Ember.on('init', function() {
-    const drag = this.get('drag');
-    const context = this;
-
-    drag.on('drag', function() {
-      let dragBeatCount = context.get('_dragBeatCount');
-      dragBeatCount += d3.event.dx / context.get('pxPerBeat');
-      context.set('_dragBeatCount', dragBeatCount);
-
-      context.sendAction('onDrag', dragBeatCount);
-    });
-
-    drag.on('dragstart', function() {
-      d3.event.sourceEvent.stopPropagation(); // silence other listeners
-
-      context.sendAction('onDragStart');
-    });
-
-    drag.on('dragend', function() {
-      d3.event.sourceEvent.stopPropagation(); // silence other listeners
-      context.set('_dragBeatCount', 0);
-
-      context.sendAction('onDragEnd');
-    });
-  }),
 
   backdrop: join([0], 'rect.ArrangementVisualClip-backdrop', {
     update(selection) {

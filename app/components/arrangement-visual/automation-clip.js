@@ -49,6 +49,7 @@ export default Clip.extend({
         .attr('cy', (d) => (1 - d.value) * height)
         .attr('r', 10)
         .style('fill', '#B8DE44')
+        .call(this.get('drag'));
     }
   }),
 });

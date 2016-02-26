@@ -56,6 +56,10 @@ export default Ember.Component.extend(
       console.log('onAutomationClipClick');
     },
 
+    onAutomationClipDrag(beats) {
+      console.log('onAutomationClipDrag', beats);
+    },
+
     // TODO(REFACTOR): move to simple-transition/track-clip?
     onTrackClipDrag(clip, marker, beats) {
       const newBeat = this.get('_markerStartBeat') - beats;
