@@ -27,4 +27,19 @@ export default Ember.Mixin.create({
 
     return values;
   }),
+
+  scheduleAutomation(control, metronome) {
+    Ember.assert('Cannot scheduleAutomation without a control', Ember.isPresent(control));
+    const values = this.get('values');
+
+    if (values) {
+      const startBeat = this.get('startBeat');
+      const startTime = this.getAbsoluteStartTime(startBeat);
+      // TODO(REFACTOR): turn this into this.getClipDuration
+      const duration = metronome.getDuration(startBeat, this.get('beatCount'));
+
+      console.log('scheduleAutomation', control.get('type'), startTime, startBeat, duration);
+      control.setValueCurveAtTime(values, startTime, duration);
+    }
+  },
 });

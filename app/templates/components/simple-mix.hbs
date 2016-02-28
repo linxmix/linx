@@ -62,8 +62,10 @@
     {{#zip-entries select=gridSelect.SimpleMix-trackClips items=mix.trackClips as |trackClip tag|}}
       {{arrangement-visual/track-clip
         select=tag
-        clip=trackClip
+        track=trackClip.track
+        beatCount=trackClip.beatCount
         startBeat=trackClip.startBeat
+        audioStartTime=trackClip.audioStartTime
         height=height
         pxPerBeat=pxPerBeat
       }}
@@ -73,8 +75,8 @@
     {{#zip-entries select=gridSelect.SimpleMix-transitionClips items=mix.transitionClips as |transitionClip tag|}}
       {{arrangement-visual/transition-clip
         select=tag
-        clip=transitionClip
         startBeat=transitionClip.startBeat
+        beatCount=transitionClip.beatCount
         height=height
         onClick=(action 'onTransitionClipClick')
         pxPerBeat=pxPerBeat

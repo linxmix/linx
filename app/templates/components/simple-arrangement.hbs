@@ -16,8 +16,10 @@
     {{#if trackClip}}
       {{arrangement-visual/track-clip
         select=tag
-        clip=trackClip
+        track=trackClip.track
         startBeat=trackClip.startBeat
+        beatCount=trackClip.beatCount
+        audioStartTime=trackClip.audioStartTime
         height=rowHeight
         pxPerBeat=pxPerBeat
         onDrag=attrs.onTrackClipDrag

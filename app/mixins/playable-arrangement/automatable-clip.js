@@ -24,25 +24,14 @@ export default Ember.Mixin.create(PlayableClipMixin, {
 
     if (this.get('isScheduled')) {
       const metronome = this.get('metronome');
-      const allAutomations = this.get('automations');
+      const automations = this.get('automations');
       const controls = this.get('controls');
 
       // schedule automations for each control
       controls.forEach((control) => {
-        const automations = allAutomations.filterBy('controlType', control.get('type'))
-
-        automations.forEach((automation) => {
-          const values = automation.get('values');
-
-          if (values) {
-            const automationStartBeat = automation.get('startBeat');
-            const automationStartTime = this.getAbsoluteStartTime(automationStartBeat);
-            const automationDuration = metronome.getDuration(automationStartBeat, automation.get('beatCount'));
-
-            console.log('scheduleAutomation', control.get('type'), automationStartTime, automationStartBeat, automationDuration);
-            control.setValueCurveAtTime(values, automationStartTime, automationDuration);
-          }
-        });
+        (automations || [])
+          .filterBy('controlType', control.get('type'))
+          .invoke('scheduleAutomation', control, metronome);
       });
     }
   },
