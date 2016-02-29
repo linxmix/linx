@@ -49,7 +49,6 @@ export default Ember.Mixin.create(
   isTrackClipReady: Ember.computed.and('trackSourceNode.isReady', 'trackSourceNode.isConnected', 'track.isReady'),
 
   // implement playable-clip
-  componentName: 'arrangement-visual/track-clip',
   beatCount: Ember.computed.reads('audioBeatCount'),
   barCount: Ember.computed.reads('audioBarCount'),
 

@@ -14,7 +14,6 @@ export default Ember.Mixin.create(PlayableClipMixin, {
   supportedControlTypes: Ember.computed.mapBy('controls', 'type'),
 
   // TODO(PERFORMANCE): can we do better than canceling and updating all every time?
-
   automationsDidChange: Ember.observer('automations.@each.{controlType,startBeat,values}', function() {
     Ember.run.once(this, 'updateAutomations');
   }).on('schedule'),

@@ -13,13 +13,13 @@ import { isValidNumber, clamp } from 'linx/lib/utils';
 // Properties: audioContext, metronome, outputNode
 export default Ember.Mixin.create(Ember.Evented, {
 
-  // params
-  componentName: null, // used to render arrangement-visual clip component
+  // required params
+  // NOTE: also requires one of endBeat, beatCount
   arrangement: null,
   startBeat: null,
+
   isDisabled: false,
   isScheduled: false,
-
   outputNode: Ember.computed.reads('arrangement.inputNode'),
   metronome: Ember.computed.reads('arrangement.metronome'),
   audioContext: Ember.computed.reads('metronome.audioContext'),

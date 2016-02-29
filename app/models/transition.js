@@ -11,68 +11,26 @@ import concat from 'linx/lib/computed/concat';
 
 export default DS.Model.extend(
   PlayableArrangementMixin,
-  ReadinessMixin('isTransitionReady'),
-  TrackPropertiesMixin('fromTrack'),
-  TrackPropertiesMixin('toTrack'), {
-
-  fromTrackAutomations: Ember.computed(function() {
-    return [this.store.createRecord('transition/track-automation', {
-      transition: this,
-      controlType: 'gain',
-    })];
-  }),
-
-  toTrackAutomations: [],
+  ReadinessMixin('isTransitionReady'), {
 
   title: DS.attr('string'),
-  mixItem: DS.belongsTo('mix/item', { async: true }),
-  beatCount: DS.attr('number', { defaultValue: 16 }),
+  description: DS.attr('string'),
+  transitionClip: DS.belongsTo('mix/transition-clip'),
 
-  // implement readiness
-  isTransitionReady: Ember.computed.and('fromTrackIsReady', 'toTrackIsReady'),
-  // TODO(CLEANUP): computed property? relIsLoaded? rel.isPending ? false : rel.isFulfilled
-  fromTrackIsReady: Ember.computed('fromTrack.isPending', 'fromTrack.isFulfilled', function() {
-    let fromTrack = this.get('fromTrack');
+  // implementing PlayableArrangement
+  outputNode: Ember.computed.reads('mixItem.mix.outputNode'),
+  clips: Ember.computed.reads('automationClips'), // TODO(POLYMORHPISM)
 
-    return fromTrack.get('isPending') ? false : fromTrack.get('isFulfilled');
-  }),
-  toTrackIsReady: Ember.computed('toTrack.isPending', 'toTrack.isFulfilled', function() {
-    let toTrack = this.get('toTrack');
-
-    return toTrack.get('isPending') ? false : toTrack.get('isFulfilled');
-  }),
-
-  // implement playable-arrangement
-  mix: Ember.computed.reads('mixItem.mix'),
-  endBeat: Ember.computed.reads('beatCount'),
-  automationClips: concat('fromTrackAutomationClips', 'toTrackAutomationClips'),
-  clips: Ember.computed.reads('automationClips'),
-  outputNode: Ember.computed.reads('mix.inputNode'),
-  metronome: Ember.computed.reads('mix.metronome'),
-  audioContext: Ember.computed.reads('mix.audioContext'),
-
-  // optimizes this model as a transition between two tracks, with given constraints
-  // possible constraints:
-  // {
-  //   fromTrack,
-  //   toTrack,
-  //   preset,
-  //   minFromTrackEndBeat,
-  //   maxToTrackStartBeat,
-  //   fromTrackEnd,
-  //   toTrackStart,
-  // }
-  optimize(options = {}) {
-    let {
-      fromTrack,
-      toTrack,
-      preset,
-      minFromTrackEndBeat,
-      maxToTrackStartBeat,
-      fromTrackEnd,
-      toTrackStart,
-    } = options;
-
+  // optimizes this transition, with given constraints
+  optimize({
+    fromTrack,
+    toTrack,
+    preset,
+    minFromTrackEndBeat,
+    maxToTrackStartBeat,
+    fromTrackEnd,
+    toTrackStart,
+  }) {
     return this.get('readyPromise').then(() => {
       fromTrack = fromTrack || this.get('fromTrack.content');
       toTrack = toTrack || this.get('toTrack.content');
@@ -84,19 +42,7 @@ export default DS.Model.extend(
         toTrack.get('readyPromise'),
       ]).then(() => {
 
-        // update tracks
-        this.setProperties({
-          fromTrack,
-          toTrack,
-        });
-
         // TODO(TRANSITION): improve this algorithm, add options and presets
-        // update markers
-        this.setProperties({
-          fromTrackEndBeat: fromTrack.get('audioMeta.lastWholeBeat'),
-          toTrackStartBeat: toTrack.get('audioMeta.firstWholeBeat'),
-          beatCount: 16,
-        });
 
         return this;
       });

@@ -28,6 +28,8 @@ export default Ember.Mixin.create({
     return values;
   }),
 
+  // NOTE: control has to call scheduleAutomation because only the control can cancel automations.
+  //       this is important because automations need to reschedule on update
   scheduleAutomation(control, metronome) {
     Ember.assert('Cannot scheduleAutomation without a control', Ember.isPresent(control));
     const values = this.get('values');

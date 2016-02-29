@@ -4,43 +4,35 @@ import DS from 'ember-data';
 import _ from 'npm:underscore';
 
 import TrackClip from './track-clip';
-import TransitionClip from './transition-clip';
 import OrderedHasManyItemMixin from 'linx/mixins/models/ordered-has-many/item';
 import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
-import equalProps from 'linx/lib/computed/equal-props';
+
 import computedObject from 'linx/lib/computed/object';
 import { variableTernary } from 'linx/lib/computed/ternary';
 import withDefaultModel from 'linx/lib/computed/with-default-model';
 
 export default DS.Model.extend(
   OrderedHasManyItemMixin('mix'),
-  DependentRelationshipMixin('transition'), {
+  DependentRelationshipMixin('transitionClip'),
+  DependentRelationshipMixin('fromTrackClip'), {
 
   mix: DS.belongsTo('mix', { async: true }),
-  _transition: DS.belongsTo('transition', { async: true }),
-  transition: withDefaultModel('_transition', function() {
-    // TODO(FIREBASE): have to fake title for Firebase to accept record
-    let transition = this.get('store').createRecord('transition', {
-      title: 'test title',
-      mixItem: this,
-    });
-    return transition;
-  }),
 
   fromTrack: Ember.computed.alias('transition.fromTrack'),
   toTrack: Ember.computed.alias('transition.toTrack'),
-  hasValidTransition: Ember.computed.reads('transitionClip.isValid'),
 
-  prevTransition: Ember.computed.reads('prevItem.transition'),
-  prevTransitionClip: Ember.computed.reads('prevItem.transitionClip'),
-  prevTransitionIsMatch: equalProps('prevTransition.toTrack.content', 'transition.fromTrack.content'),
+  _transitionClip: DS.belongsTo('mix/transition-clip', { async: true }),
+  transitionClip: withDefaultModel('_transitionClip', function() {
+    return this.get('store').createRecord('mix/transition-clip', {
+      mixItem: this,
+    });
+  }),
 
-  nextTransition: Ember.computed.reads('nextItem.transition'),
-  nextTransitionClip: Ember.computed.reads('nextItem.transitionClip'),
-  nextTransitionIsMatch: equalProps('transition.toTrack.content', 'nextTransition.fromTrack.content'),
-
-  transitionClip: computedObject(TransitionClip, {
-    'mixItem': 'this',
+  _trackClip: DS.belongsTo('mix/track-clip', { async: true }),
+  trackClip: withDefaultModel('_trackClip', function() {
+    return this.get('store').createRecord('mix/track-clip', {
+      mixItem: this,
+    });
   }),
 
   fromTrackClip: computedObject(TrackClip, {
