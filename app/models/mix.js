@@ -18,21 +18,16 @@ export default DS.Model.extend(
   session: Ember.inject.service(),
   audioContext: Ember.computed.reads('session.audioContext'),
 
-  fromTracks: Ember.computed.mapBy('items', 'fromTrack.content'),
-  toTracks: Ember.computed.mapBy('items', 'toTrack.content'),
-  tracks: Ember.computed.uniq('fromTracks', 'toTracks'),
-  transitions: Ember.computed.mapBy('items', 'transition'),
+  tracks: Ember.computed.mapBy('items', 'track.content'),
+  transitions: Ember.computed.mapBy('items', 'transition.content'),
 
-  fromTrackClips: Ember.computed.mapBy('items', 'fromTrackClip'),
-  toTrackClips: Ember.computed.mapBy('items', 'toTrackClip'),
-
-  trackClips: Ember.computed.uniq('fromTrackClips', 'toTrackClips'),
+  trackClips: Ember.computed.mapBy('items', 'trackClip'),
   transitionClips: Ember.computed.mapBy('items', 'transitionClip'),
   clips: Ember.computed.uniq('trackClips', 'transitionClips'),
 
   trackAt(index) {
     let item = this.objectAt(index);
-    return item && item.get('fromTrack.content');
+    return item && item.get('track.content');
   },
 
   transitionAt(index) {

@@ -10,15 +10,15 @@ import withDefaultModel from 'linx/lib/computed/with-default-model';
 export default Clip.extend({
 
   mixItem: DS.belongsTo('mix/item'),
-  fromTrackClip: Ember.computed.reads('mixItem.fromTrackClip'),
-  toTrackClip: Ember.computed.reads('mixItem.toTrackClip'),
+  fromTrackClip: Ember.computed.reads('mixItem.trackClip'),
+  toTrackClip: Ember.computed.reads('mixItem.nextTrackClip'),
 
-  _transition: DS.belongsTo('transition'),
+  _transition: DS.belongsTo('mix/transition'),
   transition: withDefaultModel('_transition', function() {
     // TODO(FIREBASE): have to fake title for Firebase to accept record
-    const transition = this.get('store').createRecord('transition', {
+    const transition = this.get('store').createRecord('mix/transition', {
       title: 'test title',
-      mixItem: this,
+      transitionClip: this,
     });
     return transition;
   }),

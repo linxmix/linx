@@ -1,38 +1,14 @@
 import Ember from 'ember';
+import DS from 'ember-data';
 
-import TrackClipMixin from 'linx/mixins/playable-arrangement/track-clip';
-import { variableTernary } from 'linx/lib/computed/ternary';
+import TrackClip from '../arrangement/track-clip';
 import withDefault from 'linx/lib/computed/with-default';
 
-export default Ember.Object.extend(
-  TrackClipMixin, {
+export default TrackClip.extend({
 
-  // params
-  track: null,
-  arrangement: null,
-  fromTransitionClip: null,
-  toTransitionClip: null,
-  automations: null,
+  mixItem: DS.belongsTo('mix/item'),
+  automationClips: DS.hasMany('mix/transition/automation-clip'),
 
-  // implement track-clip mixin
-  startBeat: withDefault('fromTransitionClip.startBeat', 0),
-  audioStartBeat: variableTernary(
-    'fromTransitionClip.isValid',
-    'audioStartBeatWithTransition',
-    'audioStartBeatWithoutTransition'
-  ),
-  audioEndBeat: variableTernary(
-    'toTransitionClip.isValid',
-    'audioEndBeatWithTransition',
-    'audioEndBeatWithoutTransition'
-  ),
-
-  audioStartBeatWithoutTransition: Ember.computed.reads('audioMeta.firstWholeBeat'),
-  audioEndBeatWithoutTransition: Ember.computed.reads('audioMeta.lastWholeBeat'),
-
-  audioStartBeatWithTransition: Ember.computed.reads('prevTransition.toTrackStartBeat'),
-  audioEndBeatWithTransition: Ember.computed.reads('nextTransition.fromTrackEndBeat'),
-
-  prevTransition: Ember.computed.reads('fromTransitionClip.transition'),
-  nextTransition: Ember.computed.reads('toTransitionClip.transition'),
+  arrangement: Ember.computed.reads('mixItem.mix'),
+  startBeat: withDefault('mixItem.prevTransitionClip.startBeat', 0),
 });

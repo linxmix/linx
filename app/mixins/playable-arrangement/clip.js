@@ -30,9 +30,9 @@ export default Ember.Mixin.create(Ember.Evented, {
     return clamp(0, currentBeat, this.get('beatCount'));
   },
 
-  // returns absolute start time from metronome's frame of reference
-  getAbsoluteStartTime(beat = 0) {
-    return this.get('metronome').beatToTime(beat);
+  // returns absolute start time of this clip from metronome's frame of reference
+  getAbsoluteStartTime() {
+    return this.get('metronome').beatToTime(this.get('startBeat'));
   },
 
   // duration of clip in [s]

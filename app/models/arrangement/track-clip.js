@@ -12,6 +12,8 @@ export default Clip.extend(
   startBeat: DS.attr('number', { defaultValue: 0 }),
 
   // implement track-clip
+  track: DS.belongsTo('track', { async: true }),
+  automationClips: DS.hasMany('arrangement/automation-clip'),
   audioStartBeat: withDefaultProperty('_audioStartBeat', '_defaultAudioStartBeat'),
   audioEndBeat: withDefaultProperty('_audioEndBeat', '_defaultAudioEndBeat'),
 
@@ -20,6 +22,5 @@ export default Clip.extend(
   _defaultAudioStartBeat: Ember.computed.reads('audioMeta.firstWholeBeat'),
   _defaultAudioEndBeat: Ember.computed.reads('audioMeta.endBeat'),
 
-  track: DS.belongsTo('track', { async: true }),
   audioMeta: Ember.computed.reads('track.audioMeta'),
 });

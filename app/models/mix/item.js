@@ -14,12 +14,9 @@ import withDefaultModel from 'linx/lib/computed/with-default-model';
 export default DS.Model.extend(
   OrderedHasManyItemMixin('mix'),
   DependentRelationshipMixin('transitionClip'),
-  DependentRelationshipMixin('fromTrackClip'), {
+  DependentRelationshipMixin('trackClip'), {
 
   mix: DS.belongsTo('mix', { async: true }),
-
-  fromTrack: Ember.computed.alias('transition.fromTrack'),
-  toTrack: Ember.computed.alias('transition.toTrack'),
 
   _transitionClip: DS.belongsTo('mix/transition-clip', { async: true }),
   transitionClip: withDefaultModel('_transitionClip', function() {
@@ -35,41 +32,9 @@ export default DS.Model.extend(
     });
   }),
 
-  fromTrackClip: computedObject(TrackClip, {
-    'track': 'fromTrack.content',
-    'arrangement': 'mix.content',
-    'fromTransitionClip': 'prevTransitionClip',
-    'toTransitionClip': 'transitionClip',
-    'automations': 'transition.fromTrackAutomations',
-  }),
+  prevTransitionClip: Ember.computed.reads('prevItem.transitionClip'),
+  nextTransitionClip: Ember.computed.reads('nextItem.transitionClip'),
 
-  // share with nextItem, if matches
-  toTrackClip: variableTernary('nextTransitionIsMatch', 'nextItem.fromTrackClip', '_toTrackClip'),
-  _toTrackClip: computedObject(TrackClip, {
-    'track': 'toTrack.content',
-    'arrangement': 'mix.content',
-    'fromTransitionClip': 'transitionClip',
-    'toTransitionClip': 'nextTransitionClip',
-    'automations': 'transition.toTrackAutomations',
-  }),
-
-  // optimizes transition within this mix
-  optimizeTransition(options = {}) {
-    return this.get('listReadyPromise').then(() => {
-      let { prevTransition, nextTransition } = this.getProperties('prevTransition', 'nextTransition');
-
-      // add default constraints to options
-      options = _.defaults({}, options, {
-        fromTrack: prevTransition && prevTransition.get('toTrack'),
-        toTrack: nextTransition && nextTransition.get('fromTrack'),
-
-        minFromTrackEndBeat: prevTransition && prevTransition.get('toTrackStartBeat'),
-        maxToTrackStartBeat: nextTransition && nextTransition.get('fromTrackEndBeat'),
-      });
-
-      return this.get('transition').then((transition) => {
-        return transition.optimize(options);
-      });
-    });
-  },
+  prevTrackClip: Ember.computed.reads('prevItem.trackClip'),
+  nextTrackClip: Ember.computed.reads('nextItem.trackClip'),
 });

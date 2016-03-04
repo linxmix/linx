@@ -2,12 +2,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import ReadinessMixin from 'linx/mixins/readiness';
-import OrderedHasManyItemMixin from 'linx/mixins/models/ordered-has-many/item';
-import TrackPropertiesMixin from 'linx/mixins/models/transition/track-properties';
-import withDefaultModel from 'linx/lib/computed/with-default-model';
-import { isNumber } from 'linx/lib/utils';
 import PlayableArrangementMixin from 'linx/mixins/playable-arrangement';
-import concat from 'linx/lib/computed/concat';
 
 export default DS.Model.extend(
   PlayableArrangementMixin,
@@ -17,11 +12,17 @@ export default DS.Model.extend(
   description: DS.attr('string'),
   transitionClip: DS.belongsTo('mix/transition-clip'),
 
+  fromTrackClip: Ember.computed.reads('transitionClip.fromTrackClip'),
+  toTrackClip: Ember.computed.reads('transitionClip.toTrackClip'),
+
+  automationClips: DS.hasMany('mix/transition/automation-clip'),
+
   // implementing PlayableArrangement
-  outputNode: Ember.computed.reads('mixItem.mix.outputNode'),
+  outputNode: Ember.computed.reads('transitionClip.outputNode'),
   clips: Ember.computed.reads('automationClips'), // TODO(POLYMORHPISM)
 
   // optimizes this transition, with given constraints
+  // TODO(REFACTOR2)
   optimize({
     fromTrack,
     toTrack,
@@ -34,6 +35,9 @@ export default DS.Model.extend(
     return this.get('readyPromise').then(() => {
       fromTrack = fromTrack || this.get('fromTrack.content');
       toTrack = toTrack || this.get('toTrack.content');
+
+      minFromTrackEndBeat = minFromTrackEndBeat || this.get('fromTrackClip.audioStartBeat');
+      maxToTrackStartBeat = maxToTrackStartBeat || this.get('toTrackClip.audioEndBeat');
 
       Ember.assert('Must have fromTrack and toTrack to optimizeTransition', Ember.isPresent(fromTrack) && Ember.isPresent(toTrack));
 

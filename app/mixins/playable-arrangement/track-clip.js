@@ -38,7 +38,7 @@ export default Ember.Mixin.create(
   startBeat: null,
   audioStartBeat: null,
   audioEndBeat: null,
-  automations: null,
+  automationClips: null,
 
   // implementing automatable clip mixin
   controls: Ember.computed(function() {
@@ -101,7 +101,7 @@ export default Ember.Mixin.create(
     this.stopSource();
 
     if (this.get('isScheduled')) {
-      const when = this.getAbsoluteStartTime(this.get('startBeat'));
+      const when = this.getAbsoluteStartTime();
       const offset = this.getCurrentAudioTime();
 
       console.log('startTrack', this.get('track.title'), when, offset);

@@ -3,18 +3,18 @@ import Ember from 'ember';
 import PlayableClipMixin from './clip';
 
 // Interface for automatable arrangement clips
-// 'automations': array of Automations
+// 'automationClips': array of AutomationClips
 // 'controls': array of Controls
 export default Ember.Mixin.create(PlayableClipMixin, {
 
   // required params
   controls: Ember.computed(() => []),
-  automations: Ember.computed(() => []),
+  automationClips: Ember.computed(() => []),
 
   supportedControlTypes: Ember.computed.mapBy('controls', 'type'),
 
   // TODO(PERFORMANCE): can we do better than canceling and updating all every time?
-  automationsDidChange: Ember.observer('automations.@each.{controlType,startBeat,values}', function() {
+  automationClipsDidChange: Ember.observer('automationClips.@each.{controlType,startBeat,values}', function() {
     Ember.run.once(this, 'updateAutomations');
   }).on('schedule'),
 
@@ -23,12 +23,12 @@ export default Ember.Mixin.create(PlayableClipMixin, {
 
     if (this.get('isScheduled')) {
       const metronome = this.get('metronome');
-      const automations = this.get('automations');
+      const automationClips = this.get('automationClips');
       const controls = this.get('controls');
 
-      // schedule automations for each control
+      // schedule automationClips for each control
       controls.forEach((control) => {
-        (automations || [])
+        (automationClips || [])
           .filterBy('controlType', control.get('type'))
           .invoke('scheduleAutomation', control, metronome);
       });
