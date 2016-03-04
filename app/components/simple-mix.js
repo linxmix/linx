@@ -31,13 +31,13 @@ export default Ember.Component.extend(
     playItem(mixItem) {
       this.send('viewItem', mixItem);
 
-      mixItem.get('transitionClip.readyPromise').then((clip) => {
+      mixItem.get('transitionClip').then((clip) => {
         this.send('play', clip.get('startBeat') - MIX_ITEM_PREVIEW_DISTANCE);
       });
     },
 
     viewItem(mixItem) {
-      mixItem.get('transitionClip.readyPromise').then((clip) => {
+      mixItem.get('transitionClip').then((clip) => {
         this.send('zoomToClip', clip);
       });
     },

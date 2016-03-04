@@ -8,8 +8,12 @@
   Save Transition
 </div>
 <div class="inverted orange ui icon button {{if transition.hasDirtyAttributes "" "basic disabled"}}" {{action "resetTransition"}}>
-  <i class="refresh icon"></i>
+  <i class="undo icon"></i>
   Undo Changes
+</div>
+<div class="inverted orange ui icon button" {{action "optimizeTransition"}}>
+  <i class="refresh icon"></i>
+  Optimize Transition
 </div>
 
 {{simple-transition transition=transition}}

@@ -34,6 +34,10 @@ export default Ember.Route.extend({
       // TODO: dependentRelationship.rollbackAttributes
       this.get('controller.transition').rollbackAttributes();
     },
+
+    optimizeTransition() {
+      this.get('controller.transition').optimize();
+    },
   },
 
   setupController(controller, models) {
@@ -49,7 +53,7 @@ export default Ember.Route.extend({
   }),
 
 
-  model: function(params) {
+  model(params) {
     return Ember.RSVP.hash({
       transition: this.get('store').find('mix/transition', params.transition_id).catch((reason) => {
         // if transition not found, redirect to mix

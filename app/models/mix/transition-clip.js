@@ -2,12 +2,14 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import Clip from '../arrangement/clip';
+import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 
 import subtract from 'linx/lib/computed/subtract';
 import { propertyOrDefault } from 'linx/lib/computed/ternary';
 import withDefaultModel from 'linx/lib/computed/with-default-model';
 
-export default Clip.extend({
+export default Clip.extend(
+  DependentRelationshipMixin('transition'), {
 
   mixItem: DS.belongsTo('mix/item'),
   fromTrackClip: Ember.computed.reads('mixItem.trackClip'),

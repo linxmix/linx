@@ -19,15 +19,18 @@ import {
 } from 'linx/models/track/audio-meta/beat-grid';
 
 export default Ember.Component.extend(
+  RequireAttributes('transition'),
   ArrangementPlayerMixin,
-  ArrangementVisualMixin,
-  RequireAttributes('transition'), {
+  ArrangementVisualMixin, {
 
   classNames: ['SimpleTransition'],
   classNameBindings: [],
 
   // optional params
   pxPerBeat: 25,
+
+  // implement ArrangementPlayerMixin
+  arrangement: Ember.computed.reads('transition'),
 
   actions: {
     playTransition() {
@@ -99,9 +102,6 @@ export default Ember.Component.extend(
 
   selectedQuantizations: [BAR_QUANTIZATION],
   selectedQuantization: Ember.computed.reads('selectedQuantizations.firstObject'),
-
-  // implementing ArrangementPlayerMixin
-  arrangement: Ember.computed.reads('mix'),
 
   // simple-transition specific stuff
   fromTrack: Ember.computed.reads('transition.fromTrack'),
