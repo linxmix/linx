@@ -50,9 +50,7 @@ export default Ember.Component.extend(
     selectTrack(track) {
       const mix = this.get('mix');
 
-      mix.generateTransitionAndAppend({
-        toTrack: track
-      });
+      mix.appendTrack(track);
     },
 
     appendRandomTrack() {
@@ -60,9 +58,7 @@ export default Ember.Component.extend(
       const tracks = this.get('searchTracks.content');
       const randomTrack = _.sample(tracks.toArray());
 
-      mix.generateTransitionAndAppend({
-        toTrack: randomTrack
-      });
+      mix.appendTrack(randomTrack);
     },
 
     onTransitionClipClick(clip) {

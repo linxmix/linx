@@ -8,25 +8,20 @@ import { executePromisesInSeries } from 'linx/lib/utils';
 export default Ember.Route.extend({
   actions: {
     createMix() {
-      let store = this.get('store');
-      let mix = store.createRecord('mix', {
+      const store = this.get('store');
+      const mix = store.createRecord('mix', {
         title: 'Mix ' + Ember.uuid(),
       });
 
       // create the mix with a transition
-      let tracks = this.get('controller.tracks');
-      let [fromTrack, toTrack] = _.sample(tracks.toArray(), 2);
-      // let [fromTrack, toTrack] = [tracks.objectAt(0), tracks.objectAt(1)];
+      const tracks = this.get('controller.tracks');
+      const [fromTrack, toTrack] = _.sample(tracks.toArray(), 2);
+      // const [fromTrack, toTrack] = [tracks.objectAt(0), tracks.objectAt(1)];
 
       console.log('fromTrack', fromTrack.get('title'));
       console.log('toTrack', toTrack.get('title'));
 
-      mix.generateTransitionAt(0, {
-        fromTrack,
-        toTrack,
-      }).then(() => {
-        this.transitionTo('mixes.mix', mix.get('id'));
-      });
+      this.transitionTo('mixes.mix', mix.get('id'));
     },
 
     createCategoryMix() {

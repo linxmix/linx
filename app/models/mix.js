@@ -30,38 +30,29 @@ export default DS.Model.extend(
     return item && item.get('track.content');
   },
 
-  transitionAt(index) {
-    let item = this.objectAt(index);
-    return item && item.get('transition.content');
+  insertTrackAt(index, track) {
+    const item = this.createAt(index);
+
+    return item.setTrack(track);
   },
 
-  appendTransition(transition) {
-    return this.insertTransitionAt(this.get('length'), transition);
-  },
-
-  insertTransitionAt(index, transition) {
-    return this.createAt(index, { _transition: transition });
-  },
-
-  insertTransitionsAt(index, transitions) {
-    let items = transitions.map((transition) => {
-      return this.createItem({ _transition: transition });
+  insertTracksAt(index, tracks) {
+    const items = tracks.map((track) => {
+      const item = this.createItem();
+      return item.setTrack(track);
     });
 
-    return this.replace(index, 0, items);
+    // TODO(REFACTOR2): possible bug with items being proxies
+    return Ember.RSVP.all(items).then((items) => {
+      return this.replace(index, 0, items);
+    });
   },
 
-  appendTransitions(transitions) {
-    return this.insertTransitionsAt(this.get('length'), transitions);
+  appendTrack(track) {
+    return this.insertTrackAt(this.get('length'), track);
   },
 
-  generateTransitionAt(index, options) {
-    let item = this.getOrCreateAt(index);
-
-    return item.optimizeTransition(options);
-  },
-
-  generateTransitionAndAppend(options) {
-    return this.generateTransitionAt(this.get('length'), options);
+  appendTracks(tracks) {
+    return this.insertTracksAt(this.get('length'), tracks);
   },
 });

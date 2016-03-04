@@ -18,6 +18,7 @@ export default DS.Model.extend(
   automationClips: DS.hasMany('mix/transition/automation-clip'),
 
   // implementing PlayableArrangement
+  audioContext: Ember.computed.reads('transitionClip.audioContext'),
   outputNode: Ember.computed.reads('transitionClip.outputNode'),
   clips: Ember.computed.reads('automationClips'), // TODO(POLYMORHPISM)
 
@@ -33,8 +34,8 @@ export default DS.Model.extend(
     toTrackStart,
   }) {
     return this.get('readyPromise').then(() => {
-      fromTrack = fromTrack || this.get('fromTrack.content');
-      toTrack = toTrack || this.get('toTrack.content');
+      fromTrack = fromTrack || this.get('fromTrackClip.track.content');
+      toTrack = toTrack || this.get('toTrackClip.track.content');
 
       minFromTrackEndBeat = minFromTrackEndBeat || this.get('fromTrackClip.audioStartBeat');
       maxToTrackStartBeat = maxToTrackStartBeat || this.get('toTrackClip.audioEndBeat');
@@ -47,6 +48,7 @@ export default DS.Model.extend(
       ]).then(() => {
 
         // TODO(TRANSITION): improve this algorithm, add options and presets
+        console.log("OPTIMIZE TRANSITION");
 
         return this;
       });

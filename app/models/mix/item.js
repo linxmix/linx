@@ -32,9 +32,26 @@ export default DS.Model.extend(
     });
   }),
 
+  setTrack(track) {
+    return this.get('trackClip').then((trackClip) => {
+      trackClip.set('track', track);
+      return this;
+    });
+  },
+
+  track: Ember.computed.alias('_trackClip.track'),
+
   prevTransitionClip: Ember.computed.reads('prevItem.transitionClip'),
   nextTransitionClip: Ember.computed.reads('nextItem.transitionClip'),
 
   prevTrackClip: Ember.computed.reads('prevItem.trackClip'),
   nextTrackClip: Ember.computed.reads('nextItem.trackClip'),
+
+  setupTransition() {
+    return this.get('transitionClip').then((transitionClip) => {
+      return transitionClip && transitionClip.get('transition').then((transition) => {
+        return transition && transition.optimize();
+      });
+    });
+  }
 });

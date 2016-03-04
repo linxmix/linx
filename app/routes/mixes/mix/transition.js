@@ -51,7 +51,7 @@ export default Ember.Route.extend({
 
   model: function(params) {
     return Ember.RSVP.hash({
-      transition: this.get('store').find('transition', params.transition_id).catch((reason) => {
+      transition: this.get('store').find('mix/transition', params.transition_id).catch((reason) => {
         // if transition not found, redirect to mix
         this.sendAction('closeModal');
       }),
