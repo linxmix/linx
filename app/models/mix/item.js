@@ -39,7 +39,8 @@ export default DS.Model.extend(
     });
   },
 
-  track: Ember.computed.alias('_trackClip.track'),
+  track: Ember.computed.reads('trackClip.track'),
+  transition: Ember.computed.reads('transitionClip.transition'),
 
   prevTransitionClip: Ember.computed.reads('prevItem.transitionClip'),
   nextTransitionClip: Ember.computed.reads('nextItem.transitionClip'),

@@ -15,8 +15,7 @@ export default Ember.Component.extend(
 
   // params
   transition: Ember.computed.reads('item.transition'),
-  fromTrack: Ember.computed.reads('transition.fromTrack'),
-  toTrack: Ember.computed.reads('transition.toTrack'),
+  track: Ember.computed.reads('item.track'),
   mix: Ember.computed.reads('item.mix'),
 
   index: Ember.computed.reads('item.index'),

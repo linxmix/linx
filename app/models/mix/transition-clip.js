@@ -24,8 +24,7 @@ export default Clip.extend({
   }),
 
   // implementing Clip
-  _startBeat: subtract('fromTrackClip.endBeat', 'beatCount'), // overlap
-  startBeat: propertyOrDefault('isReadyAndValid', '_startBeat', 0),
+  startBeat: subtract('fromTrackClip.endBeat', 'beatCount'), // overlap
   arrangement: Ember.computed.reads('mixItem.mix'),
   beatCount: Ember.computed.reads('transition.beatCount'),
 });
