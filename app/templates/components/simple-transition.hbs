@@ -1,0 +1,157 @@
+<div>
+  From &middot;
+  {{#link-to "track" fromTrack}}
+    {{fromTrack.title}}
+  {{/link-to}}
+
+  &middot; To &middot;
+  {{#link-to "track" toTrack}}
+    {{toTrack.title}}
+  {{/link-to}}
+</div>
+
+<div>
+  {{#with mixItem.mix as |mix|}}
+    Mix &middot; {{#link-to "mixes.mix"}}{{mix.id}}{{/link-to}}
+  {{/with}}
+</div>
+
+{{#arrangement-visual
+  arrangement=arrangement
+  zoom=zoom
+  pxPerBeat=pxPerBeat
+  isReady=isReady
+  seekToBeat=(action "seekToBeat")
+  class="SimpleTransition-ArrangementVisual"
+  as |gridSelect width height|
+}}
+
+  {{!-- From Track Clip --}}
+  {{arrangement-visual/track-clip
+    track=fromTrackClip.track
+    select=gridSelect.SimpleTransition-FromTrackClip
+    beatCount=fromTrackClip.beatCount
+    startBeat=fromTrackClip.startBeat
+    audioStartTime=fromTrackClip.audioStartTime
+    height=rowHeight
+    onDrag=(action "onTrackClipDrag" fromTrackClip fromTrackMarker)
+    onDragStart=(action "onTrackClipDragStart" fromTrackClip fromTrackMarker)
+    row=0
+    pxPerBeat=pxPerBeat
+  }}
+
+  {{!-- To Track Clip --}}
+  {{arrangement-visual/track-clip
+    track=toTrackClip.track
+    select=gridSelect.SimpleTransition-ToTrackClip
+    startBeat=toTrackClip.startBeat
+    beatCount=toTrackClip.beatCount
+    audioStartTime=toTrackClip.audioStartTime
+    height=rowHeight
+    onDrag=(action "onTrackClipDrag" toTrackClip toTrackMarker)
+    onDragStart=(action "onTrackClipDragStart" toTrackClip toTrackMarker)
+    row=2
+    pxPerBeat=pxPerBeat
+  }}
+
+  {{!-- Transition Clip --}}
+  {{arrangement-visual/transition-clip
+    select=gridSelect.SimpleTransition-TransitionClip
+    startBeat=transitionClip.startBeat
+    beatCount=transitionClip.beatCount
+    height=rowHeight
+    row=1
+    onClick=(action "onTransitionClipClick" transitionClip)
+    pxPerBeat=pxPerBeat
+  }}
+
+  {{!-- From Track Automation Clips --}}
+  {{#zip-entries
+    select=gridSelect.SimpleTransition-FromTrackAutomationClips
+    items=transition.fromTrackAutomationClips
+    as |automation tag|
+  }}
+    {{arrangement-visual/automation-clip
+      select=tag
+      controlPoints=automation.sortedControlPoints
+      startBeat=automation.startBeat
+      beatCount=automation.beatCount
+      height=rowHeight
+      row=0
+      onDrag=(action "onAutomationClipDrag")
+      onClick=(action "onAutomationClipClick")
+      pxPerBeat=pxPerBeat
+    }}
+  {{/zip-entries}}
+
+  {{!-- To Track Automation Clips --}}
+  {{#zip-entries
+    select=gridSelect.SimpleTransition-ToTrackAutomationClips
+    items=transition.toTrackAutomationClips
+    as |automation tag|
+  }}
+    {{arrangement-visual/automation-clip
+      select=tag
+      controlPoints=automation.sortedControlPoints
+      startBeat=automation.startBeat
+      beatCount=automation.beatCount
+      height=rowHeight
+      row=2
+      onClick=(action "onAutomationClipClick")
+      pxPerBeat=pxPerBeat
+    }}
+  {{/zip-entries}}
+{{/arrangement-visual}}
+
+<div>FromTrack EndBeat: {{transition.fromTrackEndBeat}}</div>
+<div>ToTrack StartBeat: {{transition.toTrackStartBeat}}</div>
+<div>Transition Length: {{transition.beatCount}}</div>
+
+<div class="tiny inverted basic circular yellow ui icon button" {{action "viewTransition"}}>
+  <i class="search icon"></i>
+</div>
+<div class="tiny inverted basic circular green ui icon button" {{action "playTransition"}}>
+  <i class="play icon"></i>
+</div>
+
+<div class="ui grid">
+  <div class="five wide column">
+    {{play-buttons
+      isDisabled=notReady
+      isPlaying=isPlaying
+      playpause="playpause"
+      skipBack="skipBack"
+      skipForth="skipForth"
+    }}
+  </div>
+
+  <div class="five wide column">
+    {{quantize-dropdown
+      selected=selectedQuantizations
+      onSelect=(action "selectQuantization")
+    }}
+  </div>
+
+  <div class="four wide column">
+    Transition Length: {{input type="number" value=inputTransitionLength min="0" max="200" }}
+  </div>
+</div>
+
+<hr/>
+
+<div>BPM: {{input type="number" value=inputBpm min="0" max="200" }}</div>
+<div>Zoom: {{input type="range" value=inputZoom min="2" max="20" step="0.5"}}</div>
+
+<hr/>
+{{#each mix.trackClips as |clip|}}
+  <div>
+    Pitch: {{input type="number" value=clip.pitch}}
+    Volume: {{input type="range" value=clip.volume min="0" max="1" step="0.1"}}
+  </div>
+{{/each}}
+<hr/>
+
+<div>arrangementPlayer isReady {{isReady}}</div>
+{{#each arrangement.clips as |clip|}}
+  <div>clip isReady {{clip.isReady}}</div>
+{{/each}}

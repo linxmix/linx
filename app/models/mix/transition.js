@@ -3,11 +3,13 @@ import DS from 'ember-data';
 
 import ReadinessMixin from 'linx/mixins/readiness';
 import PlayableArrangementMixin from 'linx/mixins/playable-arrangement';
+import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 
 import { CONTROL_TYPE_GAIN } from 'linx/mixins/playable-arrangement/automatable-clip/control';
 
 export default DS.Model.extend(
   PlayableArrangementMixin,
+  DependentRelationshipMixin('automationClips'),
   ReadinessMixin('isTransitionReady'), {
 
   title: DS.attr('string'),
@@ -19,17 +21,17 @@ export default DS.Model.extend(
 
   automationClips: DS.hasMany('mix/transition/automation-clip'),
 
-  fromTrackAutomationClips: Ember.computed('automationClips.@each.targetClip', 'fromTrackClip', function() {
-    return this.get('automationClips').filterBy('targetClip', this.get('fromTrackClip'));
+  fromTrackAutomationClips: Ember.computed('automationClips.@each.targetClip', 'fromTrackClip.content', function() {
+    return this.get('automationClips').filterBy('targetClip.content', this.get('fromTrackClip.content'));
   }),
 
-  toTrackAutomationClips: Ember.computed('automationClips.@each.targetClip', 'toTrackClip', function() {
-    return this.get('automationClips').filterBy('targetClip', this.get('toTrackClip'));
+  toTrackAutomationClips: Ember.computed('automationClips.@each.targetClip', 'toTrackClip.content', function() {
+    return this.get('automationClips').filterBy('targetClip.content', this.get('toTrackClip.content'));
   }),
 
   // implementing PlayableArrangement
-  audioContext: Ember.computed.reads('transitionClip.audioContext'),
-  outputNode: Ember.computed.reads('transitionClip.outputNode'),
+  audioContext: Ember.computed.or('transitionClip.audioContext'),
+  outputNode: Ember.computed.reads('transitionClip.outputNode.content'),
   clips: Ember.computed.reads('automationClips'), // TODO(POLYMORHPISM)
 
   // optimizes this transition, with given constraints
@@ -47,31 +49,23 @@ export default DS.Model.extend(
     maxToTrackStartBeat = maxToTrackStartBeat || this.get('toTrackClip.audioEndBeat');
 
     // TODO(REFACTOR2): improve this algorithm, add options and presets
-    console.log("OPTIMIZE TRANSITION");
 
     return this.destroyAutomationClips().then(() => {
       const store = this.get('store');
       return Ember.RSVP.all([this.get('fromTrackClip'), this.get('toTrackClip')]).then(([ fromTrackClip, toTrackClip ]) => {
-
-      console.log("BEFORE CREATE TRANSITION", fromTrackClip, toTrackClip);
-
-        debugger;
         const fromTrackVolumeClip = store.createRecord('mix/transition/automation-clip', {
           controlType: CONTROL_TYPE_GAIN,
           transition: this,
           targetClip: fromTrackClip,
         });
-
-
         const toTrackVolumeClip = store.createRecord('mix/transition/automation-clip', {
           controlType: CONTROL_TYPE_GAIN,
           transition: this,
           targetClip: toTrackClip,
         });
 
-      console.log("BEFORE ADD CLIPS");
         this.get('automationClips').addObjects([fromTrackVolumeClip, toTrackVolumeClip]);
-      console.log("AFTERADD CLIPS");
+
         return this;
       });
     });
