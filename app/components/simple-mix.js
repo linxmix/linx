@@ -11,7 +11,7 @@ import { variableTernary } from 'linx/lib/computed/ternary';
 
 export const MIX_ITEM_PREVIEW_DISTANCE = 4;
 
-export const FROM_TRACK_COLOR = '#e67e22';
+export const FROM_TRACK_COLOR = '#ac6ac7';
 export const TO_TRACK_COLOR = '#16a085';
 
 export default Ember.Component.extend(
