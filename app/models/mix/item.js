@@ -20,8 +20,12 @@ export default DS.Model.extend(
 
   _transitionClip: DS.belongsTo('mix/transition-clip', { async: true }),
   transitionClip: withDefaultModel('_transitionClip', function() {
-    return this.get('store').createRecord('mix/transition-clip', {
+    const transitionClip = this.get('store').createRecord('mix/transition-clip', {
       mixItem: this,
+    });
+
+    return transitionClip.get('transition').then((transition) => {
+      return transition.optimize();
     });
   }),
 
