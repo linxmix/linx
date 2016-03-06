@@ -3,6 +3,10 @@ import Ember from 'ember';
 import d3 from 'd3';
 
 export default Ember.Mixin.create({
+
+  // optional params
+  isDraggable: false,
+
   drag: Ember.computed(function() {
     return d3.behavior.drag();
   }),
@@ -13,6 +17,8 @@ export default Ember.Mixin.create({
 
   _dragBeatCount: 0,
   _initDragHandlers: Ember.on('init', function() {
+    if (!this.get('isDraggable')) return;
+
     const drag = this.get('drag');
     const context = this;
 

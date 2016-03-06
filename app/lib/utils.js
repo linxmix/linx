@@ -32,7 +32,7 @@ export const isNumber = function(number) {
 };
 
 export const isValidNumber = function(number) {
-  return isNumber(number) && !isNaN(number);
+  return isNumber(number) && isFinite(number);
 };
 
 export const isObject = function(object) {

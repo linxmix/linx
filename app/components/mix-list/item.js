@@ -7,7 +7,7 @@ import add from 'linx/lib/computed/add';
 import equalProps from 'linx/lib/computed/equal-props';
 
 export default Ember.Component.extend(
-  BubbleActions('remove', 'view', 'play'), RequireAttributes('item'), {
+  BubbleActions('remove', 'viewTrack', 'viewTransition', 'play'), RequireAttributes('item'), {
 
   actions: {},
   classNames: ['MixListItem', 'item'],

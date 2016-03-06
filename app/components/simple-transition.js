@@ -104,16 +104,11 @@ export default Ember.Component.extend(
   selectedQuantization: Ember.computed.reads('selectedQuantizations.firstObject'),
 
   // simple-transition specific stuff
-  fromTrack: Ember.computed.reads('transition.fromTrack'),
-  fromTrackMarker: Ember.computed.reads('transition.fromTrackMarker'),
-  toTrack: Ember.computed.reads('transition.toTrack'),
-  toTrackMarker: Ember.computed.reads('transition.toTrackMarker'),
-
-  mixItem: Ember.computed.reads('transition.mixItem'),
+  transitionClip: Ember.computed.reads('transition.transitionClip'),
+  mixItem: Ember.computed.reads('transitionClip.mixItem'),
   mix: Ember.computed.reads('mixItem.mix'),
-  transitionClip: Ember.computed.reads('mixItem.transitionClip'),
-  fromTrackClip: Ember.computed.reads('mixItem.fromTrackClip'),
-  toTrackClip: Ember.computed.reads('mixItem.toTrackClip'),
+  fromTrackClip: Ember.computed.reads('mixItem.trackClip'),
+  toTrackClip: Ember.computed.reads('mixItem.nextTrackClip'),
 
   fromTrackEndBeat: Ember.computed.reads('transition.fromTrackEndBeat'),
   toTrackStartBeat: Ember.computed.reads('transition.toTrackStartBeat'),

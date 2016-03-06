@@ -5,7 +5,7 @@
     {{track.title}}
   {{/link-to}}
 
-  <div class="tiny inverted basic circular yellow ui icon button" {{action "view" item}}>
+  <div class="tiny inverted basic circular yellow ui icon button" {{action "viewTrack" item}}>
     <i class="search icon"></i>
   </div>
   <div class="tiny inverted basic circular green ui icon button" {{action "play" item}}>
@@ -18,11 +18,9 @@
 
 {{#unless isLastItem}}
   <div class="content">
-    {{#link-to "mixes.mix.transition" transition.id}}
-      <div class="inverted basic teal ui icon button">
-        <i class="linkify icon"></i>
-        View Transition
-      </div>
-    {{/link-to}}
+    <div class="inverted basic teal ui icon button" {{action "viewTransition" item}}>
+      <i class="linkify icon"></i>
+      View Transition
+    </div>
   </div>
 {{/unless}}

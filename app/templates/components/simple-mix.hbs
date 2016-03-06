@@ -3,10 +3,6 @@
   <i class="cloud upload icon"></i>
   Save Mix
 </div>
-<div class="inverted orange ui icon button {{if mix.anyDirty "" "basic disabled"}}" {{action "resetMix"}}>
-  <i class="refresh icon"></i>
-  Undo Changes
-</div>
 <div class="inverted red ui icon button test-delete-mix" {{action "deleteMix"}}>
   <i class="remove icon"></i>
   Delete Mix
@@ -18,11 +14,11 @@
 
 {{search-tracks
   tracksPromise=searchTracks
-  action="selectTrack"
+  action="addTrack"
 }}
 
 {{search-soundcloud-tracks
-  selectTrack="selectTrack"
+  selectTrack="addTrack"
   store=store
 }}
 
@@ -38,13 +34,26 @@
     {{mix-list/item
       item=item
       remove="removeItem"
-      view="viewItem"
+      viewTrack="viewTrack"
+      viewTransition="viewTransition"
       play="playItem"
     }}
   {{/each}}
 {{/mix-list}}
 
 <hr/>
+
+{{#if hasSelectedClip}}
+  <div class="inverted green ui icon button {{if selectedClip.anyDirty "" "basic disabled"}}" {{action "saveSelectedClip"}}>
+    <i class="save icon"></i>
+    Save Changes
+  </div>
+
+  <div class="inverted yellow ui icon button" {{action "didSelectClip"}}>
+    <i class="cancel icon"></i>
+    Cancel
+  </div>
+{{/if}}
 
 {{!-- TODO(REFACTOR): move to nested component? --}}
 {{#if showArrangement}}
@@ -54,31 +63,36 @@
     zoom=zoom
     isReady=isReady
     seekToBeat=(action "seekToBeat")
-    class="SimpleMix-arrangementVisual"
+    class="SimpleMix-ArrangementVisual"
     as |gridSelect width height|
   }}
 
     {{!-- Track Clips --}}
     {{#zip-entries select=gridSelect.SimpleMix-trackClips items=mix.trackClips as |trackClip tag|}}
-      {{arrangement-visual/track-clip
+      {{mix-visual/track-clip
+        clip=trackClip
         select=tag
+        selectedClip=selectedClip
         track=trackClip.track
         beatCount=trackClip.beatCount
         startBeat=trackClip.startBeat
         audioStartTime=trackClip.audioStartTime
-        height=height
+        fullHeight=height
+        rowHeight=rowHeight
         pxPerBeat=pxPerBeat
       }}
     {{/zip-entries}}
 
     {{!-- Transition Clips --}}
     {{#zip-entries select=gridSelect.SimpleMix-transitionClips items=mix.transitionClips as |transitionClip tag|}}
-      {{arrangement-visual/transition-clip
+      {{mix-visual/transition-clip
         select=tag
+        selectedClip=selectedClip
         startBeat=transitionClip.startBeat
         beatCount=transitionClip.beatCount
-        height=height
-        onClick=(action 'onTransitionClipClick' transitionClip)
+        fullHeight=height
+        rowHeight=rowHeight
+        onClick=(action "didSelectClip" transitionClip)
         pxPerBeat=pxPerBeat
       }}
     {{/zip-entries}}

@@ -5,6 +5,8 @@ import d3 from 'd3';
 
 import RequireAttributes from 'linx/lib/require-attributes';
 
+import { isValidNumber } from 'linx/lib/utils';
+
 // Interface for controlling Arrangement Visuals
 export default Ember.Mixin.create({
 
@@ -26,19 +28,19 @@ export default Ember.Mixin.create({
   }).volatile(),
 
   actions: {
-    zoomToClip(clip, doTransition) {
+    zoomToClip(clip, doAnimate) {
       const centerBeat = clip.get('centerBeat');
       const pxPerBeat = this.get('pxPerBeat');
       const clipWidthPx = clip.get('beatCount') * pxPerBeat;
       const viewWidthPx = this._getSvgWidth();
       const scale = viewWidthPx / clipWidthPx;
-      this.send('zoomToBeat', centerBeat, scale, doTransition);
+      this.send('zoomToBeat', centerBeat, scale, doAnimate);
     },
 
-    zoomToBeat(beat, scale, doTransition = true) {
+    zoomToBeat(beat, scale, doAnimate = true) {
       const zoom = this.get('zoom');
       const prevScale = zoom.scale();
-      scale = scale || prevScale;
+      scale = isValidNumber(scale) ? scale : prevScale;
       let [ translateX, translateY ] = zoom.translate();
       const pxPerBeat = this.get('pxPerBeat');
       const svgSelection = this.get('svgSelection');
@@ -49,8 +51,10 @@ export default Ember.Mixin.create({
       const svgWidth = this._getSvgWidth();
       translateX = (svgWidth / 2.0) - (beat * pxPerBeat * scale);
 
+      console.log('zoomToBeat', scale, translateX, translateY);
+
       // possibly animate zoom on svg selection
-      if (doTransition) {
+      if (doAnimate) {
         svgSelection
           .call(zoom.translate(zoom.translate()).event)
           .call(zoom.scale(prevScale).event)

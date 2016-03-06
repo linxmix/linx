@@ -12,7 +12,8 @@ export const MIX_ITEM_PREVIEW_DISTANCE = 4;
 export default Ember.Component.extend(
   ArrangementPlayerMixin,
   ArrangementVisualMixin,
-  BubbleActions('saveMix', 'deleteMix'), RequireAttributes('mix', 'store'), {
+  BubbleActions('saveMix', 'deleteMix', 'didSelectClip'),
+  RequireAttributes('mix', 'store'), {
 
   classNames: ['SimpleMix'],
   classNameBindings: [],
@@ -20,6 +21,9 @@ export default Ember.Component.extend(
   // optional params
   showArrangement: true,
   pxPerBeat: 1,
+  selectedClip: null,
+
+  hasSelectedClip: Ember.computed.bool('selectedClip'),
 
   actions: {
     resetMix() {
@@ -28,16 +32,26 @@ export default Ember.Component.extend(
       this.get('mix').rollbackAttributes();
     },
 
-    playItem(mixItem) {
-      this.send('viewItem', mixItem);
+    saveSelectedClip() {
+      const selectedClip = this.get('selectedClip');
+      selectedClip && selectedClip.save();
+    },
 
+    playItem(mixItem) {
       mixItem.get('transitionClip').then((clip) => {
         this.send('play', clip.get('startBeat') - MIX_ITEM_PREVIEW_DISTANCE);
       });
     },
 
-    viewItem(mixItem) {
+    viewTrack(mixItem) {
+      mixItem.get('trackClip').then((clip) => {
+        this.send('zoomToClip', clip);
+      });
+    },
+
+    viewTransition(mixItem) {
       mixItem.get('transitionClip').then((clip) => {
+        this.send('didSelectClip', clip);
         this.send('zoomToClip', clip);
       });
     },
@@ -47,7 +61,7 @@ export default Ember.Component.extend(
       mix.removeObject(mixItem);
     },
 
-    selectTrack(track) {
+    addTrack(track) {
       const mix = this.get('mix');
 
       mix.appendTrack(track);
@@ -60,10 +74,6 @@ export default Ember.Component.extend(
 
       mix.appendTrack(randomTrack);
     },
-
-    onTransitionClipClick(clip) {
-      this.sendAction('transitionToTransition', clip.get('transition'));
-    }
   },
 
   // implement ArrangementPlayerMixin
