@@ -7,8 +7,6 @@ import { join } from 'ember-cli-d3/utils/d3';
 import RequireAttributes from 'linx/lib/require-attributes';
 import multiply from 'linx/lib/computed/multiply';
 
-// TODO(REFACTOR) write wave component
-// http://stackoverflow.com/questions/26207636/drawing-a-waveform-with-d3
 export default Ember.Component.extend(
   GraphicSupport,
   RequireAttributes('peaks'), {
