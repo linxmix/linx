@@ -7,6 +7,8 @@ import RequireAttributes from 'linx/lib/require-attributes';
 import ArrangementPlayerMixin from 'linx/mixins/components/arrangement-player';
 import ArrangementVisualMixin from 'linx/mixins/components/arrangement-visual';
 
+import { variableTernary } from 'linx/lib/computed/ternary';
+
 export const MIX_ITEM_PREVIEW_DISTANCE = 4;
 
 export default Ember.Component.extend(
@@ -20,10 +22,12 @@ export default Ember.Component.extend(
 
   // optional params
   showArrangement: true,
-  pxPerBeat: 1,
   selectedClip: null,
+  defaultPxPerBeat: 1,
+  zoomedPxPerBeat: 25,
 
   hasSelectedClip: Ember.computed.bool('selectedClip'),
+  pxPerBeat: variableTernary('hasSelectedClip', 'zoomedPxPerBeat', 'defaultPxPerBeat'),
 
   actions: {
     resetMix() {
@@ -52,8 +56,22 @@ export default Ember.Component.extend(
     viewTransition(mixItem) {
       mixItem.get('transitionClip').then((clip) => {
         this.send('didSelectClip', clip);
-        this.send('zoomToClip', clip);
+
+        Ember.run.next(() => {
+          this.send('zoomToClip', clip);
+        });
       });
+    },
+
+    clearSelectedClip() {
+      const selectedClip = this.get('selectedClip');
+      if (selectedClip) {
+        this.send('didSelectClip', null);
+
+        Ember.run.next(() => {
+          this.send('zoomToClip', selectedClip);
+        });
+      }
     },
 
     removeItem(mixItem) {
@@ -83,16 +101,16 @@ export default Ember.Component.extend(
     return this.get('store').findAll('track');
   }),
 
-  // Hacky stuff to convert <input type="number"> values to numbers
-  inputBpm: Ember.computed.oneWay('metronome.bpm'),
-  inputZoom: Ember.computed.oneWay('pxPerBeat'),
-  _inputBpmDidChange: function() {
-    this.get('metronome').setBpm(parseFloat(this.get('inputBpm')));
-  }.observes('inputBpm'),
-  _inputZoomDidChange: function() {
-    // update pxPerBeat
-    this.set('pxPerBeat', parseFloat(this.get('inputZoom')));
-  }.observes('inputZoom'),
-  // /hacky stuff
+  // // Hacky stuff to convert <input type="number"> values to numbers
+  // inputBpm: Ember.computed.oneWay('metronome.bpm'),
+  // inputZoom: Ember.computed.oneWay('pxPerBeat'),
+  // _inputBpmDidChange: function() {
+  //   this.get('metronome').setBpm(parseFloat(this.get('inputBpm')));
+  // }.observes('inputBpm'),
+  // _inputZoomDidChange: function() {
+  //   // update pxPerBeat
+  //   this.set('pxPerBeat', parseFloat(this.get('inputZoom')));
+  // }.observes('inputZoom'),
+  // // /hacky stuff
 });
 

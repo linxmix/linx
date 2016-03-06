@@ -1,0 +1,10 @@
+{{yield}}
+
+{{#if (or (and selectedClip isSelected) (not selectedClip))}}
+  {{arrangement-visual/track-clip/wave
+    select=select.TrackClip-wave
+    transform=waveTransform
+    peaks=trackPeaks
+    height=height
+  }}
+{{/if}}

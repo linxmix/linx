@@ -28,6 +28,5 @@ export default ArrangementVisualClip.extend({
   isSelectedToTrackClip: equalProps('selectedToTrackClip', 'clip'),
 
   isSelectedClip: equalProps('selectedClip', 'clip'),
-
   isSelected: Ember.computed.or('isSelectedClip', 'isSelectedFromTrackClip', 'isSelectedToTrackClip'),
 });
