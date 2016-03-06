@@ -10,6 +10,10 @@ export default Ember.Mixin.create({
   track: null,
   audioStartTime: null,
 
+  // optional params
+  displayWaveform: true,
+  waveColor: 'green',
+
   audioMeta: Ember.computed.reads('track.audioMeta'),
   trackBpm: Ember.computed.reads('audioMeta.bpm'),
   trackBeatCount: Ember.computed.reads('audioMeta.beatCount'),
@@ -24,14 +28,16 @@ export default Ember.Mixin.create({
     return `translate(${translateX})`;
   }),
 
-  trackPeaks: Ember.computed(() => []),
+  trackPeaks: [],
 
   // TODO(CLEANUP): shouldnt have to depend on audioBuffer
-  trackPeaksDidChange: Ember.observer('audioBinary', 'audioBuffer', 'pxPerBeat', 'trackBeatCount', 'trackDuration', function() {
+  trackPeaksDidChange: Ember.observer('audioBinary', 'audioBuffer', 'pxPerBeat', 'trackBeatCount', 'trackDuration', 'displayWaveform', function() {
     Ember.run.once(this, 'updateTrackPeaks');
-  }),
+  }).on('didInsertElement'),
 
   updateTrackPeaks() {
+    if (!this.get('displayWaveform')) return;
+
     const { audioBinary, audioBuffer, pxPerBeat, trackBeatCount, trackDuration } = this.getProperties('audioBinary', 'audioBuffer', 'pxPerBeat', 'trackBeatCount', 'trackDuration');
 
     console.log('track clip peaks', this.getProperties('audioBinary', 'audioBuffer', 'pxPerBeat', 'trackBeatCount', 'trackDuration'));

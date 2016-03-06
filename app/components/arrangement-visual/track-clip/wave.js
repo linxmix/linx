@@ -15,6 +15,7 @@ export default Ember.Component.extend(
 
   // optional params
   height: 125,
+  waveColor: 'green',
 
   prevPeaks: null,
   call(selection) {
@@ -44,7 +45,7 @@ export default Ember.Component.extend(
 
       if (peaks.length) {
         selection
-          .style("fill", "green")
+          .style('fill', this.get('waveColor'))
           .attr('d', area(peaks));
       }
     }

@@ -1,8 +1,10 @@
 <div class="content">
   {{position}} &middot;
 
-  {{#link-to "track" track}}
-    {{track.title}}
+  {{#link-to "track" track }}
+    <span style="color:{{trackColor}};">
+      {{track.title}}
+    </span>
   {{/link-to}}
 
   <div class="tiny inverted basic circular yellow ui icon button" {{action "viewTrack" item}}>
@@ -18,9 +20,13 @@
 
 {{#unless isLastItem}}
   <div class="content">
-    <div class="inverted basic teal ui icon button" {{action "viewTransition" item}}>
+    <div class="inverted basic teal ui icon button {{if isSelectedTransitionClip "basic disabled"}}" {{action "viewTransition" item}}>
       <i class="linkify icon"></i>
-      View Transition
+      {{#unless isSelectedTransitionClip}}
+        View Transition
+      {{else}}
+        Viewing Transition
+      {{/unless}}
     </div>
   </div>
 {{/unless}}

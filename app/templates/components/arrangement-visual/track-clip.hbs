@@ -4,9 +4,13 @@
   pxPerBeat=pxPerBeat
 }}
  --}}
-{{arrangement-visual/track-clip/wave
-  select=select.TrackClip-wave
-  transform=waveTransform
-  peaks=trackPeaks
-  height=height
-}}
+
+{{#if displayWaveform}}
+  {{arrangement-visual/track-clip/wave
+    select=select.TrackClip-wave
+    waveColor=waveColor
+    transform=waveTransform
+    peaks=trackPeaks
+    height=height
+  }}
+{{/if}}
