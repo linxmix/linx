@@ -24,9 +24,14 @@ export default Ember.Mixin.create({
     return `translate(${translateX})`;
   }),
 
+  trackPeaks: Ember.computed(() => []),
+
   // TODO(CLEANUP): shouldnt have to depend on audioBuffer
-  // TODO(CLEANUP): wrap in ember.run.once
-  trackPeaks: Ember.computed('audioBinary', 'audioBuffer', 'pxPerBeat', 'trackBeatCount', 'trackDuration', function() {
+  trackPeaksDidChange: Ember.observer('audioBinary', 'audioBuffer', 'pxPerBeat', 'trackBeatCount', 'trackDuration', function() {
+    Ember.run.once(this, 'updateTrackPeaks');
+  }),
+
+  updateTrackPeaks() {
     const { audioBinary, audioBuffer, pxPerBeat, trackBeatCount, trackDuration } = this.getProperties('audioBinary', 'audioBuffer', 'pxPerBeat', 'trackBeatCount', 'trackDuration');
 
     console.log('track clip peaks', this.getProperties('audioBinary', 'audioBuffer', 'pxPerBeat', 'trackBeatCount', 'trackDuration'));
@@ -43,8 +48,8 @@ export default Ember.Mixin.create({
       return [beat, peak];
     });
 
-    return peaks || [];
-  }),
+    this.set('trackPeaks', peaks || []);
+  },
 
   // TODO(REFACTOR): re-implmement markers
   // audioStartBeat: Ember.computed.reads('clip.audioStartBeat'),
