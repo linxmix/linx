@@ -3,8 +3,10 @@ import DS from 'ember-data';
 
 import Clip from './clip';
 
-const TICKS_PER_BEAT = 10;
+import add from 'linx/lib/computed/add';
+import subtract from 'linx/lib/computed/subtract';
 
+const TICKS_PER_BEAT = 10;
 const FAKE_CONTROL_POINTS = [
   {
     beat: 0,
@@ -32,7 +34,7 @@ const FAKE_CONTROL_POINTS = [
 // Must provide controlType, controlPoints
 export default Clip.extend({
 
-  // // TODO(POLYMORPHISM)
+  // TODO(POLYMORPHISM)
   targetClip: DS.belongsTo('arrangement/track-clip'),
 
   controlType: DS.attr('string'), // one of CONTROL_TYPES
@@ -84,13 +86,15 @@ export default Clip.extend({
   scheduleAutomation(control, metronome) {
     Ember.assert('Cannot scheduleAutomation without a control', Ember.isPresent(control));
     const values = this.get('values');
+    const targetClipStartBeat = this.get('targetClip.startBeat');
 
     if (values) {
-      const startTime = this.getAbsoluteStartTime();
+      const startTime = metronome.beatToTime(this.get('startBeat') + targetClipStartBeat);
       const duration = this.get('duration');
 
       console.log('scheduleAutomation', control.get('type'), startTime, duration);
-      control.setValueCurveAtTime(values, startTime, duration);
+      // TODO(RONHACK)
+      // control.setValueCurveAtTime(values, startTime, duration);
     }
   },
 });

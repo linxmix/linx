@@ -44,19 +44,25 @@
 
 <hr/>
 
+{{!-- TODO(REFACTOR2): move to nested component? mix-builder/transition-toolbar --}}
 {{#if hasSelectedClip}}
-  <div class="inverted green ui icon button {{if selectedClip.anyDirty "" "basic disabled"}}" {{action "saveSelectedClip"}}>
+  <div class="basic inverted yellow ui icon button" {{action "clearSelectedClip"}}>
+    <i class="left caret icon"></i>
+    Back To Mix
+  </div>
+
+  <div class="basic inverted green ui icon button {{if selectedClip.anyDirty "" "disabled"}}" {{action "saveSelectedClip"}}>
     <i class="save icon"></i>
     Save Changes
   </div>
 
-  <div class="inverted yellow ui icon button" {{action "clearSelectedClip"}}>
-    <i class="left caret icon"></i>
-    Back To Mix
+  <div class="basic inverted orange ui icon button" {{action "optimizeTransition" selectedTransition}}>
+    <i class="refresh icon"></i>
+    Optimize Transition
   </div>
 {{/if}}
 
-{{!-- TODO(REFACTOR): move to nested component? --}}
+{{!-- TODO(REFACTOR2): move to component? simple-mix/mix-visual --}}
 {{#if showArrangement}}
   {{#arrangement-visual
     pxPerBeat=pxPerBeat
@@ -93,7 +99,43 @@
         beatCount=transitionClip.beatCount
         fullHeight=height
         rowHeight=rowHeight
+        row=(if (eq transitionClip selectedClip) 1 0)
         onClick=(action "didSelectClip" transitionClip)
+        pxPerBeat=pxPerBeat
+      }}
+    {{/zip-entries}}
+
+
+    {{!-- From Track Automation Clips --}}
+    {{#zip-entries
+      select=gridSelect.SimpleMix-FromTrackAutomationClips
+      items=selectedTransition.fromTrackAutomationClips
+      as |automation tag|
+    }}
+      {{arrangement-visual/automation-clip
+        select=tag
+        controlPoints=automation.sortedControlPoints
+        startBeat=(add automation.startBeat selectedClip.startBeat)
+        beatCount=automation.beatCount
+        height=rowHeight
+        row=0
+        pxPerBeat=pxPerBeat
+      }}
+    {{/zip-entries}}
+
+    {{!-- To Track Automation Clips --}}
+    {{#zip-entries
+      select=gridSelect.SimpleMix-ToTrackAutomationClips
+      items=selectedTransition.toTrackAutomationClips
+      as |automation tag|
+    }}
+      {{arrangement-visual/automation-clip
+        select=tag
+        controlPoints=automation.sortedControlPoints
+        startBeat=(add automation.startBeat selectedClip.startBeat)
+        beatCount=automation.beatCount
+        height=rowHeight
+        row=2
         pxPerBeat=pxPerBeat
       }}
     {{/zip-entries}}

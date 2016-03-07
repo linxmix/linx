@@ -21,6 +21,7 @@ export default Ember.Mixin.create({
   audioBinary: Ember.computed.reads('track.audioBinary'),
   audioBuffer: Ember.computed.reads('audioBinary.audioBuffer'),
 
+  // TODO(REFACTOR2): is there a way we  can make this more semantic?
   waveTransform: Ember.computed('trackBpm', 'audioStartTime', 'pxPerBeat', function() {
     // NOTE: calculate actual raw audio time offset for waveform
     const offsetBeats = -staticTimeToBeat(this.get('audioStartTime'), this.get('trackBpm'));
@@ -36,7 +37,8 @@ export default Ember.Mixin.create({
   }).on('didInsertElement'),
 
   updateTrackPeaks() {
-    if (!this.get('displayWaveform')) return;
+    // TODO(RONHACK)
+    if (!this.get('displayWaveform')) { this.set('trackPeaks', []); return; }
 
     const { audioBinary, audioBuffer, pxPerBeat, trackBeatCount, trackDuration } = this.getProperties('audioBinary', 'audioBuffer', 'pxPerBeat', 'trackBeatCount', 'trackDuration');
 

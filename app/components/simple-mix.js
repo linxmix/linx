@@ -32,6 +32,8 @@ export default Ember.Component.extend(
   hasSelectedClip: Ember.computed.bool('selectedClip'),
   pxPerBeat: variableTernary('hasSelectedClip', 'zoomedPxPerBeat', 'defaultPxPerBeat'),
 
+  selectedTransition: Ember.computed.reads('selectedClip.transition.content'),
+
   actions: {
     resetMix() {
       // TODO: dependentRelationship.rollbackAttributes
@@ -75,6 +77,10 @@ export default Ember.Component.extend(
           this.send('zoomToClip', selectedClip);
         });
       }
+    },
+
+    optimizeTransition(transition) {
+      transition && transition.optimize();
     },
 
     removeItem(mixItem) {

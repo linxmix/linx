@@ -1,9 +1,15 @@
 .ArrangementVisualClip {
 }
 
-.ArrangementVisualClip-backdrop {
-  fill: transparent;
-}
 // .ArrangementVisualClip.is-draggable {
 //   cursor: move;
 // }
+
+.ArrangementVisualClip-backdrop {
+  fill: rgba(#00f, 0.2);
+  cursor: pointer;
+
+  &:hover {
+    fill: rgba(#00f, 0.4);
+  }
+}

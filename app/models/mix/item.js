@@ -25,7 +25,8 @@ export default DS.Model.extend(
     });
 
     return transitionClip.get('transition').then((transition) => {
-      return transition.optimize();
+      // TODO(REFACTOR2): why does this not work?
+      return transition.optimize().then(() => transitionClip);
     });
   }),
 

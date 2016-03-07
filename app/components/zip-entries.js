@@ -5,14 +5,13 @@ import GraphicSupport from 'ember-cli-d3/mixins/d3-support';
 import { join } from 'ember-cli-d3/utils/d3';
 import SelectionProxy from 'ember-cli-d3/system/selection-proxy';
 
-import BubbleActions from 'linx/lib/bubble-actions';
-import RequireAttributes from 'linx/lib/require-attributes';
-
 export default Ember.Component.extend(
-  GraphicSupport,
-  BubbleActions(),
-  RequireAttributes('items'), {
+  GraphicSupport, {
 
+  // required params
+  requiredProperties: ['items'],
+
+  items: null,
   select: null,
   tags: null,
 
