@@ -13,13 +13,11 @@ export default Ember.Mixin.create(
   RequireAttributes('clips', 'audioContext'),
   ReadinessMixin('isPlayableArrangementReady'), {
 
-  // params
-  // TODO(REFACTOR): who connects arrangement to output?
-  // (update 2/19/16) i think it makes sense to provide this as a default, overridable
+  // optional params
   outputNode: Ember.computed.reads('audioContext.destination'),
 
-  metronome: Ember.computed('audioContext', function() {
-    return Metronome.create({ audioContext: this.get('audioContext') });
+  metronome: computedObject(Metronome, {
+    'audioContext': 'audioContext',
   }),
 
   // TODO(REFACTOR): arrangement shouldn't have to wait on clips? clips will just update when loaded
