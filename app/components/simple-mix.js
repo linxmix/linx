@@ -129,8 +129,13 @@ export default Ember.Component.extend(
     onTrackClipDragStart(clip) {
       this.set('_trackDragStartBeat', clip.get('audioStartBeat'));
     },
+
+    toggleShowVolumeAutomation() {
+      this.toggleProperty('showVolumeAutomation');
+    },
   },
 
+  showVolumeAutomation: false,
   // used to keep track of where marker was when track drag started
   _trackDragStartBeat: 0,
 

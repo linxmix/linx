@@ -61,6 +61,20 @@
     Optimize Transition
   </div>
 
+  <div class="basic inverted yellow ui icon button" {{action "zoomToClip" selectedClip}}>
+    <i class="search icon"></i>
+    View Transition
+  </div>
+
+  <div>
+    Show Volume Automation:
+    {{input
+      type="checkbox"
+      checked=showVolumeAutomation
+      action="toggleShowVolumeAutomation"
+    }}
+  </div>
+
   {{quantize-dropdown
     selected=selectedQuantizations
     onSelect=(action "selectQuantization")
@@ -117,7 +131,7 @@
     {{!-- From Track Automation Clips --}}
     {{#zip-entries
       select=gridSelect.SimpleMix-FromTrackAutomationClips
-      items=selectedTransition.fromTrackAutomationClips
+      items=(if showVolumeAutomation selectedTransition.fromTrackAutomationClips [])
       as |automationClip tag|
     }}
       {{arrangement-visual/automation-clip
@@ -134,7 +148,7 @@
     {{!-- To Track Automation Clips --}}
     {{#zip-entries
       select=gridSelect.SimpleMix-ToTrackAutomationClips
-      items=selectedTransition.toTrackAutomationClips
+      items=(if showVolumeAutomation selectedTransition.toTrackAutomationClips [])
       as |automationClip tag|
     }}
       {{arrangement-visual/automation-clip
