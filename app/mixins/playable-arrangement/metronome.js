@@ -56,7 +56,7 @@ export default Ember.Object.extend(
   },
 
   seekToBeat(beat) {
-    console.log("metronome seekToBeat", beat);
+    // console.log("metronome seekToBeat", beat);
 
     this.setProperties({
       seekBeat: beat,

@@ -35,7 +35,7 @@ const FAKE_CONTROL_POINTS = [
 export default Clip.extend({
 
   // required params
-  target: Ember.computed.reads('targetClip'),
+  target: Ember.computed.reads('targetClip.content'),
 
   // TODO(POLYMORPHISM)
   targetClip: DS.belongsTo('arrangement/track-clip'),
@@ -71,7 +71,7 @@ export default Clip.extend({
   // TODO(WEBWORKER)
   values: Ember.computed('scale', 'beatCount', function() {
     const { scale, beatCount } = this.getProperties('scale', 'beatCount');
-    if (!(scale && beatCount)) return [];
+    if (!(scale && beatCount)) { return new Float32Array(0); }
 
     // populate Float32Array by sampling Curve
     const numTicks = beatCount * TICKS_PER_BEAT;
@@ -84,17 +84,23 @@ export default Clip.extend({
     return values;
   }),
 
-  // NOTE: control has to call scheduleAutomation because only the control can cancel automations.
-  //       this is important because automations need to reschedule on update
-  scheduleAutomation(control) {
-    Ember.assert('Cannot scheduleAutomation without a control', Ember.isPresent(control));
-    const values = this.get('values');
+  targetControl: Ember.computed('target.controls.@each.type', 'controlType', function() {
+    return (this.get('target.controls') || []).findBy('type', this.get('controlType'));
+  }),
 
-    if (values) {
+  automationDidChange: Ember.observer('targetControl', 'values', function() {
+    Ember.run.once(this, 'updateControl');
+  }).on('schedule', 'unschedule'),
+
+  updateControl() {
+    const { targetControl, values } = this.getProperties('targetControl', 'values');
+    if (Ember.isNone(targetControl)) { return; }
+
+    if (this.get('isScheduled')) {
       let startTime = this.getAbsoluteStartTime();
       let duration = this.get('duration');
 
-      console.log('scheduleAutomation', control.get('type'), startTime, duration);
+      // curate args
       if (startTime < 0) {
         duration += startTime;
         startTime = 0;
@@ -104,7 +110,14 @@ export default Clip.extend({
         return;
       }
 
-      control.setValueCurveAtTime(values, startTime, duration);
+      console.log('updateControl', targetControl.get('type'), startTime, duration);
+      targetControl.addAutomation(this, {
+        values,
+        startTime,
+        duration,
+      });
+    } else {
+      targetControl.removeAutomation(this);
     }
   },
 });

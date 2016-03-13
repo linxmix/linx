@@ -13,7 +13,6 @@ export default Clip.extend(
 
   // implement track-clip
   track: DS.belongsTo('track', { async: true }),
-  automationClips: DS.hasMany('arrangement/automation-clip'),
   audioStartBeat: withDefaultProperty('_audioStartBeat', '_defaultAudioStartBeat'),
   audioEndBeat: withDefaultProperty('_audioEndBeat', '_defaultAudioEndBeat'),
 

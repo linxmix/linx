@@ -19,18 +19,8 @@ export default Ember.ObjectProxy.extend(
   isAudioLoaded: Ember.computed.bool('audioBuffer'),
 
   start(when, offset, duration) {
-    if (when < 0) {
-      when = 0;
-    }
-
-    // if offset is negative, shift to when
-    if (offset < 0) {
-      when -= offset;
-      offset = 0;
-    }
-
-    console.log('currentTime', this.get('audioContext.currentTime'));
-    console.log('startSource', when, offset);
+    // console.log('currentTime', this.get('audioContext.currentTime'));
+    // console.log('startSource', when, offset);
     const args = [when, offset, duration].filter(isValidNumber);
 
     // web audio buffer sources can only be played once
