@@ -37,8 +37,7 @@ export default Ember.Mixin.create({
   }).on('didInsertElement'),
 
   updateTrackPeaks() {
-    // TODO(RONHACK)
-    if (!this.get('displayWaveform')) { this.set('trackPeaks', []); return; }
+    if (!this.get('displayWaveform')) { return; }
 
     const { audioBinary, audioBuffer, pxPerBeat, trackBeatCount, trackDuration } = this.getProperties('audioBinary', 'audioBuffer', 'pxPerBeat', 'trackBeatCount', 'trackDuration');
 

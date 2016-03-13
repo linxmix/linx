@@ -110,13 +110,13 @@
     {{#zip-entries
       select=gridSelect.SimpleMix-FromTrackAutomationClips
       items=selectedTransition.fromTrackAutomationClips
-      as |automation tag|
+      as |automationClip tag|
     }}
       {{arrangement-visual/automation-clip
         select=tag
-        controlPoints=automation.sortedControlPoints
-        startBeat=(add automation.startBeat selectedClip.startBeat)
-        beatCount=automation.beatCount
+        controlPoints=automationClip.sortedControlPoints
+        startBeat=(add automationClip.startBeat selectedClip.startBeat)
+        beatCount=automationClip.beatCount
         height=rowHeight
         row=0
         pxPerBeat=pxPerBeat
@@ -127,13 +127,13 @@
     {{#zip-entries
       select=gridSelect.SimpleMix-ToTrackAutomationClips
       items=selectedTransition.toTrackAutomationClips
-      as |automation tag|
+      as |automationClip tag|
     }}
       {{arrangement-visual/automation-clip
         select=tag
-        controlPoints=automation.sortedControlPoints
-        startBeat=(add automation.startBeat selectedClip.startBeat)
-        beatCount=automation.beatCount
+        controlPoints=automationClip.sortedControlPoints
+        startBeat=(add automationClip.startBeat selectedClip.startBeat)
+        beatCount=automationClip.beatCount
         height=rowHeight
         row=2
         pxPerBeat=pxPerBeat

@@ -1,8 +1,9 @@
 import Ember from 'ember';
 
-// TODO(RONHACK)
-export function add([ a, b ]) {
-  return (Number(a) || 0) + (Number(b) || 0);
+import { arraySum } from 'linx/lib/utils';
+
+export function add(args) {
+  return arraySum(args);
 }
 
 export default Ember.Helper.helper(add);
