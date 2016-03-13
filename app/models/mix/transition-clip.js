@@ -27,6 +27,20 @@ export default Clip.extend(
 
   // implementing Clip
   startBeat: subtract('fromTrackClip.endBeat', 'beatCount'), // overlap
-  arrangement: Ember.computed.reads('mixItem.mix'),
+  mix: Ember.computed.reads('mixItem.mix'),
+  arrangement: Ember.computed.reads('mix'),
   beatCount: Ember.computed.reads('transition.beatCount'),
+
+  startTransition: Ember.on('schedule', function() {
+    const currentBeat = this.getCurrentMetronomeBeat() - this.get('startBeat');
+    const transition = this.get('transition.content');
+
+    transition && transition.play(currentBeat);
+  }),
+
+  stopTransition: Ember.on('unschedule', function() {
+    const transition = this.get('transition.content');
+
+    transition && transition.pause();
+  }),
 });

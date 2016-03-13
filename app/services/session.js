@@ -5,14 +5,14 @@ export default Ember.Service.extend({
 
   audioContext: Ember.computed(function() {
     // TODO: error handle for unsupported browsers
-    let AudioContext = (window.AudioContext || window.webkitAudioContext);
+    const AudioContext = (window.AudioContext || window.webkitAudioContext);
     return new AudioContext();
   }),
 
   offlineAudioContext: Ember.computed('audioContext', function() {
-    let audioContext = this.get('audioContext');
+    const audioContext = this.get('audioContext');
     // TODO: error handle for unsupported browsers
-    let OfflineAudioContext = (window.OfflineAudioContext || window.webkitOfflineAudioContext);
+    const OfflineAudioContext = (window.OfflineAudioContext || window.webkitOfflineAudioContext);
 
     return new OfflineAudioContext(1, 2, audioContext.sampleRate);
   }),

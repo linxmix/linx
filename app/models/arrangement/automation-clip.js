@@ -34,6 +34,9 @@ const FAKE_CONTROL_POINTS = [
 // Must provide controlType, controlPoints
 export default Clip.extend({
 
+  // required params
+  target: Ember.computed.reads('targetClip'),
+
   // TODO(POLYMORPHISM)
   targetClip: DS.belongsTo('arrangement/track-clip'),
 
@@ -83,18 +86,25 @@ export default Clip.extend({
 
   // NOTE: control has to call scheduleAutomation because only the control can cancel automations.
   //       this is important because automations need to reschedule on update
-  scheduleAutomation(control, metronome) {
+  scheduleAutomation(control) {
     Ember.assert('Cannot scheduleAutomation without a control', Ember.isPresent(control));
     const values = this.get('values');
-    const targetClipStartBeat = this.get('targetClip.startBeat');
 
     if (values) {
-      const startTime = metronome.beatToTime(this.get('startBeat') + targetClipStartBeat);
-      const duration = this.get('duration');
+      let startTime = this.getAbsoluteStartTime();
+      let duration = this.get('duration');
 
       console.log('scheduleAutomation', control.get('type'), startTime, duration);
-      // TODO(RONHACK)
-      // control.setValueCurveAtTime(values, startTime, duration);
+      if (startTime < 0) {
+        duration += startTime;
+        startTime = 0;
+      }
+
+      if (duration < 0) {
+        return;
+      }
+
+      control.setValueCurveAtTime(values, startTime, duration);
     }
   },
 });

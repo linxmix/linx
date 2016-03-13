@@ -24,6 +24,11 @@ export default Ember.Mixin.create(Ember.Evented, {
   metronome: Ember.computed.reads('arrangement.metronome'),
   audioContext: Ember.computed.reads('metronome.audioContext'),
 
+  // returns current beat from metronome's frame of reference
+  getCurrentMetronomeBeat() {
+    return this.get('metronome').getCurrentBeat();
+  },
+
   // returns current beat from clip's frame of reference
   getCurrentClipBeat() {
     let currentBeat = this.get('metronome').getCurrentBeat() - this.get('startBeat');
@@ -33,6 +38,11 @@ export default Ember.Mixin.create(Ember.Evented, {
   // returns absolute start time of this clip from metronome's frame of reference
   getAbsoluteStartTime() {
     return this.get('metronome').beatToTime(this.get('startBeat'));
+  },
+
+  // returns absolute time from metronome's frame of reference
+  getAbsoluteTime() {
+    return this.get('metronome').getAbsTime();
   },
 
   // duration of clip in [s]
@@ -77,6 +87,21 @@ export default Ember.Mixin.create(Ember.Evented, {
       this.trigger('schedule');
     }
   },
+
+  // _startEvent: null,
+  // _scheduleStartEvent: Ember.on('schedule', function() {
+  //   const metronome = this.get('metronome');
+  //   const startEvent = metronome && metronome.callbackAtBeat(() => {
+  //     this.trigger('start');
+  //   }, this.get('startBeat'));
+  //   this.set('_startEvent', startEvent);
+  // }),
+
+  // _unscheduleStartEvent: Ember.on('unschedule', function() {
+  //   const startEvent = this.get('_startEvent');
+
+  //   startEvent && startEvent.clear();
+  // }),
 
   willDestroy() {
     this.set('isScheduled', false);

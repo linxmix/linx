@@ -30,7 +30,7 @@ export default DS.Model.extend(
   }),
 
   // implementing PlayableArrangement
-  audioContext: Ember.computed.or('transitionClip.audioContext'),
+  audioContext: Ember.computed.reads('transitionClip.audioContext'),
   outputNode: Ember.computed.reads('transitionClip.outputNode.content'),
   clips: Ember.computed.reads('automationClips'), // TODO(POLYMORHPISM)
 

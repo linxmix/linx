@@ -13,6 +13,38 @@ export default Ember.Mixin.create(
   RequireAttributes('clips', 'audioContext'),
   ReadinessMixin('isPlayableArrangementReady'), {
 
+  // params
+  playpause(beat) {
+    this.get('metronome').playpause(beat);
+  },
+
+  play(beat) {
+    this.get('metronome').play(beat);
+  },
+
+  pause() {
+    this.get('metronome').pause();
+  },
+
+  stop() {
+    this.pause();
+    this.get('metronome').seekToBeat(0);
+  },
+
+  skipBack() {
+    this.get('metronome').seekToBeat(0);
+  },
+
+  skipForth() {
+    console.log("skip forth unimplemented");
+  },
+
+  seekToBeat(beat) {
+    this.get('metronome').seekToBeat(beat);
+  },
+
+  isPlaying: Ember.computed.reads('metronome.isPlaying'),
+
   // optional params
   outputNode: Ember.computed.reads('audioContext.destination'),
 

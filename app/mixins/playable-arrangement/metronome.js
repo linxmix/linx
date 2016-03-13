@@ -3,7 +3,7 @@ import Ember from 'ember';
 import _ from 'npm:underscore';
 
 import RequireAttributes from 'linx/lib/require-attributes';
-import { beatToTime, timeToBeat, clamp, isNumber } from 'linx/lib/utils';
+import { beatToTime, timeToBeat, clamp, isNumber, isValidNumber } from 'linx/lib/utils';
 import Clock from 'linx/lib/clock';
 
 // Holds rhythym based on clock
@@ -19,11 +19,27 @@ export default Ember.Object.extend(
   bpm: 128.000,
   isPlaying: false,
 
-  // clock: Ember.computed('audioContext', function() {
-  //   let clock = Clock.create({ audioContext: this.get('audioContext') });
-  //   clock.start();
-  //   return clock;
-  // }),
+  clock: Ember.computed('audioContext', function() {
+    let clock = Clock.create({ audioContext: this.get('audioContext') });
+    clock.start();
+    return clock;
+  }),
+
+  // returns WAAclock event
+  callbackAtTime(callback, time) {
+    if (!isValidNumber(time)) {
+      console.warn('Must call metronome.callbackAtTime with valid time', time);
+      return;
+    }
+
+    const clock = this.get('clock');
+    return clock && clock.callbackAtTime(callback, time);
+  },
+
+  // returns WAAclock event
+  callbackAtBeat(callback, beat) {
+    return this.callbackAtTime(callback, this.beatToTime(beat));
+  },
 
   setBpm(bpm) {
     this.seekToBeat(this.getCurrentBeat());
@@ -35,16 +51,16 @@ export default Ember.Object.extend(
     return beatToTime(beatCount, this.get('bpm'));
   },
 
-  // createEvent(options = {}) {
-  //   return this.get('clock').createEvent(options);
-  // },
+  createEvent(options = {}) {
+    return this.get('clock').createEvent(options);
+  },
 
   seekToBeat(beat) {
     console.log("metronome seekToBeat", beat);
 
     this.setProperties({
       seekBeat: beat,
-      absSeekTime: this._getAbsTime()
+      absSeekTime: this.getAbsTime()
     });
     this.trigger('seek');
   },
@@ -85,7 +101,7 @@ export default Ember.Object.extend(
   beatToTime(beat) {
     beat -= this.getCurrentBeat();
 
-    return this._getAbsTime() + beatToTime(beat, this.get('bpm'));
+    return this.getAbsTime() + beatToTime(beat, this.get('bpm'));
   },
 
   // Returns current metronome beat
@@ -93,13 +109,13 @@ export default Ember.Object.extend(
     return this.get('seekBeat') + this._getPlayedBeats();
   },
 
-  _getAbsTime() {
+  getAbsTime() {
     return this.get('audioContext').currentTime;
   },
 
   _getPlayedTime() {
     if (this.get('isPlaying')) {
-      return this._getAbsTime() - this.get('absSeekTime');
+      return this.getAbsTime() - this.get('absSeekTime');
     } else {
       return 0;
     }
