@@ -33,7 +33,8 @@ export default Ember.Component.extend(
 
   call(selection) {
     selection.classed('ArrangementVisualClip', true)
-      .attr('transform', this.get('transform'));
+      .attr('transform', this.get('transform'))
+      .call(this.get('drag'));
 
     this.backdrop(selection);
   },
@@ -43,8 +44,7 @@ export default Ember.Component.extend(
       selection
         .attr('height', this.get('height'))
         .attr('width', this.get('width'))
-        .on('click', () => this.sendAction('onClick'))
-        .call(this.get('drag'));
+        .on('click', () => this.sendAction('onClick'));
     },
     exit(selection) {
       selection

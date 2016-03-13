@@ -19,8 +19,8 @@ export default Ember.Mixin.create({
   _initDragHandlers: Ember.on('init', function() {
     if (!this.get('isDraggable')) return;
 
-    const drag = this.get('drag');
     const context = this;
+    const drag = this.get('drag');
 
     drag.on('drag', function() {
       let dragBeatCount = context.get('_dragBeatCount');

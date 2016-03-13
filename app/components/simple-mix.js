@@ -120,14 +120,26 @@ export default Ember.Component.extend(
       mix.appendTrack(randomTrack);
     },
 
-    // TODO(REFACTOR2): move to simple-transition/track-clip?
+    // TODO(REFACTOR2): move to simple-mix/track-clip?
     onTrackClipDrag(clip, beats) {
-      const newBeat = this.get('_trackDragStartBeat') - beats;
-      Ember.run.throttle(this, 'moveTrackAudioStart', clip, newBeat, 10, true);
+      console.log('track clip drag', beats);
+      const newBeat = this.get('_dragStartBeat') - beats;
+      Ember.run.throttle(this, 'moveTrackClip', clip, 'audioStartBeat', newBeat, 10, true);
     },
 
     onTrackClipDragStart(clip) {
-      this.set('_trackDragStartBeat', clip.get('audioStartBeat'));
+      this.set('_dragStartBeat', clip.get('audioStartBeat'));
+    },
+
+    // TODO(REFACTOR2): move to simple-mix/transition-clip?
+    onTransitionClipDrag(clip, beats) {
+      console.log('transition clip drag', beats);
+      const newBeat = this.get('_dragStartBeat') + beats;
+      Ember.run.throttle(this, 'moveTrackClip', clip.get('fromTrackClip'), 'audioEndBeat', newBeat, 10, true);
+    },
+
+    onTransitionClipDragStart(clip) {
+      this.set('_dragStartBeat', clip.get('fromTrackClip.audioEndBeat'));
     },
 
     toggleShowVolumeAutomation() {
@@ -135,14 +147,14 @@ export default Ember.Component.extend(
     },
   },
 
-  showVolumeAutomation: false,
+  showVolumeAutomation: true,
   // used to keep track of where marker was when track drag started
-  _trackDragStartBeat: 0,
+  _dragStartBeat: 0,
 
-  moveTrackAudioStart(clip, beat) {
+  moveTrackClip(clip, propertyPath, beat) {
     const beatGrid = clip.get('track.audioMeta.beatGrid');
     const quantization = this.get('selectedQuantization');
-    const oldStartBeat = clip.get('audioStartBeat');
+    const oldStartBeat = clip.get(propertyPath);
 
     let newStartBeat;
     switch (quantization) {
@@ -154,11 +166,11 @@ export default Ember.Component.extend(
         break;
       default: newStartBeat = beat;
     };
-    console.log('moveTrackAudioStart', beat, newStartBeat);
+    // console.log('moveTrackClip', newStartBeat, beat, newStartBeat - oldStartBeat);
 
     // TODO(REFACTOR): tolerance, not exact equality
     if (oldStartBeat !== newStartBeat) {
-      clip.set('audioStartBeat', newStartBeat);
+      clip.set(propertyPath, newStartBeat);
     }
   },
 
