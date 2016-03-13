@@ -110,7 +110,7 @@ export default Clip.extend({
         return;
       }
 
-      console.log('updateControl', targetControl.get('type'), startTime, duration);
+      // console.log('updateControl', targetControl.get('type'), startTime, duration);
       targetControl.addAutomation(this, {
         values,
         startTime,

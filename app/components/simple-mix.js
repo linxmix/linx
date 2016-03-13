@@ -6,6 +6,14 @@ import BubbleActions from 'linx/lib/bubble-actions';
 import RequireAttributes from 'linx/lib/require-attributes';
 import ArrangementPlayerMixin from 'linx/mixins/components/arrangement-player';
 import ArrangementVisualMixin from 'linx/mixins/components/arrangement-visual';
+import {
+  BAR_QUANTIZATION,
+  BEAT_QUANTIZATION,
+  TICK_QUANTIZATION,
+  MS10_QUANTIZATION,
+  MS1_QUANTIZATION,
+  SAMPLE_QUANTIZATION,
+} from 'linx/models/track/audio-meta/beat-grid';
 
 import { variableTernary } from 'linx/lib/computed/ternary';
 
@@ -29,10 +37,16 @@ export default Ember.Component.extend(
   defaultPxPerBeat: 1,
   zoomedPxPerBeat: 25,
 
+  // implement ArrangementPlayerMixin
+  arrangement: Ember.computed.reads('mix'),
+
   hasSelectedClip: Ember.computed.bool('selectedClip'),
   pxPerBeat: variableTernary('hasSelectedClip', 'zoomedPxPerBeat', 'defaultPxPerBeat'),
 
   selectedTransition: Ember.computed.reads('selectedClip.transition.content'),
+
+  selectedQuantizations: [BAR_QUANTIZATION],
+  selectedQuantization: Ember.computed.reads('selectedQuantizations.firstObject'),
 
   actions: {
     resetMix() {
@@ -56,6 +70,10 @@ export default Ember.Component.extend(
       mixItem.get('trackClip').then((clip) => {
         this.send('zoomToClip', clip);
       });
+    },
+
+    selectQuantization(quantization) {
+      this.set('selectedQuantizations', [quantization]);
     },
 
     viewTransition(mixItem) {
@@ -101,10 +119,43 @@ export default Ember.Component.extend(
 
       mix.appendTrack(randomTrack);
     },
+
+    // TODO(REFACTOR2): move to simple-transition/track-clip?
+    onTrackClipDrag(clip, beats) {
+      const newBeat = this.get('_trackDragStartBeat') - beats;
+      Ember.run.throttle(this, 'moveTrackAudioStart', clip, newBeat, 10, true);
+    },
+
+    onTrackClipDragStart(clip) {
+      this.set('_trackDragStartBeat', clip.get('audioStartBeat'));
+    },
   },
 
-  // implement ArrangementPlayerMixin
-  arrangement: Ember.computed.reads('mix'),
+  // used to keep track of where marker was when track drag started
+  _trackDragStartBeat: 0,
+
+  moveTrackAudioStart(clip, beat) {
+    const beatGrid = clip.get('track.audioMeta.beatGrid');
+    const quantization = this.get('selectedQuantization');
+    const oldStartBeat = clip.get('audioStartBeat');
+
+    let newStartBeat;
+    switch (quantization) {
+      case BEAT_QUANTIZATION:
+        newStartBeat = beatGrid.quantizeBeat(beat);
+        break;
+      case BAR_QUANTIZATION:
+        newStartBeat = beatGrid.barToBeat(beatGrid.quantizeBar(beatGrid.beatToBar(beat)));
+        break;
+      default: newStartBeat = beat;
+    };
+    console.log('moveTrackAudioStart', beat, newStartBeat);
+
+    // TODO(REFACTOR): tolerance, not exact equality
+    if (oldStartBeat !== newStartBeat) {
+      clip.set('audioStartBeat', newStartBeat);
+    }
+  },
 
   searchTracks: Ember.computed(function() {
     return this.get('store').findAll('track');

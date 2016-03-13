@@ -60,6 +60,11 @@
     <i class="refresh icon"></i>
     Optimize Transition
   </div>
+
+  {{quantize-dropdown
+    selected=selectedQuantizations
+    onSelect=(action "selectQuantization")
+  }}
 {{/if}}
 
 {{!-- TODO(REFACTOR2): move to component? simple-mix/mix-visual --}}
@@ -87,6 +92,9 @@
         fullHeight=height
         rowHeight=rowHeight
         pxPerBeat=pxPerBeat
+        onDrag=(action "onTrackClipDrag" trackClip)
+        onDragStart=(action "onTrackClipDragStart" trackClip)
+        isDraggable=true
       }}
     {{/zip-entries}}
 
