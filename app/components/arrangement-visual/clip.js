@@ -20,6 +20,7 @@ export default Ember.Component.extend(
   pxPerBeat: 0,
   height: 0,
   row: 0,
+  clip: null,
 
   width: multiply('beatCount', 'pxPerBeat'),
 

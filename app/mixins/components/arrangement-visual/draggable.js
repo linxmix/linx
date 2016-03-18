@@ -4,8 +4,9 @@ import d3 from 'd3';
 
 export default Ember.Mixin.create({
 
-  // optional params
+  // required params
   isDraggable: false,
+  pxPerBeat: 0,
 
   drag: Ember.computed(function() {
     return d3.behavior.drag();
@@ -15,34 +16,44 @@ export default Ember.Mixin.create({
   onDragStart(d3Context) {},
   onDragEnd(d3Context, d, beats) {},
 
-  _dragBeatCount: 0,
+  _dragX: 0,
+  _dragY: 0,
   _initDragHandlers: Ember.on('init', function() {
-    if (!this.get('isDraggable')) return;
-
     const context = this;
     const drag = this.get('drag');
 
     drag.on('drag', function(d) {
-      let dragBeatCount = context.get('_dragBeatCount');
-      dragBeatCount += d3.event.dx / context.get('pxPerBeat');
-      context.set('_dragBeatCount', dragBeatCount);
+      if (!context.get('isDraggable')) return;
 
-      context.onDrag(this, d, dragBeatCount);
+      const pxPerBeat = context.get('pxPerBeat');
+      let { _dragX, _dragY } = context.getProperties('_dragX', '_dragY');
+
+      _dragX += d3.event.dx / pxPerBeat;
+      _dragY += d3.event.dy;
+      context.setProperties({ _dragX, _dragY });
+
+      context.onDrag(this, d, _dragX, _dragY);
     });
 
     drag.on('dragstart', function(d) {
-      d3.event.sourceEvent.stopPropagation(); // silence other listeners
+      if (!context.get('isDraggable')) return;
 
+      d3.event.sourceEvent.stopPropagation(); // silence other listeners
       context.onDragStart(this, d);
     });
 
     drag.on('dragend', function(d) {
-      const dragBeatCount = context.get('_dragBeatCount');
+      if (!context.get('isDraggable')) return;
+
+      const { _dragX, _dragY } = context.getProperties('_dragX', '_dragY');
 
       d3.event.sourceEvent.stopPropagation(); // silence other listeners
-      context.set('_dragBeatCount', 0);
+      context.setProperties({
+        _dragX: 0,
+        _dragY: 0
+      });
 
-      context.onDragEnd(this, d, dragBeatCount);
+      context.onDragEnd(this, d, _dragX, _dragY);
     });
   }),
 })

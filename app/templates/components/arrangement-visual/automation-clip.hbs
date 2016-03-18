@@ -1,7 +1,13 @@
-{{yield}}
+{{#if _drawControlPoints}}
+  {{arrangement-visual/automation-clip/control-points
+    select=select.ArrangementVisualAutomationClip-ControlPoints
+    controlPoints=controlPoints
+    height=height
+    pxPerBeat=pxPerBeat
+    isDraggable=true
+    onDrag=(action "onControlPointDrag")
+    onDragStart=(action "onControlPointDragStart")
+  }}
+{{/if}}
 
-{{arrangement-visual/automation-clip/control-points
-  controlPoints=controlPoints
-  height=height
-  pxPerBeat=pxPerBeat
-}}
+{{yield}}

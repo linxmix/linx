@@ -5,19 +5,56 @@ import _ from 'npm:underscore';
 import { join } from 'ember-cli-d3/utils/d3';
 
 import Clip from './clip';
-import { timeToBeat as staticTimeToBeat } from 'linx/lib/utils';
+import {
+  clamp,
+  timeToBeat as staticTimeToBeat
+} from 'linx/lib/utils';
 
 export default Clip.extend({
 
   // required params
   controlPoints: Ember.computed.reads('clip.sortedControlPoints'),
+  height: 0,
+
+  actions: {
+    onControlPointDrag(d3Context, controlPoint, dBeats, dHeight) {
+      const oldValue = this.get('_dragStartValue');
+      const oldBeat = this.get('_dragStartBeat');
+      const height = this.get('height');
+
+      // calculate new beat and value
+      const beat = clamp(this.get('clip.startBeat'), oldBeat + dBeats, this.get('clip.beatCount'));
+      const value = clamp(0, oldValue - (dHeight / height), 1);
+
+      // console.log('onControlPointDrag', dBeats, dHeight / height, beat, value)
+
+      controlPoint.setProperties({
+        beat,
+        value,
+      });
+    },
+
+    onControlPointDragStart(d3Context, controlPoint) {
+      this.setProperties({
+        _dragStartBeat: controlPoint.get('beat'),
+        _dragStartValue: controlPoint.get('value')
+      });
+    },
+  },
+
+  // keep track of where controlPoint was at dragStart
+  _dragStartBeat: 0,
+  _dragStartValue: 0,
+
+  // used to control svg insertion order (z-index)
+  _drawControlPoints: false,
 
   call(selection) {
     this._super.apply(this, arguments);
     selection.classed('ArrangementVisualAutomationClip', true);
 
     this.drawPath(selection);
-    this.drawControlPoints(selection);
+    this.set('_drawControlPoints', true);
   },
 
   drawPath: join([0], 'path.ArrangementVisualAutomationClip-path', {
@@ -36,20 +73,6 @@ export default Clip.extend({
           .style('fill', 'transparent')
           .attr('d', line(controlPoints));
       }
-    }
-  }),
-
-  drawControlPoints: join('controlPoints', 'circle.ArrangementVisualAutomationClip-ControlPoint', {
-    update(selection) {
-      const height = this.get('height');
-      const pxPerBeat = this.get('pxPerBeat');
-
-      selection
-        .attr('cx', (d) => d.beat * pxPerBeat)
-        .attr('cy', (d) => (1 - d.value) * height)
-        .attr('r', 10)
-        .style('fill', '#B8DE44')
-        .call(this.get('drag'));
     }
   }),
 });

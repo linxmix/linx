@@ -1,15 +1,37 @@
 import Ember from 'ember';
-import BubbleActions from 'linx/lib/bubble-actions';
-import RequireAttributes from 'linx/lib/require-attributes';
+
+import d3 from 'd3';
+import GraphicSupport from 'ember-cli-d3/mixins/d3-support';
+import { join } from 'ember-cli-d3/utils/d3';
+
+import DraggableMixin from 'linx/mixins/components/arrangement-visual/draggable';
 
 export default Ember.Component.extend(
-  BubbleActions(), RequireAttributes(), {
+  DraggableMixin,
+  GraphicSupport, {
 
-  actions: {},
-  classNames: ['ArrangementVisualAutomationClipControlPoints'],
-  classNameBindings: [],
+  // required params
+  controlPoints: null,
 
-  // params
-  foo: 'bar',
+  call(selection) {
+    selection.classed('ArrangementVisualAutomationClipControlPoints', true);
+
+    this.drawControlPoints(selection);
+  },
+
+  drawControlPoints: join('controlPoints', 'circle.ArrangementVisualAutomationClip-ControlPoint', {
+    update(selection) {
+      const height = this.get('height');
+      const pxPerBeat = this.get('pxPerBeat');
+
+      selection
+        .attr('cx', (d) => d.beat * pxPerBeat)
+        .attr('cy', (d) => (1 - d.value) * height)
+        .attr('r', 10)
+        .style('fill', '#B8DE44')
+        .call(this.get('drag'));
+    }
+  }),
+
 });
 
