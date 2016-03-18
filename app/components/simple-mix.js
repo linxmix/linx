@@ -121,24 +121,24 @@ export default Ember.Component.extend(
     },
 
     // TODO(REFACTOR2): move to simple-mix/track-clip?
-    onTrackClipDrag(clip, beats) {
+    onTrackClipDrag(d3Context, clip, beats) {
       console.log('track clip drag', beats);
       const newBeat = this.get('_dragStartBeat') - beats;
       Ember.run.throttle(this, 'moveTrackClip', clip, 'audioStartBeat', newBeat, 10, true);
     },
 
-    onTrackClipDragStart(clip) {
+    onTrackClipDragStart(d3Context, clip) {
       this.set('_dragStartBeat', clip.get('audioStartBeat'));
     },
 
     // TODO(REFACTOR2): move to simple-mix/transition-clip?
-    onTransitionClipDrag(clip, beats) {
+    onTransitionClipDrag(d3Context, clip, beats) {
       console.log('transition clip drag', beats);
       const newBeat = this.get('_dragStartBeat') + beats;
       Ember.run.throttle(this, 'moveTrackClip', clip.get('fromTrackClip'), 'audioEndBeat', newBeat, 10, true);
     },
 
-    onTransitionClipDragStart(clip) {
+    onTransitionClipDragStart(d3Context, clip) {
       this.set('_dragStartBeat', clip.get('fromTrackClip.audioEndBeat'));
     },
 
