@@ -7,28 +7,6 @@ import add from 'linx/lib/computed/add';
 import subtract from 'linx/lib/computed/subtract';
 
 const TICKS_PER_BEAT = 10;
-const FAKE_CONTROL_POINTS = [
-  {
-    beat: 0,
-    value: 0,
-  },
-  {
-    beat: 4,
-    value: 0.5,
-  },
-  {
-    beat: 12,
-    value: 0.5,
-  },
-  {
-    beat: 8,
-    value: 0.2,
-  },
-  {
-    beat: 16,
-    value: 1,
-  },
-];
 
 // Clip that automates Controls
 // Must provide controlType, controlPoints
@@ -41,27 +19,25 @@ export default Clip.extend({
   targetClip: DS.belongsTo('arrangement/track-clip'),
 
   controlType: DS.attr('string'), // one of CONTROL_TYPES
-  // controlPoints: DS.hasMany('arrangement/automation-clip/control-point', { async: true }),
-  controlPoints: Ember.computed(function() {
-    return FAKE_CONTROL_POINTS.map((params) => {
-      return Ember.Object.create(params);
-    });
-  }),
+  controlPoints: DS.hasMany('arrangement/automation-clip/control-point', { async: true }),
 
-  startBeat: Ember.computed.reads('firstControlPoint.beat'),
-  endBeat: Ember.computed.reads('lastControlPoint.beat'),
+  startBeat: Ember.computed.reads('sortedControlPoints.firstObject.beat'),
+  endBeat: Ember.computed.reads('sortedControlPoints.lastObject.beat'),
+
+  // TODO(CLEANUP): why cant i depend on firstControlPoint.beat?
+  // firstControlPoint: Ember.computed.reads('sortedControlPoints.firstObject'),
+  // lastControlPoint: Ember.computed.reads('sortedControlPoints.lastObject'),
 
   // TODO(CLEANUP): why is this still bugged?
   // controlPointSort: ['beat:asc'],
   // sortedControlPoints: Ember.computed.sort('controlPoints', 'controlPointSort'),
-  sortedControlPoints: Ember.computed('controlPoints.@each.beat', function() {
+  sortedControlPoints: Ember.computed('controlPoints.[]', function() {
     return this.get('controlPoints').sortBy('beat');
   }),
 
-  firstControlPoint: Ember.computed.reads('sortedControlPoints.firstObject'),
-  lastControlPoint: Ember.computed.reads('sortedControlPoints.lastObject'),
 
-  scale: Ember.computed('sortedControlPoints.@each.{beat,value}', function() {
+  // scale: Ember.computed('sortedControlPoints.@each.{beat,value}', function() {
+  scale: Ember.computed('sortedControlPoints.[]', function() {
     return d3.scale.linear()
       // .interpolate('monotone')
       .domain(this.get('sortedControlPoints').mapBy('beat'))
@@ -119,5 +95,34 @@ export default Clip.extend({
     } else {
       targetControl.removeAutomation(this);
     }
+  },
+
+  initBasicFade(beatCount = 0, n = 4) {
+    this.destroyControlPoints().then(() => {
+      const controlPoints = [];
+
+      for (let i = 0.0; i <= n; i++) {
+        console.log('create control point', beatCount * (i / n), i / n)
+        this.get('store').createRecord('arrangement/automation-clip/control-point', {
+          automationClip: this,
+          beat: beatCount * (i / n),
+          value: i / n,
+        });
+      }
+    });
+  },
+
+  initBasicFadeIn(beatCount, numControlPoints) {
+    return this.initBasicFade(beatCount, numControlPoints);
+  },
+
+  initBasicFadeOut(beatCount, numControlPoints) {
+    return this.initBasicFade(beatCount, numControlPoints);
+  },
+
+  destroyControlPoints() {
+    return this.get('controlPoints').then((controlPoints) => {
+      return Ember.RSVP.all(controlPoints.toArray().invoke('destroyRecord'));
+    });
   },
 });

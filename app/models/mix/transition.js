@@ -58,11 +58,13 @@ export default DS.Model.extend(
           transition: this,
           targetClip: fromTrackClip,
         });
+        fromTrackVolumeClip.initBasicFadeIn(16);
         const toTrackVolumeClip = store.createRecord('mix/transition/automation-clip', {
           controlType: CONTROL_TYPE_GAIN,
           transition: this,
           targetClip: toTrackClip,
         });
+        toTrackVolumeClip.initBasicFadeOut(16);
 
         this.get('automationClips').addObjects([fromTrackVolumeClip, toTrackVolumeClip]);
 

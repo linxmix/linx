@@ -25,8 +25,8 @@ export default Ember.Component.extend(
       const pxPerBeat = this.get('pxPerBeat');
 
       selection
-        .attr('cx', (d) => d.beat * pxPerBeat)
-        .attr('cy', (d) => (1 - d.value) * height)
+        .attr('cx', (controlPoint) => controlPoint.get('beat') * pxPerBeat)
+        .attr('cy', (controlPoint) => (1 - controlPoint.get('value')) * height)
         .attr('r', 10)
         .style('fill', '#B8DE44')
         .call(this.get('drag'));

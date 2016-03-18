@@ -26,7 +26,7 @@ export default Clip.extend({
       const beat = clamp(this.get('clip.startBeat'), oldBeat + dBeats, this.get('clip.beatCount'));
       const value = clamp(0, oldValue - (dHeight / height), 1);
 
-      // console.log('onControlPointDrag', dBeats, dHeight / height, beat, value)
+      console.log('onControlPointDrag', dBeats, dHeight / height, beat, value)
 
       controlPoint.setProperties({
         beat,
@@ -63,8 +63,8 @@ export default Clip.extend({
       const controlPoints = this.get('controlPoints');
       const pxPerBeat = this.get('pxPerBeat');
       const line = d3.svg.line()
-        .x((d) => d.beat * pxPerBeat)
-        .y((d) => (1 - d.value) * height)
+        .x((controlPoint) => controlPoint.get('beat') * pxPerBeat)
+        .y((controlPoint) => (1 - controlPoint.get('value')) * height)
         .interpolate('linear');
 
       if (controlPoints.length) {
