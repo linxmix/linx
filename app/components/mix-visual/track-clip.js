@@ -1,13 +1,13 @@
 import Ember from 'ember';
 
-import MixVisualClip from './clip';
-import ArrangementVisualTrackClipMixin from 'linx/mixins/components/arrangement-visual/track-clip';
+import ArrangementVisualTrackClip from 'linx/components/arrangement-visual/track-clip';
+import MixVisualClipMixin from 'linx/mixins/components/mix-visual/clip';
 
 import { constantTernary, propertyOrDefault } from 'linx/lib/computed/ternary';
 import { FROM_TRACK_COLOR, TO_TRACK_COLOR } from 'linx/components/simple-mix';
 
-export default MixVisualClip.extend(
-  ArrangementVisualTrackClipMixin, {
+export default ArrangementVisualTrackClip.extend(
+  MixVisualClipMixin, {
 
   layoutName: 'components/arrangement-visual/track-clip',
 
@@ -26,6 +26,6 @@ export default MixVisualClip.extend(
 
   call(selection) {
     this._super.apply(this, arguments);
-    selection.classed('ArrangementVisualMixClip', true);
+    selection.classed('MixVisualTrackClip', true);
   },
 });

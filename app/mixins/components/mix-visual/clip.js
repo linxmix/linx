@@ -1,15 +1,11 @@
 import Ember from 'ember';
 
-import ArrangementVisualClip from '../arrangement-visual/clip';
-
 import equalProps from 'linx/lib/computed/equal-props';
 import { variableTernary } from 'linx/lib/computed/ternary';
 
-export default ArrangementVisualClip.extend({
-  layoutName: 'components/arrangement-visual/clip',
+export default Ember.Mixin.create({
 
   // required params
-  clip: null,
   selectedClip: null,
   fullHeight: null,
   rowHeight: null,

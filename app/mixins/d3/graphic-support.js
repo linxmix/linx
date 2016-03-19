@@ -7,13 +7,13 @@ export default function(...dependentPaths) {
 
   return Ember.Mixin.create(GraphicSupport, {
     [observerName]: Ember.observer.apply(Ember, dependentPaths.concat([function() {
-      // this.didReceiveAttrs();
-      const select = this.get('select');
+      this.didReceiveAttrs();
+      // const select = this.get('select');
 
-      if (select && !this.isDestroying) {
-        // console.log('SELECTION', select)
-        Ember.run.once(select, select.call, this);
-      }
+      // if (select && !this.isDestroying) {
+      //   // console.log('SELECTION', select)
+      //   Ember.run.once(select, select.call, this);
+      // }
     }])),
   });
 }
