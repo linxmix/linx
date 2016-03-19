@@ -18,38 +18,55 @@ export default Clip.extend(
   controlPoints: Ember.computed.reads('clip.sortedControlPoints'),
   height: 0,
 
+  // optional params
+  minControlPointBeat: 0,
+  maxControlPointBeat: Ember.computed.reads('clip.beatCount'),
+  canMoveControlPoint: true,
+
   actions: {
     onControlPointDrag(d3Context, controlPoint, dBeats, dHeight) {
-      const oldValue = this.get('_dragStartValue');
-      const oldBeat = this.get('_dragStartBeat');
-      const height = this.get('height');
+      if (this.get('canMoveControlPoint')) {
+        const oldValue = this.get('_dragStartValue');
+        const oldBeat = this.get('_dragStartBeat');
+        const height = this.get('height');
 
-      // calculate new beat and value
-      const prevControlPoint = controlPoint.get('prevItem');
-      const nextControlPoint = controlPoint.get('nextItem');
-      const minBeat = prevControlPoint ? prevControlPoint.get('beat') : oldBeat;
-      const maxBeat = nextControlPoint ? nextControlPoint.get('beat') : oldBeat;
+        // calculate new beat and value
+        const prevControlPoint = controlPoint.get('prevItem');
+        const nextControlPoint = controlPoint.get('nextItem');
+        const minBeat = prevControlPoint ? prevControlPoint.get('beat') : this.get('minControlPointBeat');
+        const maxBeat = nextControlPoint ? nextControlPoint.get('beat') : this.get('maxControlPointBeat');
 
-      const beat = clamp(minBeat, oldBeat + dBeats, maxBeat);
-      const value = clamp(0, oldValue - (dHeight / height), 1);
+        const beat = clamp(minBeat, oldBeat + dBeats, maxBeat);
+        const value = clamp(0, oldValue - (dHeight / height), 1);
 
-      // console.log('onControlPointDrag', dBeats, dHeight / height, beat, value)
+        // console.log('onControlPointDrag', dBeats, dHeight / height, beat, value)
 
-      controlPoint.setProperties({
-        beat,
-        value,
-      });
+        controlPoint.setProperties({
+          beat,
+          value,
+        });
+      }
     },
 
     onControlPointDragStart(d3Context, controlPoint) {
       this.setProperties({
+        selectedControlPoint: controlPoint,
         _dragStartBeat: controlPoint.get('beat'),
         _dragStartValue: controlPoint.get('value')
+      });
+    },
+
+    onControlPointDragEnd(d3Context, controlPoint) {
+      this.setProperties({
+        selectedControlPoint: null,
+        _dragStartBeat: 0,
+        _dragStartValue: 0,
       });
     },
   },
 
   // keep track of where controlPoint was at dragStart
+  selectedControlPoint: null,
   _dragStartBeat: 0,
   _dragStartValue: 0,
 
