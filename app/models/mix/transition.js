@@ -52,21 +52,25 @@ export default DS.Model.extend(
 
     return this.destroyAutomationClips().then(() => {
       const store = this.get('store');
-      return Ember.RSVP.all([this.get('fromTrackClip'), this.get('toTrackClip')]).then(([ fromTrackClip, toTrackClip ]) => {
-        const fromTrackVolumeClip = store.createRecord('mix/transition/automation-clip', {
-          controlType: CONTROL_TYPE_GAIN,
-          transition: this,
-          targetClip: fromTrackClip,
-        });
-        fromTrackVolumeClip.initBasicFadeIn(16);
-        const toTrackVolumeClip = store.createRecord('mix/transition/automation-clip', {
-          controlType: CONTROL_TYPE_GAIN,
-          transition: this,
-          targetClip: toTrackClip,
-        });
-        toTrackVolumeClip.initBasicFadeOut(16);
+      return Ember.RSVP.all([this.get('fromTrackClip'), this.get('toTrackClip')])
+        .then(([ fromTrackClip, toTrackClip ]) => {
 
-        this.get('automationClips').addObjects([fromTrackVolumeClip, toTrackVolumeClip]);
+        if (fromTrackClip && toTrackClip) {
+          const fromTrackVolumeClip = store.createRecord('mix/transition/automation-clip', {
+            controlType: CONTROL_TYPE_GAIN,
+            transition: this,
+            targetClip: fromTrackClip,
+          });
+          fromTrackVolumeClip.initBasicFadeIn(16);
+          const toTrackVolumeClip = store.createRecord('mix/transition/automation-clip', {
+            controlType: CONTROL_TYPE_GAIN,
+            transition: this,
+            targetClip: toTrackClip,
+          });
+          toTrackVolumeClip.initBasicFadeOut(16);
+
+          this.get('automationClips').addObjects([fromTrackVolumeClip, toTrackVolumeClip]);
+        }
 
         return this;
       });
