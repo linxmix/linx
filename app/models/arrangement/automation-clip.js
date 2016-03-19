@@ -1,6 +1,7 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
+import OrderedHasManyMixin from 'linx/mixins/models/ordered-has-many';
 import Clip from './clip';
 
 import add from 'linx/lib/computed/add';
@@ -10,16 +11,17 @@ const TICKS_PER_BEAT = 10;
 
 // Clip that automates Controls
 // Must provide controlType, controlPoints
-export default Clip.extend({
+export default Clip.extend(
+  OrderedHasManyMixin('_controlPoints', 'arrangement/automation-clip/control-point'), {
 
-  // required params
-  target: Ember.computed.reads('targetClip.content'),
+  // implement ordered has many
+  _controlPoints: DS.hasMany('arrangement/automation-clip/control-point', { async: true }),
+  controlPoints: Ember.computed.reads('items'),
 
   // TODO(POLYMORPHISM)
+  target: Ember.computed.reads('targetClip.content'),
   targetClip: DS.belongsTo('arrangement/track-clip'),
-
   controlType: DS.attr('string'), // one of CONTROL_TYPES
-  controlPoints: DS.hasMany('arrangement/automation-clip/control-point', { async: true }),
 
   startBeat: Ember.computed.reads('sortedControlPoints.firstObject.beat'),
   endBeat: Ember.computed.reads('sortedControlPoints.lastObject.beat'),
@@ -98,18 +100,20 @@ export default Clip.extend({
   },
 
   initBasicFade(beatCount = 0, n = 4) {
-    this.destroyControlPoints().then(() => {
-      const controlPoints = [];
+    // remove old control points
+    this.clear();
 
-      for (let i = 0.0; i <= n; i++) {
-        console.log('create control point', beatCount * (i / n), i / n)
-        this.get('store').createRecord('arrangement/automation-clip/control-point', {
-          automationClip: this,
-          beat: beatCount * (i / n),
-          value: i / n,
-        });
-      }
-    });
+    // make new control points
+    const controlPoints = [];
+
+    for (let i = 0.0; i <= n; i++) {
+      console.log('create control point', beatCount * (i / n), i / n)
+      const controlPoints = this.createItem({
+        automationClip: this,
+        beat: beatCount * (i / n),
+        value: i / n,
+      });
+    }
   },
 
   initBasicFadeIn(beatCount, numControlPoints) {

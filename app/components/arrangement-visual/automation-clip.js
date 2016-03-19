@@ -28,7 +28,7 @@ export default Clip.extend(
       const beat = clamp(this.get('clip.startBeat'), oldBeat + dBeats, this.get('clip.beatCount'));
       const value = clamp(0, oldValue - (dHeight / height), 1);
 
-      console.log('onControlPointDrag', dBeats, dHeight / height, beat, value)
+      // console.log('onControlPointDrag', dBeats, dHeight / height, beat, value)
 
       controlPoint.setProperties({
         beat,

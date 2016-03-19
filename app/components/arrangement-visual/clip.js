@@ -42,7 +42,6 @@ export default Ember.Component.extend(
 
   backdrop: join([0], 'rect.ArrangementVisualClip-backdrop', {
     update(selection) {
-      console.log("UPDAT ECLIP BACKDROP", this.getProperties('height', 'widthPx'))
       selection
         .attr('height', this.get('height'))
         .attr('width', this.get('widthPx'))
