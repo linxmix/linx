@@ -2,7 +2,10 @@ import Ember from 'ember';
 
 import d3 from 'd3';
 
-export default Ember.Mixin.create({
+import GraphicSupport from 'linx/mixins/d3/graphic-support';
+
+export default Ember.Mixin.create(
+  GraphicSupport('isDraggable'), {
 
   // required params
   isDraggable: false,

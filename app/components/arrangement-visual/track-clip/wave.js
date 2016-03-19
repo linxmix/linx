@@ -1,23 +1,29 @@
 import Ember from 'ember';
 
 import d3 from 'd3';
-import GraphicSupport from 'ember-cli-d3/mixins/d3-support';
+import GraphicSupport from 'linx/mixins/d3/graphic-support';
 import { join } from 'ember-cli-d3/utils/d3';
 
-import RequireAttributes from 'linx/lib/require-attributes';
 import multiply from 'linx/lib/computed/multiply';
 
 export default Ember.Component.extend(
-  GraphicSupport,
-  RequireAttributes('peaks'), {
+  GraphicSupport('peaks.[]', 'waveColor', 'height', 'displayWaveform'), {
 
   // optional params
+  displayWaveform: true,
   height: 125,
   waveColor: 'green',
 
   prevPeaks: null,
   call(selection) {
     const transform = this.get('transform');
+
+    if (!this.get('displayWaveform')) {
+      selection.style('visibility', 'hidden');
+      return;
+    } else {
+      selection.style('visibility', 'visible');
+    }
 
     selection
       .classed('TrackClipWave', true)

@@ -1,8 +1,8 @@
 import Ember from 'ember';
 
-import GraphicSupport from 'ember-cli-d3/mixins/d3-support';
+import GraphicSupport from 'linx/mixins/d3/graphic-support';
 
-export default Ember.Component.extend(GraphicSupport, {
+export default Ember.Component.extend(GraphicSupport(), {
   // classNames: ['ArrangementVisualRow'],
   // classNameBindings: ['isMini:ArrangementVisualRow--mini'],
 

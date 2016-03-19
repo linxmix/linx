@@ -1,11 +1,11 @@
 import Ember from 'ember';
 import d3 from 'd3';
 
-import GraphicSupport from 'ember-cli-d3/mixins/d3-support';
+import GraphicSupport from 'linx/mixins/d3/graphic-support';
 
 import { assign } from 'ember-cli-d3/utils/d3';
 
-export default Ember.Component.extend(GraphicSupport, {
+export default Ember.Component.extend(GraphicSupport(), {
   transform: null,
 
   ticks: null,

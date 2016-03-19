@@ -4,13 +4,15 @@ import d3 from 'd3';
 import _ from 'npm:underscore';
 import { join } from 'ember-cli-d3/utils/d3';
 
+import GraphicSupport from 'linx/mixins/d3/graphic-support';
 import Clip from './clip';
 import {
   clamp,
   timeToBeat as staticTimeToBeat
 } from 'linx/lib/utils';
 
-export default Clip.extend({
+export default Clip.extend(
+  GraphicSupport('controlPoints.@each.{beat,value}'), {
 
   // required params
   controlPoints: Ember.computed.reads('clip.sortedControlPoints'),

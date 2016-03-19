@@ -1,14 +1,14 @@
 import Ember from 'ember';
 
 import d3 from 'd3';
-import GraphicSupport from 'ember-cli-d3/mixins/d3-support';
+import GraphicSupport from 'linx/mixins/d3/graphic-support';
 import { join } from 'ember-cli-d3/utils/d3';
 
 import DraggableMixin from 'linx/mixins/components/arrangement-visual/draggable';
 
 export default Ember.Component.extend(
   DraggableMixin,
-  GraphicSupport, {
+  GraphicSupport('controlPoints.@each.{beat,value}'), {
 
   // required params
   controlPoints: null,

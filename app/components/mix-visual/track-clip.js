@@ -11,6 +11,9 @@ export default MixVisualClip.extend(
 
   layoutName: 'components/arrangement-visual/track-clip',
 
+  // only tracks in selected transition can be dragged
+  isDraggable: Ember.computed.reads('isSelected'),
+
   // display waveform only if no clip is selected, or this clip is in the selection
   displayWaveform: propertyOrDefault('selectedClip', 'isSelected', true),
   row: constantTernary('isSelectedToTrackClip', 2, 0),

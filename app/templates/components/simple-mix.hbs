@@ -96,38 +96,31 @@
     {{!-- Track Clips --}}
     {{#zip-entries select=gridSelect.SimpleMix-trackClips items=mix.trackClips as |trackClip tag|}}
       {{mix-visual/track-clip
-        clip=trackClip
         select=tag
+        clip=trackClip
         selectedClip=selectedClip
-        track=trackClip.track
-        beatCount=trackClip.beatCount
-        startBeat=trackClip.startBeat
-        audioStartTime=trackClip.audioStartTime
         fullHeight=height
         rowHeight=rowHeight
         pxPerBeat=pxPerBeat
         onDrag=(action "onTrackClipDrag")
         onDragStart=(action "onTrackClipDragStart")
-        isDraggable=true
       }}
     {{/zip-entries}}
 
     {{!-- Transition Clips --}}
     {{#zip-entries select=gridSelect.SimpleMix-transitionClips items=mix.transitionClips as |transitionClip tag|}}
       {{mix-visual/transition-clip
-        clip=transitionClip
         select=tag
+        clip=transitionClip
+        pxPerBeat=pxPerBeat
         selectedClip=selectedClip
-        startBeat=transitionClip.startBeat
-        beatCount=transitionClip.beatCount
         fullHeight=height
         row=(if (eq transitionClip.id selectedClip.id) 1 0)
         rowHeight=rowHeight
-        pxPerBeat=pxPerBeat
         onClick=(action "didSelectClip")
         onDrag=(action "onTransitionClipDrag")
         onDragStart=(action "onTransitionClipDragStart")
-        isDraggable=true
+        isDraggable=(eq transitionClip.id selectedClip.id)
       }}
     {{/zip-entries}}
 
@@ -139,14 +132,12 @@
       as |automationClip tag|
     }}
       {{arrangement-visual/automation-clip
-        clip=automationClip
         select=tag
+        clip=automationClip
+        pxPerBeat=pxPerBeat
         controlPoints=automationClip.sortedControlPoints
-        startBeat=(add automationClip.startBeat selectedClip.startBeat)
-        beatCount=automationClip.beatCount
         height=rowHeight
         row=0
-        pxPerBeat=pxPerBeat
       }}
     {{/zip-entries}}
 
@@ -157,14 +148,12 @@
       as |automationClip tag|
     }}
       {{arrangement-visual/automation-clip
-        clip=automationClip
         select=tag
+        clip=automationClip
+        pxPerBeat=pxPerBeat
         controlPoints=automationClip.sortedControlPoints
-        startBeat=(add automationClip.startBeat selectedClip.startBeat)
-        beatCount=automationClip.beatCount
         height=rowHeight
         row=2
-        pxPerBeat=pxPerBeat
       }}
     {{/zip-entries}}
   {{/arrangement-visual}}
