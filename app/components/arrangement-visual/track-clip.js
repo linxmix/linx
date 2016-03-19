@@ -3,9 +3,11 @@ import Ember from 'ember';
 import { join } from 'ember-cli-d3/utils/d3';
 
 import Clip from './clip';
+import GraphicSupport from 'linx/mixins/d3/graphic-support';
 import { timeToBeat as staticTimeToBeat } from 'linx/lib/utils';
 
-export default Clip.extend({
+export default Clip.extend(
+  GraphicSupport('displayWaveform', 'waveColor'), {
 
   // optional params
   displayWaveform: true,
@@ -25,7 +27,7 @@ export default Clip.extend({
   audioBinary: Ember.computed.reads('track.audioBinary'),
   audioBuffer: Ember.computed.reads('audioBinary.audioBuffer'),
 
-  // TODO(REFACTOR2): is there a way we  can make this more semantic?
+  // TODO(REFACTOR2): is there a way we can make this more semantic?
   waveTransform: Ember.computed('trackBpm', 'audioStartTime', 'pxPerBeat', function() {
     // NOTE: calculate actual raw audio time offset for waveform
     const offsetBeats = -staticTimeToBeat(this.get('audioStartTime'), this.get('trackBpm'));

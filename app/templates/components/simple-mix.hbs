@@ -131,11 +131,10 @@
       items=(if showVolumeAutomation selectedTransition.fromTrackAutomationClips [])
       as |automationClip tag|
     }}
-      {{arrangement-visual/automation-clip
+      {{mix-visual/automation-clip
         select=tag
         clip=automationClip
         pxPerBeat=pxPerBeat
-        controlPoints=automationClip.sortedControlPoints
         height=rowHeight
         row=0
       }}
@@ -147,11 +146,10 @@
       items=(if showVolumeAutomation selectedTransition.toTrackAutomationClips [])
       as |automationClip tag|
     }}
-      {{arrangement-visual/automation-clip
+      {{mix-visual/automation-clip
         select=tag
         clip=automationClip
         pxPerBeat=pxPerBeat
-        controlPoints=automationClip.sortedControlPoints
         height=rowHeight
         row=2
       }}
