@@ -25,7 +25,12 @@ export default Clip.extend(
       const height = this.get('height');
 
       // calculate new beat and value
-      const beat = clamp(this.get('clip.startBeat'), oldBeat + dBeats, this.get('clip.beatCount'));
+      const prevControlPoint = controlPoint.get('prevItem');
+      const nextControlPoint = controlPoint.get('nextItem');
+      const minBeat = prevControlPoint ? prevControlPoint.get('beat') : oldBeat;
+      const maxBeat = nextControlPoint ? nextControlPoint.get('beat') : oldBeat;
+
+      const beat = clamp(minBeat, oldBeat + dBeats, maxBeat);
       const value = clamp(0, oldValue - (dHeight / height), 1);
 
       // console.log('onControlPointDrag', dBeats, dHeight / height, beat, value)

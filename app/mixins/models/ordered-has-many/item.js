@@ -47,16 +47,6 @@ export default function(listPropertyPath) {
     //     });
     //   }
     // },
-
-    destroyRecord: function() {
-      // remove from list before destroying
-      try {
-        this.get(listPropertyPath).removeObject(this);
-      } catch (e) {
-      }
-
-      return this._super.apply(this, arguments);
-    },
   };
 
   // implement readiness mixin

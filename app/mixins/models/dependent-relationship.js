@@ -33,7 +33,9 @@ export default function(propertyPath) {
           Ember.computed.apply(Ember, dependentKeys.concat([function() {
             return flatten(dependentKeys.map((key) => {
               return this.get(key);
-            })).reject(Ember.isNone);
+
+            // remove duplicates and empties
+            })).reject(Ember.isNone).uniq();
           }]))
         );
       }
@@ -61,10 +63,7 @@ export default function(propertyPath) {
     anyDirty: Ember.computed.or('hasDirtyDependentModels', 'hasDirtyAttributes'),
 
     destroyDependentModels() {
-      return Ember.RSVP.all(this.get('dependentModels').toArray().map((model) => {
-        // TODO(CLEANUP)
-        return model.destroyRecord && model.destroyRecord();
-      }));
+      return Ember.RSVP.all(this.get('dependentModels').toArray().invoke('destroyRecord'));
     },
 
     destroyRecord() {
@@ -76,9 +75,7 @@ export default function(propertyPath) {
     },
 
     saveDirtyDependentModels() {
-      return Ember.RSVP.all(this.get('dirtyDependentModels').map((model) => {
-        return model.save();
-      }));
+      return Ember.RSVP.all(this.get('dirtyDependentModels').toArray().invoke('save'));
     },
 
     save(options = {}) {

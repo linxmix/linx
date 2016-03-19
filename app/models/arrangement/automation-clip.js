@@ -37,7 +37,6 @@ export default Clip.extend(
     return this.get('controlPoints').sortBy('beat');
   }),
 
-
   scale: Ember.computed('sortedControlPoints.@each.{beat,value}', function() {
     return d3.scale.linear()
       // .interpolate('monotone')
@@ -101,6 +100,8 @@ export default Clip.extend(
   initBasicFade(beatCount = 0, n = 4) {
     // remove old control points
     this.clear();
+
+    console.log('initBasicFade', this.get('controlPoints.length'))
 
     // make new control points
     const controlPoints = [];
