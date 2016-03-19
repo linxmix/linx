@@ -38,8 +38,7 @@ export default Clip.extend(
   }),
 
 
-  // scale: Ember.computed('sortedControlPoints.@each.{beat,value}', function() {
-  scale: Ember.computed('sortedControlPoints.[]', function() {
+  scale: Ember.computed('sortedControlPoints.@each.{beat,value}', function() {
     return d3.scale.linear()
       // .interpolate('monotone')
       .domain(this.get('sortedControlPoints').mapBy('beat'))

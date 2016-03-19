@@ -36,10 +36,12 @@ export default function(audioParamPath) {
 
       // if adding a new automation, schedule it.
       if (isNewAutomation) {
+        console.log('add new automation', params);
         this.setValueCurveAtTime(params);
 
       // if updating existing automation, reschedule all
       } else {
+        console.log('update existing automation', params);
         Ember.run.once(this, 'rescheduleAutomations');
       }
     },
