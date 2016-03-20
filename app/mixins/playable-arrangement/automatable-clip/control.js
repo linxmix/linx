@@ -36,12 +36,14 @@ export default function(audioParamPath) {
 
       // if adding a new automation, schedule it.
       if (isNewAutomation) {
-        console.log('add new automation', params);
+        // console.log('add new automation', params);
         this.setValueCurveAtTime(params);
 
-      // if updating existing automation, reschedule all
+
+      // NOTE: web audio api audio params cannot cancel individual automations.
+      //       so to update automations, we must cancel and reschedule them all
       } else {
-        console.log('update existing automation', params);
+        // console.log('update existing automation', params);
         Ember.run.once(this, 'rescheduleAutomations');
       }
     },
@@ -53,8 +55,6 @@ export default function(audioParamPath) {
       }
     },
 
-    // NOTE: web audio api audio params cannot cancel individual automations.
-    //       so to update automations, we must cancel and reschedule them all
     rescheduleAutomations() {
       this.cancelAutomations();
       this.scheduleAutomations();
@@ -68,10 +68,10 @@ export default function(audioParamPath) {
     },
 
     // TODO(PERFORMANCE): only cancel values that havent occurred yet
-    cancelAutomations() {
+    cancelAutomations: Ember.on('willDestroy', function() {
       const audioParam = this.get('audioParam');
       audioParam && audioParam.cancelScheduledValues(0);
-    },
+    }),
 
     setValueCurveAtTime({ values, startTime, duration }) {
       Ember.assert('Must provide values as Float32Array to Control.setValueCurveAtTime',

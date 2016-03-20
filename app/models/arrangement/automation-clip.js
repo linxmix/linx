@@ -1,6 +1,8 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
+import _ from 'npm:underscore';
+
 import OrderedHasManyMixin from 'linx/mixins/models/ordered-has-many';
 import Clip from './clip';
 
@@ -13,6 +15,15 @@ const TICKS_PER_BEAT = 10;
 // Must provide controlType, controlPoints
 export default Clip.extend(
   OrderedHasManyMixin('_controlPoints', 'arrangement/automation-clip/control-point'), {
+
+  addControlPoints(paramsArray = []) {
+    console.log('addControlPoints', paramsArray);
+    return paramsArray.map((params) => {
+      return this.createItem(_.defaults({
+        automationClip: this,
+      }, params));
+    });
+  },
 
   // implement ordered has many
   _controlPoints: DS.hasMany('arrangement/automation-clip/control-point', { async: true }),
@@ -95,38 +106,5 @@ export default Clip.extend(
     } else {
       targetControl.removeAutomation(this);
     }
-  },
-
-  initBasicFade(beatCount = 0, n = 4) {
-    // remove old control points
-    this.clear();
-
-    console.log('initBasicFade', this.get('controlPoints.length'))
-
-    // make new control points
-    const controlPoints = [];
-
-    for (let i = 0.0; i <= n; i++) {
-      console.log('create control point', beatCount * (i / n), i / n)
-      const controlPoints = this.createItem({
-        automationClip: this,
-        beat: beatCount * (i / n),
-        value: i / n,
-      });
-    }
-  },
-
-  initBasicFadeIn(beatCount, numControlPoints) {
-    return this.initBasicFade(beatCount, numControlPoints);
-  },
-
-  initBasicFadeOut(beatCount, numControlPoints) {
-    return this.initBasicFade(beatCount, numControlPoints);
-  },
-
-  destroyControlPoints() {
-    return this.get('controlPoints').then((controlPoints) => {
-      return Ember.RSVP.all(controlPoints.toArray().invoke('destroyRecord'));
-    });
   },
 });

@@ -1,6 +1,8 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
+import _ from 'npm:underscore';
+
 import ReadinessMixin from 'linx/mixins/readiness';
 import PlayableArrangementMixin from 'linx/mixins/playable-arrangement';
 import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
@@ -56,18 +58,27 @@ export default DS.Model.extend(
         .then(([ fromTrackClip, toTrackClip ]) => {
 
         if (fromTrackClip && toTrackClip) {
+          const beatCount = 16;
+
           const fromTrackVolumeClip = store.createRecord('mix/transition/automation-clip', {
             controlType: CONTROL_TYPE_GAIN,
             transition: this,
             targetClip: fromTrackClip,
           });
-          fromTrackVolumeClip.initBasicFadeIn(16);
+          fromTrackVolumeClip.addControlPoints(generateControlPointParams({
+            beatCount,
+            direction: -1
+          }));
+
           const toTrackVolumeClip = store.createRecord('mix/transition/automation-clip', {
             controlType: CONTROL_TYPE_GAIN,
             transition: this,
             targetClip: toTrackClip,
           });
-          toTrackVolumeClip.initBasicFadeOut(16);
+          toTrackVolumeClip.addControlPoints(generateControlPointParams({
+            beatCount,
+            direction: 1
+          }));
 
           this.get('automationClips').addObjects([fromTrackVolumeClip, toTrackVolumeClip]);
         }
@@ -84,3 +95,15 @@ export default DS.Model.extend(
     });
   },
 });
+
+function generateControlPointParams({ beatCount = 16, direction = 1, n = 4 }) {
+  const range = _.range(0, n + 1);
+  if (direction === -1) { range.reverse(); }
+
+  return range.map((x, i) => {
+    return {
+      beat: beatCount * (i / n),
+      value: x / n,
+    };
+  });
+}
