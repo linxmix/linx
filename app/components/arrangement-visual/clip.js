@@ -55,9 +55,5 @@ export default Ember.Component.extend(
         .attr('width', this.get('widthPx'))
         .on('click', () => this.sendAction('onClick'));
     },
-    exit(selection) {
-      selection
-        .on('.drag', null);
-    }
   }),
 });

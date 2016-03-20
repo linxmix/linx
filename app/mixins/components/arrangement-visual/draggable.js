@@ -9,11 +9,10 @@ export default Ember.Mixin.create(
 
   // required params
   isDraggable: false,
+  dragTransformsParent: false, // see drag.origin note
   pxPerBeat: 0,
 
   // optional params
-  dragOriginX: null,
-  dragOriginY: null,
   drag: Ember.computed(() => d3.behavior.drag()),
   onDrag(d3Context, d, beats) {},
   onDragStart(d3Context) {},
@@ -25,13 +24,17 @@ export default Ember.Mixin.create(
     const context = this;
     const drag = this.get('drag');
 
-    drag.origin(function(d) {
-      console.log('dragOriginX', context.get('dragOriginX'))
-      return {
-        x: context.get('dragOriginX'),
-        y: context.get('dragOriginY')
-      };
-    });
+    // we do not use `d3.event.x` or `d3.event.y` as absolute positions
+    // therefore, set 'x' and 'y' to 0 so we can use them for `dx` and `dy`
+    // see http://stackoverflow.com/questions/13078535/stuttering-drag-when-using-d3-behavior-drag-and-transform
+    if (context.get('dragTransformsParent')) {
+      drag.origin(function(d) {
+        return {
+          x: 0,
+          y: 0,
+        };
+      });
+    }
 
     drag.on('drag', function(d) {
       if (!context.get('isDraggable')) return;
@@ -39,8 +42,17 @@ export default Ember.Mixin.create(
       const pxPerBeat = context.get('pxPerBeat');
       let { _dragX, _dragY } = context.getProperties('_dragX', '_dragY');
 
-      _dragX += d3.event.dx / pxPerBeat;
-      _dragY += d3.event.dy;
+      let dx, dy
+      if (context.get('dragTransformsParent')) {
+        dx = d3.event.x;
+        dy = d3.event.y;
+      } else {
+        dx = d3.event.dx;
+        dy = d3.event.dy;
+      }
+
+      _dragX += dx / pxPerBeat;
+      _dragY += dy;
       context.setProperties({ _dragX, _dragY });
 
       context.onDrag(this, d, _dragX, _dragY);

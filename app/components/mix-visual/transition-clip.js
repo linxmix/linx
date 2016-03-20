@@ -20,11 +20,12 @@ export default ArrangementVisualClip.extend(
   _resizeBeatCount: 0,
   actions: {
     onResizeRight(d3Context, d, dBeats) {
-      console.log('resizeRight', dBeats, d3.event.x)
+      this.get('transition').then((transition) => {
+        transition.set('beatCount', Math.max(this.get('_resizeBeatCount') + dBeats, 0));
+      });
     },
 
     onResizeLeft(d3Context, d, dBeats) {
-      console.log('resizeLeft', dBeats, d3.event.x)
       this.get('transition').then((transition) => {
         transition.set('beatCount', Math.max(this.get('_resizeBeatCount') - dBeats, 0));
       });
