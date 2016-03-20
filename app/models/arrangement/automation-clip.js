@@ -14,11 +14,11 @@ const TICKS_PER_BEAT = 10;
 // Clip that automates Controls
 // Must provide controlType, controlPoints
 export default Clip.extend(
-  OrderedHasManyMixin('_controlPoints', 'arrangement/automation-clip/control-point'), {
+  OrderedHasManyMixin('_controlPoints'), {
 
   addControlPoints(paramsArray = []) {
     console.log('addControlPoints', paramsArray);
-    return paramsArray.map((params) => {
+    const controlPoints = paramsArray.map((params) => {
       return this.createItem(_.defaults({
         automationClip: this,
       }, params));
@@ -26,6 +26,7 @@ export default Clip.extend(
   },
 
   // implement ordered has many
+  orderedHasManyItemModelName: 'arrangement/automation-clip/control-point',
   _controlPoints: DS.hasMany('arrangement/automation-clip/control-point', { async: true }),
   controlPoints: Ember.computed.reads('items'),
 
@@ -58,7 +59,7 @@ export default Clip.extend(
   // TODO(WEBWORKER)
   values: Ember.computed('scale', 'beatCount', function() {
     const { scale, beatCount } = this.getProperties('scale', 'beatCount');
-    if (!(scale && beatCount)) { return new Float32Array(0); }
+    if (!(scale && (beatCount > 0))) { return new Float32Array(0); }
 
     // populate Float32Array by sampling Curve
     const numTicks = beatCount * TICKS_PER_BEAT;

@@ -8,11 +8,14 @@ import PlayableArrangementMixin from 'linx/mixins/playable-arrangement';
 
 export default DS.Model.extend(
   PlayableArrangementMixin,
-  OrderedHasManyMixin('_mixItems', 'mix/item'), {
+  OrderedHasManyMixin('_mixItems'), {
+
+  // implement ordered has many
+  orderedHasManyItemModelName: 'mix/item',
+  _mixItems: DS.hasMany('mix/item', { async: true }),
 
   title: DS.attr('string'),
   timeSignature: DS.attr('number', { defaultValue: 4.0 }),
-  _mixItems: DS.hasMany('mix/item', { async: true }),
 
   // implement playable-arrangement
   session: Ember.inject.service(),

@@ -1,7 +1,6 @@
 import Ember from 'ember';
 
 import RequireAttributes from 'linx/lib/require-attributes';
-import OrderedHasManyItemMixin from '../models/ordered-has-many/item';
 
 import add from 'linx/lib/computed/add';
 import subtract from 'linx/lib/computed/subtract';

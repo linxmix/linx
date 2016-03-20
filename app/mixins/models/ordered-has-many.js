@@ -93,9 +93,12 @@ export const OrderedHasManyProxy = Ember.ArrayProxy.extend(
 // exposes sorted items
 export default function(hasManyPath, itemModelName) {
   Ember.assert('Need hasManyPath for OrderedHasManyMixin', hasManyPath);
-  Ember.assert('Need itemModelName for OrderedHasManyMixin', itemModelName);
 
   let mixinParams = {
+
+    // required params
+    orderedHasManyItemModelName: '',
+
     items: Ember.computed(hasManyPath, function() {
       return OrderedHasManyProxy.create({ hasMany: this.get(hasManyPath) });
     }),
@@ -120,6 +123,10 @@ export default function(hasManyPath, itemModelName) {
 
     // creates and returns a new item, does NOT insert into list
     createItem: function(params = {}) {
+      const itemModelName = this.get('orderedHasManyItemModelName');
+      console.log('createItem', itemModelName, params);
+      Ember.assert('Need itemModelName for OrderedHasManyMixin.createItem', Ember.isPresent(itemModelName));
+
       return this.get('store').createRecord(itemModelName, params);
     },
 

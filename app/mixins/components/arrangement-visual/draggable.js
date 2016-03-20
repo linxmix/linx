@@ -11,10 +11,10 @@ export default Ember.Mixin.create(
   isDraggable: false,
   pxPerBeat: 0,
 
-  drag: Ember.computed(function() {
-    return d3.behavior.drag();
-  }),
-
+  // optional params
+  dragOriginX: null,
+  dragOriginY: null,
+  drag: Ember.computed(() => d3.behavior.drag()),
   onDrag(d3Context, d, beats) {},
   onDragStart(d3Context) {},
   onDragEnd(d3Context, d, beats) {},
@@ -24,6 +24,14 @@ export default Ember.Mixin.create(
   _initDragHandlers: Ember.on('init', function() {
     const context = this;
     const drag = this.get('drag');
+
+    drag.origin(function(d) {
+      console.log('dragOriginX', context.get('dragOriginX'))
+      return {
+        x: context.get('dragOriginX'),
+        y: context.get('dragOriginY')
+      };
+    });
 
     drag.on('drag', function(d) {
       if (!context.get('isDraggable')) return;

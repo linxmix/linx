@@ -1,1 +1,27 @@
 {{yield}}
+
+{{arrangement-visual/clip/resize-handle
+  select=select.ArrangementVisualClip-leftResizeHandle
+  direction="left"
+  isResizable=isResizable
+  height=height
+  widthPx=widthPx
+  pxPerBeat=pxPerBeat
+  onDragStart=(action "onResizeStart")
+  onDrag=(action "onResizeLeft")
+  dragOriginX=translateX
+  dragOriginY=translateY
+}}
+
+{{arrangement-visual/clip/resize-handle
+  select=select.ArrangementVisualClip-rightResizeHandle
+  direction="right"
+  isResizable=isResizable
+  height=height
+  widthPx=widthPx
+  pxPerBeat=pxPerBeat
+  onDragStart=(action "onResizeStart")
+  onDrag=(action "onResizeRight")
+  dragOriginX=translateX
+  dragOriginY=translateY
+}}

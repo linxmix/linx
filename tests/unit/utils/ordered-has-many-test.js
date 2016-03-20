@@ -10,8 +10,6 @@ import { expect } from 'chai';
 import setupTestEnvironment from 'linx/tests/helpers/setup-test-environment';
 import { asResolvedPromise } from 'linx/lib/utils';
 
-import OrderedHasManyMixin from 'linx/mixins/models/ordered-has-many';
-
 // End to end testing of ordered-has-many and ordered-has-many/item.
 describe('OrderedHasManyMixin', function() {
   setupTestEnvironment();

@@ -16,6 +16,7 @@ export default DS.Model.extend(
 
   title: DS.attr('string'),
   description: DS.attr('string'),
+  beatCount: DS.attr('number', { defaultValue: 16 }),
   transitionClip: DS.belongsTo('mix/transition-clip'),
 
   fromTrackClip: Ember.computed.reads('transitionClip.fromTrackClip'),
@@ -59,6 +60,7 @@ export default DS.Model.extend(
 
         if (fromTrackClip && toTrackClip) {
           const beatCount = 16;
+          this.set('beatCount', beatCount);
 
           const fromTrackVolumeClip = store.createRecord('mix/transition/automation-clip', {
             controlType: CONTROL_TYPE_GAIN,

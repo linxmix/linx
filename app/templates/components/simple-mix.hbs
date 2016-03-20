@@ -115,12 +115,10 @@
         pxPerBeat=pxPerBeat
         selectedClip=selectedClip
         fullHeight=height
-        row=(if (eq transitionClip.id selectedClip.id) 1 0)
         rowHeight=rowHeight
         onClick=(action "didSelectClip")
         onDrag=(action "onTransitionClipDrag")
         onDragStart=(action "onTransitionClipDragStart")
-        isDraggable=(eq transitionClip.id selectedClip.id)
       }}
     {{/zip-entries}}
 
