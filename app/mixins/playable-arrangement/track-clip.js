@@ -110,13 +110,13 @@ export default Ember.Mixin.create(
         offset = 0;
       }
 
-      // console.log('startTrack', this.get('track.title'), when, offset);
+      // Ember.Logger.log('startTrack', this.get('track.title'), when, offset);
       this.get('trackSourceNode').start(when, offset);
     }
   },
 
   stopSource: Ember.on('unschedule', function() {
-    // console.log('stopTrack', this.get('track.title'));
+    // Ember.Logger.log('stopTrack', this.get('track.title'));
     this.get('trackSourceNode').stop();
   }),
 

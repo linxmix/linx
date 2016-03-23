@@ -74,7 +74,7 @@ export default BufferSourceNode.extend({
 // };
 
 // Wavesurfer.WebAudio.setTempo = function(tempo) {
-//   // console.log("setting tempo", tempo);
+//   // Ember.Logger.log("setting tempo", tempo);
 //   if (typeof tempo !== 'number' || !tempo) {
 //     tempo = 1;
 //   }
@@ -93,7 +93,7 @@ export default BufferSourceNode.extend({
 // };
 
 // Wavesurfer.WebAudio.setPitch = function(pitch) {
-//   // console.log("setting pitch", pitch);
+//   // Ember.Logger.log("setting pitch", pitch);
 
 //   // TODO: remove this check, only for two-way binding to input
 //   try {

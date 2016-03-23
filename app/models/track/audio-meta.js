@@ -117,7 +117,7 @@ export default DS.Model.extend(
   isProcessingAnalysis: false,
   processAnalysis: function(analysis) {
     if (this.get('isProcessingAnalysis')) {
-      return console.log("WARNING: processAnalysis called while already isProcessingAnalysis");
+      return Ember.Logger.log("WARNING: processAnalysis called while already isProcessingAnalysis");
     } else {
       this.set('isProcessingAnalysis', true);
     }

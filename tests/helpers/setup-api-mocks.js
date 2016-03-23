@@ -24,7 +24,7 @@ export default function() {
       return buildMock(modules[moduleKey]);
     });
     mockIds = mocks.map((mock) => {
-      // console.log("SETUP MOCK", mock);
+      // Ember.Logger.log("SETUP MOCK", mock);
       return $.mockjax(mock);
     });
   });

@@ -39,7 +39,7 @@ export default Clip.extend(
         const beat = clamp(minBeat, oldBeat + dBeats, maxBeat);
         const value = clamp(0, oldValue - (dHeight / height), 1);
 
-        // console.log('onControlPointDrag', dBeats, dHeight / height, beat, value)
+        // Ember.Logger.log('onControlPointDrag', dBeats, dHeight / height, beat, value)
 
         controlPoint.setProperties({
           beat,

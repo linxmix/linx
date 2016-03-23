@@ -18,8 +18,8 @@ export default Ember.Route.extend({
       const [fromTrack, toTrack] = _.sample(tracks.toArray(), 2);
       // const [fromTrack, toTrack] = [tracks.objectAt(0), tracks.objectAt(1)];
 
-      console.log('fromTrack', fromTrack.get('title'));
-      console.log('toTrack', toTrack.get('title'));
+      Ember.Logger.log('fromTrack', fromTrack.get('title'));
+      Ember.Logger.log('toTrack', toTrack.get('title'));
 
       this.transitionTo('mixes.mix', mix.get('id'));
     },
@@ -31,7 +31,7 @@ export default Ember.Route.extend({
       });
 
       $.get('/https://api-v2.soundcloud.com/explore/Popular+Music?tag=out-of-experiment&limit=10&offset=0&linked_partitioning=1&client_id=02gUJC0hH2ct1EGOcYXQIzRFU91c72Ea&app_version=56ba14a').then((response) => {
-        console.log('RESPONSE', response);
+        Ember.Logger.log('RESPONSE', response);
 
         let soundcloudTracks = store.push({
           data: response.tracks.map((track) => {

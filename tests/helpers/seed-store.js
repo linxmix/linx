@@ -8,7 +8,7 @@ import { asResolvedPromise } from 'linx/lib/utils';
 export default function(store) {
 
 
-  console.log("seed store");
+  Ember.Logger.log("seed store");
   DS.Model.reopenClass({
     save() { asResolvedPromise(this); }
   });

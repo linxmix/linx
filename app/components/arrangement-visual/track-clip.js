@@ -45,7 +45,7 @@ export default Clip.extend(
   updateTrackPeaks() {
     const { audioBinary, audioBuffer, pxPerBeat, trackBeatCount, trackDuration } = this.getProperties('audioBinary', 'audioBuffer', 'pxPerBeat', 'trackBeatCount', 'trackDuration');
 
-    // console.log('track clip peaks', this.getProperties('audioBinary', 'audioBuffer', 'pxPerBeat', 'trackBeatCount', 'trackDuration'));
+    // Ember.Logger.log('track clip peaks', this.getProperties('audioBinary', 'audioBuffer', 'pxPerBeat', 'trackBeatCount', 'trackDuration'));
     const peaksLength = trackBeatCount * pxPerBeat;
     const peaks = audioBinary && audioBinary.getPeaks({
       startTime: 0,

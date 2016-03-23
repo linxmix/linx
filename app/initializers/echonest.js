@@ -35,7 +35,7 @@ var Echonest = Ember.Object.extend({
 
   uploadTrack: function(track) {
     let streamUrl = track.get('audioBinary.streamUrl');
-    console.log("uploading track to echonest", track, streamUrl);
+    Ember.Logger.log("uploading track to echonest", track, streamUrl);
 
     Ember.assert('Track must have streamUrl to upload', streamUrl);
 
@@ -49,7 +49,7 @@ var Echonest = Ember.Object.extend({
     }).then((response) => {
       // TODO(CLEANUP): better error handling here
       if (!Ember.get(response, 'response.track.id')) {
-        console.log("WARNING: ANALYSIS INCOMPLETE", response);
+        Ember.Logger.log("WARNING: ANALYSIS INCOMPLETE", response);
       }
       return response.response.track;
     });
@@ -71,7 +71,7 @@ var Echonest = Ember.Object.extend({
 
   // TODO
   // identifyTrackMD5: function(md5, options) {
-  //   console.log("attempt identifyMD5", md5);
+  //   Ember.Logger.log("attempt identifyMD5", md5);
   //   $.ajax({
   //     type: "GET",
   //     url: 'http://developer.echonest.com/api/v4/track/profile',
@@ -83,7 +83,7 @@ var Echonest = Ember.Object.extend({
   //       options.onSuccess(Graviton.getProperty(response, 'response.track'));
   //     },
   //     error: function(xhr) {
-  //       console.error(xhr);
+  //       Ember.Logger.error(xhr);
   //       throw new Error('Failed to identifyMD5: ' + md5);
   //     },
   //   });

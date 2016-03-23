@@ -69,7 +69,7 @@ export const ClockEvent = Ember.Object.extend(
 
       // otherwise, schedule execution
       else {
-        // console.log("evnet schedule", deadline);
+        // Ember.Logger.log("evnet schedule", deadline);
 
         var event = this.get('clock').callbackAtTime(() => {
           Ember.run(this, '_execute', deadline);
@@ -159,7 +159,7 @@ export default Ember.Object.extend(
     if (this.get('isStarted') && false) {
       this.set('_tickEvent', this.createEvent({
         onExecute: () => { this.incrementProperty('tick'); },
-        onExpired: () => { console.log("TICK EXPIRED"); },
+        onExpired: () => { Ember.Logger.log("TICK EXPIRED"); },
         deadline: this.getCurrentTime(),
         repeatInterval: TICK_INTERVAL,
         isScheduled: true,

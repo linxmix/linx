@@ -21,7 +21,7 @@ export default LxCanvas.extend(
 
   draw: function() {
     let curve = this.get('curve');
-    console.log('_drawCurve');
+    Ember.Logger.log('_drawCurve');
     this.drawCurve(curve);
     this.drawSkeleton(curve);
   }.observes('curve'),

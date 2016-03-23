@@ -20,7 +20,7 @@ export default AutomationClip.extend({
   // transition automation-clip must have controlPoints within transition
   _updateControlPoints: Ember.observer('beatCount', function() {
     const beatCount = this.get('beatCount')
-    // console.log('_updateControlPoints', beatCount);
+    // Ember.Logger.log('_updateControlPoints', beatCount);
 
     if (isValidNumber(beatCount)) {
       this.get('controlPoints').forEach((controlPoint) => {

@@ -8,7 +8,7 @@ function getOrCreateModel(key, relPath, createModelFn) {
 
   // if relationship is empty, create default
   if (!dependentModelId) {
-    console.log("WithDefaultModel - EMPTY", key, this.get('id'));
+    Ember.Logger.log("WithDefaultModel - EMPTY", key, this.get('id'));
 
     return DS.PromiseObject.create({
       promise: asResolvedPromise(createModelFn.call(this)).then((model) => {
@@ -27,7 +27,7 @@ function getOrCreateModel(key, relPath, createModelFn) {
 
   // relationship is filled, return as normal
   else {
-    console.log("WithDefaultModel - NORMAL", key);
+    Ember.Logger.log("WithDefaultModel - NORMAL", key);
     return this.get(relPath);
   }
 }
@@ -42,7 +42,7 @@ export default function(relPath, createModelFn) {
     get: function(key) {
       // if not loaded, wait till loaded and try
       if (!this.get('isLoaded')) {
-        console.log("WithDefaultModel - NOT LOADED", key);
+        Ember.Logger.log("WithDefaultModel - NOT LOADED", key);
         return DS.PromiseObject.create({
           promise: new Ember.RSVP.Promise((resolve, reject) => {
             this.one('didLoad', () => {
@@ -56,7 +56,7 @@ export default function(relPath, createModelFn) {
     },
 
     set: function(key, value) {
-      console.log("WithDefaultModel - SETTER", key);
+      Ember.Logger.log("WithDefaultModel - SETTER", key);
       this.set(relPath, value);
       return value;
     }

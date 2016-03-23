@@ -37,7 +37,7 @@ export default Ember.Object.extend(
   streamUrlArrayBuffer: Ember.computed('streamUrl', function() {
     let streamUrl = this.get('streamUrl');
 
-    console.log("fetch ajax", streamUrl);
+    Ember.Logger.log("fetch ajax", streamUrl);
     if (streamUrl) {
       let ajax = Ajax.create({
         url: this.get('streamUrl'),
@@ -46,7 +46,7 @@ export default Ember.Object.extend(
 
       return DS.PromiseObject.create({
         promise: ajax.execute().catch((e) => {
-          console.log('AudioSource XHR error: ' + e.target.statusText);
+          Ember.Logger.log('AudioSource XHR error: ' + e.target.statusText);
           throw e;
         }),
       });
@@ -62,7 +62,7 @@ export default Ember.Object.extend(
       let promise = arrayBuffer.then((arrayBuffer) => {
         return new Ember.RSVP.Promise((resolve, reject) => {
           audioContext.decodeAudioData(arrayBuffer, resolve, (error) => {
-            console.log('AudioSource Decoding Error: ' + error.err);
+            Ember.Logger.log('AudioSource Decoding Error: ' + error.err);
             reject(error);
           });
         });
@@ -90,7 +90,7 @@ export default Ember.Object.extend(
     let sampleStep = ~~(sampleSize / 10) || 1; // reduce granularity with small length
     let peaks = [];
 
-    // console.log('getPeaks', length, startTime, endTime, sampleSize, sampleRate, startSample, endSample, audioBuffer.length);
+    // Ember.Logger.log('getPeaks', length, startTime, endTime, sampleSize, sampleRate, startSample, endSample, audioBuffer.length);
 
     // TODO(REFACTOR): update to use multiple channels
     let samples = audioBuffer.getChannelData(0);

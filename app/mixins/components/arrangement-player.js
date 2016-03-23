@@ -27,7 +27,7 @@ export default Ember.Mixin.create(
     },
 
     skipForth() {
-      console.log("skip forth unimplemented");
+      Ember.Logger.log("skip forth unimplemented");
     },
 
     seekToBeat(beat) {

@@ -36,14 +36,14 @@ export default function(audioParamPath) {
 
       // if adding a new automation, schedule it.
       if (isNewAutomation) {
-        // console.log('add new automation', params);
+        // Ember.Logger.log('add new automation', params);
         this.setValueCurveAtTime(params);
 
 
       // NOTE: web audio api audio params cannot cancel individual automations.
       //       so to update automations, we must cancel and reschedule them all
       } else {
-        // console.log('update existing automation', params);
+        // Ember.Logger.log('update existing automation', params);
         Ember.run.once(this, 'rescheduleAutomations');
       }
     },

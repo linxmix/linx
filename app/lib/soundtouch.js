@@ -62,7 +62,7 @@ function getWebAudioNode(audioContext, source) {
     var r = e.outputBuffer.getChannelData(1);
     var framesExtracted = source.extract(samples, BUFFER_SIZE);
     if (framesExtracted === 0) {
-      console.log("zero frames extracted");
+      Ember.Logger.log("zero frames extracted");
     }
     for (var i = 0; i < framesExtracted; i++) {
       l[i] = samples[i * 2];

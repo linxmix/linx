@@ -13,7 +13,7 @@ export default Ember.Component.extend(GraphicSupport(), {
   isMini: Ember.computed.equal('size', 'mini'),
 
   exportedSelection: Ember.computed('select', function() {
-    console.log("exportedSelection", this.get('elementId'));
+    Ember.Logger.log("exportedSelection", this.get('elementId'));
     return this.get(`select.${this.get('elementId')}`);
   }),
 
@@ -31,6 +31,6 @@ export default Ember.Component.extend(GraphicSupport(), {
       .attr("r", 50)
       .style("fill", "#B8DE44")
 
-    console.log("ROW CALL", this.get('elementId'));
+    Ember.Logger.log("ROW CALL", this.get('elementId'));
   },
 });

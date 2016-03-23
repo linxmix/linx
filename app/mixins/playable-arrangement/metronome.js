@@ -28,7 +28,7 @@ export default Ember.Object.extend(
   // returns WAAclock event
   callbackAtTime(callback, time) {
     if (!isValidNumber(time)) {
-      console.warn('Must call metronome.callbackAtTime with valid time', time);
+      Ember.Logger.warn('Must call metronome.callbackAtTime with valid time', time);
       return;
     }
 
@@ -56,7 +56,7 @@ export default Ember.Object.extend(
   },
 
   seekToBeat(beat) {
-    // console.log("metronome seekToBeat", beat);
+    // Ember.Logger.log("metronome seekToBeat", beat);
 
     this.setProperties({
       seekBeat: beat,

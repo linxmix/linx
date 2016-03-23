@@ -17,7 +17,7 @@ export default Clip.extend(
   OrderedHasManyMixin('_controlPoints'), {
 
   addControlPoints(paramsArray = []) {
-    console.log('addControlPoints', paramsArray);
+    Ember.Logger.log('addControlPoints', paramsArray);
     const controlPoints = paramsArray.map((params) => {
       return this.createItem(_.defaults({
         automationClip: this,
@@ -98,7 +98,7 @@ export default Clip.extend(
         return;
       }
 
-      // console.log('updateControl', targetControl.get('type'), startTime, duration);
+      // Ember.Logger.log('updateControl', targetControl.get('type'), startTime, duration);
       targetControl.addAutomation(this, {
         values,
         startTime,

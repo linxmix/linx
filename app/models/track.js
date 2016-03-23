@@ -66,11 +66,11 @@ export default DS.Model.extend(
   // analyze echonest track, then parse into new audio meta
   fetchAudioMeta() {
     return this.get('echonestTrack').then((echonestTrack) => {
-      // console.log("got echonest track");
+      // Ember.Logger.log("got echonest track");
       return echonestTrack.get('analysis').then((analysis) => {
-        // console.log("got analysis");
+        // Ember.Logger.log("got analysis");
         return this.get('_audioMeta').then((audioMeta) => {
-          // console.log("got audioMeta");
+          // Ember.Logger.log("got audioMeta");
           if (!audioMeta) {
             audioMeta = this.get('store').createRecord('track/audio-meta', {
               track: this
@@ -78,9 +78,9 @@ export default DS.Model.extend(
           }
 
           return audioMeta.processAnalysis(analysis).then(() => {
-            // console.log("process analysis");
+            // Ember.Logger.log("process analysis");
             return this.save().then(() => {
-              // console.log("process save track");
+              // Ember.Logger.log("process save track");
               return audioMeta;
             });
           });

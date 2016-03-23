@@ -21,7 +21,7 @@ export default Ember.Route.extend({
     },
 
     onPageDrop(files) {
-      console.log("page drop", files);
+      Ember.Logger.log("page drop", files);
 
       var store = this.get('store');
 

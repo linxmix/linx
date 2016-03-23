@@ -21,9 +21,9 @@ export default function(propertyPath) {
       if (!this.isReady) {
         Ember.defineProperty(this, 'isReady',
           Ember.computed.apply(Ember, readinessKeys.concat([function() {
-            // console.log("IS READY", this.constructor.toString(), readinessKeys);
+            // Ember.Logger.log("IS READY", this.constructor.toString(), readinessKeys);
             return readinessKeys.every((key) => {
-              // console.log("key", key);
+              // Ember.Logger.log("key", key);
               return this.get(key) === true;
             });
           }]))
@@ -37,10 +37,10 @@ export default function(propertyPath) {
 
     // debugging helper
     logReadiness() {
-      console.log('isReady', this.get('isReady'));
+      Ember.Logger.log('isReady', this.get('isReady'));
 
       this.get('_readinessPaths').map((path) => {
-        console.log(`${path}:`, this.get(path));
+        Ember.Logger.log(`${path}:`, this.get(path));
       });
     },
 

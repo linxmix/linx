@@ -164,7 +164,7 @@ export default Ember.Component.extend(
         break;
       default: newStartBeat = beat;
     };
-    // console.log('moveTrackClip', newStartBeat, beat, newStartBeat - oldStartBeat);
+    // Ember.Logger.log('moveTrackClip', newStartBeat, beat, newStartBeat - oldStartBeat);
 
     // TODO(REFACTOR): tolerance, not exact equality
     if (oldStartBeat !== newStartBeat) {

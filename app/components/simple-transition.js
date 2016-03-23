@@ -56,11 +56,11 @@ export default Ember.Component.extend(
     },
 
     onAutomationClipClick(clip) {
-      console.log('onAutomationClipClick');
+      Ember.Logger.log('onAutomationClipClick');
     },
 
     onAutomationClipDrag(beats) {
-      console.log('onAutomationClipDrag', beats);
+      Ember.Logger.log('onAutomationClipDrag', beats);
     },
 
     // TODO(REFACTOR): move to simple-transition/track-clip?
@@ -92,7 +92,7 @@ export default Ember.Component.extend(
         break;
       default: newStartBeat = beat;
     };
-    console.log('moveTrackMarker', beat, newStartBeat);
+    Ember.Logger.log('moveTrackMarker', beat, newStartBeat);
 
     // TODO(REFACTOR): tolerance, not exact equality
     if (oldStartBeat !== newStartBeat) {

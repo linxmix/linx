@@ -51,7 +51,7 @@ export default Ember.Mixin.create({
       const svgWidth = this._getSvgWidth();
       translateX = (svgWidth / 2.0) - (beat * pxPerBeat * scale);
 
-      console.log('zoomToBeat', scale, translateX, translateY);
+      Ember.Logger.log('zoomToBeat', scale, translateX, translateY);
 
       // possibly animate zoom on svg selection
       if (doAnimate) {

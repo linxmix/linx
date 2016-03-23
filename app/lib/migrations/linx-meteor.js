@@ -19,7 +19,7 @@ export default function(store) {
 
     // populate tracks
     songs.forEach((song) => {
-      console.log("song", song.title);
+      Ember.Logger.log("song", song.title);
 
       let track = store.createRecord('track', {
         id: song._id,
@@ -34,7 +34,7 @@ export default function(store) {
 
     // populate transitions
     // transitions.forEach((transition) => {
-    //   console.log("transition", transition.dj);
+    //   Ember.Logger.log("transition", transition.dj);
 
     //   let fromTrack = store.find('track', transition.startSong);
     //   let toTrack = store.find('track', transition.endSong);

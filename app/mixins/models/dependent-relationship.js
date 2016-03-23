@@ -67,7 +67,7 @@ export default function(propertyPath) {
     },
 
     destroyRecord() {
-      console.log("destroy master model", this.constructor.modelName);
+      Ember.Logger.log("destroy master model", this.constructor.modelName);
       return this.destroyDependentModels().then(() => {
         this.deleteRecord();
         return this.save();
@@ -89,7 +89,7 @@ export default function(propertyPath) {
           });
         });
       } else {
-        console.log("save master model", this.constructor.modelName);
+        Ember.Logger.log("save master model", this.constructor.modelName);
         return this._super.apply(this, arguments);
       }
     },
@@ -97,7 +97,7 @@ export default function(propertyPath) {
     // implement readiness mixin
     _areDependentModelsReady: Ember.computed('dependentModels.@each.isLoaded', 'dependentModels.@each.content', function() {
       return this.get('dependentModels').every((dependentModel) => {
-        // console.log("dependent model isReady", this.constructor.modelName, !dependentModel || !dependentModel.get('id') || dependentModel.get('isLoaded'), dependentModel)
+        // Ember.Logger.log("dependent model isReady", this.constructor.modelName, !dependentModel || !dependentModel.get('id') || dependentModel.get('isLoaded'), dependentModel)
         return !dependentModel || !dependentModel.get('content') || dependentModel.get('isLoaded');
       });
     }),

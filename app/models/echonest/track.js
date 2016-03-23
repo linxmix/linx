@@ -97,7 +97,7 @@ export default DS.Model.extend({
 
     // TODO: retry on failure
     //.catch((reason) => {
-      //console.log("Echonest Analysis failed", reason);
+      //Ember.Logger.log("Echonest Analysis failed", reason);
       //throw reason;
 
       // var track = echonestTrack.get('track').then((track) => {
