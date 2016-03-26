@@ -29,37 +29,76 @@ export default function(audioParamPath) {
 
     _initClipListeners: Ember.on('init', function() {
       const clip = this.get('clip');
-      clip && clip.on('schedule', this, this.updateValue);
-      clip && clip.on('unschedule', this, this.updateValue);
+      clip && clip.on('schedule', this, this.scheduleDidChange);
+      clip && clip.on('unschedule', this, this.scheduleDidChange);
     }),
 
     _removeClipListeners: Ember.on('willDestroy', function() {
       const clip = this.get('clip');
-      clip && clip.off('schedule', this, this.updateValue);
-      clip && clip.off('unschedule', this, this.updateValue);
+      clip && clip.off('schedule', this, this.scheduleDidChange);
+      clip && clip.off('unschedule', this, this.scheduleDidChange);
     }),
+
+    scheduleDidChange() {
+      Ember.run.next(this, 'updateValue');
+    },
 
     // on seek, update underlying web audio param to current value
     updateValue() {
       const currentTime = this.get('clip').getAbsoluteTime();
       const automationsHash = this.get('automations');
+      const audioParam = this.get('audioParam');
 
-      // TODO:
-      // if currentTime in automation, leave as it
-      // if currentTime outside automation, set value to last value of most recently finished automation
-      let firstValue, lastValue;
-      const autom
-      automationsHash.forEach((automation) => {
+      if (!isValidNumber(currentTime) || Ember.isNone(audioParam)) {
+        return;
+      }
 
+      // tuples of [time, value]
+      let lastEndTime = [-Infinity, NaN], nextStartTime = [Infinity, NaN], isInAutomation = false;
+      automationsHash.forEach(({ values, startTime, duration }) => {
+        const endTime = startTime + duration;
+
+        // current automation
+        if ((startTime <= currentTime) && (currentTime <= endTime)) {
+          isInAutomation = true;
+
+        // upcoming automation
+        } else if (startTime > currentTime) {
+          // possibly update nextStartTime
+          if (startTime < nextStartTime[0]) {
+            nextStartTime = [startTime, values[0]];
+          }
+
+        // completed automation
+        } else if (endTime < currentTime) {
+          // possibly update lastEndTime
+          if (endTime > lastEndTime[0]) {
+            lastEndTime = [endTime, values[values.length - 1]];
+          }
+        }
       });
+
+      // if in automation, do not update value
+      // if last value set by automation, use that
+      // if no last value, use next value set by automation
+      // Ember.Logger.log('updateValue', this.get('clip.track.title'), isInAutomation, lastEndTime, nextStartTime);
+      if (!isInAutomation) {
+        let value;
+
+        if (isValidNumber(lastEndTime[1])) {
+          value = lastEndTime[1];
+        } else if (isValidNumber(nextStartTime[1])) {
+          value = nextStartTime[1];
+        }
+
+        if (isValidNumber(value)) {
+          audioParam.value = value;
+        }
+      }
     },
 
     audioParam: Ember.computed.reads(`clip.${audioParamPath}`),
     automations: Ember.computed(() => Ember.Map.create()),
-
-    timeSort: ['startTime:asc'],
-    timeSortedAutomations: Ember.computed.sort('automations', 'timeSort'),
-
 
     addAutomation(automation, params = {}) {
       const automations = this.get('automations');

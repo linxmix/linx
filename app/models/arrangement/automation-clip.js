@@ -65,8 +65,14 @@ export default Clip.extend(
     const numTicks = beatCount * TICKS_PER_BEAT;
     const values = new Float32Array(numTicks);
     for (let i = 0; i < numTicks; i++) {
-      const beat = (i / numTicks) * beatCount;
-      values[i] = scale(beat);
+
+      // for last value, get end of curve
+      if (i !== numTicks - 1) {
+        const beat = (i / numTicks) * beatCount;
+        values[i] = scale(beat);
+      } else {
+        values[i] = scale(beatCount);
+      }
     }
 
     return values;
