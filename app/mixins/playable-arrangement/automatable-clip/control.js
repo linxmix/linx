@@ -95,9 +95,23 @@ export default function(audioParamPath) {
           value = nextStartTime[1];
         }
 
-        if (isValidNumber(value)) {
-          audioParam.value = value;
-        }
+        this.setValue(value);
+      }
+    },
+
+    setValue(value) {
+      const audioParam = this.get('audioParam');
+
+      if (audioParam && isValidNumber(value)) {
+        audioParam.value = value;
+      }
+    },
+
+    getValue() {
+      const audioParam = this.get('audioParam');
+
+      if (audioParam) {
+        return audioParam.value;
       }
     },
 

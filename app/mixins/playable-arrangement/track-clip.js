@@ -106,6 +106,7 @@ export default Ember.Mixin.create(
     if (this.get('isScheduled')) {
       let when = this.getAbsoluteStartTime();
       let offset = this.getCurrentAudioTime();
+      let duration = this.get('duration');
 
       // curate args
       if (when < 0) { when = 0; }
@@ -114,9 +115,11 @@ export default Ember.Mixin.create(
         offset = 0;
       }
 
-      // Ember.Logger.log('startTrack', this.get('track.title'), when, offset);
+      duration -= offset;
+
+      // Ember.Logger.log('startTrack', this.get('track.title'), when, offset, duration);
       const node = this.get('soundtouchNode');
-      node && node.start(when, offset);
+      node && node.start(when, offset, duration);
     }
   },
 

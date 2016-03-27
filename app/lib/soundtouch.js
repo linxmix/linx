@@ -83,13 +83,21 @@ export function createSoundtouchScriptNode(audioContext, filter, when, offset, d
         bufferSize = Math.min(0, bufferSize);
       }
 
-      const framesExtracted = filter.extract(samples, bufferSize);
+      const framesExtracted = bufferSize > 0 ? filter.extract(samples, bufferSize) : 0;
       if (framesExtracted === 0) {
-        Ember.Logger.log("zero frames extracted", startSample, endSample, lastSample);
+        // Ember.Logger.log("zero frames extracted", startSample, endSample, lastSample);
       }
+
+      // fill output with extracted values
       for (let i = 0; i < framesExtracted; i++) {
         l[i] = samples[i * 2];
         r[i] = samples[i * 2 + 1];
+      }
+
+      // fill rest of output with empty values
+      for (let i = framesExtracted; i < BUFFER_SIZE; i++) {
+        l[i] = 0;
+        r[i] = 0;
       }
     }
   };
