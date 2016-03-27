@@ -11,11 +11,6 @@ export default Ember.Mixin.create(
   node: null,
   outputNode: null,
   isConnected: false,
-  controls: Ember.computed(() => []),
-
-  getControl(controlName) {
-    return this.get('controls').findBy('name', controlName);
-  },
 
   connectOutput: Ember.observer('node', 'outputNode', function() {
     let node = this.get('node');

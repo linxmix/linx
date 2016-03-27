@@ -1,7 +1,8 @@
 /* global SoundTouch:true */
 /* global FifoSampleBuffer:true */
+/* global SimpleFilter:true */
 
-import RequireAttributes from 'linx/lib/require-attributes';
+import { isValidNumber } from 'linx/lib/utils';
 
 // Augment SoundTouch
 SoundTouch.prototype.clearBuffers = function() {
@@ -31,20 +32,20 @@ FifoSampleBuffer.prototype.clear = function() {
 //
 //  Add SoundTouch + Web Audio integration. exposes:
 //  [class] SoundTouch()
-//  [class] WebAudioBufferSource(buffer)
-//  [function] getWebAudioNode(audioContext, source)
+//  [class] SoundtouchBufferSource(buffer)
+//  [function] createSoundtouchScriptNode(audioContext, filter, when, offset, duration)
 //
 const BUFFER_SIZE = 16384 / 8;
 
-function WebAudioBufferSource(buffer) {
+export function SoundtouchBufferSource(buffer) {
   this.buffer = buffer;
 }
 
-WebAudioBufferSource.prototype = {
+SoundtouchBufferSource.prototype = {
   extract: function(target, numFrames, position) {
-    var l = this.buffer.getChannelData(0);
-    var r = this.buffer.getChannelData(1);
-    for (var i = 0; i < numFrames; i++) {
+    const l = this.buffer.getChannelData(0);
+    const r = this.buffer.getChannelData(1);
+    for (let i = 0; i < numFrames; i++) {
       target[i * 2] = l[i + position];
       target[i * 2 + 1] = r[i + position];
     }
@@ -52,26 +53,50 @@ WebAudioBufferSource.prototype = {
   }
 };
 
-function getWebAudioNode(audioContext, source) {
-  var node = audioContext.createScriptProcessor(BUFFER_SIZE, 2, 2);
-  var samples = new Float32Array(BUFFER_SIZE * 2);
+export function createSoundtouchScriptNode(audioContext, filter, when, offset, duration) {
+  const node = audioContext.createScriptProcessor(BUFFER_SIZE, 2, 2);
+  const samples = new Float32Array(BUFFER_SIZE * 2);
 
-  node.onaudioprocess = function(e) {
+  const sampleRate = audioContext.sampleRate;
+  const startSample = ~~(offset * sampleRate);
+  let endSample;
+  if (isValidNumber(duration)) {
+    endSample = startSample + ~~(duration * sampleRate);
+  }
+
+  filter.sourcePosition = startSample;
+
   // TODO(WEBWORKER): handle in web worker. will be possible with AudioWorkerNode
-    var l = e.outputBuffer.getChannelData(0);
-    var r = e.outputBuffer.getChannelData(1);
-    var framesExtracted = source.extract(samples, BUFFER_SIZE);
-    if (framesExtracted === 0) {
-      Ember.Logger.log("zero frames extracted");
-    }
-    for (var i = 0; i < framesExtracted; i++) {
-      l[i] = samples[i * 2];
-      r[i] = samples[i * 2 + 1];
+  node.onaudioprocess = function(e) {
+    const l = e.outputBuffer.getChannelData(0);
+    const r = e.outputBuffer.getChannelData(1);
+
+    if (audioContext.currentTime >= when) {
+
+      // do not extract past endSample
+      const currentSample = filter.sourcePosition;
+      const lastSample = currentSample + BUFFER_SIZE;
+
+      let bufferSize = BUFFER_SIZE;
+      if ((isValidNumber(endSample)) && (lastSample > endSample)) {
+        bufferSize -= lastSample - endSample;
+        bufferSize = Math.min(0, bufferSize);
+      }
+
+      const framesExtracted = filter.extract(samples, bufferSize);
+      if (framesExtracted === 0) {
+        Ember.Logger.log("zero frames extracted", startSample, endSample, lastSample);
+      }
+      for (let i = 0; i < framesExtracted; i++) {
+        l[i] = samples[i * 2];
+        r[i] = samples[i * 2 + 1];
+      }
     }
   };
+
   return node;
 }
 
-export var WebAudioBufferSource;
-export var getWebAudioNode;
+export var SoundtouchFilter = SimpleFilter;
+
 export default SoundTouch;

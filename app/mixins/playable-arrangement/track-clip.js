@@ -20,7 +20,9 @@ import {
 
 import {
   default as AutomatableClipControlMixin,
-  CONTROL_TYPE_GAIN
+  CONTROL_TYPE_GAIN,
+  CONTROL_TYPE_BPM,
+  CONTROL_TYPE_PITCH
 } from './automatable-clip/control';
 
 // TODO(CLEANUP): nest under track-clip/controls/gain?
@@ -28,6 +30,18 @@ const TrackGainControl = Ember.Object.extend(
   AutomatableClipControlMixin('trackGainNode.gain'), {
 
   type: CONTROL_TYPE_GAIN,
+});
+
+const TrackTempoControl = Ember.Object.extend(
+  AutomatableClipControlMixin('soundtouchNode.bpm'), {
+
+  type: CONTROL_TYPE_BPM,
+});
+
+const TrackPitchControl = Ember.Object.extend(
+  AutomatableClipControlMixin('soundtouchNode.pitch'), {
+
+  type: CONTROL_TYPE_PITCH,
 });
 
 export default Ember.Mixin.create(
@@ -43,7 +57,11 @@ export default Ember.Mixin.create(
 
   // implementing automatable clip mixin
   controls: Ember.computed(function() {
-    return [TrackGainControl.create({ clip: this })];
+    return [
+      TrackGainControl.create({ clip: this }),
+      TrackTempoControl.create({ clip: this }),
+      TrackPitchControl.create({ clip: this })
+    ];
   }),
 
   // implementing readiness
@@ -54,6 +72,7 @@ export default Ember.Mixin.create(
   barCount: Ember.computed.reads('audioBarCount'),
 
   audioMeta: Ember.computed.reads('track.audioMeta'),
+  audioBinary: Ember.computed.reads('track.audioBinary'),
   audioBeatGrid: Ember.computed.reads('audioMeta.beatGrid'),
   timeSignature: Ember.computed.reads('audioMeta.timeSignature'),
 
@@ -66,21 +85,6 @@ export default Ember.Mixin.create(
   audioBeatCount: subtract('audioEndBeat', 'audioStartBeat'),
   audioDuration: subtract('audioEndTime', 'audioStartTime'),
   audioBarCount: subtract('audioEndBar', 'audioStartBar'),
-
-  // TODO(REFACTOR): need to somehow make sourceNode.playbackRate observe tempo
-  // TODO(MULTIGRID): make this depend on ex seekTime and audioBeatGrid.beatScale
-  // TODO(MULTIGRID): need to be able to multiply beatgrids together
-  audioBpm: Ember.computed.reads('audioMeta.bpm'),
-  syncBpm: Ember.computed.reads('metronome.bpm'),
-  tempo: Ember.computed('audioBpm', 'syncBpm', function() {
-    const audioBpm = this.get('audioBpm');
-    const syncBpm = this.get('syncBpm');
-    if (Ember.isNone(syncBpm)) {
-      return 1;
-    } else {
-      return syncBpm / audioBpm;
-    }
-  }),
 
   getCurrentAudioBeat() {
     const currentClipBeat = this.getCurrentClipBeat();
@@ -111,13 +115,15 @@ export default Ember.Mixin.create(
       }
 
       // Ember.Logger.log('startTrack', this.get('track.title'), when, offset);
-      this.get('trackSourceNode').start(when, offset);
+      const node = this.get('soundtouchNode');
+      node && node.start(when, offset);
     }
   },
 
   stopSource: Ember.on('unschedule', function() {
     // Ember.Logger.log('stopTrack', this.get('track.title'));
-    this.get('trackSourceNode').stop();
+    const node = this.get('soundtouchNode');
+    node && node.stop();
   }),
 
   //
@@ -126,9 +132,16 @@ export default Ember.Mixin.create(
   // TODO(REFACTOR): how to distinguish between track gain, fx gain, arrangement gain?
   // TODO(REFACTOR): set GainControl.defaultValue based on track.audioMeta.loudness
   // that might mean making a specific TrackGainNode?
-  trackSourceNode: computedObject(TrackSourceNode, {
+  // trackSourceNode: computedObject(TrackSourceNode, {
+  //   'audioContext': 'audioContext',
+  //   'track': 'track',
+  //   'outputNode': 'soundtouchNode.content',
+  // }),
+
+  soundtouchNode: computedObject(SoundtouchNode, {
     'audioContext': 'audioContext',
-    'track': 'track',
+    'audioBpm': 'audioMeta.bpm',
+    'audioBuffer': 'audioBinary.audioBuffer',
     'outputNode': 'trackGainNode.content',
   }),
 
@@ -136,11 +149,6 @@ export default Ember.Mixin.create(
     'audioContext': 'audioContext',
     'outputNode': 'outputNode.content',
   }),
-
-  // soundtouchNode: computedObject(SoundtouchNode, {
-  //   'audioContext': 'audioContext',
-  //   'outputNode': 'fxNode',
-  // }),
 
   // fxNode: computedObject(FxNode, {
   //   'audioContext': 'audioContext',

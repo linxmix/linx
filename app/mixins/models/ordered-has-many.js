@@ -124,7 +124,7 @@ export default function(hasManyPath, itemModelName) {
     // creates and returns a new item, does NOT insert into list
     createItem: function(params = {}) {
       const itemModelName = this.get('orderedHasManyItemModelName');
-      Ember.Logger.log('createItem', itemModelName, params);
+      // Ember.Logger.log('createItem', itemModelName, params);
       Ember.assert('Need itemModelName for OrderedHasManyMixin.createItem', Ember.isPresent(itemModelName));
 
       return this.get('store').createRecord(itemModelName, params);
