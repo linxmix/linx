@@ -15,7 +15,7 @@ export default Clip.extend(
   GraphicSupport('controlPoints.@each.{beat,value}'), {
 
   // required params
-  controlPoints: Ember.computed.reads('clip.sortedControlPoints'),
+  controlPoints: Ember.computed.reads('clip.controlPoints'),
   height: 0,
 
   // optional params

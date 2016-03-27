@@ -9,7 +9,7 @@ import Clip from './clip';
 import add from 'linx/lib/computed/add';
 import subtract from 'linx/lib/computed/subtract';
 
-const TICKS_PER_BEAT = 10;
+const TICKS_PER_BEAT = 50;
 
 // Clip that automates Controls
 // Must provide controlType, controlPoints
@@ -28,37 +28,33 @@ export default Clip.extend(
   // implement ordered has many
   orderedHasManyItemModelName: 'arrangement/automation-clip/control-point',
   _controlPoints: DS.hasMany('arrangement/automation-clip/control-point', { async: true }),
-  controlPoints: Ember.computed.reads('items'),
+  controlPoints: Ember.computed.reads('items.content'),
 
   // TODO(POLYMORPHISM)
   target: Ember.computed.reads('targetClip.content'),
   targetClip: DS.belongsTo('arrangement/track-clip'),
   controlType: DS.attr('string'), // one of CONTROL_TYPES
 
-  startBeat: Ember.computed.reads('sortedControlPoints.firstObject.beat'),
-  endBeat: Ember.computed.reads('sortedControlPoints.lastObject.beat'),
+  startBeat: Ember.computed.reads('controlPoints.firstObject.beat'),
+  endBeat: Ember.computed.reads('controlPoints.lastObject.beat'),
+
+  startValue: Ember.computed.reads('controlPoints.firstObject.value'),
+  endValue: Ember.computed.reads('controlPoints.lastObject.value'),
 
   // TODO(CLEANUP): why cant i depend on firstControlPoint.beat?
-  // firstControlPoint: Ember.computed.reads('sortedControlPoints.firstObject'),
-  // lastControlPoint: Ember.computed.reads('sortedControlPoints.lastObject'),
+  // firstControlPoint: Ember.computed.reads('controlPoints.firstObject'),
+  // lastControlPoint: Ember.computed.reads('controlPoints.lastObject'),
 
-  // TODO(CLEANUP): why is this still bugged?
-  // controlPointSort: ['beat:asc'],
-  // sortedControlPoints: Ember.computed.sort('controlPoints', 'controlPointSort'),
-  sortedControlPoints: Ember.computed('controlPoints.[]', function() {
-    return this.get('controlPoints').sortBy('beat');
-  }),
-
-  scale: Ember.computed('sortedControlPoints.@each.{beat,value}', function() {
+  scale: Ember.computed('controlPoints.@each.{beat,value}', function() {
     return d3.scale.linear()
       // .interpolate('monotone')
-      .domain(this.get('sortedControlPoints').mapBy('beat'))
-      .range(this.get('sortedControlPoints').mapBy('value'));
+      .domain(this.get('controlPoints').mapBy('beat'))
+      .range(this.get('controlPoints').mapBy('value'));
   }),
 
   // TODO(WEBWORKER)
-  values: Ember.computed('scale', 'beatCount', function() {
-    const { scale, beatCount } = this.getProperties('scale', 'beatCount');
+  values: Ember.computed('scale', 'beatCount', 'startValue', 'endValue', function() {
+    const { scale, beatCount, startValue, endValue } = this.getProperties('scale', 'beatCount', 'startValue', 'endValue');
     if (!(scale && (beatCount > 0))) { return new Float32Array(0); }
 
     // populate Float32Array by sampling Curve
@@ -66,13 +62,22 @@ export default Clip.extend(
     const values = new Float32Array(numTicks);
     for (let i = 0; i < numTicks; i++) {
 
-      // for last value, get end of curve
-      if (i !== numTicks - 1) {
-        const beat = (i / numTicks) * beatCount;
-        values[i] = scale(beat);
+      // for first value, use startValue
+      let value;
+      if (i === 0) {
+        values[i] = startValue;
+
+      // for last value, get last point's value
+      } else if (i == numTicks - 1) {
+        value = endValue;
+
+      // otherwise, get value indicated by scale
       } else {
-        values[i] = scale(beatCount);
+        const beat = (i / numTicks) * beatCount;
+        value = scale(beat);
       }
+
+      values[i] = value;
     }
 
     return values;

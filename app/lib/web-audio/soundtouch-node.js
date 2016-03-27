@@ -8,6 +8,7 @@ import {
 } from 'linx/lib/soundtouch';
 
 import WebAudioNodeMixin from 'linx/mixins/web-audio/node';
+import { isValidNumber } from 'linx/lib/utils';
 
 export default Ember.ObjectProxy.extend(
   WebAudioNodeMixin, {
@@ -84,19 +85,3 @@ export default Ember.ObjectProxy.extend(
     return '<linx@object-proxy:web-audio/soundtouch-node>';
   },
 });
-
-
-  // // TODO(REFACTOR): need to somehow make sourceNode.playbackRate observe tempo
-  // // TODO(MULTIGRID): make this depend on ex seekTime and audioBeatGrid.beatScale
-  // // TODO(MULTIGRID): need to be able to multiply beatgrids together
-  // audioBpm: Ember.computed.reads('audioMeta.bpm'),
-  // syncBpm: Ember.computed.reads('metronome.bpm'),
-  // tempo: Ember.computed('audioBpm', 'syncBpm', function() {
-  //   const audioBpm = this.get('audioBpm');
-  //   const syncBpm = this.get('syncBpm');
-  //   if (Ember.isNone(syncBpm)) {
-  //     return 1;
-  //   } else {
-  //     return syncBpm / audioBpm;
-  //   }
-  // }),
