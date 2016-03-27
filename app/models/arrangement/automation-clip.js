@@ -2,6 +2,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import _ from 'npm:underscore';
+import d3 from 'd3';
 
 import OrderedHasManyMixin from 'linx/mixins/models/ordered-has-many';
 import Clip from './clip';
@@ -65,10 +66,10 @@ export default Clip.extend(
       // for first value, use startValue
       let value;
       if (i === 0) {
-        values[i] = startValue;
+        value = startValue;
 
       // for last value, get last point's value
-      } else if (i == numTicks - 1) {
+      } else if (i === numTicks - 1) {
         value = endValue;
 
       // otherwise, get value indicated by scale

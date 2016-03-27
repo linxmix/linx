@@ -143,7 +143,8 @@ export default Ember.Mixin.create(
 
   soundtouchNode: computedObject(SoundtouchNode, {
     'audioContext': 'audioContext',
-    'audioBpm': 'audioMeta.bpm',
+    // TODO(MULTIGRID): how to handle? audioBeatGrid?
+    // 'audioBpm': 'audioMeta.bpm',
     'audioBuffer': 'audioBinary.audioBuffer',
     'outputNode': 'trackGainNode.content',
   }),

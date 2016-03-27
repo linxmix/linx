@@ -23,6 +23,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
+    "audio-worker-node": "git+https://github.com/mohayonao/audio-worker-node.git",
     "bezier-js": "^1.0.8",
     "broccoli-asset-rev": "^2.0.2",
     "broccoli-static-compiler": "^0.2.1",

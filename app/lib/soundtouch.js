@@ -2,6 +2,8 @@
 /* global FifoSampleBuffer:true */
 /* global SimpleFilter:true */
 
+import AudioWorkerNode from 'npm:audio-worker-node';
+
 import { isValidNumber } from 'linx/lib/utils';
 
 // Augment SoundTouch
@@ -53,8 +55,9 @@ SoundtouchBufferSource.prototype = {
   }
 };
 
-export function createSoundtouchScriptNode(audioContext, filter, when, offset, duration) {
-  const node = audioContext.createScriptProcessor(BUFFER_SIZE, 2, 2);
+export function createSoundtouchNode(audioContext, filter, when, offset, duration) {
+  // const node = audioContext.createScriptProcessor(BUFFER_SIZE, 2, 2);
+
   const samples = new Float32Array(BUFFER_SIZE * 2);
 
   const sampleRate = audioContext.sampleRate;
@@ -66,18 +69,37 @@ export function createSoundtouchScriptNode(audioContext, filter, when, offset, d
 
   filter.sourcePosition = startSample;
 
-  // TODO(WEBWORKER): handle in web worker. will be possible with AudioWorkerNode
-  node.onaudioprocess = function(e) {
-    const l = e.outputBuffer.getChannelData(0);
-    const r = e.outputBuffer.getChannelData(1);
+  function onaudioprocess({
+    type,
+    inputs,
+    outputs,
+    parameters,
+    playbackTime,
+    node,
+  }) {
+    // outputs is array of arrays of outputs
+    const l = outputs[0][0];
+    const r = outputs[0][1];
 
     if (audioContext.currentTime >= when) {
+      let bufferSize = l.length;
+
+      // naively take first pitch and tempo values for this sample
+      const pitch = parameters.pitch && parameters.pitch[0];
+      const tempo = parameters.tempo && parameters.tempo[0];
+      const soundtouch = filter.pipe;
+
+      if (isValidNumber(pitch)) {
+        soundtouch.pitchSemitones = pitch;
+      }
+      if (isValidNumber(tempo)) {
+        soundtouch.tempo = tempo;
+      }
 
       // do not extract past endSample
       const currentSample = filter.sourcePosition;
       const lastSample = currentSample + BUFFER_SIZE;
 
-      let bufferSize = BUFFER_SIZE;
       if ((isValidNumber(endSample)) && (lastSample > endSample)) {
         bufferSize -= lastSample - endSample;
         bufferSize = Math.min(0, bufferSize);
@@ -101,6 +123,22 @@ export function createSoundtouchScriptNode(audioContext, filter, when, offset, d
       }
     }
   };
+
+  const node = new AudioWorkerNode(audioContext, onaudioprocess, {
+    numberOfInputs: 2,
+    numberOfOutputs: 2,
+    bufferLength: BUFFER_SIZE,
+    parameters: [
+      {
+        name: 'pitch',
+        defaultValue: 0,
+      },
+      {
+        name: 'tempo',
+        defaultValue: 1,
+      }
+    ],
+  });
 
   return node;
 }

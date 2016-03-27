@@ -102,7 +102,7 @@ export default function(audioParamPath) {
     setValue(value) {
       const audioParam = this.get('audioParam');
 
-      Ember.Logger.log('setValue', audioParam, value);
+      // Ember.Logger.log('setValue', audioParam, value);
       if (audioParam && isValidNumber(value)) {
         audioParam.value = value;
       }
