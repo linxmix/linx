@@ -4,7 +4,7 @@ import ArrangementVisualTrackClip from 'linx/components/arrangement-visual/track
 import MixVisualClipMixin from 'linx/mixins/components/mix-visual/clip';
 
 import { constantTernary, propertyOrDefault } from 'linx/lib/computed/ternary';
-import { FROM_TRACK_COLOR, TO_TRACK_COLOR } from 'linx/components/simple-mix';
+import { FROM_TRACK_COLOR, TO_TRACK_COLOR } from 'linx/components/mix-builder';
 
 export default ArrangementVisualTrackClip.extend(
   MixVisualClipMixin, {

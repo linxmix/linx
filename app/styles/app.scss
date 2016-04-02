@@ -19,9 +19,9 @@ $site-nav-height: 35px;
 @import 'components/_arrangement-visual/automation-clip';
 @import 'components/_arrangement-visual/automation-clip/control-points';
 
+@import 'components/mix-builder';
 @import 'components/_mix-visual/transition-clip';
 
-@import 'components/simple-mix';
 @import 'components/simple-arrangement';
 @import 'components/simple-transition';
 

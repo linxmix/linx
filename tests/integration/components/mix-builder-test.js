@@ -7,8 +7,8 @@ import {
 import hbs from 'htmlbars-inline-precompile';
 
 describeComponent.skip(
-  'simple-mix',
-  'Integration: SimpleMixComponent',
+  'mix-builder',
+  'Integration: MixBuilderComponent',
   {
     integration: true
   },
@@ -18,12 +18,12 @@ describeComponent.skip(
       // Handle any actions with this.on('myAction', function(val) { ... });
       // Template block usage:
       // this.render(hbs`
-      //   {{#simple-mix}}
+      //   {{#mix-builder}}
       //     template content
-      //   {{/simple-mix}}
+      //   {{/mix-builder}}
       // `);
 
-      this.render(hbs`{{simple-mix}}`);
+      this.render(hbs`{{mix-builder}}`);
       expect(this.$()).to.have.length(1);
     });
   }

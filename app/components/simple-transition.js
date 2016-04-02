@@ -8,7 +8,7 @@ import ArrangementVisualMixin from 'linx/mixins/components/arrangement-visual';
 import subtract from 'linx/lib/computed/subtract';
 import { isNumber } from 'linx/lib/utils';
 
-import { MIX_ITEM_PREVIEW_DISTANCE } from 'linx/components/simple-mix';
+import { MIX_ITEM_PREVIEW_DISTANCE } from 'linx/components/mix-builder';
 import {
   BAR_QUANTIZATION,
   BEAT_QUANTIZATION,

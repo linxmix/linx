@@ -28,7 +28,7 @@ export default Ember.Component.extend(
   BubbleActions('saveMix', 'deleteMix', 'didSelectClip'),
   RequireAttributes('mix', 'store'), {
 
-  classNames: ['SimpleMix'],
+  classNames: ['MixBuilder'],
   classNameBindings: [],
 
   // optional params
@@ -120,7 +120,7 @@ export default Ember.Component.extend(
       mix.appendTrack(randomTrack);
     },
 
-    // TODO(REFACTOR2): move to simple-mix/track-clip?
+    // TODO(REFACTOR2): move to mix-builder/track-clip?
     onTrackClipDrag(d3Context, clip, dBeats) {
       const newBeat = this.get('_dragStartBeat') - dBeats;
       Ember.run.throttle(this, 'moveTrackClip', clip, 'audioStartBeat', newBeat, 10, true);
@@ -130,7 +130,7 @@ export default Ember.Component.extend(
       this.set('_dragStartBeat', clip.get('audioStartBeat'));
     },
 
-    // TODO(REFACTOR2): move to simple-mix/transition-clip?
+    // TODO(REFACTOR2): move to mix-builder/transition-clip?
     onTransitionClipDrag(d3Context, clip, dBeats) {
       const newBeat = this.get('_dragStartBeat') + dBeats;
       Ember.run.throttle(this, 'moveTrackClip', clip.get('fromTrackClip'), 'audioEndBeat', newBeat, 10, true);

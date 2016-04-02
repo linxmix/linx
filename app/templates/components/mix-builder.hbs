@@ -81,7 +81,6 @@
   }}
 {{/if}}
 
-{{!-- TODO(REFACTOR2): move to component? simple-mix/mix-visual --}}
 {{#if showArrangement}}
   {{#arrangement-visual
     pxPerBeat=pxPerBeat
@@ -89,12 +88,12 @@
     zoom=zoom
     isReady=isReady
     seekToBeat=(action "seekToBeat")
-    class="SimpleMix-ArrangementVisual"
+    class="MixBuilder-ArrangementVisual"
     as |gridSelect width height|
   }}
 
     {{!-- Track Clips --}}
-    {{#zip-entries select=gridSelect.SimpleMix-trackClips items=mix.trackClips as |trackClip tag|}}
+    {{#zip-entries select=gridSelect.MixBuilder-trackClips items=mix.trackClips as |trackClip tag|}}
       {{mix-visual/track-clip
         select=tag
         clip=trackClip
@@ -108,7 +107,7 @@
     {{/zip-entries}}
 
     {{!-- Transition Clips --}}
-    {{#zip-entries select=gridSelect.SimpleMix-transitionClips items=mix.transitionClips as |transitionClip tag|}}
+    {{#zip-entries select=gridSelect.MixBuilder-transitionClips items=mix.transitionClips as |transitionClip tag|}}
       {{mix-visual/transition-clip
         select=tag
         clip=transitionClip
@@ -124,7 +123,7 @@
 
     {{!-- From Track Automation Clips --}}
     {{#zip-entries
-      select=gridSelect.SimpleMix-FromTrackAutomationClips
+      select=gridSelect.MixBuilder-FromTrackAutomationClips
       items=(if showVolumeAutomation selectedTransition.fromTrackAutomationClips [])
       as |automationClip tag|
     }}
@@ -139,7 +138,7 @@
 
     {{!-- To Track Automation Clips --}}
     {{#zip-entries
-      select=gridSelect.SimpleMix-ToTrackAutomationClips
+      select=gridSelect.MixBuilder-ToTrackAutomationClips
       items=(if showVolumeAutomation selectedTransition.toTrackAutomationClips [])
       as |automationClip tag|
     }}

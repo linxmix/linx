@@ -5,7 +5,7 @@ import RequireAttributes from 'linx/lib/require-attributes';
 
 import add from 'linx/lib/computed/add';
 import equalProps from 'linx/lib/computed/equal-props';
-import { FROM_TRACK_COLOR, TO_TRACK_COLOR } from 'linx/components/simple-mix';
+import { FROM_TRACK_COLOR, TO_TRACK_COLOR } from 'linx/components/mix-builder';
 
 export default Ember.Component.extend(
   BubbleActions('remove', 'viewTrack', 'viewTransition', 'play'), RequireAttributes('item'), {
