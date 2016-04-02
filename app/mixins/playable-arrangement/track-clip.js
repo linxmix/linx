@@ -137,7 +137,7 @@ export default Ember.Mixin.create(
   // trackSourceNode: computedObject(TrackSourceNode, {
   //   'audioContext': 'audioContext',
   //   'track': 'track',
-  //   'outputNode': 'soundtouchNode.content',
+  //   'outputNode': 'outputNode.content',
   // }),
 
   soundtouchNode: computedObject(SoundtouchNode, {

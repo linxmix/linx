@@ -2,13 +2,13 @@ import Ember from 'ember';
 
 import WebAudioNodeMixin from 'linx/mixins/web-audio/node';
 
-const MERGER_NODE_INPUTS = 10;
+const MERGER_NODE_INPUTS = 1;
 
 export default Ember.ObjectProxy.extend(
   WebAudioNodeMixin, {
 
   // params
-  // TODO(REFACTOR): make this not static?
+  // TODO: what is this? why does `1` work for track stereo?
   numberOfInputs: MERGER_NODE_INPUTS,
 
   // implement web-audio/node
