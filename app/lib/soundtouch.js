@@ -1,6 +1,7 @@
 /* global SoundTouch:true */
 /* global FifoSampleBuffer:true */
 /* global SimpleFilter:true */
+import Ember from 'ember';
 
 import AudioWorkerNode from 'npm:audio-worker-node';
 
@@ -37,7 +38,8 @@ FifoSampleBuffer.prototype.clear = function() {
 //  [class] SoundtouchBufferSource(buffer)
 //  [function] createSoundtouchScriptNode(audioContext, filter, when, offset, duration)
 //
-const BUFFER_SIZE = 16384 / 8;
+const MAX_BUFFER_SIZE = 16384;
+const BUFFER_SIZE = MAX_BUFFER_SIZE / 16;
 
 export function SoundtouchBufferSource(buffer) {
   this.buffer = buffer;
@@ -55,19 +57,19 @@ SoundtouchBufferSource.prototype = {
   }
 };
 
-export function createSoundtouchNode(audioContext, filter, when, offset, duration) {
-  // const node = audioContext.createScriptProcessor(BUFFER_SIZE, 2, 2);
+export function createSoundtouchNode(audioContext, filter, startTime, offset, duration) {
+  const channelCount = 2;
 
-  const samples = new Float32Array(BUFFER_SIZE * 2);
+  Ember.assert('Must provide all params to createSoundtouchNode', audioContext && filter
+    && isValidNumber(startTime) && isValidNumber(offset) && isValidNumber(duration));
 
-  const sampleRate = audioContext.sampleRate;
+  const samples = new Float32Array(BUFFER_SIZE * channelCount);
+  const sampleRate = audioContext.sampleRate || 44100;
   const startSample = ~~(offset * sampleRate);
-  let endSample;
-  if (isValidNumber(duration)) {
-    endSample = startSample + ~~(duration * sampleRate);
-  }
 
   filter.sourcePosition = startSample;
+
+  let first = true;
 
   function onaudioprocess({
     type,
@@ -81,46 +83,35 @@ export function createSoundtouchNode(audioContext, filter, when, offset, duratio
     const l = outputs[0][0];
     const r = outputs[0][1];
 
-    if (audioContext.currentTime >= when) {
-      let bufferSize = l.length;
+    // naively take first pitch and tempo values for this sample
+    const pitch = parameters.pitch && parameters.pitch[0];
+    const tempo = parameters.tempo && parameters.tempo[0];
+    const soundtouch = filter.pipe;
 
-      // naively take first pitch and tempo values for this sample
-      const pitch = parameters.pitch && parameters.pitch[0];
-      const tempo = parameters.tempo && parameters.tempo[0];
-      const soundtouch = filter.pipe;
+    if (isValidNumber(pitch)) {
+      soundtouch.pitchSemitones = pitch;
+    }
+    if (isValidNumber(tempo)) {
+      soundtouch.tempo = tempo;
+    }
 
-      if (isValidNumber(pitch)) {
-        soundtouch.pitchSemitones = pitch;
-      }
-      if (isValidNumber(tempo)) {
-        soundtouch.tempo = tempo;
-      }
+    // calculate how many frames to extract based on isPlaying
+    const isPlaying = parameters.isPlaying || [];
+    const bufferSize = l.length;
 
-      // do not extract past endSample
-      const currentSample = filter.sourcePosition;
-      const lastSample = currentSample + BUFFER_SIZE;
+    let extractFrameCount = 0;
+    for (let i = 0; i < isPlaying.length; i++) {
+      extractFrameCount += isPlaying[i];
+    }
 
-      if ((isValidNumber(endSample)) && (lastSample > endSample)) {
-        bufferSize -= lastSample - endSample;
-        bufferSize = Math.min(0, bufferSize);
-      }
+    const framesExtracted = extractFrameCount > 0 ? filter.extract(samples, extractFrameCount) : 0;
 
-      const framesExtracted = bufferSize > 0 ? filter.extract(samples, bufferSize) : 0;
-      if (framesExtracted === 0) {
-        // Ember.Logger.log("zero frames extracted", startSample, endSample, lastSample);
-      }
-
-      // fill output with extracted values
-      for (let i = 0; i < framesExtracted; i++) {
-        l[i] = samples[i * 2];
-        r[i] = samples[i * 2 + 1];
-      }
-
-      // fill rest of output with empty values
-      for (let i = framesExtracted; i < BUFFER_SIZE; i++) {
-        l[i] = 0;
-        r[i] = 0;
-      }
+    // map extracted frames onto output
+    let filterFrame = 0;
+    for (let i = 0; i < bufferSize; i++) {
+      l[i] = (samples[filterFrame * 2] * isPlaying[i]) || 0;
+      r[i] = (samples[filterFrame * 2 + 1] * isPlaying[i]) || 0;
+      filterFrame += isPlaying[i];
     }
   };
 
@@ -136,9 +127,21 @@ export function createSoundtouchNode(audioContext, filter, when, offset, duratio
       {
         name: 'tempo',
         defaultValue: 1,
+      },
+      {
+        name: 'isPlaying',
+        defaultValue: 0,
       }
     ],
   });
+
+  // schedule node start and end
+  const endTime = startTime + duration;
+  const currentTime = audioContext.currentTime;
+  if (endTime > currentTime) {
+    node.isPlaying.setValueAtTime(1, startTime);
+    node.isPlaying.setValueAtTime(0, endTime);
+  }
 
   return node;
 }

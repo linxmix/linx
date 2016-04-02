@@ -104,20 +104,19 @@ export default Ember.Mixin.create(
 
   startSource() {
     if (this.get('isScheduled')) {
-      let when = this.getAbsoluteStartTime();
+      // if starting in past, start now instead
+      let when = Math.max(this.getAbsoluteTime(), this.getAbsoluteStartTime());
       let offset = this.getCurrentAudioTime();
       let duration = this.get('duration');
 
       // curate args
-      if (when < 0) { when = 0; }
       if (offset < 0) {
         when -= offset;
         offset = 0;
       }
-
       duration -= offset;
 
-      // Ember.Logger.log('startTrack', this.get('track.title'), when, offset, duration);
+      Ember.Logger.log('startTrack', this.get('track.title'), when, offset, duration);
       const node = this.get('soundtouchNode');
       node && node.start(when, offset, duration);
     }
