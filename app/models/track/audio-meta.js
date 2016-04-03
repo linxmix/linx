@@ -21,12 +21,60 @@ import {
   USER_MARKER_TYPE,
 } from './audio-meta/marker';
 
-import { roundTo, clamp } from 'linx/lib/utils';
+import { roundTo, clamp, isValidNumber } from 'linx/lib/utils';
 import withDefault from 'linx/lib/computed/with-default';
 import subtract from 'linx/lib/computed/subtract';
+import lookup from 'linx/lib/computed/lookup';
 import add from 'linx/lib/computed/add';
 
 export const BEAT_LEAD_TIME = 0.5;
+
+export const CAMELOT_KEYS = {
+  'Abm':  '1a',
+  'B':    '1b',
+  'Ebm':  '2a',
+  'Gb':   '2b',
+  'Bbm':  '3a',
+  'Db':   '3b',
+  'Fm':   '4a',
+  'Ab':   '4b',
+  'Cm':   '5a',
+  'Eb':   '5b',
+  'Gm':   '6a',
+  'Bb':   '6b',
+  'Dm':   '7a',
+  'F':    '7b',
+  'Am':   '8a',
+  'C':    '8b',
+  'Em':   '9a',
+  'G':    '9b',
+  'Bm':   '10a',
+  'D':    '10b',
+  'Gbm':  '11a',
+  'A':    '11b',
+  'Dbm':  '12a',
+  'E':    '12b',
+};
+
+export const ECHONEST_KEYS = {
+  '0':  'C',
+  '1':  'Db',
+  '2':  'D',
+  '3':  'Eb',
+  '4':  'E',
+  '5':  'F',
+  '6':  'Gb',
+  '7':  'G',
+  '8':  'Ab',
+  '9':  'A',
+  '10': 'Bb',
+  '11': 'B',
+};
+
+export const ECHONEST_MODES = {
+  '0': 'minor',
+  '1': 'major'
+};
 
 export default DS.Model.extend(
   ReadinessMixin('isAudioMetaReady'),
@@ -41,6 +89,17 @@ export default DS.Model.extend(
 
   track: DS.belongsTo('track', { async: true }),
   markers: DS.hasMany('track/audio-meta/marker', { async: true }),
+
+  keyName: Ember.computed('key', 'mode', function() {
+    const modeString = this.get('mode') === 1 ? '' : 'm';
+
+    const key = this.get('key');
+    const keyString = isValidNumber(key) ? ECHONEST_KEYS[key] : '';
+
+    return keyString.concat(modeString);
+  }),
+
+  camelotKey: lookup('keyName', CAMELOT_KEYS),
 
   timeSort: ['time:asc'],
   sortedMarkers: Ember.computed.sort('markers', 'timeSort'),
