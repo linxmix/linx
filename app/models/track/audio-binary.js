@@ -18,6 +18,7 @@ export default Ember.Object.extend(
     return `/${this.get('streamUrl')}`;
   }),
 
+  scStreamUrl: Ember.computed.reads('track.scStreamUrl'),
   s3Url: Ember.computed.reads('track.s3Url'),
   s3StreamUrl: Ember.computed('s3Url', function() {
     if (!Ember.isNone(this.get('s3Url'))) {

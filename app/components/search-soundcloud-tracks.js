@@ -64,12 +64,9 @@ export default Ember.Component.extend(
 
   // create new track with this soundcloudTrack
   onTrackSelect(trackWrapper){
-    let soundcloudTrack = trackWrapper.track;
-    let track = this.get('store').createRecord('track', {
-      soundcloudTrack,
-      title: soundcloudTrack.get('title'),
-      scStreamUrl: soundcloudTrack.get('streamUrl'),
-    });
+    const soundcloudTrack = trackWrapper.track;
+    const track = this.get('store').createRecord('track');
+    track.createFromSoundcloudTrack(soundcloudTrack);
 
     this.sendAction('selectTrack', track);
   },
