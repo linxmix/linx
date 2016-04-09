@@ -7,7 +7,7 @@ import ReadinessMixin from 'linx/mixins/readiness';
 import PlayableArrangementMixin from 'linx/mixins/playable-arrangement';
 import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 
-import { CONTROL_TYPE_GAIN } from 'linx/mixins/playable-arrangement/automatable-clip/control';
+import { CONTROL_TYPE_VOLUME } from 'linx/mixins/playable-arrangement/automatable-clip/control';
 
 export default DS.Model.extend(
   PlayableArrangementMixin,
@@ -63,7 +63,7 @@ export default DS.Model.extend(
           this.set('beatCount', beatCount);
 
           const fromTrackVolumeClip = store.createRecord('mix/transition/automation-clip', {
-            controlType: CONTROL_TYPE_GAIN,
+            controlType: CONTROL_TYPE_VOLUME,
             transition: this,
             targetClip: fromTrackClip,
           });
@@ -73,7 +73,7 @@ export default DS.Model.extend(
           }));
 
           const toTrackVolumeClip = store.createRecord('mix/transition/automation-clip', {
-            controlType: CONTROL_TYPE_GAIN,
+            controlType: CONTROL_TYPE_VOLUME,
             transition: this,
             targetClip: toTrackClip,
           });

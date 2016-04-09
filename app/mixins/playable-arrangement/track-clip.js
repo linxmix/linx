@@ -20,16 +20,16 @@ import {
 
 import {
   default as AutomatableClipControlMixin,
-  CONTROL_TYPE_GAIN,
+  CONTROL_TYPE_VOLUME,
   CONTROL_TYPE_BPM,
   CONTROL_TYPE_PITCH
 } from './automatable-clip/control';
 
 // TODO(CLEANUP): nest under track-clip/controls/gain?
-const TrackGainControl = Ember.Object.extend(
-  AutomatableClipControlMixin('trackGainNode.gain'), {
+const TrackVolumeControl = Ember.Object.extend(
+  AutomatableClipControlMixin('trackVolumeNode.gain'), {
 
-  type: CONTROL_TYPE_GAIN,
+  type: CONTROL_TYPE_VOLUME,
 });
 
 const TrackTempoControl = Ember.Object.extend(
@@ -58,7 +58,7 @@ export default Ember.Mixin.create(
   // implementing automatable clip mixin
   controls: Ember.computed(function() {
     return [
-      TrackGainControl.create({ clip: this }),
+      TrackVolumeControl.create({ clip: this }),
       TrackTempoControl.create({ clip: this }),
       TrackPitchControl.create({ clip: this })
     ];
@@ -147,6 +147,12 @@ export default Ember.Mixin.create(
   }),
 
   trackGainNode: computedObject(GainNode, {
+    'value': 'audioMeta.gain',
+    'audioContext': 'audioContext',
+    'outputNode': 'trackVolumeNode.content',
+  }),
+
+  trackVolumeNode: computedObject(GainNode, {
     'audioContext': 'audioContext',
     'outputNode': 'outputNode.content',
   }),

@@ -76,6 +76,21 @@ export const ECHONEST_MODES = {
   '1': 'major'
 };
 
+// Replay Gain algorithm to convert from db to gain and back
+// http://wiki.hydrogenaud.io/index.php?title=ReplayGain_2.0_specification
+export const TARGET_LOUDNESS = -14; // 14db headroom
+export const DEFAULT_GAIN = 0.8;
+
+export function loudnessToGain(loudness) {
+  // how far off we are from target loudness
+  const delta = TARGET_LOUDNESS - loudness;
+  return Math.pow(10, delta / 20.0);
+}
+
+export function gainToLoudness(gain) {
+  return TARGET_LOUDNESS - 20 * Math.log10(gain);
+}
+
 export default DS.Model.extend(
   ReadinessMixin('isAudioMetaReady'),
   DependentRelationshipMixin('markers'), {
@@ -86,6 +101,21 @@ export default DS.Model.extend(
   key: DS.attr('number'),
   mode: DS.attr('number'),
   loudness: DS.attr('number'),
+
+  // calculate gain from loudness (decibels)
+  gain: Ember.computed('loudness', {
+    get() {
+      const loudness = this.get('loudness');
+      return isValidNumber(loudness) ? loudnessToGain(loudness) : DEFAULT_GAIN;
+    },
+
+    set(key, gain) {
+      Ember.assert('Must set audioMeta.gain to valid number', isValidNumber(gain));
+
+      this.set('loudness', gainToLoudness(gain));
+      return gain;
+    },
+  }),
 
   track: DS.belongsTo('track', { async: true }),
   markers: DS.hasMany('track/audio-meta/marker', { async: true }),

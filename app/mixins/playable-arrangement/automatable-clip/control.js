@@ -4,12 +4,12 @@ import RequireAttributes from 'linx/lib/require-attributes';
 
 import { isValidNumber } from 'linx/lib/utils';
 
-export const CONTROL_TYPE_GAIN = 'gain';
+export const CONTROL_TYPE_VOLUME = 'gain';
 export const CONTROL_TYPE_BPM = 'bpm';
 export const CONTROL_TYPE_PITCH = 'pitch';
 
 export const CONTROL_TYPES = [
-  CONTROL_TYPE_GAIN,
+  CONTROL_TYPE_VOLUME,
   CONTROL_TYPE_BPM,
   CONTROL_TYPE_PITCH
 ];
