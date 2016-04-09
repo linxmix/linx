@@ -12,6 +12,7 @@ export default Clip.extend(
   // optional params
   displayWaveform: true,
   waveColor: 'green',
+  selectedQuantization: null,
 
   call(selection) {
     this._super.apply(this, arguments);

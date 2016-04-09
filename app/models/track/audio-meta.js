@@ -120,6 +120,7 @@ export default DS.Model.extend(
   track: DS.belongsTo('track', { async: true }),
   markers: DS.hasMany('track/audio-meta/marker', { async: true }),
 
+  // something like 'C' or 'Cbm'
   keyName: Ember.computed('key', 'mode', function() {
     const modeString = this.get('mode') === 1 ? '' : 'm';
 

@@ -45,6 +45,7 @@ export default Ember.Mixin.create(Ember.Evented, {
   },
 
   // duration of clip in [s]
+  // TODO(MULTIGRID)
   duration: Ember.computed('metronome.bpm', 'startBeat', 'beatCount', function() {
     return this.get('metronome').getDuration(this.get('startBeat'), this.get('beatCount'));
   }),

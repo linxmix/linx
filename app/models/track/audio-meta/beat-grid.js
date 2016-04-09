@@ -5,7 +5,7 @@ import LinearScale from 'linx/lib/linear-scale';
 import QuantizeScale from 'linx/lib/quantize-scale';
 import RequireAttributes from 'linx/lib/require-attributes';
 import computedObject from 'linx/lib/computed/object';
-import { timeToBeat, bpmToSpb, isNumber } from 'linx/lib/utils';
+import { timeToBeat, bpmToSpb, isValidNumber } from 'linx/lib/utils';
 
 export const BAR_QUANTIZATION = 'bar';
 export const BEAT_QUANTIZATION = 'beat';
@@ -108,7 +108,7 @@ export default Ember.Object.extend(
   gridMarker: Ember.computed.reads('audioMeta.sortedGridMarkers.firstObject'),
 
   nudge(value) {
-    Ember.assert('Cannot nudge BeatGrid without numeric value', isNumber(value));
+    Ember.assert('Cannot nudge BeatGrid without numeric value', isValidNumber(value));
 
     let gridMarker = this.get('gridMarker');
     gridMarker.set('time', gridMarker.get('time') + value);
@@ -121,19 +121,22 @@ export default Ember.Object.extend(
 
   // the time of the first actual beat in the raw audio file
   // TODO(MULTIGRID): this supposes a constant bpm in the audio file
-  firstBarOffset: Ember.computed('gridMarker.time', 'bpm', 'timeSignature', function() {
-    let bpm = this.get('bpm');
-    let timeSignature = this.get('timeSignature');
-    let secondsPerBeat = bpmToSpb(bpm);
-    let secondsPerBar = secondsPerBeat * timeSignature;
+  // firstBarOffset: Ember.computed('gridMarker.time', 'bpm', 'timeSignature', function() {
+  //   let bpm = this.get('bpm');
+  //   let timeSignature = this.get('timeSignature');
+  //   let secondsPerBeat = bpmToSpb(bpm);
+  //   let secondsPerBar = secondsPerBeat * timeSignature;
 
-    let firstBarOffsetTime = this.get('gridMarker.time');
-    while ((firstBarOffsetTime - secondsPerBar) >= 0) {
-      firstBarOffsetTime -= secondsPerBar;
-    }
+  //   let firstBarOffsetTime = this.get('gridMarker.time');
+  //   while ((firstBarOffsetTime - secondsPerBar) >= 0) {
+  //     firstBarOffsetTime -= secondsPerBar;
+  //   }
 
-    return firstBarOffsetTime * secondsPerBar;
-  }),
+  //   return firstBarOffsetTime * secondsPerBar;
+  // }),
+
+  // TODO(MULTIGRID)
+  firstBarOffset: 0,
 
   toString() {
     return '<linx@object:track/audio-meta/beat-grid>';
@@ -144,26 +147,33 @@ export default Ember.Object.extend(
 // supports constants and paths
 function beatGridPropertyGenerator(beatGridFunctionName) {
   return function(beatGridPath, unitOrPath) {
-    let isPath = !isNumber(unitOrPath);
+    const isPath = !isValidNumber(unitOrPath);
 
-    if (isPath) {
-      let unitPath = unitOrPath;
-
-      return Ember.computed(`${beatGridPath}.beatScale`, unitPath, function() {
-        let unit = this.get(unitPath);
-        let beatGrid = this.get(beatGridPath);
-
-        return beatGrid && beatGrid[beatGridFunctionName](unit);
-      });
-    } else {
-      let unit = unitOrPath;
-
-      return Ember.computed(`${beatGridPath}.beatScale`, function() {
-        let beatGrid = this.get(beatGridPath);
-
-        return beatGrid && beatGrid[beatGridFunctionName](unit);
-      });
+    const getUnit = function(context) {
+      return isPath ? context.get(unitOrPath) : unitOrPath;
     }
+
+    return Ember.computed(`${beatGridPath}.beatScale`, isPath ? unitOrPath : '', {
+      get() {
+        const unit = getUnit(this);
+        const beatGrid = this.get(beatGridPath);
+
+        return beatGrid && beatGrid[beatGridFunctionName](unit);
+      },
+
+      // TODO(TECHDEBT): this only works for timeToBeat
+      set(key, beat) {
+        Ember.Logger.log(`set ${beatGridFunctionName}`, beat);
+        Ember.assert('Must set `${beatGridFunctionName} to valid number', isValidNumber(beat));
+
+        const beatGrid = this.get(beatGridPath);
+        const time = beatGrid && beatGrid.beatToTime(beat);
+
+        this.set(unitOrPath, time);
+
+        return beat;
+      },
+    });
   };
 }
 

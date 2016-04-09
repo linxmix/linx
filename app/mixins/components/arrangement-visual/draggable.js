@@ -14,9 +14,12 @@ export default Ember.Mixin.create(
 
   // optional params
   drag: Ember.computed(() => d3.behavior.drag()),
-  onDrag(d3Context, d, beats) {},
-  onDragStart(d3Context) {},
-  onDragEnd(d3Context, d, beats) {},
+
+  actions: {
+    onDrag(d3Context, d, beats) { return true; },
+    onDragStart(d3Context) { return true; },
+    onDragEnd(d3Context, d, beats) { return true; },
+  },
 
   _dragX: 0,
   _dragY: 0,
@@ -55,14 +58,14 @@ export default Ember.Mixin.create(
       _dragY += dy;
       context.setProperties({ _dragX, _dragY });
 
-      context.onDrag(this, d, _dragX, _dragY);
+      context.send('onDrag', this, d, _dragX, _dragY);
     });
 
     drag.on('dragstart', function(d) {
       if (!context.get('isDraggable')) return;
 
       d3.event.sourceEvent.stopPropagation(); // silence other listeners
-      context.onDragStart(this, d);
+      context.send('onDragStart', this, d);
     });
 
     drag.on('dragend', function(d) {
@@ -76,7 +79,7 @@ export default Ember.Mixin.create(
         _dragY: 0
       });
 
-      context.onDragEnd(this, d, _dragX, _dragY);
+      context.send('onDragEnd', this, d, _dragX, _dragY);
     });
   }),
 })

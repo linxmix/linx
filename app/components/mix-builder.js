@@ -6,6 +6,14 @@ import BubbleActions from 'linx/lib/bubble-actions';
 import RequireAttributes from 'linx/lib/require-attributes';
 import ArrangementPlayerMixin from 'linx/mixins/components/arrangement-player';
 import ArrangementVisualMixin from 'linx/mixins/components/arrangement-visual';
+
+import { variableTernary } from 'linx/lib/computed/ternary';
+
+export const MIX_ITEM_PREVIEW_DISTANCE = 4;
+
+export const FROM_TRACK_COLOR = '#ac6ac7';
+export const TO_TRACK_COLOR = '#16a085';
+
 import {
   BAR_QUANTIZATION,
   BEAT_QUANTIZATION,
@@ -14,13 +22,6 @@ import {
   MS1_QUANTIZATION,
   SAMPLE_QUANTIZATION,
 } from 'linx/models/track/audio-meta/beat-grid';
-
-import { variableTernary } from 'linx/lib/computed/ternary';
-
-export const MIX_ITEM_PREVIEW_DISTANCE = 4;
-
-export const FROM_TRACK_COLOR = '#ac6ac7';
-export const TO_TRACK_COLOR = '#16a085';
 
 export default Ember.Component.extend(
   ArrangementPlayerMixin,
@@ -120,16 +121,6 @@ export default Ember.Component.extend(
       mix.appendTrack(randomTrack);
     },
 
-    // TODO(REFACTOR2): move to mix-builder/track-clip?
-    onTrackClipDrag(d3Context, clip, dBeats) {
-      const newBeat = this.get('_dragStartBeat') - dBeats;
-      Ember.run.throttle(this, 'moveTrackClip', clip, 'audioStartBeat', newBeat, 10, true);
-    },
-
-    onTrackClipDragStart(d3Context, clip) {
-      this.set('_dragStartBeat', clip.get('audioStartBeat'));
-    },
-
     // TODO(REFACTOR2): move to mix-builder/transition-clip?
     onTransitionClipDrag(d3Context, clip, dBeats) {
       const newBeat = this.get('_dragStartBeat') + dBeats;
@@ -143,34 +134,28 @@ export default Ember.Component.extend(
     toggleShowVolumeAutomation() {
       this.toggleProperty('showVolumeAutomation');
     },
+
+    quantizeBeat(beat) {
+      const quantization = this.get('selectedQuantization');
+
+      let quantizedBeat;
+      switch (quantization) {
+        case BEAT_QUANTIZATION:
+          quantizedBeat = Math.round(beat);
+          break;
+        case BAR_QUANTIZATION:
+          // TODO(TECHDEBT)
+          quantizedBeat = Math.round(beat);
+          // quantizedBeat = beatGrid.barToBeat(beatGrid.quantizeBar(beatGrid.beatToBar(beat)));
+          break;
+        default: quantizedBeat = beat;
+      };
+
+      return quantizedBeat;
+    },
   },
 
   showVolumeAutomation: true,
-  // used to keep track of where marker was when track drag started
-  _dragStartBeat: 0,
-
-  moveTrackClip(clip, propertyPath, beat) {
-    const beatGrid = clip.get('track.audioMeta.beatGrid');
-    const quantization = this.get('selectedQuantization');
-    const oldStartBeat = clip.get(propertyPath);
-
-    let newStartBeat;
-    switch (quantization) {
-      case BEAT_QUANTIZATION:
-        newStartBeat = beatGrid.quantizeBeat(beat);
-        break;
-      case BAR_QUANTIZATION:
-        newStartBeat = beatGrid.barToBeat(beatGrid.quantizeBar(beatGrid.beatToBar(beat)));
-        break;
-      default: newStartBeat = beat;
-    };
-    // Ember.Logger.log('moveTrackClip', newStartBeat, beat, newStartBeat - oldStartBeat);
-
-    // TODO(REFACTOR): tolerance, not exact equality
-    if (oldStartBeat !== newStartBeat) {
-      clip.set(propertyPath, newStartBeat);
-    }
-  },
 
   searchTracks: Ember.computed(function() {
     return this.get('store').findAll('track');

@@ -14,7 +14,7 @@ import computedObject from 'linx/lib/computed/object';
 import { flatten } from 'linx/lib/utils';
 
 import {
-  computedBeatToTime,
+  computedTimeToBeat,
   computedBeatToBar,
 } from 'linx/models/track/audio-meta/beat-grid';
 
@@ -52,8 +52,8 @@ export default Ember.Mixin.create(
   // necessary params
   track: null,
   startBeat: null,
-  audioStartBeat: null,
-  audioEndBeat: null,
+  audioStartTime: null,
+  audioEndTime: null,
 
   // implementing automatable clip mixin
   controls: Ember.computed(function() {
@@ -62,7 +62,7 @@ export default Ember.Mixin.create(
       TrackTempoControl.create({ clip: this }),
       TrackPitchControl.create({ clip: this })
     ];
-  }),
+  }).readOnly(),
 
   // implementing readiness
   isTrackClipReady: Ember.computed.and('trackSourceNode.isReady', 'trackSourceNode.isConnected', 'track.isReady'),
@@ -76,8 +76,8 @@ export default Ember.Mixin.create(
   audioBeatGrid: Ember.computed.reads('audioMeta.beatGrid'),
   timeSignature: Ember.computed.reads('audioMeta.timeSignature'),
 
-  audioStartTime: computedBeatToTime('audioBeatGrid', 'audioStartBeat'),
-  audioEndTime: computedBeatToTime('audioBeatGrid', 'audioEndBeat'),
+  audioStartBeat: computedTimeToBeat('audioBeatGrid', 'audioStartTime'),
+  audioEndBeat: computedTimeToBeat('audioBeatGrid', 'audioEndTime'),
 
   audioStartBar: computedBeatToBar('audioBeatGrid', 'audioStartBeat'),
   audioEndBar: computedBeatToBar('audioBeatGrid', 'audioEndBeat'),

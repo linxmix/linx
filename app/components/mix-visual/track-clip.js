@@ -9,6 +9,25 @@ import { FROM_TRACK_COLOR, TO_TRACK_COLOR } from 'linx/components/mix-builder';
 export default ArrangementVisualTrackClip.extend(
   MixVisualClipMixin, {
 
+  // required params
+  quantizeBeat: null,
+
+  actions: {
+    onDrag(d3Context, d, dBeats) {
+      const newBeat = this.attrs.quantizeBeat(this.get('_dragStartBeat') - dBeats);
+      const clip = this.get('clip');
+
+      Ember.run.throttle(clip, clip.set, 'audioStartBeat', newBeat, 10, true);
+    },
+
+    onDragStart(d3Context, d) {
+      this.set('_dragStartBeat', this.get('clip.audioStartBeat'));
+    },
+  },
+
+  // used to keep track of where audio was when drag started
+  _dragStartBeat: 0,
+
   layoutName: 'components/arrangement-visual/track-clip',
 
   // only tracks in selected transition can be dragged

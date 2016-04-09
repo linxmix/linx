@@ -13,13 +13,13 @@ export default Clip.extend(
 
   // implement track-clip
   track: DS.belongsTo('track', { async: true }),
-  audioStartBeat: withDefaultProperty('_audioStartBeat', '_defaultAudioStartBeat'),
-  audioEndBeat: withDefaultProperty('_audioEndBeat', '_defaultAudioEndBeat'),
+  audioStartTime: withDefaultProperty('_audioStartTime', '_defaultAudioStartTime'),
+  audioEndTime: withDefaultProperty('_audioEndTime', '_defaultAudioEndTime'),
 
-  _audioStartBeat: DS.attr('number'),
-  _audioEndBeat: DS.attr('number'),
-  _defaultAudioStartBeat: Ember.computed.reads('audioMeta.firstWholeBeat'),
-  _defaultAudioEndBeat: Ember.computed.reads('audioMeta.endBeat'),
+  _audioStartTime: DS.attr('number'),
+  _audioEndTime: DS.attr('number'),
+  _defaultAudioStartTime: 0,
+  _defaultAudioEndTime: Ember.computed.reads('audioMeta.duration'),
 
   audioMeta: Ember.computed.reads('track.audioMeta'),
 });
