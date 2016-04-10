@@ -2,9 +2,8 @@
   "name": "linx",
   "dependencies": {
     "ember": "2.4.1",
-    "ember-cli-shims": "~0.0.6",
+    "ember-cli-shims": "0.1.0",
     "ember-cli-test-loader": "ember-cli-test-loader#0.1.3",
-    "ember-data": "2.1.0",
     "ember-load-initializers": "~0.1.7",
     "ember-qunit": "0.3.3",
     "ember-qunit-notifications": "0.0.7",
