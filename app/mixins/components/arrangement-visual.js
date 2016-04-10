@@ -47,13 +47,20 @@ export default Ember.Mixin.create({
     quantizeBeat(beat) {
       const quantization = this.get('selectedQuantization');
 
-      let quantizedBeat;
+      // TODO(TECHDEBT): does this make sense to always say? how to tell if this event is active?
+      // if alt key is held, suspend quantization
+      const isAltKeyHeld = Ember.get(d3, 'event.sourceEvent.altKey') || false;
+      if (isAltKeyHeld) {
+        return beat;
+      }
+
+      let quantizedBeat = beat;
       switch (quantization) {
         case BEAT_QUANTIZATION:
           quantizedBeat = Math.round(beat);
           break;
         case BAR_QUANTIZATION:
-          // TODO(TECHDEBT)
+          // TODO(TECHDEBT): implement
           quantizedBeat = Math.round(beat);
           // quantizedBeat = beatGrid.barToBeat(beatGrid.quantizeBar(beatGrid.beatToBar(beat)));
           break;

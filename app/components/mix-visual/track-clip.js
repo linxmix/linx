@@ -14,7 +14,8 @@ export default ArrangementVisualTrackClip.extend(
 
   actions: {
     onDrag(d3Context, d, dBeats) {
-      const newBeat = this.attrs.quantizeBeat(this.get('_dragStartBeat') - dBeats);
+      dBeats = this.attrs.quantizeBeat(dBeats);
+      const newBeat = this.get('_dragStartBeat') - dBeats;
       const clip = this.get('clip');
 
       Ember.run.throttle(clip, clip.set, 'audioStartBeat', newBeat, 10, true);
