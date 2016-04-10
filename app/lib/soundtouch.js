@@ -60,8 +60,11 @@ SoundtouchBufferSource.prototype = {
 export function createSoundtouchNode({ audioContext, filter, startTime, offset, duration, defaultTempo, defaultPitch }) {
   const channelCount = 2;
 
-  Ember.assert('Must provide all params to createSoundtouchNode', audioContext && filter
-    && isValidNumber(startTime) && isValidNumber(offset) && isValidNumber(duration));
+  if (!(audioContext && filter
+    && isValidNumber(startTime) && isValidNumber(offset) && isValidNumber(duration))) {
+    Ember.Logger.warn('Must provide all params to createSoundtouchNode');
+    return;
+  }
 
   const samples = new Float32Array(BUFFER_SIZE * channelCount);
   const sampleRate = audioContext.sampleRate || 44100;
