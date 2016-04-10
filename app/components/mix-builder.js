@@ -14,15 +14,6 @@ export const MIX_ITEM_PREVIEW_DISTANCE = 4;
 export const FROM_TRACK_COLOR = '#ac6ac7';
 export const TO_TRACK_COLOR = '#16a085';
 
-import {
-  BAR_QUANTIZATION,
-  BEAT_QUANTIZATION,
-  TICK_QUANTIZATION,
-  MS10_QUANTIZATION,
-  MS1_QUANTIZATION,
-  SAMPLE_QUANTIZATION,
-} from 'linx/models/track/audio-meta/beat-grid';
-
 export default Ember.Component.extend(
   ArrangementPlayerMixin,
   ArrangementVisualMixin,
@@ -46,9 +37,6 @@ export default Ember.Component.extend(
 
   selectedTransition: Ember.computed.reads('selectedClip.transition.content'),
 
-  selectedQuantizations: [BAR_QUANTIZATION],
-  selectedQuantization: Ember.computed.reads('selectedQuantizations.firstObject'),
-
   actions: {
     resetMix() {
       // TODO: dependentRelationship.rollbackAttributes
@@ -71,10 +59,6 @@ export default Ember.Component.extend(
       mixItem.get('trackClip').then((clip) => {
         this.send('zoomToClip', clip);
       });
-    },
-
-    selectQuantization(quantization) {
-      this.set('selectedQuantizations', [quantization]);
     },
 
     viewTransition(mixItem) {
@@ -121,37 +105,8 @@ export default Ember.Component.extend(
       mix.appendTrack(randomTrack);
     },
 
-    // TODO(REFACTOR2): move to mix-builder/transition-clip?
-    onTransitionClipDrag(d3Context, clip, dBeats) {
-      const newBeat = this.get('_dragStartBeat') + dBeats;
-      Ember.run.throttle(this, 'moveTrackClip', clip.get('fromTrackClip'), 'audioEndBeat', newBeat, 10, true);
-    },
-
-    onTransitionClipDragStart(d3Context, clip) {
-      this.set('_dragStartBeat', clip.get('fromTrackClip.audioEndBeat'));
-    },
-
     toggleShowVolumeAutomation() {
       this.toggleProperty('showVolumeAutomation');
-    },
-
-    quantizeBeat(beat) {
-      const quantization = this.get('selectedQuantization');
-
-      let quantizedBeat;
-      switch (quantization) {
-        case BEAT_QUANTIZATION:
-          quantizedBeat = Math.round(beat);
-          break;
-        case BAR_QUANTIZATION:
-          // TODO(TECHDEBT)
-          quantizedBeat = Math.round(beat);
-          // quantizedBeat = beatGrid.barToBeat(beatGrid.quantizeBar(beatGrid.beatToBar(beat)));
-          break;
-        default: quantizedBeat = beat;
-      };
-
-      return quantizedBeat;
     },
   },
 

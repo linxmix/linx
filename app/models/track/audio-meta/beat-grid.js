@@ -163,7 +163,7 @@ function beatGridPropertyGenerator(beatGridFunctionName) {
 
       // TODO(TECHDEBT): this only works for timeToBeat
       set(key, beat) {
-        Ember.Logger.log(`set ${beatGridFunctionName}`, beat);
+        // Ember.Logger.log(`set ${beatGridFunctionName}`, beat);
         Ember.assert('Must set `${beatGridFunctionName} to valid number', isValidNumber(beat));
 
         const beatGrid = this.get(beatGridPath);

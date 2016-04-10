@@ -15,10 +15,11 @@ export default Ember.Mixin.create(
   // optional params
   drag: Ember.computed(() => d3.behavior.drag()),
 
+  // optional actions
   actions: {
-    onDrag(d3Context, d, beats) { return true; },
-    onDragStart(d3Context) { return true; },
-    onDragEnd(d3Context, d, beats) { return true; },
+    onDrag(d3Context, d, dragX, dragY) { this.attrs.onDrag && this.attrs.onDrag(d3Context, d, dragX, dragY); },
+    onDragStart(d3Context, d) { this.attrs.onDragStart && this.attrs.onDragStart(d3Context, d); },
+    onDragEnd(d3Context, d, dragX, dragY) { this.attrs.onDragEnd && this.attrs.onDragEnd(d3Context, d, dragX, dragY); },
   },
 
   _dragX: 0,

@@ -7,12 +7,24 @@ import RequireAttributes from 'linx/lib/require-attributes';
 
 import { isValidNumber } from 'linx/lib/utils';
 
+import {
+  BAR_QUANTIZATION,
+  BEAT_QUANTIZATION,
+  TICK_QUANTIZATION,
+  MS10_QUANTIZATION,
+  MS1_QUANTIZATION,
+  SAMPLE_QUANTIZATION,
+} from 'linx/models/track/audio-meta/beat-grid';
+
 // Interface for controlling Arrangement Visuals
 export default Ember.Mixin.create({
 
   // optional params
   pxPerBeat: 20,
   rowHeight: 128,
+
+  selectedQuantizations: [BAR_QUANTIZATION],
+  selectedQuantization: Ember.computed.reads('selectedQuantizations.firstObject'),
 
   // params
   zoom: Ember.computed(function() {
@@ -28,6 +40,29 @@ export default Ember.Mixin.create({
   }).volatile(),
 
   actions: {
+    selectQuantization(quantization) {
+      this.set('selectedQuantizations', [quantization]);
+    },
+
+    quantizeBeat(beat) {
+      const quantization = this.get('selectedQuantization');
+
+      let quantizedBeat;
+      switch (quantization) {
+        case BEAT_QUANTIZATION:
+          quantizedBeat = Math.round(beat);
+          break;
+        case BAR_QUANTIZATION:
+          // TODO(TECHDEBT)
+          quantizedBeat = Math.round(beat);
+          // quantizedBeat = beatGrid.barToBeat(beatGrid.quantizeBar(beatGrid.beatToBar(beat)));
+          break;
+        default: quantizedBeat = beat;
+      };
+
+      return quantizedBeat;
+    },
+
     zoomToClip(clip, doAnimate) {
       const centerBeat = clip.get('centerBeat');
       const pxPerBeat = this.get('pxPerBeat');
