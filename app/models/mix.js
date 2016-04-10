@@ -15,6 +15,7 @@ export default DS.Model.extend(
   _mixItems: DS.hasMany('mix/item', { async: true }),
 
   title: DS.attr('string'),
+  bpm: DS.attr('number', { defaultValue: 128 }),
   timeSignature: DS.attr('number', { defaultValue: 4.0 }),
 
   // implement playable-arrangement

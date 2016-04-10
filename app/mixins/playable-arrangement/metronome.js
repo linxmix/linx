@@ -12,29 +12,32 @@ export default Ember.Object.extend(
   Ember.Evented,
   RequireAttributes('audioContext'), {
 
+  // required params
+  arrangement: null,
+
   // params
   seekBeat: 0,        // [b] last seeked beat
   absSeekTime: 0,     // [s] time of last seek in clock frame of reference
   lastPlayBeat: 0,    // [b] beat at which metronome was last played
-  bpm: 128.000,
+  bpm: Ember.computed.alias('arrangement.bpm'), // TODO(V2): clean this up
   isPlaying: false,
 
-  clock: Ember.computed('audioContext', function() {
-    let clock = Clock.create({ audioContext: this.get('audioContext') });
-    clock.start();
-    return clock;
-  }),
+  // clock: Ember.computed('audioContext', function() {
+  //   let clock = Clock.create({ audioContext: this.get('audioContext') });
+  //   clock.start();
+  //   return clock;
+  // }),
 
-  // returns WAAclock event
-  callbackAtTime(callback, time) {
-    if (!isValidNumber(time)) {
-      Ember.Logger.warn('Must call metronome.callbackAtTime with valid time', time);
-      return;
-    }
+  // // returns WAAclock event
+  // callbackAtTime(callback, time) {
+  //   if (!isValidNumber(time)) {
+  //     Ember.Logger.warn('Must call metronome.callbackAtTime with valid time', time);
+  //     return;
+  //   }
 
-    const clock = this.get('clock');
-    return clock && clock.callbackAtTime(callback, time);
-  },
+  //   const clock = this.get('clock');
+  //   return clock && clock.callbackAtTime(callback, time);
+  // },
 
   // returns WAAclock event
   callbackAtBeat(callback, beat) {
@@ -51,9 +54,9 @@ export default Ember.Object.extend(
     return beatToTime(beatCount, this.get('bpm'));
   },
 
-  createEvent(options = {}) {
-    return this.get('clock').createEvent(options);
-  },
+  // createEvent(options = {}) {
+  //   return this.get('clock').createEvent(options);
+  // },
 
   seekToBeat(beat) {
     // Ember.Logger.log("metronome seekToBeat", beat);

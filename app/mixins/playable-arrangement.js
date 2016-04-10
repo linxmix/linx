@@ -6,7 +6,7 @@ import withDefault from 'linx/lib/computed/with-default';
 import Metronome from './playable-arrangement/metronome';
 import WebAudioMergerNode from 'linx/lib/web-audio/merger-node';
 import computedObject from 'linx/lib/computed/object';
-import { flatten } from 'linx/lib/utils';
+import { flatten, isValidNumber } from 'linx/lib/utils';
 
 // Interface for playable arrangements of clips
 export default Ember.Mixin.create(
@@ -43,13 +43,21 @@ export default Ember.Mixin.create(
     this.get('metronome').seekToBeat(beat);
   },
 
-  isPlaying: Ember.computed.reads('metronome.isPlaying'),
+  setBpm(bpm) {
+    Ember.assert("Can only PlayableArrangement.setBpm to valid number", isValidNumber(bpm));
+
+    this.get('metronome').setBpm(bpm);
+  },
 
   // optional params
   outputNode: Ember.computed.reads('audioContext.destination'),
+  bpm: 128.0,
+
+  isPlaying: Ember.computed.reads('metronome.isPlaying'),
 
   metronome: computedObject(Metronome, {
     'audioContext': 'audioContext',
+    'arrangement': 'this'
   }),
 
   // TODO(REFACTOR): arrangement shouldn't have to wait on clips? clips will just update when loaded

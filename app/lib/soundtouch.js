@@ -57,7 +57,7 @@ SoundtouchBufferSource.prototype = {
   }
 };
 
-export function createSoundtouchNode(audioContext, filter, startTime, offset, duration) {
+export function createSoundtouchNode({ audioContext, filter, startTime, offset, duration, defaultTempo, defaultPitch }) {
   const channelCount = 2;
 
   Ember.assert('Must provide all params to createSoundtouchNode', audioContext && filter
@@ -122,11 +122,11 @@ export function createSoundtouchNode(audioContext, filter, startTime, offset, du
     parameters: [
       {
         name: 'pitch',
-        defaultValue: 0,
+        defaultValue: isValidNumber(defaultPitch) ? defaultPitch : 0,
       },
       {
         name: 'tempo',
-        defaultValue: 1,
+        defaultValue: isValidNumber(defaultTempo) ? defaultTempo : 1,
       },
       {
         name: 'isPlaying',

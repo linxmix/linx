@@ -11,7 +11,7 @@ import ReadinessMixin from '../readiness';
 import subtract from 'linx/lib/computed/subtract';
 import multiply from 'linx/lib/computed/multiply';
 import computedObject from 'linx/lib/computed/object';
-import { flatten } from 'linx/lib/utils';
+import { flatten, isValidNumber } from 'linx/lib/utils';
 
 import {
   computedTimeToBeat,
@@ -49,11 +49,14 @@ export default Ember.Mixin.create(
   PlayableClipMixin,
   ReadinessMixin('isTrackClipReady'), {
 
-  // necessary params
+  // required params
   track: null,
   startBeat: null,
   audioStartTime: null,
   audioEndTime: null,
+
+  // optional params
+  transpose: 0,
 
   // implementing automatable clip mixin
   controls: Ember.computed(function() {
@@ -85,6 +88,7 @@ export default Ember.Mixin.create(
   audioBeatCount: subtract('audioEndBeat', 'audioStartBeat'),
   audioDuration: subtract('audioEndTime', 'audioStartTime'),
   audioBarCount: subtract('audioEndBar', 'audioStartBar'),
+  audioBpm: Ember.computed.reads('audioMeta.bpm'),
 
   getCurrentAudioBeat() {
     const currentClipBeat = this.getCurrentClipBeat();
@@ -98,12 +102,21 @@ export default Ember.Mixin.create(
     return audioBeatGrid && audioBeatGrid.beatToTime(currentAudioBeat);
   },
 
-  audioScheduleDidChange: Ember.observer('audioStartBeat', 'audioBeatCount', function() {
+  // TODO(V2): dynamic tempo
+  audioScheduleDidChange: Ember.observer('audioStartBeat', 'audioBeatCount', 'tempo', 'transpose', function() {
     Ember.run.once(this, 'startSource');
   }).on('schedule'),
 
+  tempo: Ember.computed('syncBpm', 'audioBpm', function() {
+    const syncBpm = this.get('syncBpm');
+    const audioBpm = this.get('audioBpm');
+
+    return (isValidNumber(syncBpm) && isValidNumber(audioBpm)) ? (syncBpm / audioBpm) : 1;
+  }),
+
   startSource() {
     if (this.get('isScheduled')) {
+      const { tempo, transpose } = this.getProperties('tempo', 'transpose');
       // if starting in past, start now instead
       let when = Math.max(this.getAbsoluteTime(), this.getAbsoluteStartTime());
       let offset = this.getCurrentAudioTime();
@@ -116,9 +129,9 @@ export default Ember.Mixin.create(
       }
       duration -= offset;
 
-      Ember.Logger.log('startTrack', this.get('track.title'), when, offset, duration);
+      Ember.Logger.log('startTrack', this.get('track.title'), when, offset, duration, tempo, transpose);
       const node = this.get('soundtouchNode');
-      node && node.start(when, offset, duration);
+      node && node.start(when, offset, duration, tempo, transpose);
     }
   },
 

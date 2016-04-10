@@ -79,6 +79,11 @@
     selected=selectedQuantizations
     onSelect=(action "selectQuantization")
   }}
+
+  <div>
+    {{x-slider min=0 max=200 step=0.01 value=mix.bpm}}
+    Mix BPM: {{mix.bpm}}
+  </div>
 {{/if}}
 
 {{#if showArrangement}}

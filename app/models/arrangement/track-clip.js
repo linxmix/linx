@@ -15,6 +15,7 @@ export default Clip.extend(
   track: DS.belongsTo('track', { async: true }),
   audioStartTime: withDefaultProperty('_audioStartTime', '_defaultAudioStartTime'),
   audioEndTime: withDefaultProperty('_audioEndTime', '_defaultAudioEndTime'),
+  transpose: DS.attr('number', { defaultValue: 0 }),
 
   _audioStartTime: DS.attr('number'),
   _audioEndTime: DS.attr('number'),

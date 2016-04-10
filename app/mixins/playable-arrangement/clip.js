@@ -22,6 +22,7 @@ export default Ember.Mixin.create(Ember.Evented, {
   outputNode: Ember.computed.reads('arrangement.inputNode'),
   metronome: Ember.computed.reads('arrangement.metronome'),
   audioContext: Ember.computed.reads('metronome.audioContext'),
+  syncBpm: Ember.computed.reads('metronome.bpm'),
 
   // returns current beat from metronome's frame of reference
   getCurrentMetronomeBeat() {

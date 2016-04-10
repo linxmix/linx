@@ -20,7 +20,8 @@ export default Ember.ObjectProxy.extend(
   node: null, // set by `start` method, unset by `disconnect`
   outputNode: null,
 
-  start(when, offset, duration) {
+  // TODO(V2): tempo, transpose dynamic
+  start(when, offset, duration, tempo, transpose) {
     // Ember.Logger.log('currentTime', this.get('audioContext.currentTime'));
     // Ember.Logger.log('startSource', when, offset);
     this.stop();
@@ -29,7 +30,15 @@ export default Ember.ObjectProxy.extend(
     // web audio buffer sources can only be played once
     // therefore we must recreate source on each playback
     if (audioContext && soundtouchFilter) {
-      const node = createSoundtouchNode(audioContext, soundtouchFilter, when, offset, duration);
+      const node = createSoundtouchNode({
+        audioContext,
+        filter: soundtouchFilter,
+        startTime: when,
+        offset,
+        duration,
+        defaultTempo: tempo,
+        defaultPitch: transpose,
+      });
       this.set('node', node);
       this.connectOutput();
     }
