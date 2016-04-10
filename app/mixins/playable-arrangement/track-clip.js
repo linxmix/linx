@@ -120,14 +120,17 @@ export default Ember.Mixin.create(
       // if starting in past, start now instead
       let when = Math.max(this.getAbsoluteTime(), this.getAbsoluteStartTime());
       let offset = this.getCurrentAudioTime();
-      let duration = this.get('duration');
 
       // curate args
       if (offset < 0) {
         when -= offset;
         offset = 0;
       }
-      duration -= offset;
+
+      // scale duration based on mix tempo
+      const currentAudioBeat = this.getCurrentAudioBeat();
+      const remainingBeatCount = this.get('audioEndBeat') - currentAudioBeat;
+      const duration = this.get('metronome').getDuration(this.get('startBeat') + this.getCurrentClipBeat(), remainingBeatCount);
 
       Ember.Logger.log('startTrack', this.get('track.title'), when, offset, duration, tempo, transpose);
       const node = this.get('soundtouchNode');

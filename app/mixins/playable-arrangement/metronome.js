@@ -19,7 +19,7 @@ export default Ember.Object.extend(
   seekBeat: 0,        // [b] last seeked beat
   absSeekTime: 0,     // [s] time of last seek in clock frame of reference
   lastPlayBeat: 0,    // [b] beat at which metronome was last played
-  bpm: Ember.computed.alias('arrangement.bpm'), // TODO(V2): clean this up
+  bpm: 128.0,
   isPlaying: false,
 
   // clock: Ember.computed('audioContext', function() {
@@ -39,24 +39,29 @@ export default Ember.Object.extend(
   //   return clock && clock.callbackAtTime(callback, time);
   // },
 
-  // returns WAAclock event
-  callbackAtBeat(callback, beat) {
-    return this.callbackAtTime(callback, this.beatToTime(beat));
-  },
+  // createEvent(options = {}) {
+  //   return this.get('clock').createEvent(options);
+  // },
 
-  setBpm(bpm) {
-    this.seekToBeat(this.getCurrentBeat());
-    this.set('bpm', bpm);
-  },
+  // returns WAAclock event
+  // callbackAtBeat(callback, beat) {
+  //   return this.callbackAtTime(callback, this.beatToTime(beat));
+  // },
+
+  // TODO(V2): clean this up
+  _updateBpm: Ember.observer('arrangement.bpm', function() {
+    const bpm = this.get('arrangement.bpm');
+
+    if (isValidNumber(bpm)) {
+      this.seekToBeat(this.getCurrentBeat());
+      this.set('bpm', bpm);
+    }
+  }).on('init'),
 
   // TODO(MULTIRGID) TODO(REFACTOR)
   getDuration(startBeat, beatCount) {
     return beatToTime(beatCount, this.get('bpm'));
   },
-
-  // createEvent(options = {}) {
-  //   return this.get('clock').createEvent(options);
-  // },
 
   seekToBeat(beat) {
     // Ember.Logger.log("metronome seekToBeat", beat);

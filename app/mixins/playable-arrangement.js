@@ -43,12 +43,6 @@ export default Ember.Mixin.create(
     this.get('metronome').seekToBeat(beat);
   },
 
-  setBpm(bpm) {
-    Ember.assert("Can only PlayableArrangement.setBpm to valid number", isValidNumber(bpm));
-
-    this.get('metronome').setBpm(bpm);
-  },
-
   // optional params
   outputNode: Ember.computed.reads('audioContext.destination'),
   bpm: 128.0,
