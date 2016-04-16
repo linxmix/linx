@@ -20,6 +20,12 @@ $site-nav-height: 35px;
 
 @import 'components/mix-builder';
 @import 'components/_mix-visual/transition-clip';
+@import 'components/_mix-builder/container';
+@import 'components/_mix-builder/visual';
+@import 'components/_mix-builder/tracklist';
+@import 'components/_mix-builder/mix-controls';
+@import 'components/_mix-builder/transition-controls';
+@import 'components/_mix-builder/clip-controls';
 
 @import 'components/simple-arrangement';
 @import 'components/simple-transition';
@@ -37,3 +43,6 @@ $site-nav-height: 35px;
 @import 'components/_mix-list/item';
 @import 'components/quantize-dropdown';
 @import 'components/lx-dropdown';
+@import 'components/mix-visual';
+@import 'components/mix-builder/header';
+@import 'components/mix-builder/playback-controls';

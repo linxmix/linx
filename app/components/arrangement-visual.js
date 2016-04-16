@@ -18,7 +18,7 @@ export default DataVisual.extend(
   RequireAttributes('arrangement', 'pxPerBeat'), {
 
   // optional params
-  isReady: false,
+  isReady: true,
   zoom: Ember.computed(() => d3.behavior.zoom()),
 
   classNames: ['ArrangementVisual'],

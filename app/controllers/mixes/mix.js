@@ -1,23 +1,19 @@
 import Ember from 'ember';
 
 export default Ember.Controller.extend({
+  actions: {
+    selectTransition(transition) {
+      this.set('transitionId', transition && transition.get('id') || '');
+    }
+  },
 
   // expected from route
   mix: null,
 
-  // set by child routes
-  showArrangement: true,
+  queryParams: ['transitionId'],
+  transitionId: '',
 
-  actions: {
-    didSelectClip(clip) {
-      this.set('selectedClipId', clip && clip.get('id') || '');
-    }
-  },
-
-  queryParams: ['selectedClipId'],
-  selectedClipId: '',
-
-  selectedClip: Ember.computed('selectedClipId', 'mix.clips.@each.id', function() {
-    return this.get('mix.clips').findBy('id', this.get('selectedClipId'));
+  selectedTransition: Ember.computed('transitionId', 'mix.transitions.@each.id', function() {
+    return this.get('mix.transitions').findBy('id', this.get('transitionId'));
   }),
 });

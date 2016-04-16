@@ -1,170 +1,45 @@
-<div>{{mix.title}}</div>
-<div class="inverted green ui icon button test-save-mix {{if mix.anyDirty "" "basic disabled"}}" {{action "saveMix"}}>
-  <i class="cloud upload icon"></i>
-  Save Mix
-</div>
-<div class="inverted red ui icon button test-delete-mix" {{action "deleteMix"}}>
-  <i class="remove icon"></i>
-  Delete Mix
-</div>
-<div class="inverted purple ui icon button" {{action "appendRandomTrack"}}>
-  <i class="shuffle icon"></i>
-  Add Random Track
-</div>
-
-{{search-tracks
-  tracksPromise=searchTracks
-  action="addTrack"
+{{#mix-builder/container
+  selectedTransition=attrs.selectedTransition
+  selectTransition=(action attrs.selectTransition)
+  as |container|
 }}
-
-{{search-soundcloud-tracks
-  selectTrack="addTrack"
-  store=store
-}}
-
-{{!-- {{search-transitions
-  transitions=searchTransitions
-  action="appendTransitionWithTracks"
-}} --}}
-
-<hr/>
-
-{{#mix-list mix=mix}}
-  {{#each mix.items as |item|}}
-    {{mix-list/item
-      item=item
-      remove="removeItem"
-      viewTrack="viewTrack"
-      viewTransition="viewTransition"
-      play="playItem"
-      selectedClip=selectedClip
-    }}
-  {{/each}}
-{{/mix-list}}
-
-<hr/>
-
-{{!-- TODO(REFACTOR2): move to nested component? mix-builder/transition-toolbar --}}
-{{#if hasSelectedClip}}
-  <div class="basic inverted yellow ui icon button" {{action "clearSelectedClip"}}>
-    <i class="left caret icon"></i>
-    Back To Mix
-  </div>
-
-  <div class="basic inverted green ui icon button {{if selectedClip.anyDirty "" "disabled"}}" {{action "saveSelectedClip"}}>
-    <i class="save icon"></i>
-    Save Changes
-  </div>
-
-  <div class="basic inverted orange ui icon button" {{action "optimizeTransition" selectedTransition}}>
-    <i class="refresh icon"></i>
-    Optimize Transition
-  </div>
-
-  <div class="basic inverted yellow ui icon button" {{action "zoomToClip" selectedClip}}>
-    <i class="search icon"></i>
-    View Transition
-  </div>
-
-  <div>
-    Show Volume Automation:
-    {{input
-      type="checkbox"
-      checked=showVolumeAutomation
-      action="toggleShowVolumeAutomation"
-    }}
-  </div>
-
-  {{quantize-dropdown
-    selected=selectedQuantizations
-    onSelect=(action "selectQuantization")
+  {{mix-builder/header
+    mix=mix
   }}
 
-  <div>
-    {{x-slider min=0 max=200 step=0.01 value=mix.bpm}}
-    Mix BPM: {{mix.bpm}}
-  </div>
-{{/if}}
-
-{{#if showArrangement}}
-  {{#arrangement-visual
-    pxPerBeat=pxPerBeat
-    arrangement=arrangement
-    zoom=zoom
-    isReady=isReady
-    seekToBeat=(action "seekToBeat")
-    class="MixBuilder-ArrangementVisual"
-    as |gridSelect width height|
+  {{mix-builder/tracklist
+    mix=mix
+    selectedTransition=container.selectedTransition
+    selectTransition=(action container.selectTransition)
+    zoomToTrack=(action container.zoomToTrack)
+    removeTrack=(action container.removeTrack)
   }}
 
-    {{!-- Track Clips --}}
-    {{#zip-entries select=gridSelect.MixBuilder-trackClips items=mix.trackClips as |trackClip tag|}}
-      {{mix-visual/track-clip
-        select=tag
-        clip=trackClip
-        selectedClip=selectedClip
-        quantizeBeat=(action "quantizeBeat")
-        fullHeight=height
-        rowHeight=rowHeight
-        pxPerBeat=pxPerBeat
-      }}
-    {{/zip-entries}}
-
-    {{!-- Transition Clips --}}
-    {{#zip-entries select=gridSelect.MixBuilder-transitionClips items=mix.transitionClips as |transitionClip tag|}}
-      {{mix-visual/transition-clip
-        select=tag
-        clip=transitionClip
-        pxPerBeat=pxPerBeat
-        selectedClip=selectedClip
-        fullHeight=height
-        rowHeight=rowHeight
-        quantizeBeat=(action "quantizeBeat")
-      }}
-    {{/zip-entries}}
-
-
-    {{!-- From Track Automation Clips --}}
-    {{#zip-entries
-      select=gridSelect.MixBuilder-FromTrackAutomationClips
-      items=(if showVolumeAutomation selectedTransition.fromTrackAutomationClips [])
-      as |automationClip tag|
-    }}
-      {{mix-visual/automation-clip
-        select=tag
-        clip=automationClip
-        pxPerBeat=pxPerBeat
-        height=rowHeight
-        row=0
-      }}
-    {{/zip-entries}}
-
-    {{!-- To Track Automation Clips --}}
-    {{#zip-entries
-      select=gridSelect.MixBuilder-ToTrackAutomationClips
-      items=(if showVolumeAutomation selectedTransition.toTrackAutomationClips [])
-      as |automationClip tag|
-    }}
-      {{mix-visual/automation-clip
-        select=tag
-        clip=automationClip
-        pxPerBeat=pxPerBeat
-        height=rowHeight
-        row=2
-      }}
-    {{/zip-entries}}
-  {{/arrangement-visual}}
-
-  {{play-buttons
-    isDisabled=notReady
-    isPlaying=isPlaying
-    playpause="playpause"
-    skipBack="skipBack"
-    skipForth="skipForth"
+  {{mix-builder/playback-controls
+    mix=mix
+    selectedTransition=container.selectedTransition
   }}
 
-  <hr/>
+  {{!-- {{mix-builder/transition-controls
+    isVisible=container.selectedTransition
+    selectedClip=container.selectedClip
+    selectedQuantization=container.selectedQuantization
+    selectQuantization=(action container.selectQuantization)
+    zoomToClip=(action container.zoomToClip)
+  }} --}}
 
-  <div>pxPerBeat: {{input type="range" value=inputZoom min="0.5" max="100" step="0.5"}}</div>
-  <div>BPM: {{input type="number" value=inputBpm min="0" max="200" }}</div>
-{{/if}}
+  {{mix-visual
+    mix=mix
+    selectedTransition=container.selectedTransition
+    selectedClip=container.selectedClip
+    selectTransition=(action container.selectTransition)
+    selectClip=(action container.selectClip)
+    quantizeBeat=(action container.quantizeBeat)
+    seekToBeat=(action container.seekToBeat)
+  }}
+
+  {{!-- {{mix-builder/clip-controls
+    isVisible=container.selectedTransition
+    selectedClip=container.selectedClip
+  }} --}}
+{{/mix-builder/container}}
