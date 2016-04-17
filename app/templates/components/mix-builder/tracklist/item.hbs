@@ -1,13 +1,13 @@
 <td>
-  <span class="MixBuilderTracklistItem-index">{{index}}</span>
+  <span class="MixBuilderTracklistItem-index">{{item.position}}</span>
   <div class="MixBuilderTracklistItem-buttonGroup">
-    <div class="small inverted green ui icon button no-border" {{action "playItem"}}>
+    <div class="small inverted basic green ui icon button no-border" {{action "playItem"}}>
       <i class="play icon"/>
     </div>
-    <div class="small inverted teal ui icon button no-border" {{action "selectTransition"}}>
+    <div class="small inverted basic teal ui icon button no-border {{if isSelectedTransition "disabled"}}" {{action "selectTransition"}}>
       <i class="linkify icon"/>
     </div>
-    <div class="small inverted red ui icon button no-border" {{action "removeItem"}}>
+    <div class="small inverted basic red ui icon button no-border" {{action "removeItem"}}>
       <i class="remove icon"/>
     </div>
   </div>
@@ -15,4 +15,4 @@
 <td>{{item.track.title}}</td>
 <td>{{item.track.artist}}</td>
 <td>{{item.track.audioMeta.camelotKey}}&nbsp;{{item.track.audioMeta.keyName}}</td>
-<td class="right align">{{item.track.audioMeta.bpm}}</td>
+<td>{{item.track.audioMeta.bpm}}</td>

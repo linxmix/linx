@@ -15,7 +15,7 @@ export default Ember.Component.extend(
   selectedClip: null,
 
   // optional params
-  pxPerBeat: variableTernary('hasSelectedClip', 'zoomedPxPerBeat', 'defaultPxPerBeat'),
+  pxPerBeat: variableTernary('selectedTransition', 'zoomedPxPerBeat', 'defaultPxPerBeat'),
   defaultPxPerBeat: 1,
   zoomedPxPerBeat: 25,
   rowHeight: 128,

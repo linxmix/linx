@@ -7,6 +7,10 @@ import { FROM_TRACK_COLOR, TO_TRACK_COLOR } from 'linx/components/mix-builder';
 export default Ember.Component.extend({
   tagName: 'tr',
   classNames: ['MixBuilderTracklistItem'],
+  classNameBindings: [
+    'isSelectedFromTrack:MixBuilderTracklistItem--selectedFromTrack',
+    'isSelectedToTrack:MixBuilderTracklistItem--selectedToTrack',
+  ],
 
   // required params
   item: null,
@@ -14,26 +18,29 @@ export default Ember.Component.extend({
   // optional params
   selectedTransition: null,
 
+  actions: {
+    selectTransition() {
+      this.sendAction('selectTransition', this.get('transition'));
+    },
+
+    playItem() {
+      this.sendAction('playItem', this.get('item'));
+    },
+
+    removeItem() {
+      this.sendAction('removeItem', this.get('item'));
+    },
+  },
+
   // params
   transition: Ember.computed.reads('item.transition'),
   track: Ember.computed.reads('item.track'),
   mix: Ember.computed.reads('item.mix'),
 
-  isSelectedTransition: equalProps('selectedTransition', 'item.transition'),
+  isSelectedTransition: equalProps('selectedTransition.id', 'transition.id'),
   isSelectedFromTrack: Ember.computed.reads('isSelectedTransition'),
-  isSelectedToTrack: equalProps('selectedTransition', 'item.prevTransition'),
+  isSelectedToTrack: equalProps('selectedTransition.id', 'item.prevTransition.id'),
 
-  trackColor: Ember.computed('isSelectedFromTrack', 'isSelectedToTrack', function() {
-    if (this.get('isSelectedFromTrackClip')) return FROM_TRACK_COLOR;
-    if (this.get('isSelectedToTrackClip')) return TO_TRACK_COLOR;
-  }),
-
-  index: Ember.computed.reads('item.index'),
-  position: Ember.computed.reads('item.position'),
-  lastPosition: add('position', 1),
-  isLastItem: equalProps('position', 'mix.length'),
-
-  showFromTrack: Ember.computed.bool('toTrack.content'),
-  showToTrack: Ember.computed.and('isLastItem', 'toTrack.content'),
+  isLastItem: equalProps('item.position', 'mix.length'),
 });
 

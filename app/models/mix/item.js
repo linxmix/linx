@@ -47,6 +47,9 @@ export default DS.Model.extend(
   track: Ember.computed.reads('trackClip.track'),
   transition: Ember.computed.reads('transitionClip.transition'),
 
+  prevTransition: Ember.computed.reads('prevTransitionClip.transition'),
+  nextTransition: Ember.computed.reads('nextTransitionClip.transition'),
+
   prevTransitionClip: Ember.computed.reads('prevItem.transitionClip'),
   nextTransitionClip: Ember.computed.reads('nextItem.transitionClip'),
 

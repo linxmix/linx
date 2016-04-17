@@ -1,17 +1,21 @@
-<table class="MixBuilderTracklist-table ui selectable inverted table">
+<table class="MixBuilderTracklist-table ui inverted very basic table">
   <thead>
     <tr>
-      <th>#</th>
-      <th>Song</th>
-      <th>Artist</th>
-      <th>Key</th>
-      <th class="right align">Tempo</th>
+      <th class="three wide"><span style="margin-left: 20px;">#</span></th>
+      <th class="six wide">Song</th>
+      <th class="five wide">Artist</th>
+      <th class="one wide">Key</th>
+      <th class="one wide">Tempo</th>
     </tr>
   </thead>
   <tbody>
     {{#each mix.items as |item index|}}
       {{mix-builder/tracklist/item
         item=item
+        selectTransition=(action attrs.selectTransition)
+        playItem=(action attrs.playItem)
+        removeItem=(action attrs.removeItem)
+        selectedTransition=selectedTransition
       }}
     {{/each}}
   </tbody>

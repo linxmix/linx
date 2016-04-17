@@ -1,5 +1,5 @@
 .MixBuilderTracklistItem-index {
-  margin-right: 15px;
+  margin: 0 20px;
 }
 
 .MixBuilderTracklistItem-buttonGroup {
@@ -15,4 +15,12 @@
   .MixBuilderTracklistItem-buttonGroup {
     visibility: visible;
   }
+}
+
+.MixBuilderTracklistItem--selectedFromTrack {
+  background-color: darken($MixBuilder-fromTrackColor, 20%);
+}
+
+.MixBuilderTracklistItem--selectedToTrack {
+  background-color: darken($MixBuilder-toTrackColor, 20%);
 }
