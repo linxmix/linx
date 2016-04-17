@@ -13,6 +13,7 @@
       selectTransition=(action attrs.selectTransition)
       zoomToClip=(action "zoomToClip")
       removeItem=(action "removeItem")
+      playItem=(action "playItem")
     }}
   </div>
 
@@ -26,6 +27,12 @@
 </div>
 
 <div class="MixBuilder-workstation">
+  {{mix-builder/playback-controls
+    mix=mix
+    selectedTransition=selectedTransition
+    playpause=(action "playpause")
+  }}
+
   {{mix-visual
     class="MixBuilder-mixVisual"
     mix=mix
@@ -39,10 +46,6 @@
     seekToBeat=(action "seekToBeat")
   }}
 
-  {{mix-builder/playback-controls
-    mix=mix
-    selectedTransition=selectedTransition
-  }}
 
   {{!-- {{mix-builder/clip-controls
     isVisible=selectedTransition

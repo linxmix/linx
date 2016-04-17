@@ -1,12 +1,49 @@
-{{#mix-list mix=mix}}
+<table class="MixBuilderTracklist-table ui selectable inverted table">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Song</th>
+      <th>Artist</th>
+      <th>Key</th>
+      <th class="right align">Tempo</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each mix.items as |item index|}}
+      <tr>
+        <td>
+          <div class="MixBuilderTrackList-table-row">
+            <span class="MixBuilderTracklist-table-row-index">{{index}}</span>
+            <div class="mini inverted basic green ui icon button no-border" {{action attrs.playItem item}}>
+              <i class="play icon"/>
+            </div>
+            <div class="mini inverted basic teal ui icon button no-border">
+              <i class="linkify icon"/>
+            </div>
+            <div class="mini inverted basic red ui icon button no-border" {{action attrs.playItem item}}>
+              <i class="remove icon"/>
+            </div>
+          </div>
+        </td>
+        <td>{{item.track.title}}</td>
+        <td>{{item.track.artist}}</td>
+        <td>{{item.track.audioMeta.camelotKey}}&nbsp;{{item.track.audioMeta.keyName}}</td>
+        <td class="right align">{{item.track.audioMeta.bpm}}</td>
+      </tr>
+    {{/each}}
+  </tbody>
+</table>
+
+
+{{!-- {{#mix-list mix=mix}}
   {{#each mix.items as |item|}}
     {{mix-list/item
       item=item
       remove="removeItem"
       viewTrack="zoomToClip"
-      viewTransition="selectTransition"
+      viewTransition=(action attrs.selectTransition)
       play="playItem"
       selectedClip=selectedClip
     }}
   {{/each}}
-{{/mix-list}}
+{{/mix-list}} --}}

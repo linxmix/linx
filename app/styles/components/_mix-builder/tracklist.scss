@@ -1,3 +1,13 @@
 .MixBuilderTracklist {
+  width: 100%;
+}
 
+.MixBuilderTrackList-table-row {
+  .ui.button {
+    margin-right: 0 !important;
+  }
+}
+
+.MixBuilderTracklist-table-row-index {
+  margin-right: 5px;
 }

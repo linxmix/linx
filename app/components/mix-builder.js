@@ -32,6 +32,14 @@ export default Ember.Component.extend({
   mixVisualActionReceiver: null,
 
   actions: {
+    play(beat) {
+      this.get('mix').play(beat);
+    },
+
+    pause(beat) {
+      this.get('mix').pause(beat);
+    },
+
     playpause(beat) {
       this.get('mix').playpause(beat);
     },
@@ -92,11 +100,11 @@ export default Ember.Component.extend({
       mix.removeObject(mixItem);
     },
 
-    // playItem(mixItem) {
-    //   mixItem.get('transitionClip').then((clip) => {
-    //     this.send('play', clip.get('startBeat') - MIX_ITEM_PREVIEW_DISTANCE);
-    //   });
-    // },
+    playItem(mixItem) {
+      mixItem.get('transitionClip').then((clip) => {
+        this.send('play', clip.get('startBeat') - MIX_ITEM_PREVIEW_DISTANCE);
+      });
+    },
 
     // viewTrack(mixItem) {
     //   mixItem.get('trackClip').then((clip) => {
@@ -150,10 +158,6 @@ export default Ember.Component.extend({
 
   // showVolumeAutomation: true,
 
-  // store: Ember.inject.service(),
-  // searchTracks: Ember.computed(function() {
-  //   return this.get('store').findAll('track');
-  // }),
 });
 
 
