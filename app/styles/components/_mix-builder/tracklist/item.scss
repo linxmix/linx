@@ -1,0 +1,18 @@
+.MixBuilderTracklistItem-index {
+  margin-right: 15px;
+}
+
+.MixBuilderTracklistItem-buttonGroup {
+  visibility: hidden;
+  display: inline;
+
+  .ui.button {
+    margin-right: 0 !important;
+  }
+}
+
+.MixBuilderTracklistItem:hover {
+  .MixBuilderTracklistItem-buttonGroup {
+    visibility: visible;
+  }
+}

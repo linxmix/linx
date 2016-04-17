@@ -25,6 +25,7 @@ $site-nav-height: 40px;
 @import 'components/mix-builder';
 @import 'components/_mix-builder/header';
 @import 'components/_mix-builder/tracklist';
+@import 'components/_mix-builder/tracklist/item';
 @import 'components/_mix-builder/playback-controls';
 
 @import 'components/simple-arrangement';
@@ -43,3 +44,4 @@ $site-nav-height: 40px;
 @import 'components/_mix-list/item';
 @import 'components/quantize-dropdown';
 @import 'components/lx-dropdown';
+
