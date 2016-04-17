@@ -1,11 +1,9 @@
-<div class="MixPage">
-  {{page-drop action="onPageDrop"}}
+{{page-drop action="onPageDrop"}}
 
-  {{mix-builder
-    mix=mix
-    selectedTransition=selectedTransition
-    selectTransition=(action "selectTransition")
-  }}
+{{mix-builder
+  mix=mix
+  selectedTransition=selectedTransition
+  selectTransition=(action "selectTransition")
+}}
 
-  {{outlet}}
-</div>
+{{outlet}}

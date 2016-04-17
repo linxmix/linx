@@ -1,0 +1,15 @@
+$site-top-padding: 35px;
+
+.ApplicationPage {
+  padding-top: $site-nav-height + $site-top-padding;
+  min-height: 100vh; // make sure bg color covers page
+
+  color: gray;
+  background-color: #121314 !important; // override semantic
+}
+
+// HACK: make it go away
+#ember-testing-container {
+  width: 0 !important;
+  height: 0 !important;
+}

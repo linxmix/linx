@@ -1,15 +1,15 @@
 import Ember from 'ember';
-import BubbleActions from 'linx/lib/bubble-actions';
-import RequireAttributes from 'linx/lib/require-attributes';
 
-export default Ember.Component.extend(
-  BubbleActions(), RequireAttributes(), {
-
-  actions: {},
+export default Ember.Component.extend({
   classNames: ['MixBuilderHeader'],
-  classNameBindings: [],
+
+  // required params
+  mix: null,
 
   // params
-  foo: 'bar',
+  store: Ember.inject.service(),
+  searchTracks: Ember.computed(function() {
+    return this.get('store').findAll('track');
+  }),
 });
 

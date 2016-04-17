@@ -1,45 +1,51 @@
-{{#mix-builder/container
-  selectedTransition=attrs.selectedTransition
-  selectTransition=(action attrs.selectTransition)
-  as |container|
-}}
-  {{mix-builder/header
-    mix=mix
-  }}
+<div class="ui container grid">
+  <div class="row">
+    {{mix-builder/header
+      mix=mix
+    }}
+  </div>
 
-  {{mix-builder/tracklist
+  <div class="row">
+    {{mix-builder/tracklist
+      mix=mix
+      selectedTransition=selectedTransition
+
+      selectTransition=(action attrs.selectTransition)
+      zoomToClip=(action "zoomToClip")
+      removeItem=(action "removeItem")
+    }}
+  </div>
+
+  {{!-- {{mix-builder/transition-controls
+    isVisible=selectedTransition
+    selectedClip=selectedClip
+    selectedQuantization=selectedQuantization
+    selectQuantization=selectQuantization
+    zoomToClip=zoomToClip
+  }} --}}
+</div>
+
+<div class="MixBuilder-workstation">
+  {{mix-visual
+    class="MixBuilder-mixVisual"
     mix=mix
-    selectedTransition=container.selectedTransition
-    selectTransition=(action container.selectTransition)
-    zoomToTrack=(action container.zoomToTrack)
-    removeTrack=(action container.removeTrack)
+    selectedTransition=selectedTransition
+    selectedClip=selectedClip
+    actionReceiver=mixVisual
+
+    selectTransition=(action attrs.selectTransition)
+    selectClip=(action "selectClip")
+    quantizeBeat=(action "quantizeBeat")
+    seekToBeat=(action "seekToBeat")
   }}
 
   {{mix-builder/playback-controls
     mix=mix
-    selectedTransition=container.selectedTransition
-  }}
-
-  {{!-- {{mix-builder/transition-controls
-    isVisible=container.selectedTransition
-    selectedClip=container.selectedClip
-    selectedQuantization=container.selectedQuantization
-    selectQuantization=(action container.selectQuantization)
-    zoomToClip=(action container.zoomToClip)
-  }} --}}
-
-  {{mix-visual
-    mix=mix
-    selectedTransition=container.selectedTransition
-    selectedClip=container.selectedClip
-    selectTransition=(action container.selectTransition)
-    selectClip=(action container.selectClip)
-    quantizeBeat=(action container.quantizeBeat)
-    seekToBeat=(action container.seekToBeat)
+    selectedTransition=selectedTransition
   }}
 
   {{!-- {{mix-builder/clip-controls
-    isVisible=container.selectedTransition
-    selectedClip=container.selectedClip
+    isVisible=selectedTransition
+    selectedClip=selectedClip
   }} --}}
-{{/mix-builder/container}}
+</div>

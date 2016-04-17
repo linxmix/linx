@@ -1,11 +1,9 @@
-<div class="application pushable">
-  {{site-nav}}
+{{site-nav}}
 
-  <div class="main-container pusher">
-    {{outlet}}
-  </div>
-
-  {{#bottom-bar isActive=isBottomBarActive}}
-    {{!-- {{queue-controls}} --}}
-  {{/bottom-bar}}
+<div class="ApplicationPage">
+  {{outlet}}
 </div>
+
+{{!-- {{#bottom-bar isActive=isBottomBarActive}} --}}
+  {{!-- {{queue-controls}} --}}
+{{!-- {{/bottom-bar}} --}}

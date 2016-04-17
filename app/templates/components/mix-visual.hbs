@@ -1,20 +1,18 @@
 {{#arrangement-visual
+  arrangement=attrs.mix
   pxPerBeat=pxPerBeat
-  arrangement=arrangement
-  zoom=zoom
-  isReady=isReady
-  seekToBeat=(action "seekToBeat")
-  class="MixBuilder-ArrangementVisual"
+  seekToBeat=(action attrs.seekToBeat)
+  class="MixVisual-ArrangementVisual"
   as |gridSelect width height|
 }}
 
   {{!-- Track Clips --}}
-  {{#zip-entries select=gridSelect.MixBuilder-trackClips items=mix.trackClips as |trackClip tag|}}
+  {{#zip-entries select=gridSelect.MixVisual-trackClips items=mix.trackClips as |trackClip tag|}}
     {{mix-visual/track-clip
       select=tag
       clip=trackClip
       selectedClip=selectedClip
-      quantizeBeat=(action "quantizeBeat")
+      quantizeBeat=(action attrs.quantizeBeat)
       fullHeight=height
       rowHeight=rowHeight
       pxPerBeat=pxPerBeat
@@ -22,7 +20,7 @@
   {{/zip-entries}}
 
   {{!-- Transition Clips --}}
-  {{#zip-entries select=gridSelect.MixBuilder-transitionClips items=mix.transitionClips as |transitionClip tag|}}
+  {{#zip-entries select=gridSelect.MixVisual-transitionClips items=mix.transitionClips as |transitionClip tag|}}
     {{mix-visual/transition-clip
       select=tag
       clip=transitionClip
@@ -30,14 +28,14 @@
       selectedClip=selectedClip
       fullHeight=height
       rowHeight=rowHeight
-      quantizeBeat=(action "quantizeBeat")
+      quantizeBeat=(action attrs.quantizeBeat)
     }}
   {{/zip-entries}}
 
 
   {{!-- From Track Automation Clips --}}
   {{#zip-entries
-    select=gridSelect.MixBuilder-FromTrackAutomationClips
+    select=gridSelect.MixVisual-FromTrackAutomationClips
     items=(if showVolumeAutomation selectedTransition.fromTrackAutomationClips [])
     as |automationClip tag|
   }}
@@ -52,7 +50,7 @@
 
   {{!-- To Track Automation Clips --}}
   {{#zip-entries
-    select=gridSelect.MixBuilder-ToTrackAutomationClips
+    select=gridSelect.MixVisual-ToTrackAutomationClips
     items=(if showVolumeAutomation selectedTransition.toTrackAutomationClips [])
     as |automationClip tag|
   }}

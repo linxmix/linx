@@ -1,6 +1,13 @@
 .MixBuilder {
+  .sub.header {
+    font-size: 13px !important;
+  }
 }
 
-.MixBuilder-ArrangementVisual.ArrangementVisual {
-  height: 384px;
+.MixBuilder-workstation {
+  margin-top: 1rem; // match grid above
+}
+
+.MixBuilder-mixVisual {
+  width: 100vw;
 }

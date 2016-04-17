@@ -1,1 +1,12 @@
-{{yield}}
+{{#mix-list mix=mix}}
+  {{#each mix.items as |item|}}
+    {{mix-list/item
+      item=item
+      remove="removeItem"
+      viewTrack="zoomToClip"
+      viewTransition="selectTransition"
+      play="playItem"
+      selectedClip=selectedClip
+    }}
+  {{/each}}
+{{/mix-list}}

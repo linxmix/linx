@@ -3,7 +3,6 @@ import Ember from 'ember';
 import RequireAttributes from 'linx/lib/require-attributes';
 import BubbleActions from 'linx/lib/bubble-actions';
 import ArrangementPlayerMixin from 'linx/mixins/components/arrangement-player';
-import ArrangementVisualMixin from 'linx/mixins/components/arrangement-visual';
 
 import subtract from 'linx/lib/computed/subtract';
 import { isNumber } from 'linx/lib/utils';
@@ -20,8 +19,7 @@ import {
 
 export default Ember.Component.extend(
   RequireAttributes('transition'),
-  ArrangementPlayerMixin,
-  ArrangementVisualMixin, {
+  ArrangementPlayerMixin, {
 
   classNames: ['SimpleTransition'],
   classNameBindings: [],
