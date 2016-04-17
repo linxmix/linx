@@ -10,7 +10,7 @@
       mix=mix
       selectedTransition=selectedTransition
 
-      selectTransition=(action attrs.selectTransition)
+      selectTransition=(action "selectTransition")
       zoomToClip=(action "zoomToClip")
       removeItem=(action "removeItem")
       playItem=(action "playItem")
@@ -38,9 +38,9 @@
     mix=mix
     selectedTransition=selectedTransition
     selectedClip=selectedClip
-    actionReceiver=mixVisual
+    actionReceiver=mixVisualActionReceiver
 
-    selectTransition=(action attrs.selectTransition)
+    selectTransition=(action "selectTransition")
     selectClip=(action "selectClip")
     quantizeBeat=(action "quantizeBeat")
     seekToBeat=(action "seekToBeat")

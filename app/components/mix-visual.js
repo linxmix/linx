@@ -8,6 +8,7 @@ export default Ember.Component.extend(
   InboundActions, {
 
   classNames: ['MixVisual'],
+  classNameBindings: ['selectedTransition:MixVisual--precision'],
 
   // required params
   mix: null,

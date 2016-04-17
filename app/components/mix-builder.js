@@ -11,8 +11,6 @@ import {
   SAMPLE_QUANTIZATION,
 } from 'linx/models/track/audio-meta/beat-grid';
 
-export const MIX_ITEM_PREVIEW_DISTANCE = 4;
-
 export const FROM_TRACK_COLOR = '#ac6ac7';
 export const TO_TRACK_COLOR = '#16a085';
 
@@ -60,13 +58,19 @@ export default Ember.Component.extend({
       this.set('selectedQuantizations', [quantization]);
     },
 
-    selectClip(args) {
-      console.log("TODO: implement selectClip", args);
+    selectClip(clip) {
+      console.log("TODO: implement selectClip", clip);
+    },
+
+    selectTransition(transition) {
+      this.sendAction('selectTransition', transition);
+
+      Ember.run.next(this, 'send', 'zoomToClip', transition.get('transitionClip'), true);
     },
 
     zoomToClip(...args) {
       const mixVisual = this.get('mixVisualActionReceiver');
-      mixVisual.send.apply(mixVisual, ['zoomToClip'].concat(args));
+      mixVisual && mixVisual.send.apply(mixVisual, ['zoomToClip'].concat(args));
     },
 
     quantizeBeat(beat) {
@@ -101,8 +105,9 @@ export default Ember.Component.extend({
     },
 
     playItem(mixItem) {
-      mixItem.get('transitionClip').then((clip) => {
-        this.send('play', clip.get('startBeat') - MIX_ITEM_PREVIEW_DISTANCE);
+      mixItem.get('trackClip').then((clip) => {
+        this.send('zoomToClip', clip, true);
+        this.send('play', clip.get('startBeat'));
       });
     },
 

@@ -5,7 +5,7 @@ import _ from 'npm:underscore';
 import d3 from 'd3';
 import DataVisual from 'ember-cli-d3/components/data-visual';
 
-import { clamp, isNumber } from 'linx/lib/utils';
+import { clamp, isValidNumber } from 'linx/lib/utils';
 import multiply from 'linx/lib/computed/multiply';
 
 // ms to wait between zoom events
@@ -19,6 +19,7 @@ export default DataVisual.extend(
   pxPerBeat: 0,
 
   // optional params
+  showBarGrid: true,
   isReady: true,
   zoom: Ember.computed(() => d3.behavior.zoom()),
 
@@ -41,7 +42,7 @@ export default DataVisual.extend(
       scale = isValidNumber(scale) ? scale : prevScale;
       let [ translateX, translateY ] = zoom.translate();
       const pxPerBeat = this.get('pxPerBeat');
-      const svgSelection = this.get('svgSelection');
+      const svgSelection = this.get('selection');
 
       Ember.assert('Must have svgSelection to zoom', !!svgSelection);
 

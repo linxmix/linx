@@ -1,8 +1,10 @@
 {{#arrangement-visual
   arrangement=attrs.mix
   pxPerBeat=pxPerBeat
+  showBarGrid=selectedTransition
   seekToBeat=(action attrs.seekToBeat)
-  class="MixVisual-ArrangementVisual"
+  actionReceiver=arrangementVisualActionReceiver
+  class="MixVisual-arrangementVisual"
   as |gridSelect width height|
 }}
 

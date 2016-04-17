@@ -12,6 +12,7 @@ export default Ember.Component.extend(GraphicSupport(), {
   tickSize: null,
   tickFormat: null,
   tickPadding: null,
+  isNodeVisible: true,
 
   scale: null,
 
@@ -30,6 +31,7 @@ export default Ember.Component.extend(GraphicSupport(), {
     if (axis) {
       sel.attr('id', this.elementId)
         .attr('transform', transform)
+        .style('visibility', this.get('isNodeVisible') ? 'visible' : 'hidden')
         .call(axis)
         .each(function () {
           d3.select(this).selectAll('.tick')

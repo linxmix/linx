@@ -1,6 +1,9 @@
-.MixVisual {
+.MixVisual.MixVisual--precision {
+  .MixVisual-arrangementVisual {
+    height: 384px;
+  }
 }
 
-.MixVisual-ArrangementVisual.ArrangementVisual {
-  height: 384px;
+.MixVisual-arrangementVisual {
+  height: 128px;
 }
