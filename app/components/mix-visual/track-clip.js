@@ -41,7 +41,7 @@ export default ArrangementVisualTrackClip.extend(
   waveColor: Ember.computed('isSelectedFromTrackClip', 'isSelectedToTrackClip', function() {
     if (this.get('isSelectedFromTrackClip')) return FROM_TRACK_COLOR;
     if (this.get('isSelectedToTrackClip')) return TO_TRACK_COLOR;
-    return 'green';
+    return 'steelblue';
   }),
 
   call(selection) {

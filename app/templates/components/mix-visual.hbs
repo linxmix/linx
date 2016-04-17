@@ -13,7 +13,7 @@
     {{mix-visual/track-clip
       select=tag
       clip=trackClip
-      selectedClip=selectedClip
+      selectedTransition=selectedTransition
       quantizeBeat=(action attrs.quantizeBeat)
       fullHeight=height
       rowHeight=rowHeight
@@ -27,10 +27,11 @@
       select=tag
       clip=transitionClip
       pxPerBeat=pxPerBeat
-      selectedClip=selectedClip
+      selectedTransition=selectedTransition
       fullHeight=height
       rowHeight=rowHeight
       quantizeBeat=(action attrs.quantizeBeat)
+      selectTransition=(action attrs.selectTransition)
     }}
   {{/zip-entries}}
 

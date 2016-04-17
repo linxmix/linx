@@ -48,10 +48,13 @@ export default Ember.Component.extend(
   drawHandle: join([0], 'rect.ArrangementVisualClipResizeHandle-rect', {
     update(selection) {
       const xPos = this.get('xPos');
+      const handleHeight = this.get('height') / 1.0;
+      const yPos = (this.get('height') - handleHeight) / 2.0;
 
       selection
         .attr('x', xPos)
-        .attr('height', this.get('height'))
+        .attr('y', yPos)
+        .attr('height', handleHeight)
         .attr('width', this.get('handleWidthPx'))
     },
   }),

@@ -6,10 +6,12 @@ import { variableTernary } from 'linx/lib/computed/ternary';
 export default Ember.Mixin.create({
 
   // required params
-  selectedClip: null,
+  selectedTransition: null,
   fullHeight: null,
   rowHeight: null,
 
+  // params
+  selectedTransitionClip: Ember.computed.reads('selectedTransition.transitionClip'),
   height: variableTernary('isSelected', 'rowHeight', 'fullHeight'),
 
   call(selection) {
@@ -17,12 +19,12 @@ export default Ember.Mixin.create({
     selection.classed('MixVisualClip', true);
   },
 
-  selectedFromTrackClip: Ember.computed.reads('selectedClip.fromTrackClip'),
-  selectedToTrackClip: Ember.computed.reads('selectedClip.toTrackClip'),
+  selectedFromTrackClip: Ember.computed.reads('selectedTransitionClip.fromTrackClip'),
+  selectedToTrackClip: Ember.computed.reads('selectedTransitionClip.toTrackClip'),
 
   isSelectedFromTrackClip: equalProps('selectedFromTrackClip', 'clip'),
   isSelectedToTrackClip: equalProps('selectedToTrackClip', 'clip'),
 
-  isSelectedClip: equalProps('selectedClip.id', 'clip.id'),
-  isSelected: Ember.computed.or('isSelectedClip', 'isSelectedFromTrackClip', 'isSelectedToTrackClip'),
+  isSelectedTransitionClip: equalProps('selectedTransitionClip.id', 'clip.id'),
+  isSelected: Ember.computed.or('isSelectedTransitionClip', 'isSelectedFromTrackClip', 'isSelectedToTrackClip'),
 });

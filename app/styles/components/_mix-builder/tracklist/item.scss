@@ -11,7 +11,7 @@
   }
 }
 
-.MixBuilderTracklistItem:hover {
+.MixBuilderTracklistItem:hover, .MixBuilderTracklistItem--selectedFromTrack {
   .MixBuilderTracklistItem-buttonGroup {
     visibility: visible;
   }

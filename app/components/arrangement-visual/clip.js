@@ -4,10 +4,12 @@ import d3 from 'd3';
 import GraphicSupport from 'linx/mixins/d3/graphic-support';
 import { join } from 'ember-cli-d3/utils/d3';
 
+import BubbleActions from 'linx/lib/bubble-actions';
 import multiply from 'linx/lib/computed/multiply';
 import DraggableMixin from 'linx/mixins/components/arrangement-visual/draggable';
 
 export default Ember.Component.extend(
+  BubbleActions('onClick'),
   GraphicSupport('startBeat', 'beatCount', 'pxPerBeat', 'height', 'row'),
   DraggableMixin, {
 
@@ -53,7 +55,7 @@ export default Ember.Component.extend(
       selection
         .attr('height', this.get('height'))
         .attr('width', this.get('widthPx'))
-        .on('click', () => this.sendAction('onClick'));
+        .on('click', () => this.send('onClick'));
     },
   }),
 });

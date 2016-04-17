@@ -29,6 +29,11 @@ export default Ember.Component.extend(
       const arrangementVisual = this.get('arrangementVisualActionReceiver');
       arrangementVisual.send.apply(arrangementVisual, ['zoomToClip'].concat(args));
     },
+
+    resetZoom(...args) {
+      const arrangementVisual = this.get('arrangementVisualActionReceiver');
+      arrangementVisual.send.apply(arrangementVisual, ['resetZoom'].concat(args));
+    },
   }
 });
 

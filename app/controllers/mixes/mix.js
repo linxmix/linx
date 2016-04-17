@@ -7,12 +7,19 @@ export default Ember.Controller.extend({
 
   actions: {
     selectTransition(transition) {
-      this.set('transitionId', transition && transition.get('id') || '');
+      const prevId = this.get('transitionId');
+      const newId = (transition && transition.get('id')) || '';
+
+      if (prevId === newId) {
+        this.set('transitionId', '');
+      } else {
+        this.set('transitionId', newId);
+      }
     }
   },
 
   // params
-  queryParams: ['transitionId'],
+  // queryParams: ['transitionId'],
   transitionId: '',
 
   selectedTransition: Ember.computed('transitionId', 'mix.transitions.@each.id', function() {

@@ -4,7 +4,7 @@
     <div class="small inverted basic green ui icon button no-border" {{action "playItem"}}>
       <i class="play icon"/>
     </div>
-    <div class="small inverted basic teal ui icon button no-border {{if isSelectedTransition "disabled"}}" {{action "selectTransition"}}>
+    <div class="small inverted teal ui icon button no-border {{if isSelectedTransition "" "basic"}}" {{action "selectTransition"}}>
       <i class="linkify icon"/>
     </div>
     <div class="small inverted basic red ui icon button no-border" {{action "removeItem"}}>

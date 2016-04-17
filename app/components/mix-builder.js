@@ -63,14 +63,20 @@ export default Ember.Component.extend({
     },
 
     selectTransition(transition) {
-      this.sendAction('selectTransition', transition);
+      const prevId = this.get('selectedTransition.id');
+      const newId = transition.get('id');
 
-      Ember.run.next(this, 'send', 'zoomToClip', transition.get('transitionClip'), true);
+      this.sendAction('selectTransition', transition);
     },
 
     zoomToClip(...args) {
       const mixVisual = this.get('mixVisualActionReceiver');
       mixVisual && mixVisual.send.apply(mixVisual, ['zoomToClip'].concat(args));
+    },
+
+    resetZoom(...args) {
+      const mixVisual = this.get('mixVisualActionReceiver');
+      mixVisual && mixVisual.send.apply(mixVisual, ['resetZoom'].concat(args));
     },
 
     quantizeBeat(beat) {
@@ -160,6 +166,18 @@ export default Ember.Component.extend({
     //   this.toggleProperty('showVolumeAutomation');
     // },
   },
+
+  _selectedTransitionDidChange: Ember.observer('selectedTransition', function() {
+    const transition = this.get('selectedTransition');
+
+    Ember.run.next(() => {
+      if (transition) {
+        this.send('zoomToClip', transition.get('transitionClip'), true);
+      } else {
+        this.send('resetZoom', true);
+      }
+    });
+  }).on('didInsertElement'),
 
   // showVolumeAutomation: true,
 

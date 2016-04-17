@@ -11,9 +11,10 @@ export default ArrangementVisualClip.extend(
   // overrides
   layoutName: 'components/arrangement-visual/clip',
 
-  row: constantTernary('isSelectedClip', 1, 0),
-  isDraggable: Ember.computed.reads('isSelectedClip'),
-  isResizable: Ember.computed.reads('isSelectedClip'),
+  height: Ember.computed.reads('fullHeight'),
+  row: 0,
+  isDraggable: Ember.computed.reads('isSelectedTransitionClip'),
+  isResizable: Ember.computed.reads('isSelectedTransitionClip'),
 
   transition: Ember.computed.reads('clip.transition'),
   fromTrackClip: Ember.computed.reads('clip.fromTrackClip'),
@@ -24,6 +25,12 @@ export default ArrangementVisualClip.extend(
   _resizeStartValue: 0,
 
   actions: {
+    onClick() {
+      if (!this.get('isSelectedTransitionClip')) {
+        this.sendAction('selectTransition', this.get('transition'));
+      }
+    },
+
     onDrag(d3Context, d, dBeats) {
       dBeats = this.attrs.quantizeBeat(dBeats);
       const newBeat = this.get('_dragStartBeat') + dBeats;

@@ -27,6 +27,10 @@ export default DataVisual.extend(
   classNameBindings: ['isReady::ArrangementVisual--loading'],
 
   actions: {
+    resetZoom(doAnimate) {
+      this.send('zoomToBeat', this.get('width') / 2.0, 1, doAnimate);
+    },
+
     zoomToClip(clip, doAnimate) {
       const centerBeat = clip.get('centerBeat');
       const pxPerBeat = this.get('pxPerBeat');
@@ -37,6 +41,10 @@ export default DataVisual.extend(
     },
 
     zoomToBeat(beat, scale, doAnimate = true) {
+      if (!isValidNumber(beat)) {
+        return Ember.Logger.warn('zoomToBeat given invalid beat', beat);
+      }
+
       const zoom = this.get('zoom');
       const prevScale = zoom.scale();
       scale = isValidNumber(scale) ? scale : prevScale;
