@@ -51,6 +51,7 @@
     "ember-data": "2.4.0",
     "ember-data-factory-guy": "2.1.1",
     "ember-new-computed": "1.0.0",
+    "ember-one-way-controls": "0.6.3",
     "ember-radio-button": "1.0.4",
     "ember-sinon": "0.2.1",
     "ember-truth-helpers": "1.2.0",
