@@ -26,7 +26,9 @@ export default ArrangementVisualClip.extend(
 
   actions: {
     onClick() {
-      if (!this.get('isSelectedTransitionClip')) {
+      if (this.get('selectedTransition')) {
+        this.sendAction('selectClip', this.get('clip'));
+      } else {
         this.sendAction('selectTransition', this.get('transition'));
       }
     },

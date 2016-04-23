@@ -2,6 +2,7 @@
   <div class="row">
     {{mix-builder/header
       mix=mix
+      addTrack=(action "addTrack")
     }}
   </div>
 
@@ -46,8 +47,17 @@
     seekToBeat=(action "seekToBeat")
   }}
 
+ {{!--  {{#if isPrecisionEditor}}
+    <div class="basic inverted orange ui icon button" {{action "optimizeTransition"}}>
+      <i class="refresh icon"></i>
+      Optimize Transition
+    </div>
+  {{/if}} --}}
+
   {{mix-builder/clip-controls
     isVisible=(not (not selectedClip))
-    selectedClip=selectedClip
+    clip=selectedClip
   }}
+
+
 </div>

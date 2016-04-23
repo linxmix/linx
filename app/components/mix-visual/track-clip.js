@@ -13,6 +13,12 @@ export default ArrangementVisualTrackClip.extend(
   quantizeBeat: null,
 
   actions: {
+    onClick() {
+      if (this.get('selectedTransition')) {
+        this.sendAction('selectClip', this.get('clip'));
+      }
+    },
+
     onDrag(d3Context, d, dBeats) {
       dBeats = this.attrs.quantizeBeat(dBeats);
       const newBeat = this.get('_dragStartBeat') - dBeats;

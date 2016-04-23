@@ -28,7 +28,7 @@ export default Ember.Component.extend({
   selectedQuantizations: [BAR_QUANTIZATION],
   selectedQuantization: Ember.computed.reads('selectedQuantizations.firstObject'),
   mixVisualActionReceiver: null,
-  isPrecisionEditor: Ember.computed.reads('selectedTransition'),
+  isPrecisionEditor: Ember.computed.bool('selectedTransition'),
 
   actions: {
     play(beat) {
@@ -60,13 +60,11 @@ export default Ember.Component.extend({
     },
 
     selectClip(clip) {
-      console.log("selectClip", clip, this.get('isPrecisionEditor'));
-      if (this.get('isPrecisionEditor')) {
-        if (clip === this.get('selectedClip')) {
-          this.set('selectedClip', null);
-        } else {
-          this.set('selectedClip', clip);
-        }
+      console.log('selectClip', clip);
+      if (clip === this.get('selectedClip')) {
+        this.set('selectedClip', null);
+      } else {
+        this.set('selectedClip', clip);
       }
     },
 
@@ -125,42 +123,15 @@ export default Ember.Component.extend({
       });
     },
 
-    // viewTrack(mixItem) {
-    //   mixItem.get('trackClip').then((clip) => {
-    //     this.send('zoomToClip', clip);
-    //   });
-    // },
+    optimizeTransition(transition) {
+      transition && transition.optimize();
+    },
 
-    // viewTransition(mixItem) {
-    //   mixItem.get('transitionClip').then((clip) => {
-    //     this.send('didSelectClip', clip);
+    addTrack(track) {
+      const mix = this.get('mix');
 
-    //     Ember.run.next(() => {
-    //       this.send('zoomToClip', clip);
-    //     });
-    //   });
-    // },
-
-    // clearSelectedClip() {
-    //   const selectedClip = this.get('selectedClip');
-    //   if (selectedClip) {
-    //     this.send('didSelectClip', null);
-
-    //     Ember.run.next(() => {
-    //       this.send('zoomToClip', selectedClip);
-    //     });
-    //   }
-    // },
-
-    // optimizeTransition(transition) {
-    //   transition && transition.optimize();
-    // },
-
-    // addTrack(track) {
-    //   const mix = this.get('mix');
-
-    //   mix.appendTrack(track);
-    // },
+      mix.appendTrack(track);
+    },
 
     // appendRandomTrack() {
     //   const mix = this.get('mix');

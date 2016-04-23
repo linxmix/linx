@@ -1,2 +1,5 @@
-{{selectedClip.track.title}} - {{selectedClip.track.artist}}
-{{selectedClip.track.bpm}}
+{{#if isTransitionClip}}
+  {{mix-builder/clip-controls/transition clip=clip}}
+{{else if isTrackClip}}
+  {{mix-builder/clip-controls/track clip=clip}}
+{{/if}}

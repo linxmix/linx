@@ -4,6 +4,13 @@ export default Ember.Component.extend({
   classNames: ['MixBuilderClipControls', 'inverted ui segment'],
 
   // required params
-  selectedClip: null,
+  clip: null,
+
+  // params
+  transition: Ember.computed.reads('clip.transition'),
+  track: Ember.computed.reads('clip.track'),
+
+  isTransitionClip: Ember.computed.reads('clip.transition'),
+  isTrackClip: Ember.computed.reads('clip.track'),
 });
 
