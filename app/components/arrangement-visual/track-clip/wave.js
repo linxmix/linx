@@ -16,6 +16,7 @@ export default Ember.Component.extend(
 
   prevPeaks: null,
   call(selection) {
+    this._super.apply(this, arguments);
     const transform = this.get('transform');
 
     if (!this.get('displayWaveform')) {

@@ -25,6 +25,7 @@ export default Ember.Component.extend(
   isDraggable: Ember.computed.reads('isResizable'),
 
   call(selection) {
+    this._super.apply(this, arguments);
     const { direction, isResizable, widthPx } = this.getProperties('direction', 'isResizable');
     const isVisible = isResizable && Ember.isPresent(direction);
 

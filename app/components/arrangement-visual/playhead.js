@@ -31,6 +31,7 @@ export default Ember.Component.extend(
   },
 
   call(selection) {
+    this._super.apply(this, arguments);
     this.updatePlayhead();
   },
 
