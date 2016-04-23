@@ -1,15 +1,9 @@
 import Ember from 'ember';
-import BubbleActions from 'linx/lib/bubble-actions';
-import RequireAttributes from 'linx/lib/require-attributes';
 
-export default Ember.Component.extend(
-  BubbleActions(), RequireAttributes(), {
+export default Ember.Component.extend({
+  classNames: ['MixBuilderClipControls', 'inverted ui segment'],
 
-  actions: {},
-  classNames: ['MixBuilderClipControls'],
-  classNameBindings: [],
-
-  // params
-  foo: 'bar',
+  // required params
+  selectedClip: null,
 });
 

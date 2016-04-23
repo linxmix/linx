@@ -46,10 +46,8 @@
     seekToBeat=(action "seekToBeat")
   }}
 
-
   {{mix-builder/clip-controls
-    mix=mix
-    isD3Visible=selectClip
+    isVisible=(not (not selectedClip))
     selectedClip=selectedClip
   }}
 </div>

@@ -13,18 +13,13 @@ export default Ember.Component.extend(
   height: 125,
   waveColor: 'green',
 
-  prevPeaks: null,
   call(selection) {
     this._super.apply(this, arguments);
 
     selection
       .classed('TrackClipWave', true);
 
-    const newPeaks = this.get('peaks');
-    if (newPeaks !== this.get('prevPeaks')) {
-      this.drawWaveform(selection);
-      this.set('prevPeaks', newPeaks);
-    }
+    this.drawWaveform(selection);
   },
 
   drawWaveform: join([0], 'path.TrackClipWave-waveform', {

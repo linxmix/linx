@@ -32,10 +32,10 @@ export default ArrangementVisualTrackClip.extend(
   layoutName: 'components/arrangement-visual/track-clip',
 
   // only tracks in selected transition can be dragged
-  isDraggable: Ember.computed.reads('isSelected'),
+  isDraggable: Ember.computed.reads('isInSelectedTransition'),
 
   // display waveform only if no clip is selected, or this clip is in the selection
-  displayWaveform: propertyOrDefault('selectedClip', 'isSelected', true),
+  displayWaveform: propertyOrDefault('selectedTransition', 'isInSelectedTransition', true),
   row: constantTernary('isSelectedToTrackClip', 2, 0),
 
   waveColor: Ember.computed('isSelectedFromTrackClip', 'isSelectedToTrackClip', function() {

@@ -28,6 +28,7 @@ export default Ember.Component.extend({
   selectedQuantizations: [BAR_QUANTIZATION],
   selectedQuantization: Ember.computed.reads('selectedQuantizations.firstObject'),
   mixVisualActionReceiver: null,
+  isPrecisionEditor: Ember.computed.reads('selectedTransition'),
 
   actions: {
     play(beat) {
@@ -59,7 +60,14 @@ export default Ember.Component.extend({
     },
 
     selectClip(clip) {
-      console.log("TODO: implement selectClip", clip);
+      console.log("selectClip", clip, this.get('isPrecisionEditor'));
+      if (this.get('isPrecisionEditor')) {
+        if (clip === this.get('selectedClip')) {
+          this.set('selectedClip', null);
+        } else {
+          this.set('selectedClip', clip);
+        }
+      }
     },
 
     selectTransition(transition) {

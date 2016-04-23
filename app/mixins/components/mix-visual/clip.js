@@ -12,7 +12,7 @@ export default Ember.Mixin.create({
 
   // params
   selectedTransitionClip: Ember.computed.reads('selectedTransition.transitionClip'),
-  height: variableTernary('isSelected', 'rowHeight', 'fullHeight'),
+  height: variableTernary('isInSelectedTransition', 'rowHeight', 'fullHeight'),
 
   call(selection) {
     this._super.apply(this, arguments);
@@ -26,5 +26,6 @@ export default Ember.Mixin.create({
   isSelectedToTrackClip: equalProps('selectedToTrackClip', 'clip'),
 
   isSelectedTransitionClip: equalProps('selectedTransitionClip.id', 'clip.id'),
-  isSelected: Ember.computed.or('isSelectedTransitionClip', 'isSelectedFromTrackClip', 'isSelectedToTrackClip'),
+  isInSelectedTransition: Ember.computed.or('isSelectedTransitionClip', 'isSelectedFromTrackClip', 'isSelectedToTrackClip'),
+  isInSelectedTransition: Ember.computed.or('isSelectedTransitionClip', 'isSelectedFromTrackClip', 'isSelectedToTrackClip'),
 });

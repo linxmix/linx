@@ -11,6 +11,9 @@ import multiply from 'linx/lib/computed/multiply';
 // ms to wait between zoom events
 const ZOOM_THROTTLE_DELAY = 0;
 
+// when zooming to clip, leave some space
+const ZOOM_TO_CLIP_SCALE_FACTOR = 0.9;
+
 export default DataVisual.extend(
   InboundActions, {
 
@@ -40,7 +43,7 @@ export default DataVisual.extend(
       const pxPerBeat = this.get('pxPerBeat');
       const clipWidthPx = clip.get('beatCount') * pxPerBeat;
       const viewWidthPx = this.get('width');
-      const scale = viewWidthPx / clipWidthPx;
+      const scale = viewWidthPx / clipWidthPx * ZOOM_TO_CLIP_SCALE_FACTOR;
       this.send('zoomToBeat', centerBeat, scale, doAnimate);
     },
 
