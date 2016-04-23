@@ -7,7 +7,7 @@ export default function(...dependentPaths) {
   const observerName = `_renderD3Selection${dependentPaths.join('')}`;
 
   return Ember.Mixin.create(GraphicSupport, {
-    [observerName]: Ember.observer.apply(Ember, dependentPaths.concat(['isD3Visible', 'transform', function() {
+    [observerName]: Ember.observer.apply(Ember, dependentPaths.concat(['isD3Visible', 'transform', 'height', 'width', function() {
       this.didReceiveAttrs();
     }])),
 

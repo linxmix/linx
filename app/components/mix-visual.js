@@ -21,6 +21,12 @@ export default Ember.Component.extend(
   zoomedPxPerBeat: 25,
   rowHeight: 128,
 
+  _measureVisual: Ember.observer('selectedTransition', function() {
+    Ember.run.next(() => {
+      this.get('arrangementVisualActionReceiver').send('measure');
+    });
+  }),
+
   // params
   arrangementVisualActionReceiver: null,
 

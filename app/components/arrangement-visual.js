@@ -27,6 +27,10 @@ export default DataVisual.extend(
   classNameBindings: ['isReady::ArrangementVisual--loading'],
 
   actions: {
+    measure() {
+      this.measure();
+    },
+
     resetZoom(doAnimate) {
       this.send('zoomToBeat', this.get('width') / 2.0, 1, doAnimate);
     },
