@@ -10,6 +10,8 @@ export default Ember.Object.extend(
   ReadinessMixin('isArrayBufferLoadedAndDecoded'),
   RequireAttributes('track'), {
 
+  isLoading: Ember.computed.reads('arrayBuffer.isPending'),
+
   // implement readiness
   isArrayBufferLoadedAndDecoded: Ember.computed.and('arrayBuffer.isFulfilled', 'decodedArrayBuffer.content'),
 

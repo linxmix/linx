@@ -6,4 +6,11 @@
       fill: rgba(#fff, 0.2);
     }
   }
+
+  &.is-loading {
+    .ArrangementVisualClip-backdrop {
+      fill: rgba(#0ff, 0.2);
+      cursor: wait;
+    }
+  }
 }

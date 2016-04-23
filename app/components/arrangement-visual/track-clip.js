@@ -7,16 +7,19 @@ import GraphicSupport from 'linx/mixins/d3/graphic-support';
 import { timeToBeat as staticTimeToBeat } from 'linx/lib/utils';
 
 export default Clip.extend(
-  GraphicSupport('displayWaveform', 'waveColor'), {
+  GraphicSupport('displayWaveform', 'waveColor', 'isLoadingAudio'), {
 
   // optional params
   displayWaveform: true,
   waveColor: 'green',
   selectedQuantization: null,
+  isLoadingAudio: Ember.computed.reads('audioBinary.isLoading'),
 
   call(selection) {
     this._super.apply(this, arguments);
-    selection.classed('ArrangementVisualTrackClip', true);
+    selection
+      .classed('ArrangementVisualTrackClip', true)
+      .classed('is-loading', this.get('isLoadingAudio'));
   },
 
   track: Ember.computed.reads('clip.track'),
