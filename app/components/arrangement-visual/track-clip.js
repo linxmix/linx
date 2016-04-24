@@ -74,8 +74,8 @@ export default Clip.extend(
     return translate([-this.get('startOffsetPx')]);
   }),
 
-  endOffsetBeats: Ember.computed('audioEndTime', 'trackBpm', function() {
-    return staticTimeToBeat(this.get('audioEndTime'), this.get('trackBpm'));
+  endOffsetBeats: Ember.computed('audioStartTime', 'audioEndTime', 'trackBpm', function() {
+    return staticTimeToBeat(this.get('audioEndTime') - this.get('audioStartTime'), this.get('trackBpm'));
   }),
   endOffsetPx: multiply('endOffsetBeats', 'pxPerBeat'),
   endOffsetWidth: Ember.computed('endOffsetBeats', 'trackBeatCount', 'pxPerBeat', function() {
