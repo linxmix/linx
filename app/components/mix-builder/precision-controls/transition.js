@@ -14,11 +14,6 @@ export default Ember.Component.extend(
   showAutomation: true,
 
   actions: {
-    toggleShowAutomation() {
-      console.log('toggleShowAutomation');
-      this.attrs.toggleShowAutomation();
-    },
-
     optimizeTransition() {
       const transition = this.get('transition.content') || this.get('transition');
       transition && transition.optimize();

@@ -46,7 +46,6 @@ export default Ember.Component.extend(
     this._super.apply(this, arguments);
 
     selection.classed('ArrangementVisualClip', true)
-      .attr('transform', this.get('transform'))
       .call(this.get('drag'));
 
     this.backdrop(selection);
