@@ -41,11 +41,12 @@
   {{!-- From Track Automation Clips --}}
   {{#zip-entries
     select=gridSelect.MixVisual-FromTrackAutomationClips
-    items=(if showVolumeAutomation selectedTransition.fromTrackAutomationClips [])
+    items=selectedTransition.fromTrackAutomationClips
     as |automationClip tag|
   }}
     {{mix-visual/automation-clip
       select=tag
+      isD3Visible=attrs.showAutomation
       clip=automationClip
       pxPerBeat=pxPerBeat
       height=rowHeight
@@ -56,11 +57,12 @@
   {{!-- To Track Automation Clips --}}
   {{#zip-entries
     select=gridSelect.MixVisual-ToTrackAutomationClips
-    items=(if showVolumeAutomation selectedTransition.toTrackAutomationClips [])
+    items=selectedTransition.toTrackAutomationClips
     as |automationClip tag|
   }}
     {{mix-visual/automation-clip
       select=tag
+      isD3Visible=attrs.showAutomation
       clip=automationClip
       pxPerBeat=pxPerBeat
       height=rowHeight

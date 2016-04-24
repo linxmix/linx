@@ -14,9 +14,9 @@ export default ArrangementVisualTrackClip.extend(
 
   actions: {
     onClick() {
-      if (this.get('selectedTransition')) {
+      // if (this.get('selectedTransition')) {
         this.sendAction('selectClip', this.get('clip'));
-      }
+      // }
     },
 
     onDrag(d3Context, d, dBeats) {

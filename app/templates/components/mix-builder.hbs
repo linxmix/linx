@@ -37,6 +37,7 @@
   {{mix-visual
     class="MixBuilder-mixVisual"
     mix=mix
+    showAutomation=showAutomation
     selectedTransition=selectedTransition
     selectedClip=selectedClip
     actionReceiver=mixVisualActionReceiver
@@ -54,9 +55,13 @@
     </div>
   {{/if}} --}}
 
-  {{mix-builder/clip-controls
-    isVisible=(not (not selectedClip))
-    clip=selectedClip
+  {{mix-builder/precision-controls
+    isVisible=(not (not selectedTransition))
+    selectedTransition=selectedTransition
+    showAutomation=showAutomation
+
+    selectTransition=(action "selectTransition")
+    toggleShowAutomation=(action toggleProperty "showAutomation")
   }}
 
 

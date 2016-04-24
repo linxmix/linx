@@ -1,0 +1,20 @@
+<div class="five wide column">
+  {{mix-builder/precision-controls/track
+    clip=selectedTransition.fromTrackClip
+  }}
+</div>
+
+<div class="six wide column">
+  {{mix-builder/precision-controls/transition
+    clip=selectedTransition.transitionClip
+    showAutomation=attrs.showAutomation
+
+    toggleShowAutomation=(action attrs.toggleShowAutomation)
+  }}
+</div>
+
+<div class="five wide column">
+  {{mix-builder/precision-controls/track
+    clip=selectedTransition.toTrackClip
+  }}
+</div>

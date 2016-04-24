@@ -27,9 +27,9 @@ $site-nav-height: 40px;
 @import 'components/_mix-builder/tracklist';
 @import 'components/_mix-builder/tracklist/item';
 @import 'components/_mix-builder/playback-controls';
-@import 'components/_mix-builder/clip-controls';
-@import 'components/_mix-builder/clip-controls/track';
-@import 'components/_mix-builder/clip-controls/transition';
+@import 'components/_mix-builder/precision-controls';
+@import 'components/_mix-builder/precision-controls/track';
+@import 'components/_mix-builder/precision-controls/transition';
 
 @import 'components/simple-arrangement';
 @import 'components/simple-transition';

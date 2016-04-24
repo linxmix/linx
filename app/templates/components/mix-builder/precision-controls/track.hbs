@@ -1,0 +1,45 @@
+<h4 class="inverted ui header">
+  <i class="music icon"/>
+  <div class="content">
+    #{{clip.mixItem.position}} - {{track.title}}
+    <div class="sub header">Track Clip</div>
+  </div>
+</h4>
+
+<div style="margin: 5px 0;">
+  Transpose
+  {{x-slider min=-11 max=11 step=1 value=clip.transpose}}
+  <span class="MixBuilderPrecisionControls-number">{{clip.transpose}}</span>
+</div>
+
+<div style="margin: 5px 0;">
+  Gain
+  {{x-slider min=0 max=2 step=0.01 value=track.audioMeta.gain}}
+  <span class="MixBuilderPrecisionControls-number">{{track.audioMeta.gain}}</span>
+</div>
+
+<div>
+  Audio Start Beat <span class="MixBuilderPrecisionControls-number">{{clip.audioStartBeat}}</span>
+  {{!-- {{one-way-input
+    class="inverted ui input"
+    value=clip.audioStartBeat
+    update=(action (mut clip.audioStartBeat))
+  }} --}}
+</div>
+
+<div>
+  Audio End Beat <span class="MixBuilderPrecisionControls-number">{{clip.audioEndBeat}}</span>
+</div>
+
+<div>
+  Synced Tempo <span class="MixBuilderPrecisionControls-number">{{clip.tempo}}</span>
+</div>
+
+<div>
+  Clip Duration <span class="MixBuilderPrecisionControls-number">{{clip.duration}}</span>
+</div>
+
+
+<div>
+  Track Duration <span class="MixBuilderPrecisionControls-number">{{clip.duration}}</span>
+</div>

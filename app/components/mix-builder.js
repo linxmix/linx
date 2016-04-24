@@ -28,7 +28,8 @@ export default Ember.Component.extend({
   selectedQuantizations: [BAR_QUANTIZATION],
   selectedQuantization: Ember.computed.reads('selectedQuantizations.firstObject'),
   mixVisualActionReceiver: null,
-  isPrecisionEditor: Ember.computed.bool('selectedTransition'),
+
+  showAutomation: true,
 
   actions: {
     play(beat) {
@@ -60,7 +61,7 @@ export default Ember.Component.extend({
     },
 
     selectClip(clip) {
-      console.log('selectClip', clip);
+      Ember.Logger.log('selectClip', clip);
       if (clip === this.get('selectedClip')) {
         this.set('selectedClip', null);
       } else {
@@ -123,10 +124,6 @@ export default Ember.Component.extend({
       });
     },
 
-    optimizeTransition(transition) {
-      transition && transition.optimize();
-    },
-
     addTrack(track) {
       const mix = this.get('mix');
 
@@ -146,6 +143,7 @@ export default Ember.Component.extend({
     // },
   },
 
+  // TODO: make this work
   _selectedTransitionDidChange: Ember.observer('selectedTransition', function() {
     const transition = this.get('selectedTransition');
 
@@ -157,9 +155,6 @@ export default Ember.Component.extend({
       }
     });
   }).on('didInsertElement'),
-
-  // showVolumeAutomation: true,
-
 });
 
 
