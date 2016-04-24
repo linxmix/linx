@@ -15,6 +15,11 @@
       <div class="content">
         {{mix.title}}
         <div class="sub header">
+          {{#if mix.isSaving}}
+            Saving...
+          {{else}}
+            All changes saved.
+          {{/if}}
         </div>
       </div>
     </h2>
