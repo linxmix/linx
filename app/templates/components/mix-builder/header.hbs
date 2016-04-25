@@ -17,6 +17,8 @@
         <div class="sub header">
           {{#if mix.isSaving}}
             Saving...
+          {{else if mix.anyDirty}}
+            Has dirty changes.
           {{else}}
             All changes saved.
           {{/if}}
