@@ -49,19 +49,23 @@ export default Clip.extend(
     const { audioBinary, audioBuffer, peaksLength, trackDuration } = this.getProperties('audioBinary', 'audioBuffer', 'peaksLength', 'trackDuration');
 
     // Ember.Logger.log('track clip peaks', this.getProperties('audioBinary', 'audioBuffer', 'pxPerBeat', 'trackBeatCount', 'trackDuration'));
-    const peaks = audioBinary && audioBinary.getPeaks({
+    audioBinary && audioBinary.getPeaks({
       startTime: 0,
       endTime: trackDuration,
       length: peaksLength,
 
     // scale peaks to track-clip
-    }).map((peak, i) => {
-      const percent = i / peaksLength;
-      const beat = percent * peaksLength;
-      return [beat, peak];
-    });
+    }).then((peaks) => {
+      peaks = peaks.map((peak, i) => {
+        const percent = i / peaksLength;
+        const beat = percent * peaksLength;
+        return [beat, peak];
+      });
 
-    this.set('trackPeaks', peaks || []);
+      this.set('trackPeaks', peaks || []);
+    }, (error) => {
+      throw error;
+    });
   },
 
   // calculate actual raw audio time offset for waveform and overlays
