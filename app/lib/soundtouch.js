@@ -40,6 +40,7 @@ FifoSampleBuffer.prototype.clear = function() {
 //
 const MAX_BUFFER_SIZE = 16384;
 const BUFFER_SIZE = MAX_BUFFER_SIZE / 16;
+const SAMPLE_DRIFT_TOLERANCE = 512;
 
 export function SoundtouchBufferSource(buffer) {
   this.buffer = buffer;
@@ -72,7 +73,7 @@ export function createSoundtouchNode({ audioContext, filter, startTime, offset, 
 
   filter.sourcePosition = startSample;
 
-  let first = true;
+  const filterStartPosition = filter.position;
 
   function onaudioprocess({
     type,
@@ -107,6 +108,29 @@ export function createSoundtouchNode({ audioContext, filter, startTime, offset, 
       extractFrameCount += isPlaying[i];
     }
 
+    // if playing, calculate expected vs actual position
+    if (extractFrameCount !== 0) {
+      const actualElapsedSamples = Math.max(0, filter.position - filterStartPosition + extractFrameCount);
+      const elapsedTime = Math.min(playbackTime, endTime) - startTime;
+      const expectedElapsedSamples = Math.max(0, elapsedTime * sampleRate);
+      const sampleDelta = ~~(expectedElapsedSamples - actualElapsedSamples);
+
+      // if we've drifed past tolerance, adjust frames to extract
+      if (Math.abs(sampleDelta) >= SAMPLE_DRIFT_TOLERANCE) {
+
+        // if we're behind where we should be, extract dummy frames to catch up
+        if (sampleDelta > 0) {
+          const dummySamples = new Float32Array(sampleDelta * channelCount);
+          const dummyFramesExtracted = filter.extract(dummySamples, sampleDelta);
+
+        // if we're ahead of where we should be, rewind
+        } else if (sampleDelta < 0) {
+          filter.position += sampleDelta;
+        }
+      }
+    }
+
+
     const framesExtracted = extractFrameCount > 0 ? filter.extract(samples, extractFrameCount) : 0;
 
     // map extracted frames onto output
@@ -122,6 +146,7 @@ export function createSoundtouchNode({ audioContext, filter, startTime, offset, 
     numberOfInputs: 2,
     numberOfOutputs: 2,
     bufferLength: BUFFER_SIZE,
+    dspBufLength: BUFFER_SIZE,
     parameters: [
       {
         name: 'pitch',
