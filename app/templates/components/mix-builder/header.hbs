@@ -1,0 +1,32 @@
+<div class="ui container grid">
+  <div class="five wide column ui middle aligned grid">
+    {{search-tracks
+      tracksPromise=searchTracks
+      action=attrs.addTrack
+    }}
+    {{!-- <div class="inverted green ui icon button no-border">
+      <i class="add icon"/>
+      Add Tracks
+    </div> --}}
+  </div>
+
+  <div class="six wide column">
+    <h2 class="ui inverted centered grey header">
+      <div class="content">
+        {{mix.title}}
+        <div class="sub header">
+          {{#if mix.isSaving}}
+            Saving...
+          {{else if mix.anyDirty}}
+            Has dirty changes.
+          {{else}}
+            All changes saved.
+          {{/if}}
+        </div>
+      </div>
+    </h2>
+  </div>
+
+  <div class="five wide column">
+  </div>
+</div>

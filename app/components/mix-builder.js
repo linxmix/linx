@@ -2,93 +2,142 @@ import Ember from 'ember';
 
 import _ from 'npm:underscore';
 
-import BubbleActions from 'linx/lib/bubble-actions';
-import RequireAttributes from 'linx/lib/require-attributes';
-import ArrangementPlayerMixin from 'linx/mixins/components/arrangement-player';
-import ArrangementVisualMixin from 'linx/mixins/components/arrangement-visual';
-
-import { variableTernary } from 'linx/lib/computed/ternary';
-
-export const MIX_ITEM_PREVIEW_DISTANCE = 4;
+import {
+  BAR_QUANTIZATION,
+  BEAT_QUANTIZATION,
+  TICK_QUANTIZATION,
+  MS10_QUANTIZATION,
+  MS1_QUANTIZATION,
+  SAMPLE_QUANTIZATION,
+} from 'linx/models/track/audio-meta/beat-grid';
 
 export const FROM_TRACK_COLOR = '#ac6ac7';
 export const TO_TRACK_COLOR = '#16a085';
 
-export default Ember.Component.extend(
-  ArrangementPlayerMixin,
-  ArrangementVisualMixin,
-  BubbleActions('saveMix', 'deleteMix', 'didSelectClip'),
-  RequireAttributes('mix', 'store'), {
+export const AUTOSAVE_INTERVAL = 10000;
 
+export default Ember.Component.extend({
   classNames: ['MixBuilder'],
-  classNameBindings: [],
+
+  // required params
+  mix: null,
 
   // optional params
-  showArrangement: true,
+  selectedTransition: null,
   selectedClip: null,
-  defaultPxPerBeat: 1,
-  zoomedPxPerBeat: 25,
 
-  // implement ArrangementPlayerMixin
-  arrangement: Ember.computed.reads('mix'),
+  // params
+  selectedQuantizations: [BAR_QUANTIZATION],
+  selectedQuantization: Ember.computed.reads('selectedQuantizations.firstObject'),
+  mixVisualActionReceiver: null,
 
-  hasSelectedClip: Ember.computed.bool('selectedClip'),
-  pxPerBeat: variableTernary('hasSelectedClip', 'zoomedPxPerBeat', 'defaultPxPerBeat'),
+  showAutomation: true,
 
-  selectedTransition: Ember.computed.reads('selectedClip.transition.content'),
+  // repeatedely save mix, if any unsaved changes
+  _autoSave: Ember.on('init', function() {
+    if (!this.get('isDestroyed')) {
+      const mix = this.get('mix');
+
+      if (mix && mix.get('anyDirty')) {
+        mix.save();
+      }
+
+      Ember.run.later(this, '_autoSave', AUTOSAVE_INTERVAL);
+    }
+  }),
+
 
   actions: {
-    resetMix() {
-      // TODO: dependentRelationship.rollbackAttributes
-      // TODO: orderedHasMany.rollbackAttributes
-      this.get('mix').rollbackAttributes();
+    play(beat) {
+      this.get('mix').play(beat);
     },
 
-    saveSelectedClip() {
-      const selectedClip = this.get('selectedClip');
-      selectedClip && selectedClip.save();
+    pause(beat) {
+      this.get('mix').pause(beat);
     },
 
-    playItem(mixItem) {
-      mixItem.get('transitionClip').then((clip) => {
-        this.send('play', clip.get('startBeat') - MIX_ITEM_PREVIEW_DISTANCE);
-      });
+    playpause(beat) {
+      this.get('mix').playpause(beat);
     },
 
-    viewTrack(mixItem) {
-      mixItem.get('trackClip').then((clip) => {
-        this.send('zoomToClip', clip);
-      });
+    skipBack() {
+      this.get('mix').seekToBeat(0);
     },
 
-    viewTransition(mixItem) {
-      mixItem.get('transitionClip').then((clip) => {
-        this.send('didSelectClip', clip);
-
-        Ember.run.next(() => {
-          this.send('zoomToClip', clip);
-        });
-      });
+    skipForth() {
+      Ember.Logger.log("skip forth unimplemented");
     },
 
-    clearSelectedClip() {
-      const selectedClip = this.get('selectedClip');
-      if (selectedClip) {
-        this.send('didSelectClip', null);
+    seekToBeat(beat) {
+      this.get('mix').seekToBeat(beat);
+    },
 
-        Ember.run.next(() => {
-          this.send('zoomToClip', selectedClip);
-        });
+    selectQuantization(quantization) {
+      this.set('selectedQuantizations', [quantization]);
+    },
+
+    selectClip(clip) {
+      Ember.Logger.log('selectClip', clip);
+      if (clip === this.get('selectedClip')) {
+        this.set('selectedClip', null);
+      } else {
+        this.set('selectedClip', clip);
       }
     },
 
-    optimizeTransition(transition) {
-      transition && transition.optimize();
+    selectTransition(transition) {
+      const prevId = this.get('selectedTransition.id');
+      const newId = transition.get('id');
+
+      this.sendAction('selectTransition', transition);
+    },
+
+    zoomToClip(...args) {
+      const mixVisual = this.get('mixVisualActionReceiver');
+      mixVisual && mixVisual.send.apply(mixVisual, ['zoomToClip'].concat(args));
+    },
+
+    resetZoom(...args) {
+      const mixVisual = this.get('mixVisualActionReceiver');
+      mixVisual && mixVisual.send.apply(mixVisual, ['resetZoom'].concat(args));
+    },
+
+    quantizeBeat(beat) {
+      const quantization = this.get('selectedQuantization');
+
+      // TODO(TECHDEBT): does this make sense to always say? how to tell if this event is active?
+      // if alt key is held, suspend quantization
+      const isAltKeyHeld = Ember.get(d3, 'event.sourceEvent.altKey') || false;
+      if (isAltKeyHeld) {
+        return beat;
+      }
+
+      let quantizedBeat = beat;
+      switch (quantization) {
+        case BEAT_QUANTIZATION:
+          quantizedBeat = Math.round(beat);
+          break;
+        case BAR_QUANTIZATION:
+          // TODO(TECHDEBT): implement
+          quantizedBeat = Math.round(beat);
+          // quantizedBeat = beatGrid.barToBeat(beatGrid.quantizeBar(beatGrid.beatToBar(beat)));
+          break;
+        default: quantizedBeat = beat;
+      };
+
+      return quantizedBeat;
     },
 
     removeItem(mixItem) {
       const mix = this.get('mix');
       mix.removeObject(mixItem);
+    },
+
+    playItem(mixItem) {
+      mixItem.get('trackClip').then((clip) => {
+        this.send('zoomToClip', clip, true);
+        this.send('play', clip.get('startBeat'));
+      });
     },
 
     addTrack(track) {
@@ -97,35 +146,31 @@ export default Ember.Component.extend(
       mix.appendTrack(track);
     },
 
-    appendRandomTrack() {
-      const mix = this.get('mix');
-      const tracks = this.get('searchTracks.content');
-      const randomTrack = _.sample(tracks.toArray());
+    // appendRandomTrack() {
+    //   const mix = this.get('mix');
+    //   const tracks = this.get('searchTracks.content');
+    //   const randomTrack = _.sample(tracks.toArray());
 
-      mix.appendTrack(randomTrack);
-    },
+    //   mix.appendTrack(randomTrack);
+    // },
 
-    toggleShowVolumeAutomation() {
-      this.toggleProperty('showVolumeAutomation');
-    },
+    // toggleShowVolumeAutomation() {
+    //   this.toggleProperty('showVolumeAutomation');
+    // },
   },
 
-  showVolumeAutomation: true,
+  // TODO: make this work
+  _selectedTransitionDidChange: Ember.observer('selectedTransition', function() {
+    const transition = this.get('selectedTransition');
 
-  searchTracks: Ember.computed(function() {
-    return this.get('store').findAll('track');
-  }),
-
-  // // Hacky stuff to convert <input type="number"> values to numbers
-  // inputBpm: Ember.computed.oneWay('metronome.bpm'),
-  // inputZoom: Ember.computed.oneWay('pxPerBeat'),
-  // _inputBpmDidChange: function() {
-  //   this.get('metronome').setBpm(parseFloat(this.get('inputBpm')));
-  // }.observes('inputBpm'),
-  // _inputZoomDidChange: function() {
-  //   // update pxPerBeat
-  //   this.set('pxPerBeat', parseFloat(this.get('inputZoom')));
-  // }.observes('inputZoom'),
-  // // /hacky stuff
+    Ember.run.next(() => {
+      if (transition) {
+        this.send('zoomToClip', transition.get('transitionClip'), true);
+      } else {
+        this.send('resetZoom', true);
+      }
+    });
+  }).on('didInsertElement'),
 });
+
 

@@ -78,6 +78,7 @@ export default Clip.extend(
     selection.classed('ArrangementVisualAutomationClip', true);
 
     this.drawPath(selection);
+    this.drawOverlay(selection);
     this.set('_drawControlPoints', true);
   },
 
@@ -96,6 +97,24 @@ export default Clip.extend(
           .style('stroke', 'magenta')
           .style('fill', 'transparent')
           .attr('d', line(controlPoints));
+      }
+    }
+  }),
+
+  drawOverlay: join([0], 'path.ArrangementVisualAutomationClip-overlay', {
+    update(selection) {
+      const height = this.get('height');
+      const controlPoints = this.get('controlPoints');
+      const pxPerBeat = this.get('pxPerBeat');
+      const area = d3.svg.area()
+        .x((controlPoint) => controlPoint.get('beat') * pxPerBeat)
+        .y((controlPoint) => (1 - controlPoint.get('value')) * height)
+        .y0(0)
+        .interpolate('linear');
+
+      if (controlPoints.length) {
+        selection
+          .attr('d', area(controlPoints));
       }
     }
   }),

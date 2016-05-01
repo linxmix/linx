@@ -1,0 +1,36 @@
+<table class="MixBuilderTracklist-table ui inverted very basic table">
+  <thead>
+    <tr>
+      <th class="three wide"><span style="margin-left: 20px;">#</span></th>
+      <th class="six wide">Song</th>
+      <th class="five wide">Artist</th>
+      <th class="one wide">Key</th>
+      <th class="one wide">Tempo</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each mix.items as |item index|}}
+      {{mix-builder/tracklist/item
+        item=item
+        selectTransition=(action attrs.selectTransition)
+        playItem=(action attrs.playItem)
+        removeItem=(action attrs.removeItem)
+        selectedTransition=selectedTransition
+      }}
+    {{/each}}
+  </tbody>
+</table>
+
+
+{{!-- {{#mix-list mix=mix}}
+  {{#each mix.items as |item|}}
+    {{mix-list/item
+      item=item
+      remove="removeItem"
+      viewTrack="zoomToClip"
+      viewTransition=(action attrs.selectTransition)
+      play="playItem"
+      selectedClip=selectedClip
+    }}
+  {{/each}}
+{{/mix-list}} --}}

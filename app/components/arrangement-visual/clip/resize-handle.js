@@ -23,14 +23,13 @@ export default Ember.Component.extend(
 
   // implement draggable mixin
   isDraggable: Ember.computed.reads('isResizable'),
+  isD3Visible: Ember.computed.and('isDraggable', 'direction'),
 
   call(selection) {
-    const { direction, isResizable, widthPx } = this.getProperties('direction', 'isResizable');
-    const isVisible = isResizable && Ember.isPresent(direction);
+    this._super.apply(this, arguments);
+    const { direction } = this.getProperties('direction');
 
     selection.classed('ArrangementVisualClipResizeHandle', true)
-      // TODO(REFACTOR2): can visibility be a mixin? similar to transform mixin?
-      .style('visibility', isVisible ? 'visible' : 'hidden')
       .call(this.get('drag'));
 
     this.drawHandle(selection);
@@ -48,10 +47,13 @@ export default Ember.Component.extend(
   drawHandle: join([0], 'rect.ArrangementVisualClipResizeHandle-rect', {
     update(selection) {
       const xPos = this.get('xPos');
+      const handleHeight = this.get('height') * 0.33;
+      const yPos = (this.get('height') - handleHeight) / 2.0;
 
       selection
         .attr('x', xPos)
-        .attr('height', this.get('height'))
+        .attr('y', yPos)
+        .attr('height', handleHeight)
         .attr('width', this.get('handleWidthPx'))
     },
   }),

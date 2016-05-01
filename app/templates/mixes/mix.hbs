@@ -1,15 +1,9 @@
-<div class="MixPage">
-  {{page-drop action="onPageDrop"}}
+{{page-drop action="onPageDrop"}}
 
-  {{mix-builder
-    mix=mix
-    store=store
-    saveMix="saveMix"
-    deleteMix="deleteMix"
-    didSelectClip="didSelectClip"
-    selectedClip=selectedClip
-    showArrangement=showArrangement
-  }}
+{{mix-builder
+  mix=mix
+  selectedTransition=selectedTransition
+  selectTransition=(action "selectTransition")
+}}
 
-  {{outlet}}
-</div>
+{{outlet}}

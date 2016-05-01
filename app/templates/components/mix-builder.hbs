@@ -1,170 +1,71 @@
-<div>{{mix.title}}</div>
-<div class="inverted green ui icon button test-save-mix {{if mix.anyDirty "" "basic disabled"}}" {{action "saveMix"}}>
-  <i class="cloud upload icon"></i>
-  Save Mix
-</div>
-<div class="inverted red ui icon button test-delete-mix" {{action "deleteMix"}}>
-  <i class="remove icon"></i>
-  Delete Mix
-</div>
-<div class="inverted purple ui icon button" {{action "appendRandomTrack"}}>
-  <i class="shuffle icon"></i>
-  Add Random Track
-</div>
+<div class="ui container grid">
+  <div class="row">
+    {{mix-builder/header
+      mix=mix
 
-{{search-tracks
-  tracksPromise=searchTracks
-  action="addTrack"
-}}
-
-{{search-soundcloud-tracks
-  selectTrack="addTrack"
-  store=store
-}}
-
-{{!-- {{search-transitions
-  transitions=searchTransitions
-  action="appendTransitionWithTracks"
-}} --}}
-
-<hr/>
-
-{{#mix-list mix=mix}}
-  {{#each mix.items as |item|}}
-    {{mix-list/item
-      item=item
-      remove="removeItem"
-      viewTrack="viewTrack"
-      viewTransition="viewTransition"
-      play="playItem"
-      selectedClip=selectedClip
-    }}
-  {{/each}}
-{{/mix-list}}
-
-<hr/>
-
-{{!-- TODO(REFACTOR2): move to nested component? mix-builder/transition-toolbar --}}
-{{#if hasSelectedClip}}
-  <div class="basic inverted yellow ui icon button" {{action "clearSelectedClip"}}>
-    <i class="left caret icon"></i>
-    Back To Mix
-  </div>
-
-  <div class="basic inverted green ui icon button {{if selectedClip.anyDirty "" "disabled"}}" {{action "saveSelectedClip"}}>
-    <i class="save icon"></i>
-    Save Changes
-  </div>
-
-  <div class="basic inverted orange ui icon button" {{action "optimizeTransition" selectedTransition}}>
-    <i class="refresh icon"></i>
-    Optimize Transition
-  </div>
-
-  <div class="basic inverted yellow ui icon button" {{action "zoomToClip" selectedClip}}>
-    <i class="search icon"></i>
-    View Transition
-  </div>
-
-  <div>
-    Show Volume Automation:
-    {{input
-      type="checkbox"
-      checked=showVolumeAutomation
-      action="toggleShowVolumeAutomation"
+      addTrack=(action "addTrack")
     }}
   </div>
 
-  {{quantize-dropdown
-    selected=selectedQuantizations
-    onSelect=(action "selectQuantization")
+  <div class="row">
+    {{mix-builder/tracklist
+      mix=mix
+      selectedTransition=selectedTransition
+
+      selectTransition=(action "selectTransition")
+      zoomToClip=(action "zoomToClip")
+      removeItem=(action "removeItem")
+      playItem=(action "playItem")
+    }}
+  </div>
+
+  {{!-- {{mix-builder/transition-controls
+    isVisible=selectedTransition
+    selectedClip=selectedClip
+    selectedQuantization=selectedQuantization
+    selectQuantization=selectQuantization
+    zoomToClip=zoomToClip
+  }} --}}
+</div>
+
+<div class="MixBuilder-workstation">
+  {{mix-builder/playback-controls
+    mix=mix
+    selectedTransition=selectedTransition
+
+    playpause=(action "playpause")
+    skipBack=(action "skipBack")
   }}
 
-  <div>
-    {{x-slider min=0 max=200 step=0.01 value=mix.bpm}}
-    Mix BPM: {{mix.bpm}}
-  </div>
-{{/if}}
+  {{mix-visual
+    class="MixBuilder-mixVisual"
+    mix=mix
+    showAutomation=showAutomation
+    selectedTransition=selectedTransition
+    selectedClip=selectedClip
+    actionReceiver=mixVisualActionReceiver
 
-{{#if showArrangement}}
-  {{#arrangement-visual
-    pxPerBeat=pxPerBeat
-    arrangement=arrangement
-    zoom=zoom
-    isReady=isReady
+    selectTransition=(action "selectTransition")
+    selectClip=(action "selectClip")
+    quantizeBeat=(action "quantizeBeat")
     seekToBeat=(action "seekToBeat")
-    class="MixBuilder-ArrangementVisual"
-    as |gridSelect width height|
   }}
 
-    {{!-- Track Clips --}}
-    {{#zip-entries select=gridSelect.MixBuilder-trackClips items=mix.trackClips as |trackClip tag|}}
-      {{mix-visual/track-clip
-        select=tag
-        clip=trackClip
-        selectedClip=selectedClip
-        quantizeBeat=(action "quantizeBeat")
-        fullHeight=height
-        rowHeight=rowHeight
-        pxPerBeat=pxPerBeat
-      }}
-    {{/zip-entries}}
+ {{!--  {{#if isPrecisionEditor}}
+    <div class="basic inverted orange ui icon button" {{action "optimizeTransition"}}>
+      <i class="refresh icon"></i>
+      Optimize Transition
+    </div>
+  {{/if}} --}}
 
-    {{!-- Transition Clips --}}
-    {{#zip-entries select=gridSelect.MixBuilder-transitionClips items=mix.transitionClips as |transitionClip tag|}}
-      {{mix-visual/transition-clip
-        select=tag
-        clip=transitionClip
-        pxPerBeat=pxPerBeat
-        selectedClip=selectedClip
-        fullHeight=height
-        rowHeight=rowHeight
-        quantizeBeat=(action "quantizeBeat")
-      }}
-    {{/zip-entries}}
+  {{mix-builder/precision-controls
+    isVisible=(not (not selectedTransition))
+    selectedTransition=selectedTransition
+    showAutomation=showAutomation
 
-
-    {{!-- From Track Automation Clips --}}
-    {{#zip-entries
-      select=gridSelect.MixBuilder-FromTrackAutomationClips
-      items=(if showVolumeAutomation selectedTransition.fromTrackAutomationClips [])
-      as |automationClip tag|
-    }}
-      {{mix-visual/automation-clip
-        select=tag
-        clip=automationClip
-        pxPerBeat=pxPerBeat
-        height=rowHeight
-        row=0
-      }}
-    {{/zip-entries}}
-
-    {{!-- To Track Automation Clips --}}
-    {{#zip-entries
-      select=gridSelect.MixBuilder-ToTrackAutomationClips
-      items=(if showVolumeAutomation selectedTransition.toTrackAutomationClips [])
-      as |automationClip tag|
-    }}
-      {{mix-visual/automation-clip
-        select=tag
-        clip=automationClip
-        pxPerBeat=pxPerBeat
-        height=rowHeight
-        row=2
-      }}
-    {{/zip-entries}}
-  {{/arrangement-visual}}
-
-  {{play-buttons
-    isDisabled=notReady
-    isPlaying=isPlaying
-    playpause="playpause"
-    skipBack="skipBack"
-    skipForth="skipForth"
+    selectTransition=(action "selectTransition")
+    toggleShowAutomation=(action toggleProperty "showAutomation")
   }}
 
-  <hr/>
 
-  <div>pxPerBeat: {{input type="range" value=inputZoom min="0.5" max="100" step="0.5"}}</div>
-  <div>BPM: {{input type="number" value=inputBpm min="0" max="200" }}</div>
-{{/if}}
+</div>

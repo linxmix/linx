@@ -23,7 +23,7 @@
 
 {{#unless isLastItem}}
   <div class="content">
-    <div class="inverted basic teal ui icon button {{if isSelectedTransitionClip "basic disabled"}}" {{action "viewTransition" item}}>
+    <div class="inverted basic teal ui icon button {{if isSelectedTransitionClip "basic disabled"}}" {{action "viewTransition" item.transition}}>
       <i class="linkify icon"></i>
       {{#unless isSelectedTransitionClip}}
         Edit Transition

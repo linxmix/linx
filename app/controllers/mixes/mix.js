@@ -5,19 +5,26 @@ export default Ember.Controller.extend({
   // expected from route
   mix: null,
 
-  // set by child routes
-  showArrangement: true,
-
   actions: {
-    didSelectClip(clip) {
-      this.set('selectedClipId', clip && clip.get('id') || '');
+    selectTransition(transition) {
+      const prevId = this.get('transitionId');
+      const newId = (transition && transition.get('id')) || '';
+
+      if (prevId === newId) {
+        this.set('transitionId', '');
+      } else {
+        this.set('transitionId', newId);
+      }
     }
   },
 
-  queryParams: ['selectedClipId'],
-  selectedClipId: '',
+  // params
+  // queryParams: ['transitionId'],
+  transitionId: '',
 
-  selectedClip: Ember.computed('selectedClipId', 'mix.clips.@each.id', function() {
-    return this.get('mix.clips').findBy('id', this.get('selectedClipId'));
+  selectedTransition: Ember.computed('transitionId', 'mix.transitions.@each.id', function() {
+    return this.get('mix.transitions')
+      .filter((transition) => !!transition)
+      .findBy('id', this.get('transitionId'));
   }),
 });

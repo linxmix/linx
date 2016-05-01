@@ -1,10 +1,20 @@
 .ArrangementVisualTrackClip {
   .ArrangementVisualClip-backdrop {
-    fill: rgba(#00f, 0.2);
     cursor: pointer;
 
     &:hover {
-      fill: rgba(#00f, 0.4);
+      fill: rgba(#fff, 0.2);
     }
   }
+
+  &.is-loading {
+    .ArrangementVisualClip-backdrop {
+      fill: rgba(#0ff, 0.2);
+      cursor: wait;
+    }
+  }
+}
+
+.ArrangementVisualTrackClip-startOverlay, .ArrangementVisualTrackClip-endOverlay {
+  fill: rgba(#000, 0.5);
 }

@@ -1,14 +1,17 @@
+/* global Parallel:true */
 import Ember from 'ember';
 import DS from 'ember-data';
 
 import RequireAttributes from 'linx/lib/require-attributes';
-import { isNumber } from 'linx/lib/utils';
+import { isNumber, asResolvedPromise } from 'linx/lib/utils';
 import ReadinessMixin from 'linx/mixins/readiness';
 import Ajax from 'linx/lib/ajax';
 
 export default Ember.Object.extend(
   ReadinessMixin('isArrayBufferLoadedAndDecoded'),
   RequireAttributes('track'), {
+
+  isLoading: Ember.computed.reads('arrayBuffer.isPending'),
 
   // implement readiness
   isArrayBufferLoadedAndDecoded: Ember.computed.and('arrayBuffer.isFulfilled', 'decodedArrayBuffer.content'),
@@ -55,7 +58,6 @@ export default Ember.Object.extend(
   }),
 
   // TODO(COMPUTEDPROMISE): use that?
-  // TODO(WEBWORKER): handle in web worker
   decodedArrayBuffer: Ember.computed('audioContext', 'arrayBuffer', function() {
     let { arrayBuffer, audioContext } = this.getProperties('arrayBuffer', 'audioContext');
 
@@ -73,52 +75,59 @@ export default Ember.Object.extend(
     }
   }),
 
-  // returns an array of arrays of [ymin, ymax] values of the waveform
+  // returns a promise of an array of arrays of [ymin, ymax] values of the waveform
   // from startTime to endTime when broken into length subranges
-  // TODO(WEBWORKER): handle in web worker
+  // returns a promise
   getPeaks({ startTime, endTime, length }) {
-    let audioBuffer = this.get('audioBuffer');
-    if (!audioBuffer) { return []; }
+    const audioBuffer = this.get('audioBuffer');
+    if (!audioBuffer) { return asResolvedPromise([]); }
 
     Ember.assert('Cannot AudioBinary.getPeaks without endTime', isNumber(endTime));
     startTime = startTime || 0;
 
-    let sampleRate = audioBuffer.sampleRate;
-    let startSample = startTime * sampleRate;
-    let endSample = endTime * sampleRate;
+    const job = new Parallel({
+      // TODO(REFACTOR): update to use multiple channels
+      samples: audioBuffer.getChannelData(0),
+      startTime,
+      endTime,
+      length,
+      sampleRate: audioBuffer.sampleRate
+    });
 
-    let sampleSize = (endSample - startSample) / length;
-    let sampleStep = ~~(sampleSize / 10) || 1; // reduce granularity with small length
-    let peaks = [];
+    return job.spawn(({ samples, startTime, endTime, length, sampleRate }) => {
+      const startSample = startTime * sampleRate;
+      const endSample = endTime * sampleRate;
 
-    // Ember.Logger.log('getPeaks', length, startTime, endTime, sampleSize, sampleRate, startSample, endSample, audioBuffer.length);
+      const sampleSize = (endSample - startSample) / length;
+      const sampleStep = ~~(sampleSize / 10) || 1; // reduce granularity with small length
+      const peaks = [];
 
-    // TODO(REFACTOR): update to use multiple channels
-    let samples = audioBuffer.getChannelData(0);
+      // Ember.Logger.log('getPeaks', length, startTime, endTime, sampleSize, sampleRate, startSample, endSample, audioBuffer.length);
 
-    for (let i = 0; i < length; i++) {
-      let start = ~~(startSample + i * sampleSize);
-      let end = ~~(start + sampleSize);
-      let min = samples[start];
-      let max = samples[start];
+      for (let i = 0; i < length; i++) {
+        const start = ~~(startSample + i * sampleSize);
+        const end = ~~(start + sampleSize);
+        let min = samples[start];
+        let max = samples[start];
 
-      // calculate max and min in this sample
-      for (let j = start; j < end; j += sampleStep) {
-        let value = samples[j];
+        // calculate max and min in this sample
+        for (let j = start; j < end; j += sampleStep) {
+          const value = samples[j];
 
-        if (value > max) {
-          max = value;
+          if (value > max) {
+            max = value;
+          }
+          if (value < min) {
+            min = value;
+          }
         }
-        if (value < min) {
-          min = value;
-        }
+
+        // add to peaks
+        peaks[i] = [min, max];
       }
 
-      // add to peaks
-      peaks[i] = [min, max];
-    }
-
-    return peaks;
+      return peaks;
+    });
   },
 
   // TODO: load from file/blob

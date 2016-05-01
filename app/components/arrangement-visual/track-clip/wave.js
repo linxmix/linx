@@ -7,33 +7,19 @@ import { join } from 'ember-cli-d3/utils/d3';
 import multiply from 'linx/lib/computed/multiply';
 
 export default Ember.Component.extend(
-  GraphicSupport('peaks.[]', 'waveColor', 'height', 'displayWaveform'), {
+  GraphicSupport('peaks.[]', 'waveColor', 'height'), {
 
   // optional params
-  displayWaveform: true,
   height: 125,
   waveColor: 'green',
 
-  prevPeaks: null,
   call(selection) {
-    const transform = this.get('transform');
-
-    if (!this.get('displayWaveform')) {
-      selection.style('visibility', 'hidden');
-      return;
-    } else {
-      selection.style('visibility', 'visible');
-    }
+    this._super.apply(this, arguments);
 
     selection
-      .classed('TrackClipWave', true)
-      .attr('transform', this.get('transform'));
+      .classed('TrackClipWave', true);
 
-    const newPeaks = this.get('peaks');
-    if (newPeaks !== this.get('prevPeaks')) {
-      this.drawWaveform(selection);
-      this.set('prevPeaks', newPeaks);
-    }
+    this.drawWaveform(selection);
   },
 
   drawWaveform: join([0], 'path.TrackClipWave-waveform', {

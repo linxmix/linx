@@ -2,11 +2,9 @@ import Ember from 'ember';
 
 import RequireAttributes from 'linx/lib/require-attributes';
 import ArrangementPlayerMixin from 'linx/mixins/components/arrangement-player';
-import ArrangementVisualMixin from 'linx/mixins/components/arrangement-visual';
 
 export default Ember.Component.extend(
   ArrangementPlayerMixin,
-  ArrangementVisualMixin,
   RequireAttributes('arrangement'), {
 
   classNames: ['SimpleArrangement'],

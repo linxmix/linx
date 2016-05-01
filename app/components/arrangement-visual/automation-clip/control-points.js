@@ -14,6 +14,7 @@ export default Ember.Component.extend(
   controlPoints: null,
 
   call(selection) {
+    this._super.apply(this, arguments);
     selection.classed('ArrangementVisualAutomationClipControlPoints', true);
 
     this.drawControlPoints(selection);

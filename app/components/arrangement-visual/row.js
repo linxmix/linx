@@ -18,6 +18,8 @@ export default Ember.Component.extend(GraphicSupport(), {
   }),
 
   call(selection) {
+    this._super.apply(this, arguments);
+
     selection.classed('ArrangementVisualRow', true)
       .append("circle")
       .attr("cx", 0)

@@ -1,0 +1,72 @@
+{{#arrangement-visual
+  arrangement=attrs.mix
+  pxPerBeat=pxPerBeat
+  showBarGrid=selectedTransition
+  seekToBeat=(action attrs.seekToBeat)
+  actionReceiver=arrangementVisualActionReceiver
+  class="MixVisual-arrangementVisual"
+  as |gridSelect width height|
+}}
+
+  {{!-- Track Clips --}}
+  {{#zip-entries select=gridSelect.MixVisual-trackClips items=mix.trackClips as |trackClip tag|}}
+    {{mix-visual/track-clip
+      select=tag
+      clip=trackClip
+      selectedTransition=selectedTransition
+      quantizeBeat=(action attrs.quantizeBeat)
+      selectClip=(action attrs.selectClip)
+      fullHeight=height
+      rowHeight=rowHeight
+      pxPerBeat=pxPerBeat
+    }}
+  {{/zip-entries}}
+
+  {{!-- Transition Clips --}}
+  {{#zip-entries select=gridSelect.MixVisual-transitionClips items=mix.transitionClips as |transitionClip tag|}}
+    {{mix-visual/transition-clip
+      select=tag
+      clip=transitionClip
+      pxPerBeat=pxPerBeat
+      selectedTransition=selectedTransition
+      fullHeight=height
+      rowHeight=rowHeight
+      quantizeBeat=(action attrs.quantizeBeat)
+      selectTransition=(action attrs.selectTransition)
+      selectClip=(action attrs.selectClip)
+    }}
+  {{/zip-entries}}
+
+
+  {{!-- From Track Automation Clips --}}
+  {{#zip-entries
+    select=gridSelect.MixVisual-FromTrackAutomationClips
+    items=selectedTransition.fromTrackAutomationClips
+    as |automationClip tag|
+  }}
+    {{mix-visual/automation-clip
+      select=tag
+      isD3Visible=attrs.showAutomation
+      clip=automationClip
+      pxPerBeat=pxPerBeat
+      height=rowHeight
+      row=0
+    }}
+  {{/zip-entries}}
+
+  {{!-- To Track Automation Clips --}}
+  {{#zip-entries
+    select=gridSelect.MixVisual-ToTrackAutomationClips
+    items=selectedTransition.toTrackAutomationClips
+    as |automationClip tag|
+  }}
+    {{mix-visual/automation-clip
+      select=tag
+      isD3Visible=attrs.showAutomation
+      clip=automationClip
+      pxPerBeat=pxPerBeat
+      height=rowHeight
+      row=2
+    }}
+  {{/zip-entries}}
+{{/arrangement-visual}}

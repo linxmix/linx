@@ -27,6 +27,7 @@ module.exports = function(defaults) {
   // along with the exports of each module as its value.
 
   app.import('vendor/js/soundtouch.min.js');
+  app.import('vendor/js/parallel.js'); // TODO(TECHDEBT): minify
 
   // WebAudioTestApi overrides native globals; only import when testing
   if (app.env === 'test') {

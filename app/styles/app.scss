@@ -1,6 +1,7 @@
-$site-nav-height: 35px;
+$site-nav-height: 40px;
 
-@import 'index';
+@import 'application-page';
+@import 'semantic-overrides';
 
 @import 'components/site-nav';
 @import 'components/page-drop';
@@ -18,8 +19,17 @@ $site-nav-height: 35px;
 @import 'components/_arrangement-visual/automation-clip';
 @import 'components/_arrangement-visual/automation-clip/control-points';
 
-@import 'components/mix-builder';
+@import 'components/mix-visual';
 @import 'components/_mix-visual/transition-clip';
+
+@import 'components/mix-builder';
+@import 'components/_mix-builder/header';
+@import 'components/_mix-builder/tracklist';
+@import 'components/_mix-builder/tracklist/item';
+@import 'components/_mix-builder/playback-controls';
+@import 'components/_mix-builder/precision-controls';
+@import 'components/_mix-builder/precision-controls/track';
+@import 'components/_mix-builder/precision-controls/transition';
 
 @import 'components/simple-arrangement';
 @import 'components/simple-transition';

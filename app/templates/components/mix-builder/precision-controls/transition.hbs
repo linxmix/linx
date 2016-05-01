@@ -1,0 +1,16 @@
+<h3 class="inverted ui header">
+  <i class="linkify icon"/>
+  <div class="content">
+    Transition Clip
+  </div>
+</h3>
+
+<div class="basic inverted orange ui icon button" {{action "optimizeTransition"}}>
+  <i class="refresh icon"></i>
+  Optimize Transition
+</div>
+
+<div class="inverted teal ui icon button {{if attrs.showAutomation '' 'basic'}}" {{action "toggleShowAutomation"}}>
+  <i class="volume {{if attrs.showAutomation 'up' 'off'}} icon"></i>
+  {{if attrs.showAutomation 'Hide' 'Show'}} Volume Automation
+</div>

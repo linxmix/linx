@@ -1,0 +1,26 @@
+.MixBuilderTracklistItem-index {
+  margin: 0 20px;
+}
+
+.MixBuilderTracklistItem-buttonGroup {
+  visibility: hidden;
+  display: inline;
+
+  .ui.button {
+    margin-right: 0 !important;
+  }
+}
+
+.MixBuilderTracklistItem:hover, .MixBuilderTracklistItem--selectedFromTrack {
+  .MixBuilderTracklistItem-buttonGroup {
+    visibility: visible;
+  }
+}
+
+.MixBuilderTracklistItem--selectedFromTrack {
+  background-color: darken($MixBuilder-fromTrackColor, 20%);
+}
+
+.MixBuilderTracklistItem--selectedToTrack {
+  background-color: darken($MixBuilder-toTrackColor, 20%);
+}

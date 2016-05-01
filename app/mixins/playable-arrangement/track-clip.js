@@ -44,6 +44,7 @@ const TrackPitchControl = Ember.Object.extend(
   type: CONTROL_TYPE_PITCH,
 });
 
+// TODO(REFACTOR2): merge this with arrangement/track-clip model
 export default Ember.Mixin.create(
   AutomatableClipMixin,
   PlayableClipMixin,
