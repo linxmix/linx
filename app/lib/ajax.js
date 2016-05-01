@@ -15,6 +15,7 @@ export default Ember.ObjectProxy.extend(
   // optional params
   method: 'GET',
   responseType: 'json',
+  headers: null,
 
   // sets promise and sends xhr
   execute() {

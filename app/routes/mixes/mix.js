@@ -6,6 +6,8 @@ import PreventDirtyTransitionMixin from 'linx/mixins/routes/prevent-dirty-transi
 
 // export default Ember.Route.extend(PreventDirtyTransitionMixin, {
 export default Ember.Route.extend({
+  s3Upload: Ember.inject.service(),
+
   actions: {
     saveMix() {
       this.get('controller.mix').save();
@@ -25,14 +27,17 @@ export default Ember.Route.extend({
 
       var store = this.get('store');
 
-      // for each file, create track and add to mix
-      files.map((file) => {
-        var track = store.createRecord('track', {
-          title: file.name,
-        });
+      // this.get('s3').uploadFile(files[0]);
+      this.get('s3Upload').uploadFile(files[0]);
 
-        this.send('appendTrack', track);
-      });
+      // for each file, create track and add to mix
+      // files.map((file) => {
+      //   var track = store.createRecord('track', {
+      //     title: file.name,
+      //   });
+
+      //   this.send('appendTrack', track);
+      // });
     },
 
     openTransitionModal(transition) {

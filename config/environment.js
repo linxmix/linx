@@ -43,10 +43,16 @@ module.exports = function(environment) {
     // ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
     // ENV.APP.LOG_VIEW_LOOKUPS = true;
 
+    ENV.API_HOST = 'http://localhost:4005';
+
     // Client API Keys
     ENV.S3_SECRET = process.env.S3_SECRET;
     ENV.S3_KEY = process.env.S3_KEY;
+    ENV.S3_BUCKET = process.env.S3_BUCKET;
+    ENV.S3_REGION = process.env.S3_REGION;
+
     ENV.ECHONEST_KEY = process.env.ECHONEST_KEY;
+
     ENV.SC_KEY = process.env.SC_KEY;
   }
 

@@ -1,6 +1,6 @@
 import Ember from 'ember';
 
-import Bezier from 'npm:bezier-js';
+// import Bezier from 'npm:bezier-js';
 
 import BubbleActions from 'linx/lib/bubble-actions';
 import RequireAttributes from 'linx/lib/require-attributes';
