@@ -2,14 +2,18 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import ArrangementAutomationClipControlPoint from 'linx/models/arrangement/automation-clip/control-point';
+import { isValidNumber } from 'linx/lib/utils';
 
 export default ArrangementAutomationClipControlPoint.extend({
   // overrides
   automationClip: DS.belongsTo('mix/transition/automation-clip'),
 
   save() {
-    console.log("SAVE MIX CONTROL POINT", this.get('beat'), this.get('value'));
-    this._super.apply(this, arguments);
-
+    if (isValidNumber(this.get('beat')) && isValidNumber(this.get('value'))) {
+      console.log("SAVE MIX CONTROL POINT", this.get('beat'), this.get('value'));
+      return this._super.apply(this, arguments);
+    } else {
+      return Ember.RSVP.Promise.resolve();
+    }
   }
 });

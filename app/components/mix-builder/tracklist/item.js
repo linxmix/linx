@@ -1,5 +1,7 @@
 import Ember from 'ember';
 
+import _ from 'npm:underscore';
+
 import add from 'linx/lib/computed/add';
 import equalProps from 'linx/lib/computed/equal-props';
 import { FROM_TRACK_COLOR, TO_TRACK_COLOR } from 'linx/components/mix-builder';
@@ -31,6 +33,15 @@ export default Ember.Component.extend({
       this.sendAction('removeItem', this.get('item'));
     },
   },
+
+  _autoSaveTrack: Ember.observer('track.title', 'track.artist', 'track.audioMeta.bpm', _.throttle(function() {
+    const track = this.get('track.content');
+
+    if (track && track.get('anyDirty') && !track.get('isSaving')) {
+      console.log('Autosave Track', this.get('track.title'));
+      track.save();
+    }
+  }, 1000)),
 
   // params
   transition: Ember.computed.reads('item.transition'),
