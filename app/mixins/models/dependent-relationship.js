@@ -56,37 +56,53 @@ export default function(propertyPath) {
     dirtyDependentModels: Ember.computed('_dirtyDependentModels.@each.content', function() {
       return this.get('_dirtyDependentModels').map((model) => {
         return model.get('content') || model;
-      });
+      }).uniq();
     }),
 
     hasDirtyDependentModels: Ember.computed.notEmpty('dirtyDependentModels'),
     anyDirty: Ember.computed.or('hasDirtyDependentModels', 'hasDirtyAttributes'),
 
-    destroyDependentModels() {
-      console.log('destroy dependent models', this.get('dependentModels').toArray().map((dependentModel) => {
-        return (dependentModel.get('content.constructor') || '').toString();
-      }));
+    deleteDependentModels() {
+      // console.log('destroy dependent models', this.get('dependentModels').toArray().map((dependentModel) => {
+      //   return (dependentModel.get('content.constructor') || '').toString();
+      // }));
 
-      return Ember.RSVP.all(this.get('dependentModels').toArray().invoke('destroyRecord'));
+      return Ember.RSVP.all(this.get('dependentModels').toArray().map((model) => {
+        model = model.get('content') || model;
+        return model && model.deleteRecord && model.deleteRecord();
+      }));
     },
 
-    destroyRecord() {
-      Ember.Logger.log("destroy master model", this.constructor.modelName);
+    destroyRecord(options = {}) {
+      Ember.Logger.log("destroy master model", this.constructor.modelName, this.get('isDeleted'));
 
-      const args = arguments;
-      const ctx = this;
+      const propPath = `___dependentRelationship_destroy_${propertyPath}`;
+      const hasPropertyPath = options[propPath];
 
-      return this.destroyDependentModels().then(() => {
-        return ctx._super.apply(ctx, args);
-      });
+      if (!hasPropertyPath) {
+        return this.deleteDependentModels().then(() => {
+          return new Ember.RSVP.Promise((resolve, reject) => {
+            return this.destroyRecord(_.extend(options, {
+              [propPath]: true
+            })).then(resolve, reject);
+          });
+        });
+      } else {
+        // console.log('continue to drestoyr master model', this.constructor.modelName, this.get('isDeleted'));
+        return this._super.apply(this, arguments);
+      }
     },
 
     saveDirtyDependentModels() {
-      return Ember.RSVP.all(this.get('dirtyDependentModels').toArray().invoke('save'));
+      return Ember.RSVP.all(this.get('dirtyDependentModels').toArray().map((model) => {
+        model = model.get('content') || model;
+        return model && model.save && model.save();
+      }));
     },
 
     save(options = {}) {
-      let skipPath = `skipDependent_${propertyPath}`;
+      let skipPath = `___dependentRelationship_Dependents_${propertyPath}`;
+      Ember.Logger.log("save master model", this.constructor.modelName);
 
       if (!(options[skipPath] || options.skipDependents)) {
         return this.saveDirtyDependentModels().then(() => {
@@ -96,7 +112,6 @@ export default function(propertyPath) {
           });
         });
       } else {
-        Ember.Logger.log("save master model", this.constructor.modelName);
         return this._super.apply(this, arguments);
       }
     },

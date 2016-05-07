@@ -62,5 +62,5 @@ export default DS.Model.extend(
         return transition && transition.optimize();
       });
     });
-  }
+  },
 });

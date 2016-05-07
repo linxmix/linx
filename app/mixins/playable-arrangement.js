@@ -98,12 +98,6 @@ export default Ember.Mixin.create(
   //   this.get('nodes').map((node) => { return node && node.destroy(); });
   // },
 
-  // destroy() {
-  //   this.get('metronome').destroy();
-  //   this.destroyNodes();
-  //   return this._super.apply(this, arguments);
-  // },
-
   toString() {
     return '<linx@mixin:playable-arrangement>';
   }

@@ -159,27 +159,33 @@ export default function(hasManyPath, itemModelName) {
 
     destroyRemovedObjects() {
       let removedObjects = this.get('removedObjects');
+      // console.log('hasMany destroyRemovedObjects', this.get('removedObjects.length'))
 
-      return Ember.RSVP.all(removedObjects.map((item) => {
-        return item.destroyRecord();
-      })).then((results) => {
-        return this.get(hasManyPath).then((hasManyContent) => {
-          hasManyContent.removeObjects(removedObjects);
-          return results;
-        });
+      return Ember.RSVP.all(removedObjects.toArray().invoke('destroyRecord'))
+        .then((results) => {
+          return this.get(hasManyPath).then((hasManyContent) => {
+            // console.log('hasMany removeObjects', this.constructor.modelName)
+            hasManyContent.removeObjects(removedObjects);
+            return results;
+          });
       });
     },
 
     // augment save to destroy removed items
     save(options = {}) {
-      let { skipRemoved } = options;
+      const propPath = `__orderedHasMany_save_${hasManyPath}`;
+      const hasPropertyPath = options[propPath];
 
-      if (!skipRemoved) {
+      if (!hasPropertyPath) {
         return this.destroyRemovedObjects().then(() => {
-          options.skipRemoved = true;
-          return this.save(options);
+          return new Ember.RSVP.Promise((resolve, reject) => {
+            return this.save(_.extend(options, {
+              [propPath]: true
+            })).then(resolve, reject);
+          });
         });
       } else {
+        // console.log('hasMany continue to save');
         return this._super.apply(this, arguments);
       }
     },

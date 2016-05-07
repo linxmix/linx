@@ -8,14 +8,19 @@ export default function computedObject(constructor, attributes) {
 
   args.push({
     get(key) {
-      let attrs = keysToAttrs(this, keys, attributes);
-      attrs.parentPropertyPath = key;
-      let object = constructor.create(attrs);
-
       // cleanup prevObject
       // TODO(CLEANUP): why does it not work to scope args here?
       let prevObject = this.get(`_____${key}`);
       prevObject && Ember.run(prevObject, 'destroy');
+
+      if (this.get('isDeleted') || this.get('isDestroyed') || this.get('isDestroying')) {
+        return;
+      }
+
+      let attrs = keysToAttrs(this, keys, attributes);
+      attrs.parentPropertyPath = key;
+      let object = constructor.create(attrs);
+
       this.set(`_____${key}`, object);
 
       return object;

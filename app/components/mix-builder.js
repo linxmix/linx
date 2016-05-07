@@ -38,7 +38,7 @@ export default Ember.Component.extend({
     if (!this.get('isDestroyed')) {
       const mix = this.get('mix');
 
-      if (mix && mix.get('anyDirty')) {
+      if (mix && mix.get('anyDirty') && !mix.get('isSaving')) {
         console.log('Autosave Mix', this.get('mix.title'));
         mix.save();
       }
@@ -131,6 +131,7 @@ export default Ember.Component.extend({
     removeItem(mixItem) {
       const mix = this.get('mix');
       mix.removeObject(mixItem);
+      mix.save();
     },
 
     playItem(mixItem) {

@@ -104,12 +104,6 @@ export default Ember.Mixin.create(Ember.Evented, {
   //   startEvent && startEvent.clear();
   // }),
 
-  willDestroy() {
-    this.set('isScheduled', false);
-    this.triggerScheduleEvents();
-    return this._super.apply(this, arguments);
-  },
-
   toString() {
     return '<linx@mixin:playable-arrangement/clip>';
   },

@@ -9,10 +9,10 @@ import Clock from 'linx/lib/clock';
 // Holds rhythym based on clock
 // TODO(REFACTOR): TODO(MULTIGRID): refactor metronome to have a beatgrid?
 export default Ember.Object.extend(
-  Ember.Evented,
-  RequireAttributes('audioContext'), {
+  Ember.Evented, {
 
   // required params
+  audioContext: null,
   arrangement: null,
 
   // params
@@ -118,7 +118,7 @@ export default Ember.Object.extend(
   },
 
   getAbsTime() {
-    return this.get('audioContext').currentTime;
+    return this.get('audioContext.currentTime');
   },
 
   _getPlayedTime() {

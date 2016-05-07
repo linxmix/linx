@@ -139,7 +139,7 @@ export default Ember.Mixin.create(
     }
   },
 
-  stopSource: Ember.on('unschedule', 'didDelete', function() {
+  stopSource: Ember.on('unschedule', function() {
     Ember.Logger.log('stopTrack', this.get('track.title'));
     const node = this.get('soundtouchNode');
     node && node.stop();
