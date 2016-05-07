@@ -2,6 +2,27 @@
   margin: 0 20px;
 }
 
+.MixBuilderTracklistItem-input {
+  background-color: transparent;
+  border-color: transparent;
+
+  height: 100%;
+  width: 100%;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  &:focus {
+    background-color: transparent;
+    border-color: transparent;
+  }
+
+  &::selection {
+    background: lighten(#ffb7b7, 20%);
+  }
+}
+
 .MixBuilderTracklistItem-buttonGroup {
   visibility: hidden;
   display: inline;
@@ -24,3 +45,4 @@
 .MixBuilderTracklistItem--selectedToTrack {
   background-color: darken($MixBuilder-toTrackColor, 20%);
 }
+
