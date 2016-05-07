@@ -6,6 +6,8 @@ import PreventDirtyTransitionMixin from 'linx/mixins/routes/prevent-dirty-transi
 
 // export default Ember.Route.extend(PreventDirtyTransitionMixin, {
 export default Ember.Route.extend({
+  s3Upload: Ember.inject.service(),
+
   actions: {
     saveMix() {
       this.get('controller.mix').save();
@@ -23,15 +25,24 @@ export default Ember.Route.extend({
     onPageDrop(files) {
       Ember.Logger.log("page drop", files);
 
-      var store = this.get('store');
+      const store = this.get('store');
+      const s3Upload = this.get('s3Upload');
+      const mix = this.get('controller.mix');
 
       // for each file, create track and add to mix
       files.map((file) => {
-        var track = store.createRecord('track', {
-          title: file.name,
-        });
+        s3Upload.uploadFile(file).then((url) => {
+          console.log('s3 upload complete', url);
 
-        this.send('appendTrack', track);
+          const track = store.createRecord('track', {
+            title: file.name,
+            s3StreamUrl: url,
+          });
+
+          track.fetchAudioMeta().then(() => {
+            mix.appendTrack(track);
+          });
+        });
       });
     },
 

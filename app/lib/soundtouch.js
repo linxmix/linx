@@ -111,12 +111,16 @@ export function createSoundtouchNode({ audioContext, filter, startTime, offset, 
     // if playing, calculate expected vs actual position
     if (extractFrameCount !== 0) {
       const actualElapsedSamples = Math.max(0, filter.position - filterStartPosition + extractFrameCount);
-      const elapsedTime = Math.min(playbackTime, endTime) - startTime;
+      const elapsedTime = Math.min(audioContext.currentTime, endTime) - startTime;
       const expectedElapsedSamples = Math.max(0, elapsedTime * sampleRate);
       const sampleDelta = ~~(expectedElapsedSamples - actualElapsedSamples);
 
       // if we've drifed past tolerance, adjust frames to extract
       if (Math.abs(sampleDelta) >= SAMPLE_DRIFT_TOLERANCE) {
+
+        // console.log("DRIFT", sampleDelta, extractFrameCount, BUFFER_SIZE);
+        // console.log('actualElapsedSamples', actualElapsedSamples);
+        // console.log('expectedElapsedSamples', expectedElapsedSamples);
 
         // if we're behind where we should be, extract dummy frames to catch up
         if (sampleDelta > 0) {

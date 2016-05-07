@@ -46,7 +46,6 @@ export default Ember.Component.extend({
     }
   }),
 
-
   actions: {
     play(beat) {
       this.get('mix').play(beat);

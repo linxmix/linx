@@ -34,17 +34,17 @@ var Echonest = Ember.Object.extend({
   },
 
   uploadTrack: function(track) {
-    let streamUrl = track.get('audioBinary.streamUrl');
-    Ember.Logger.log("uploading track to echonest", track, streamUrl);
+    const webStreamUrl = track.get('audioBinary.webStreamUrl');
+    Ember.Logger.log("uploading track to echonest", track, webStreamUrl);
 
-    Ember.assert('Track must have streamUrl to upload', streamUrl);
+    Ember.assert('Track must have webStreamUrl to upload', webStreamUrl);
 
     return ajax({
       type: "POST",
       url: this.get('baseUrl') + '/track/upload',
       data: {
         api_key: this.get('apiKey'),
-        url: streamUrl
+        url: webStreamUrl
       },
     }).then((response) => {
       // TODO(CLEANUP): better error handling here

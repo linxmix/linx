@@ -6,6 +6,12 @@ export default Ember.Component.extend({
   // required params
   mix: null,
 
+  actions: {
+    saveMix() {
+      this.get('mix').save();
+    }
+  },
+
   // params
   store: Ember.inject.service(),
   searchTracks: Ember.computed(function() {

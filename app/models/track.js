@@ -16,9 +16,8 @@ export default DS.Model.extend(
   length: DS.attr('number'),
 
   md5: DS.attr('string'),
-  s3Url: DS.attr('string'),
+  s3StreamUrl: DS.attr('string'),
   scStreamUrl: DS.attr('string'),
-  fileUrl: DS.attr('string'), // TODO(CLEANUP): have this here for testing
 
   _echonestTrack: DS.belongsTo('echonest/track', { async: true }),
   echonestTrack: withDefaultModel('_echonestTrack', function() {

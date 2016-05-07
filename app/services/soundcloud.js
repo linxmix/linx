@@ -1,9 +1,6 @@
 import Ember from 'ember';
 
-import retryWithBackoff from 'ember-backoff/retry-with-backoff';
 import SC from 'npm:soundcloud';
-
-import ReadinessMixin from 'linx/mixins/readiness';
 
 import ENV from 'linx/config/environment';
 import { asResolvedPromise } from 'linx/lib/utils';

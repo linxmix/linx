@@ -216,7 +216,7 @@ export default DS.Model.extend(
 
     // add highest confidence beat as grid marker
     let confidentBar = analysis.get('confidenceSortedBeats.firstObject');
-    markerParams.push({
+    confidentBar && markerParams.push({
       type: GRID_MARKER_TYPE,
       time: confidentBar.start,
       confidence: confidentBar.confidence,
@@ -258,7 +258,7 @@ export default DS.Model.extend(
 
         this.setProperties({
           duration: analysis.get('duration'),
-          bpm: analysis.get('bpm'),
+          bpm: analysis.get('bpm') || 100,
           timeSignature: analysis.get('timeSignature'),
           key: analysis.get('key'),
           mode: analysis.get('mode'),
