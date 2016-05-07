@@ -3,7 +3,7 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import RequireAttributes from 'linx/lib/require-attributes';
-import { isNumber, asResolvedPromise } from 'linx/lib/utils';
+import { isValidNumber, asResolvedPromise } from 'linx/lib/utils';
 import ReadinessMixin from 'linx/mixins/readiness';
 import Ajax from 'linx/lib/ajax';
 
@@ -16,23 +16,25 @@ export default Ember.Object.extend(
   // implement readiness
   isArrayBufferLoadedAndDecoded: Ember.computed.and('arrayBuffer.isFulfilled', 'decodedArrayBuffer.content'),
 
-  streamUrl: Ember.computed.or('fileUrl', 's3StreamUrl', 'scStreamUrl', 'soundcloudTrack.streamUrl'),
-  proxyStreamUrl: Ember.computed('streamUrl', function() {
-    return `/${this.get('streamUrl')}`;
+  file: null,
+  fileUrl: Ember.computed('file', function() {
+    const file = this.get('file');
+    return file && URL.createObjectURL(file);
+  }),
+
+  streamUrl: Ember.computed.or('fileUrl', 'proxyStreamUrl'),
+
+  webStreamUrl: Ember.computed.or('s3StreamUrl', 'scStreamUrl', 'soundcloudTrack.streamUrl'),
+  proxyStreamUrl: Ember.computed('webStreamUrl', function() {
+    return `/${this.get('webStreamUrl')}`;
   }),
 
   scStreamUrl: Ember.computed.reads('track.scStreamUrl'),
-  s3Url: Ember.computed.reads('track.s3Url'),
-  s3StreamUrl: Ember.computed('s3Url', function() {
-    if (!Ember.isNone(this.get('s3Url'))) {
-      // TODO(S3)
-      return "http://s3-us-west-2.amazonaws.com/linx-music/" + this.get('s3Url');
-    }
-  }),
+  s3StreamUrl: Ember.computed.reads('track.s3StreamUrl'),
 
   session: Ember.computed.reads('track.session'),
   audioContext: Ember.computed.reads('session.audioContext'),
-  arrayBuffer: Ember.computed.reads('streamUrlArrayBuffer'),
+  arrayBuffer: Ember.computed.or('fileArrayBuffer', 'streamUrlArrayBuffer'),
 
   // TODO(REFACTOR): add test
   audioBuffer: Ember.computed.reads('decodedArrayBuffer.content'),
@@ -56,6 +58,27 @@ export default Ember.Object.extend(
       });
     }
   }),
+
+  // TODO(COMPUTEDPROMISE): use that?
+  // fileArrayBuffer: Ember.computed('file', function() {
+  //   return DS.PromiseObject.create({
+  //     promise:
+  //   });
+  //   var my = this;
+  //   // Create file reader
+  //   var reader = new FileReader();
+  //   reader.addEventListener('progress', function (e) {
+  //       my.onProgress(e);
+  //   });
+  //   reader.addEventListener('load', function (e) {
+  //       my.loadArrayBuffer(e.target.result);
+  //   });
+  //   reader.addEventListener('error', function () {
+  //       my.fireEvent('error', 'Error reading file');
+  //   });
+  //   reader.readAsArrayBuffer(blob);
+  //   this.empty();
+  // }),
 
   // TODO(COMPUTEDPROMISE): use that?
   decodedArrayBuffer: Ember.computed('audioContext', 'arrayBuffer', function() {
@@ -82,21 +105,22 @@ export default Ember.Object.extend(
     const audioBuffer = this.get('audioBuffer');
     if (!audioBuffer) { return asResolvedPromise([]); }
 
-    Ember.assert('Cannot AudioBinary.getPeaks without endTime', isNumber(endTime));
+    Ember.assert('Cannot AudioBinary.getPeaks without length', isValidNumber(length));
     startTime = startTime || 0;
+
+    const sampleRate = audioBuffer.sampleRate;
+    const startSample = startTime * sampleRate;
+    const endSample = isValidNumber(endTime) ? (endTime * sampleRate) : samples.length;
 
     const job = new Parallel({
       // TODO(REFACTOR): update to use multiple channels
       samples: audioBuffer.getChannelData(0),
-      startTime,
-      endTime,
+      startSample,
+      endSample,
       length,
-      sampleRate: audioBuffer.sampleRate
     });
 
-    return job.spawn(({ samples, startTime, endTime, length, sampleRate }) => {
-      const startSample = startTime * sampleRate;
-      const endSample = endTime * sampleRate;
+    return job.spawn(({ samples, startSample, endSample, length }) => {
 
       const sampleSize = (endSample - startSample) / length;
       const sampleStep = ~~(sampleSize / 10) || 1; // reduce granularity with small length
@@ -130,35 +154,7 @@ export default Ember.Object.extend(
     });
   },
 
-  // TODO: load from file/blob
-  // TODO: handle in web worker
-  // TODO(FILE)
-  file: null,
-  fileUrl: Ember.computed.reads('track.fileUrl'),
-
   toString() {
     return '<linx@object:track/audio-binary>';
   },
 });
-
-/**
-     * Loads audio data from a Blob or File object.
-     *
-     * @param {Blob|File} blob Audio data.
-     */
-    // loadBlob: function (blob) {
-    //     var my = this;
-    //     // Create file reader
-    //     var reader = new FileReader();
-    //     reader.addEventListener('progress', function (e) {
-    //         my.onProgress(e);
-    //     });
-    //     reader.addEventListener('load', function (e) {
-    //         my.loadArrayBuffer(e.target.result);
-    //     });
-    //     reader.addEventListener('error', function () {
-    //         my.fireEvent('error', 'Error reading file');
-    //     });
-    //     reader.readAsArrayBuffer(blob);
-    //     this.empty();
-    // },

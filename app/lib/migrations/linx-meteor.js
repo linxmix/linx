@@ -21,11 +21,14 @@ export default function(store) {
     songs.forEach((song) => {
       Ember.Logger.log("song", song.title);
 
-      let track = store.createRecord('track', {
-        id: song._id,
+      const track = store.peekRecord('track', song._id) || store.createRecord('track', {
+        id: song._id
+      });
+
+      track.setProperties({
         title: song.title || song.name,
         artist: song.artist,
-        s3Url: 'songs/' + song._id + '.' + song.fileType,
+        s3StreamUrl: `https://linx-music.s3.amazonaws.com/songs/${song._id}.${song.fileType}`,
         md5: song.md5,
       });
 

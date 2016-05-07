@@ -25,19 +25,25 @@ export default Ember.Route.extend({
     onPageDrop(files) {
       Ember.Logger.log("page drop", files);
 
-      var store = this.get('store');
-
-      // this.get('s3').uploadFile(files[0]);
-      this.get('s3Upload').uploadFile(files[0]);
+      const store = this.get('store');
+      const s3Upload = this.get('s3Upload');
+      const mix = this.get('controller.mix');
 
       // for each file, create track and add to mix
-      // files.map((file) => {
-      //   var track = store.createRecord('track', {
-      //     title: file.name,
-      //   });
+      files.map((file) => {
+        s3Upload.uploadFile(file).then((url) => {
+          console.log('s3 upload complete', url);
 
-      //   this.send('appendTrack', track);
-      // });
+          const track = store.createRecord('track', {
+            title: file.name,
+            s3StreamUrl: url,
+          });
+
+          track.fetchAudioMeta().then(() => {
+            mix.appendTrack(track);
+          });
+        });
+      });
     },
 
     openTransitionModal(transition) {

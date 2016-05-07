@@ -9,7 +9,9 @@ export default Ember.Route.extend({
   setupController: function(controller, models) {
     controller.setProperties(models);
 
-    // Migrate(this.get('store'));
+    // this.store.findAll('track').then((tracks) => {
+    //   Migrate(this.get('store'));
+    // });
   },
 
   model: function() {

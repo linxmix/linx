@@ -62,9 +62,11 @@ export default Clip.extend(
         return [beat, peak];
       });
 
-      this.set('trackPeaks', peaks || []);
+      if (!this.get('isDestroyed')) {
+        this.set('trackPeaks', peaks || []);
+      }
     }, (error) => {
-      throw error;
+      console.log("Error with trackClip.updateTrackPeaks", error);
     });
   },
 

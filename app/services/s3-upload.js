@@ -12,13 +12,13 @@ export default Ember.Service.extend({
     const fileType = file.type;
     console.log('uploadFile', fileName, fileType);
 
-    return this._getSignedRequest(fileName, fileType).then(({ signedRequest }) => {
+    return this._getSignedRequest(fileName, fileType).then(({ signedRequest, url }) => {
       return new Ember.RSVP.Promise((resolve, reject) => {
         // TODO: make this use linx/utils/ajax
         const xhr = new XMLHttpRequest();
         xhr.open("PUT", signedRequest);
         xhr.setRequestHeader('x-amz-acl', 'public-read');
-        xhr.onload = () => { resolve(); };
+        xhr.onload = () => { resolve(url); };
         xhr.send(file);
       });
     });
