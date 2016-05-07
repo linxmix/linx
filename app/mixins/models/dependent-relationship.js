@@ -63,14 +63,21 @@ export default function(propertyPath) {
     anyDirty: Ember.computed.or('hasDirtyDependentModels', 'hasDirtyAttributes'),
 
     destroyDependentModels() {
+      console.log('destroy dependent models', this.get('dependentModels').toArray().map((dependentModel) => {
+        return (dependentModel.get('content.constructor') || '').toString();
+      }));
+
       return Ember.RSVP.all(this.get('dependentModels').toArray().invoke('destroyRecord'));
     },
 
     destroyRecord() {
       Ember.Logger.log("destroy master model", this.constructor.modelName);
+
+      const args = arguments;
+      const ctx = this;
+
       return this.destroyDependentModels().then(() => {
-        this.deleteRecord();
-        return this.save();
+        return ctx._super.apply(ctx, args);
       });
     },
 

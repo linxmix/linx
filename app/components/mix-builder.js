@@ -14,7 +14,7 @@ import {
 export const FROM_TRACK_COLOR = '#ac6ac7';
 export const TO_TRACK_COLOR = '#16a085';
 
-export const AUTOSAVE_INTERVAL = 10000;
+export const AUTOSAVE_INTERVAL = 1000;
 
 export default Ember.Component.extend({
   classNames: ['MixBuilder'],
@@ -34,15 +34,16 @@ export default Ember.Component.extend({
   showAutomation: true,
 
   // repeatedely save mix, if any unsaved changes
-  _autoSave: Ember.on('init', function() {
+  _autoSaveMix: Ember.on('init', function() {
     if (!this.get('isDestroyed')) {
       const mix = this.get('mix');
 
       if (mix && mix.get('anyDirty')) {
+        console.log('Autosave Mix', this.get('mix.title'));
         mix.save();
       }
 
-      Ember.run.later(this, '_autoSave', AUTOSAVE_INTERVAL);
+      Ember.run.later(this, '_autoSaveMix', AUTOSAVE_INTERVAL);
     }
   }),
 
