@@ -9,6 +9,10 @@ export default Ember.Component.extend({
   actions: {
     saveMix() {
       this.get('mix').save();
+    },
+
+    destroyMix() {
+      this.sendAction('destroyMix');
     }
   },
 

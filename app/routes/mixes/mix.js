@@ -9,19 +9,7 @@ export default Ember.Route.extend({
   s3Upload: Ember.inject.service(),
 
   actions: {
-    saveMix() {
-      this.get('controller.mix').save();
-    },
-
-    deleteMix() {
-      let mix = this.get('controller.mix');
-
-      if (window.confirm("Are you sure you want to delete this mix? It cannot be restored once deleted.")) {
-        mix.destroyRecord();
-        this.transitionTo('mixes');
-      }
-    },
-
+    // TODO(TECHDEBT): move to mix-builder
     onPageDrop(files) {
       Ember.Logger.log("page drop", files);
 

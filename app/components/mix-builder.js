@@ -15,7 +15,7 @@ import {
 export const FROM_TRACK_COLOR = '#ac6ac7';
 export const TO_TRACK_COLOR = '#16a085';
 
-export const AUTOSAVE_INTERVAL = 1000;
+export const AUTOSAVE_INTERVAL = 5000;
 
 export default Ember.Component.extend(
   EKMixin,

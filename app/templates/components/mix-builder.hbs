@@ -4,6 +4,7 @@
       mix=mix
 
       addTrack=(action "addTrack")
+      destroyMix=(action attrs.destroyMix)
     }}
   </div>
 
@@ -18,14 +19,6 @@
       playItem=(action "playItem")
     }}
   </div>
-
-  {{!-- {{mix-builder/transition-controls
-    isVisible=selectedTransition
-    selectedClip=selectedClip
-    selectedQuantization=selectedQuantization
-    selectQuantization=selectQuantization
-    zoomToClip=zoomToClip
-  }} --}}
 </div>
 
 <div class="MixBuilder-workstation">
@@ -51,13 +44,6 @@
     seekToBeat=(action "seekToBeat")
   }}
 
- {{!--  {{#if isPrecisionEditor}}
-    <div class="basic inverted orange ui icon button" {{action "optimizeTransition"}}>
-      <i class="refresh icon"></i>
-      Optimize Transition
-    </div>
-  {{/if}} --}}
-
   {{mix-builder/precision-controls
     isVisible=(not (not selectedTransition))
     selectedTransition=selectedTransition
@@ -66,6 +52,4 @@
     selectTransition=(action "selectTransition")
     toggleShowAutomation=(action toggleProperty "showAutomation")
   }}
-
-
 </div>

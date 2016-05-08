@@ -25,7 +25,7 @@ export default Ember.Component.extend(
         };
       });
       let searchFields = ['title', 'artist'];
-      let $search = this.$('.search');
+      let $search = this.$('.ui.search');
 
       // destroy prev search
       $search.search('destroy');

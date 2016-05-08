@@ -4,10 +4,6 @@
       tracksPromise=searchTracks
       action=attrs.addTrack
     }}
-    {{!-- <div class="inverted green ui icon button no-border">
-      <i class="add icon"/>
-      Add Tracks
-    </div> --}}
   </div>
 
   <div class="six wide column">
@@ -30,10 +26,14 @@
     </h2>
   </div>
 
-  <div class="five wide column ui middle aligned grid">
+  <div class="five wide column ui middle aligned grid MixBuilderHeader-right">
     <div class="inverted green ui icon button test-save-mix {{if mix.anyDirty "" "basic disabled"}}" {{action "saveMix"}}>
       <i class="cloud upload icon"></i>
       Save Mix
+    </div>
+    <div class="inverted red ui icon button test-delete-mix" {{action "destroyMix"}}>
+      <i class="remove icon"></i>
+      Delete Mix
     </div>
   </div>
 </div>
