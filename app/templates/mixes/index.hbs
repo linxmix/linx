@@ -1,25 +1,27 @@
-<div class="mixes">
-  <div class="inverted green ui icon button test-create-mix" {{action 'createMix'}}>
-    <i class="add icon"></i>
-    New Mix
-  </div>
-  <div class="inverted orange ui icon button" {{action 'createCategoryMix'}}>
-    <i class="add icon"></i>
-    New Category Mix
+<div class="mixes ui center aligned container grid">
+  <div class="row">
+    <div class="inverted green ui icon button test-create-mix" {{action 'createMix'}}>
+      <i class="add icon"></i>
+      New Mix
+    </div>
+    <div class="inverted orange ui icon button" {{action 'createCategoryMix'}}>
+      <i class="add icon"></i>
+      New Category Mix
+    </div>
   </div>
 
-  {{#mixes-list mixes=mixes}}
-    {{#each mixes as |mix|}}
-      {{#link-to 'mixes.mix' mix.id}}
-        {{mixes-list-item
-          mix=mix
-          select="selectMix"
-        }}
-      {{/link-to}}
-    {{/each}}
-  {{/mixes-list}}
+  <div class="row">
+    {{#mixes-list mixes=mixes}}
+      {{#each mixes as |mix|}}
+        {{#link-to 'mixes.mix' mix.id}}
+          {{mixes-list-item
+            mix=mix
+            select="selectMix"
+          }}
+        {{/link-to}}
+      {{/each}}
+    {{/mixes-list}}
+  </div>
 </div>
-
-<hr/>
 
 {{!-- {{bezier-curve}} --}}

@@ -11,7 +11,7 @@ export default Ember.Controller.extend({
 
       if (window.confirm("Are you sure you want to delete this mix? It cannot be restored once deleted.")) {
         mix.destroyRecord();
-        this.transitionTo('mixes');
+        this.transitionToRoute('mixes');
       }
     },
 
