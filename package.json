@@ -53,6 +53,7 @@
     "ember-component-inbound-actions": "1.0.1",
     "ember-data": "2.4.0",
     "ember-data-factory-guy": "2.1.1",
+    "ember-keyboard": "1.1.0",
     "ember-new-computed": "1.0.0",
     "ember-one-way-controls": "0.6.3",
     "ember-radio-button": "1.0.4",
