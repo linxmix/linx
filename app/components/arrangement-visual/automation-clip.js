@@ -77,9 +77,11 @@ export default Clip.extend(
     this._super.apply(this, arguments);
     selection.classed('ArrangementVisualAutomationClip', true);
 
-    this.drawPath(selection);
-    this.drawOverlay(selection);
-    this.set('_drawControlPoints', true);
+    if (this.get('controlPoints.length')) {
+      this.drawPath(selection);
+      this.drawOverlay(selection);
+      this.set('_drawControlPoints', true);
+    }
   },
 
   drawPath: join([0], 'path.ArrangementVisualAutomationClip-path', {

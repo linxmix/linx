@@ -17,7 +17,7 @@ export default Ember.Component.extend(
 
   entries: Ember.computed('items.[]', 'tags.[]', function () {
     if (this.get('tags.length') && this.get('items.length')) {
-      return d3.zip(this.get('items'), this.get('tags')).map(([ item, tag ]) => {
+      return d3.zip(this.get('items').toArray(), this.get('tags')).map(([ item, tag ]) => {
         return { item, tag };
       });
     } else {

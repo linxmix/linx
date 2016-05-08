@@ -11,7 +11,7 @@ import { CONTROL_TYPE_VOLUME } from 'linx/mixins/playable-arrangement/automatabl
 
 export default DS.Model.extend(
   PlayableArrangementMixin,
-  DependentRelationshipMixin('automationClips'),
+  DependentRelationshipMixin('fromTrackAutomationClips', 'toTrackAutomationClips'),
   ReadinessMixin('isTransitionReady'), {
 
   title: DS.attr('string'),
@@ -22,20 +22,13 @@ export default DS.Model.extend(
   fromTrackClip: Ember.computed.reads('transitionClip.fromTrackClip'),
   toTrackClip: Ember.computed.reads('transitionClip.toTrackClip'),
 
-  automationClips: DS.hasMany('mix/transition/automation-clip'),
-
-  fromTrackAutomationClips: Ember.computed('automationClips.@each.targetClip', 'fromTrackClip.content', function() {
-    return this.get('automationClips').filterBy('targetClip.content', this.get('fromTrackClip.content'));
-  }),
-
-  toTrackAutomationClips: Ember.computed('automationClips.@each.targetClip', 'toTrackClip.content', function() {
-    return this.get('automationClips').filterBy('targetClip.content', this.get('toTrackClip.content'));
-  }),
+  fromTrackAutomationClips: DS.hasMany('mix/transition/from-track-automation-clip'),
+  toTrackAutomationClips: DS.hasMany('mix/transition/to-track-automation-clip'),
 
   // implementing PlayableArrangement
   audioContext: Ember.computed.reads('transitionClip.audioContext'),
   outputNode: Ember.computed.reads('transitionClip.outputNode.content'),
-  clips: Ember.computed.reads('automationClips'), // TODO(POLYMORHPISM)
+  clips: Ember.computed.uniq('fromTrackAutomationClips', 'toTrackAutomationClips'),
 
   // optimizes this transition, with given constraints
   // TODO(REFACTOR2)
@@ -55,46 +48,51 @@ export default DS.Model.extend(
 
     return this.destroyAutomationClips().then(() => {
       const store = this.get('store');
-      return Ember.RSVP.all([this.get('fromTrackClip'), this.get('toTrackClip')])
-        .then(([ fromTrackClip, toTrackClip ]) => {
+      const beatCount = this.get('beatCount');
 
-        if (fromTrackClip && toTrackClip) {
-          const beatCount = 16;
-          this.set('beatCount', beatCount);
-
-          const fromTrackVolumeClip = store.createRecord('mix/transition/automation-clip', {
-            controlType: CONTROL_TYPE_VOLUME,
-            transition: this,
-            targetClip: fromTrackClip,
-          });
-          fromTrackVolumeClip.addControlPoints(generateControlPointParams({
-            beatCount,
-            direction: -1
-          }));
-
-          const toTrackVolumeClip = store.createRecord('mix/transition/automation-clip', {
-            controlType: CONTROL_TYPE_VOLUME,
-            transition: this,
-            targetClip: toTrackClip,
-          });
-          toTrackVolumeClip.addControlPoints(generateControlPointParams({
-            beatCount,
-            direction: 1
-          }));
-
-          this.get('automationClips').addObjects([fromTrackVolumeClip, toTrackVolumeClip]);
-        }
-
-        return this;
+      const fromTrackVolumeClip = store.createRecord('mix/transition/from-track-automation-clip', {
+        controlType: CONTROL_TYPE_VOLUME,
+        transition: this,
       });
+      fromTrackVolumeClip.addControlPoints(generateControlPointParams({
+        beatCount,
+        direction: -1
+      }));
+
+      const toTrackVolumeClip = store.createRecord('mix/transition/to-track-automation-clip', {
+        controlType: CONTROL_TYPE_VOLUME,
+        transition: this,
+      });
+      toTrackVolumeClip.addControlPoints(generateControlPointParams({
+        beatCount,
+        direction: 1
+      }));
+
+      this.get('fromTrackAutomationClips').addObject(fromTrackVolumeClip);
+      this.get('toTrackAutomationClips').addObject(toTrackVolumeClip);
+
+      return this;
     });
 
   },
 
-  destroyAutomationClips() {
-    return this.get('automationClips').then((automationClips) => {
-      return Ember.RSVP.all(automationClips.toArray().invoke('destroyRecord'));
+  destroyFromTrackAutomationClips() {
+    return this.get('fromTrackAutomationClips').then((fromTrackAutomationClips) => {
+      return Ember.RSVP.all(fromTrackAutomationClips.toArray().map((clip) => clip.destroyRecord()));
     });
+  },
+
+  destroyToTrackAutomationClips() {
+    return this.get('toTrackAutomationClips').then((toTrackAutomationClips) => {
+      return Ember.RSVP.all(toTrackAutomationClips.toArray().map((clip) => clip.destroyRecord()));
+    });
+  },
+
+  destroyAutomationClips() {
+    return Ember.RSVP.all([
+      this.destroyFromTrackAutomationClips(),
+      this.destroyToTrackAutomationClips()
+    ]);
   },
 });
 
