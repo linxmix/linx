@@ -13,7 +13,10 @@
   <div class="six wide column">
     <h2 class="ui inverted centered grey header">
       <div class="content">
-        {{mix.title}}
+        {{mix-builder/text-input
+          class="MixBuilderHeader-input"
+          value=mix.title
+        }}
         <div class="sub header">
           {{#if mix.isSaving}}
             Saving...
