@@ -11,7 +11,8 @@ import { CONTROL_TYPE_VOLUME } from 'linx/mixins/playable-arrangement/automatabl
 
 export default DS.Model.extend(
   PlayableArrangementMixin,
-  DependentRelationshipMixin('fromTrackAutomationClips', 'toTrackAutomationClips'),
+  DependentRelationshipMixin('fromTrackAutomationClips'),
+  DependentRelationshipMixin('toTrackAutomationClips'),
   ReadinessMixin('isTransitionReady'), {
 
   title: DS.attr('string'),
