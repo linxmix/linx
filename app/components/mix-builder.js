@@ -1,6 +1,7 @@
 import Ember from 'ember';
 
 import _ from 'npm:underscore';
+import { EKMixin, EKOnInsertMixin, keyDown } from 'ember-keyboard';
 
 import {
   BAR_QUANTIZATION,
@@ -16,7 +17,9 @@ export const TO_TRACK_COLOR = '#16a085';
 
 export const AUTOSAVE_INTERVAL = 1000;
 
-export default Ember.Component.extend({
+export default Ember.Component.extend(
+  EKMixin,
+  EKOnInsertMixin, {
   classNames: ['MixBuilder'],
 
   // required params
@@ -32,6 +35,10 @@ export default Ember.Component.extend({
   mixVisualActionReceiver: null,
 
   showAutomation: true,
+
+  _playpauseMix: Ember.on(keyDown(' '), function() {
+    this.send('playpause');
+  }),
 
   // repeatedely save mix, if any unsaved changes
   _autoSaveMix: Ember.on('init', function() {
