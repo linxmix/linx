@@ -118,7 +118,7 @@ export function createSoundtouchNode({ audioContext, filter, startTime, offset, 
       // if we've drifed past tolerance, adjust frames to extract
       if (Math.abs(sampleDelta) >= SAMPLE_DRIFT_TOLERANCE) {
 
-        // console.log("DRIFT", sampleDelta, extractFrameCount, BUFFER_SIZE);
+        console.log("DRIFT", sampleDelta, extractFrameCount, BUFFER_SIZE);
         // console.log('actualElapsedSamples', actualElapsedSamples);
         // console.log('expectedElapsedSamples', expectedElapsedSamples);
 
@@ -146,6 +146,12 @@ export function createSoundtouchNode({ audioContext, filter, startTime, offset, 
     }
   };
 
+  defaultPitch = parseFloat(defaultPitch);
+  defaultPitch = isValidNumber(defaultPitch) ? defaultPitch : 0;
+
+  defaultTempo = parseFloat(defaultTempo);
+  defaultTempo = isValidNumber(defaultTempo) ? defaultTempo : 1;
+
   const node = new AudioWorkerNode(audioContext, onaudioprocess, {
     numberOfInputs: 2,
     numberOfOutputs: 2,
@@ -154,11 +160,11 @@ export function createSoundtouchNode({ audioContext, filter, startTime, offset, 
     parameters: [
       {
         name: 'pitch',
-        defaultValue: isValidNumber(defaultPitch) ? defaultPitch : 0,
+        defaultValue: defaultPitch,
       },
       {
         name: 'tempo',
-        defaultValue: isValidNumber(defaultTempo) ? defaultTempo : 1,
+        defaultValue: defaultTempo,
       },
       {
         name: 'isPlaying',
