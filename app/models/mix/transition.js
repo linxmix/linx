@@ -30,6 +30,7 @@ export default DS.Model.extend(
   audioContext: Ember.computed.reads('transitionClip.audioContext'),
   outputNode: Ember.computed.reads('transitionClip.outputNode.content'),
   clips: Ember.computed.uniq('fromTrackAutomationClips', 'toTrackAutomationClips'),
+  bpm: Ember.computed.reads('transitionClip.mix.bpm'),
 
   // optimizes this transition, with given constraints
   // TODO(REFACTOR2)

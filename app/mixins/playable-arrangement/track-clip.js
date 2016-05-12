@@ -11,7 +11,7 @@ import ReadinessMixin from '../readiness';
 import subtract from 'linx/lib/computed/subtract';
 import multiply from 'linx/lib/computed/multiply';
 import computedObject from 'linx/lib/computed/object';
-import { flatten, isValidNumber } from 'linx/lib/utils';
+import { flatten, isValidNumber, beatToTime } from 'linx/lib/utils';
 
 import {
   computedTimeToBeat,
@@ -119,23 +119,19 @@ export default Ember.Mixin.create(
     if (this.get('isScheduled')) {
       const { tempo, transpose } = this.getProperties('tempo', 'transpose');
       // if starting in past, start now instead
-      let when = Math.max(this.getAbsoluteTime(), this.getAbsoluteStartTime());
-      let offset = this.getCurrentAudioTime();
+      let startTime = Math.max(this.getAbsoluteTime(), this.getAbsoluteStartTime());
+      let offsetTime = this.getCurrentAudioTime();
+      const endTime = this.getAbsoluteEndTime();
 
       // curate args
-      if (offset < 0) {
-        when -= offset;
-        offset = 0;
+      if (offsetTime < 0) {
+        startTime -= offsetTime;
+        offsetTime = 0;
       }
 
-      // scale duration based on mix tempo
-      const currentAudioBeat = this.getCurrentAudioBeat();
-      const remainingBeatCount = this.get('audioEndBeat') - currentAudioBeat;
-      const duration = this.get('metronome').getDuration(this.get('startBeat') + this.getCurrentClipBeat(), remainingBeatCount);
-
-      Ember.Logger.log('startTrack', this.get('track.title'), when, offset, duration, tempo, transpose);
+      Ember.Logger.log('startTrack', this.get('track.title'), startTime, offsetTime, endTime, tempo, transpose);
       const node = this.get('soundtouchNode');
-      node && node.start(when, offset, duration, tempo, transpose);
+      node && node.start(startTime, offsetTime, endTime, tempo, transpose);
     }
   },
 

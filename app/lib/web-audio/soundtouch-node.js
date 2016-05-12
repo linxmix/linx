@@ -21,9 +21,9 @@ export default Ember.ObjectProxy.extend(
   outputNode: null,
 
   // TODO(V2): tempo, transpose dynamic
-  start(when, offset, duration, tempo, transpose) {
+  start(startTime, offsetTime, endTime, tempo, transpose) {
     // Ember.Logger.log('currentTime', this.get('audioContext.currentTime'));
-    // Ember.Logger.log('startSource', when, offset);
+    // Ember.Logger.log('startSource', startTime, offsetTime);
     this.stop();
     const { audioContext, soundtouchFilter } = this.getProperties('audioContext', 'soundtouchFilter');
 
@@ -33,9 +33,9 @@ export default Ember.ObjectProxy.extend(
       const node = createSoundtouchNode({
         audioContext,
         filter: soundtouchFilter,
-        startTime: when,
-        offset,
-        duration,
+        startTime,
+        offsetTime,
+        endTime,
         defaultTempo: tempo,
         defaultPitch: transpose,
       });

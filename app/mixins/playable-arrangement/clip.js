@@ -31,13 +31,24 @@ export default Ember.Mixin.create(Ember.Evented, {
 
   // returns current beat from clip's frame of reference
   getCurrentClipBeat() {
-    let currentBeat = this.get('metronome').getCurrentBeat() - this.get('startBeat');
+    const currentBeat = this.getCurrentMetronomeBeat() - this.get('startBeat');
     return clamp(0, currentBeat, this.get('beatCount'));
+  },
+
+  // returns current time from this clip's frame of reference
+  getCurrentClipTime() {
+    const currentTime = this.getAbsoluteTime() - this.getAbsoluteStartTime();
+    return clamp(0, currentTime, this.get('duration'));
   },
 
   // returns absolute start time of this clip from metronome's frame of reference
   getAbsoluteStartTime() {
     return this.get('metronome').beatToTime(this.get('startBeat'));
+  },
+
+  // returns absolute start time of this clip from metronome's frame of reference
+  getAbsoluteEndTime() {
+    return this.get('metronome').beatToTime(this.get('endBeat'));
   },
 
   // returns absolute time from metronome's frame of reference
@@ -59,17 +70,17 @@ export default Ember.Mixin.create(Ember.Evented, {
   centerBeat: add('startBeat', 'halfBeatCount'),
 
   isValidStartBeat: Ember.computed('startBeat', function() {
-    let startBeat = this.get('startBeat');
+    const startBeat = this.get('startBeat');
     return isValidNumber(startBeat);
   }),
 
   isValidEndBeat: Ember.computed('endBeat', function() {
-    let endBeat = this.get('endBeat');
+    const endBeat = this.get('endBeat');
     return isValidNumber(endBeat);
   }),
 
   isValidBeatCount: Ember.computed('beatCount', function() {
-    let beatCount = this.get('beatCount');
+    const beatCount = this.get('beatCount');
     return isValidNumber(beatCount) && beatCount > 0;
   }),
 

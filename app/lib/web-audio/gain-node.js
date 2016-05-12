@@ -12,7 +12,7 @@ export default Ember.ObjectProxy.extend(
     const node = this.get('node');
 
     if (node) {
-      node.gain.value = this.get('value');
+      node.gain.value = parseFloat(this.get('value'));
     }
   }).on('init'),
 

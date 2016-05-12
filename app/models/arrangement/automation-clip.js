@@ -10,7 +10,7 @@ import Clip from './clip';
 import add from 'linx/lib/computed/add';
 import subtract from 'linx/lib/computed/subtract';
 
-const TICKS_PER_BEAT = 50;
+const TICKS_PER_BEAT = 100;
 
 // Clip that automates Controls
 // Must provide controlType, controlPoints
@@ -93,14 +93,13 @@ export default Clip.extend(
   }).on('schedule', 'unschedule'),
 
   updateControl() {
-    const { targetControl, values } = this.getProperties('targetControl', 'values');
+    let { targetControl, values } = this.getProperties('targetControl', 'values');
     if (Ember.isNone(targetControl)) { return; }
 
     if (this.get('isScheduled')) {
       let startTime = this.getAbsoluteStartTime();
       let duration = this.get('duration');
 
-      // curate args
       if (startTime < 0) {
         duration += startTime;
         startTime = 0;
@@ -108,6 +107,16 @@ export default Clip.extend(
 
       if (duration < 0) {
         return;
+      }
+
+      // TODO(TECHDEBT: think of this edge case
+      const fullDuration = this.get('duration');
+      if (fullDuration !== duration) {
+        console.log('fullDuration !== duration', this.get('targetClip.track.title'), fullDuration, duration);
+        const ratio = duration / fullDuration;
+        const index = ~~(ratio * values.length);
+
+        values = values.slice(index, values.length);
       }
 
       // Ember.Logger.log('updateControl', targetControl.get('type'), startTime, duration);

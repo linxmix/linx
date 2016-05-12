@@ -36,7 +36,7 @@ FifoSampleBuffer.prototype.clear = function() {
 //  Add SoundTouch + Web Audio integration. exposes:
 //  [class] SoundTouch()
 //  [class] SoundtouchBufferSource(buffer)
-//  [function] createSoundtouchScriptNode(audioContext, filter, when, offset, duration)
+//  [function] createSoundtouchScriptNode(audioContext, filter, when, offset, endTime)
 //
 const MAX_BUFFER_SIZE = 16384;
 const BUFFER_SIZE = MAX_BUFFER_SIZE / 16;
@@ -58,18 +58,18 @@ SoundtouchBufferSource.prototype = {
   }
 };
 
-export function createSoundtouchNode({ audioContext, filter, startTime, offset, duration, defaultTempo, defaultPitch }) {
+export function createSoundtouchNode({ audioContext, filter, startTime, offsetTime, endTime, defaultTempo, defaultPitch }) {
   const channelCount = 2;
 
   if (!(audioContext && filter
-    && isValidNumber(startTime) && isValidNumber(offset) && isValidNumber(duration))) {
-    Ember.Logger.warn('Must provide all params to createSoundtouchNode');
+    && isValidNumber(startTime) && isValidNumber(offsetTime) && isValidNumber(endTime))) {
+    Ember.Logger.warn('Must provide all params to createSoundtouchNode', endTime);
     return;
   }
 
   const samples = new Float32Array(BUFFER_SIZE * channelCount);
   const sampleRate = audioContext.sampleRate || 44100;
-  const startSample = ~~(offset * sampleRate);
+  const startSample = ~~(offsetTime * sampleRate);
 
   filter.sourcePosition = startSample;
 
@@ -174,9 +174,7 @@ export function createSoundtouchNode({ audioContext, filter, startTime, offset, 
   });
 
   // schedule node start and end
-  const endTime = startTime + duration;
-  const currentTime = audioContext.currentTime;
-  if (endTime > currentTime) {
+  if (endTime > audioContext.currentTime) {
     node.isPlaying.setValueAtTime(1, startTime);
     node.isPlaying.setValueAtTime(0, endTime);
   }
