@@ -36,8 +36,10 @@ export default Ember.Component.extend(
 
   showAutomation: true,
 
-  _playpauseMix: Ember.on(keyDown(' '), function() {
+  _playpauseMix: Ember.on(keyDown(' '), function(e) {
     this.send('playpause');
+    e.preventDefault();
+    e.stopPropagation();
   }),
 
   // repeatedely save mix, if any unsaved changes

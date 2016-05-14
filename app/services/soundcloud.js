@@ -6,6 +6,7 @@ import ENV from 'linx/config/environment';
 import { asResolvedPromise } from 'linx/lib/utils';
 
 export const REST_VERBS = 'get post put delete'.w();
+export const RESOLVE_URL_REGEX = /https?:\/\/soundcloud.com\/.*/;
 
 export default Ember.Service.extend({
   isSdkAuthenticated: false,
@@ -44,4 +45,26 @@ export default Ember.Service.extend({
       return properties;
     }, {}));
   }.on('init'),
+
+  store: Ember.inject.service(),
+
+  resolveUrl(targetUrl = '') {
+    Ember.assert('Must provide valid targetUrl to SoundcloudService#resolveUrl', targetUrl.match(RESOLVE_URL_REGEX));
+
+    return this.getAjax('resolve.json', {
+      url: targetUrl
+    }).then((response) => {
+
+      // TODO(TECHDEBT): why someones response.tracks?
+      const track = response && response.tracks ? response.tracks[0] : response;
+
+      if (response && response.streamable && response.stream_url) {
+        console.log('track found', track, response.tracks);
+
+        return track;
+      } else {
+        console.log('cannot stream', response);
+      }
+    });
+  },
 });

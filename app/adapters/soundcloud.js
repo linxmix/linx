@@ -65,6 +65,26 @@ export default DS.RESTAdapter.extend({
   },
 
   /**
+    Overrides DS.RESTAdapter.queryRecord to call 'soundcloud.getAjax' with a url and query
+
+    @method queryRecord
+    @param {DS.Store} store
+    @param {subclass of DS.Model} type
+    @param {object} query
+    @return {Promise} promise
+  */
+
+  queryRecord: function(store, type, query = {}) {
+    const soundcloud = this.get('soundcloud');
+
+    if ((type.modelName === 'soundcloud/track') && (query.resolveUrl)) {
+      return soundcloud.resolveUrl(query.resolveUrl);
+    }
+
+    return soundcloud.getAjax(this.buildURL(type.modelName), query);
+  },
+
+  /**
     Overrides DS.RESTAdapter.createRecord and throws an error
 
     @method deleteRecord
