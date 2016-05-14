@@ -34,7 +34,8 @@ export default Ember.Component.extend({
     },
   },
 
-  _autoSaveTrack: Ember.observer('track.title', 'track.artist', 'track.audioMeta.bpm', _.throttle(function() {
+  // TODO(TECHDEBT): should be in container
+  _autoSaveTrack: Ember.observer('track.{title,artist}', 'track.audioMeta.{gain,bpm,transpose}', _.throttle(function() {
     const track = this.get('track.content');
 
     if (track && track.get('anyDirty') && !track.get('isSaving')) {
