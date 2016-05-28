@@ -15,7 +15,7 @@ export default Clip.extend(
   displayWaveform: true,
   waveColor: 'green',
   selectedQuantization: null,
-  isLoadingAudio: Ember.computed.reads('audioBinary.isLoading'),
+  isLoadingAudio: Ember.computed.not('audioBinary.isReady'),
 
   call(selection) {
     this._super.apply(this, arguments);

@@ -14,7 +14,7 @@ export default Ember.Object.extend(
   isLoading: Ember.computed.reads('arrayBuffer.isPending'),
 
   // implement readiness
-  isArrayBufferLoadedAndDecoded: Ember.computed.and('arrayBuffer.isFulfilled', 'decodedArrayBuffer.content'),
+  isArrayBufferLoadedAndDecoded: Ember.computed.bool('audioBuffer'),
 
   file: null,
   fileUrl: Ember.computed('file', function() {

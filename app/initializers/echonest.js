@@ -25,26 +25,25 @@ var Echonest = Ember.Object.extend({
 
   // fetch echonest/track from linx-track
   // TODO: identifyTrackMD5 first?
-  fetchTrack: function(track) {
+  fetchTrack: function(streamUrl) {
     return DS.PromiseObject.create({
-      promise: this.uploadTrack(track).then((response) => {
+      promise: this.uploadTrack(streamUrl).then((response) => {
         return this.get('store').findRecord('echonest/track', response.id);
       }),
     });
   },
 
-  uploadTrack: function(track) {
-    const webStreamUrl = track.get('audioBinary.webStreamUrl');
-    Ember.Logger.log("uploading track to echonest", track, webStreamUrl);
+  uploadTrack: function(streamUrl) {
+    Ember.Logger.log("uploading track to echonest", streamUrl);
 
-    Ember.assert('Track must have webStreamUrl to upload', webStreamUrl);
+    Ember.assert('Must provide valid streamUrl to Echonest#uploadTrack', Ember.isPresent(streamUrl));
 
     return ajax({
       type: "POST",
       url: this.get('baseUrl') + '/track/upload',
       data: {
         api_key: this.get('apiKey'),
-        url: webStreamUrl
+        url: streamUrl
       },
     }).then((response) => {
       // TODO(CLEANUP): better error handling here

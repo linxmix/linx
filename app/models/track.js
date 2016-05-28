@@ -54,7 +54,9 @@ export default DS.Model.extend(
 
   // figure out which track this is in echonest
   fetchEchonestTrack() {
-    return this.get('echonest').fetchTrack(this)
+    const webStreamUrl = this.get('audioBinary.webStreamUrl');
+
+    return this.get('echonest').fetchTrack(webStreamUrl)
       .then((echonestTrack) => {
         return this.save().then(() => {
           return echonestTrack;
@@ -64,22 +66,18 @@ export default DS.Model.extend(
 
   // analyze echonest track, then parse into new audio meta
   fetchAudioMeta() {
-    return this.get('echonestTrack').then((echonestTrack) => {
-      // Ember.Logger.log("got echonest track");
-      return echonestTrack.get('analysis').then((analysis) => {
-        // Ember.Logger.log("got analysis");
-        return this.get('_audioMeta').then((audioMeta) => {
-          // Ember.Logger.log("got audioMeta");
-          if (!audioMeta) {
-            audioMeta = this.get('store').createRecord('track/audio-meta', {
-              track: this
-            });
-          }
+    return this.get('_audioMeta').then((audioMeta) => {
+      // Ember.Logger.log("got audioMeta");
+      if (!audioMeta) {
+        audioMeta = this.get('store').createRecord('track/audio-meta', {
+          track: this
+        });
+      }
 
+      return this.get('echonestTrack').then((echonestTrack) => {
+        return !echonestTrack ? audioMeta : echonestTrack.get('analysis').then((analysis) => {
           return audioMeta.processAnalysis(analysis).then(() => {
-            // Ember.Logger.log("process analysis");
             return this.save().then(() => {
-              // Ember.Logger.log("process save track");
               return audioMeta;
             });
           });

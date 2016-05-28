@@ -44,7 +44,7 @@ export default Ember.Component.extend(
 
   // repeatedely save mix, if any unsaved changes
   _autoSaveMix: Ember.on('init', function() {
-    if (!this.get('isDestroyed')) {
+    if (false && !this.get('isDestroyed')) {
       const mix = this.get('mix');
 
       if (mix && mix.get('anyDirty') && !mix.get('isSaving')) {
@@ -95,9 +95,6 @@ export default Ember.Component.extend(
     },
 
     selectTransition(transition) {
-      const prevId = this.get('selectedTransition.id');
-      const newId = transition.get('id');
-
       this.sendAction('selectTransition', transition);
     },
 
