@@ -87,7 +87,11 @@ export default Ember.Mixin.create(Ember.Evented, {
   // TODO(REFACTOR): turn isValid into validness mixin?
   isValid: Ember.computed.and('isValidStartBeat', 'isValidEndBeat', 'isValidBeatCount'),
 
-  clipScheduleDidChange: Ember.observer('isValid', 'isDisabled', 'startBeat', 'beatCount', 'duration', 'metronome.{absSeekTime,isPlaying,bpm}', function() {
+  clipScheduleDidChange: Ember.observer('isValid', 'isDisabled', 'startBeat', 'beatCount', 'duration', 'metronome.absSeekTime', 'metronome.isPlaying', 'metronome.bpm', function() {
+    if (this.get('track.title') === "The Way U Do (RL Grime Remix).mp3") {
+      console.log('clipScheduleDidChange', this.get('track.title'), this.get('metronome.isPlaying'));
+
+    }
     this.set('isScheduled', this.get('metronome.isPlaying'));
     Ember.run.once(this, 'triggerScheduleEvents');
   }),

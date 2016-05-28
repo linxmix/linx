@@ -22,13 +22,16 @@ export default Ember.Object.extend(
     return file && URL.createObjectURL(file);
   }),
 
-  streamUrl: Ember.computed.or('fileUrl', 'proxyStreamUrl'),
+  // webStreamUrl with proxying
+  streamUrl: Ember.computed('webStreamUrl', function() {
+    const webStreamUrl = this.get('webStreamUrl');
 
-  webStreamUrl: Ember.computed.or('s3StreamUrl', 'scStreamUrl', 'soundcloudTrack.streamUrl'),
-  proxyStreamUrl: Ember.computed('webStreamUrl', function() {
-    return `/${this.get('webStreamUrl')}`;
+    if (webStreamUrl) {
+      return encodeURI(`/${webStreamUrl}`);
+    }
   }),
 
+  webStreamUrl: Ember.computed.or('s3StreamUrl', 'scStreamUrl', 'soundcloudTrack.streamUrl'),
   scStreamUrl: Ember.computed.reads('track.scStreamUrl'),
   s3StreamUrl: Ember.computed.reads('track.s3StreamUrl'),
 
@@ -60,25 +63,28 @@ export default Ember.Object.extend(
   }),
 
   // TODO(COMPUTEDPROMISE): use that?
-  // fileArrayBuffer: Ember.computed('file', function() {
-  //   return DS.PromiseObject.create({
-  //     promise:
-  //   });
-  //   var my = this;
-  //   // Create file reader
-  //   var reader = new FileReader();
-  //   reader.addEventListener('progress', function (e) {
-  //       my.onProgress(e);
-  //   });
-  //   reader.addEventListener('load', function (e) {
-  //       my.loadArrayBuffer(e.target.result);
-  //   });
-  //   reader.addEventListener('error', function () {
-  //       my.fireEvent('error', 'Error reading file');
-  //   });
-  //   reader.readAsArrayBuffer(blob);
-  //   this.empty();
-  // }),
+  fileArrayBuffer: Ember.computed('file', function() {
+    const file = this.get('file');
+
+    if (file) {
+      return DS.PromiseObject.create({
+        promise: new Ember.RSVP.Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.addEventListener('progress', function (e) {
+            console.log('progress', e);
+          });
+          reader.addEventListener('load', function (e) {
+            resolve(e.target.result);
+          });
+          reader.addEventListener('error', function (e) {
+            Ember.Logger.log(`FileReader: Error reading file ${file.name}`, e, file);
+            reject(e);
+          });
+          reader.readAsArrayBuffer(file);
+        }),
+      });
+    }
+  }),
 
   // TODO(COMPUTEDPROMISE): use that?
   decodedArrayBuffer: Ember.computed('audioContext', 'arrayBuffer', function() {
