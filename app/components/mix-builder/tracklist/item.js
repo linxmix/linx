@@ -32,13 +32,19 @@ export default Ember.Component.extend({
     removeItem() {
       this.sendAction('removeItem', this.get('item'));
     },
+
+    saveTrack() {
+      const track = this.get('track.content');
+      track && track.save();
+    }
   },
 
-  // TODO(TECHDEBT): should be in container
+  // TODO(TECHDEBT): update to ember concurrency. should be in container
   _autoSaveTrack: Ember.observer('track.{title,artist}', 'track.audioMeta.{gain,bpm,transpose}', _.throttle(function() {
     const track = this.get('track.content');
+    const item = this.get('item');
 
-    if (track && track.get('anyDirty') && !track.get('isSaving')) {
+    if (track && track.get('anyDirty') && !item.get('isNew') && !track.get('isSaving')) {
       console.log('Autosave Track', this.get('track.title'));
       track.save();
     }

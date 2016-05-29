@@ -1,28 +1,32 @@
 import Ember from 'ember';
 
+import { task } from 'ember-concurrency';
+
 import ENV from 'linx/config/environment';
 
 // S3 file upload service
 export default Ember.Service.extend({
 
-  uploadFile(file) {
-    Ember.assert('Cannot s3Upload.uploadFile without valid file.{name,type}', Ember.isPresent(file.name) && Ember.isPresent(file.type));
+  uploadFileTask: task(function * (file) {
+    Ember.assert('Cannot s3Upload.uploadFileTask without valid file.{name,type}', Ember.isPresent(file.name) && Ember.isPresent(file.type));
 
     const fileName = `${getFileNameWithoutExtension(file.name)}-${Date.now()}.${getFileNameExtension(file.name)}`;
     const fileType = file.type;
-    console.log('uploadFile', fileName, fileType);
+    // console.log('uploadFile', fileName, fileType);
 
-    return this._getSignedRequest(fileName, fileType).then(({ signedRequest, url }) => {
-      return new Ember.RSVP.Promise((resolve, reject) => {
-        // TODO: make this use linx/utils/ajax
-        const xhr = new XMLHttpRequest();
-        xhr.open("PUT", signedRequest);
-        xhr.setRequestHeader('x-amz-acl', 'public-read');
-        xhr.onload = () => { resolve(url); };
-        xhr.send(file);
-      });
+    const { signedRequest, url } = yield this._getSignedRequest(fileName, fileType);
+
+    yield new Ember.RSVP.Promise((resolve, reject) => {
+      // TODO(TECHDEBT): make this use linx/utils/ajax
+      const xhr = new XMLHttpRequest();
+      xhr.open("PUT", signedRequest);
+      xhr.setRequestHeader('x-amz-acl', 'public-read');
+      xhr.onload = () => { resolve(url); };
+      xhr.send(file);
     });
-  },
+
+    return url;
+  }),
 
   _getSignedRequest(fileName, fileType) {
     return new Ember.RSVP.Promise((resolve, reject) => {

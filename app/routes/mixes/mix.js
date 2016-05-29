@@ -13,7 +13,6 @@ export default Ember.Route.extend({
       Ember.Logger.log("page drop", files);
 
       const store = this.get('store');
-      const s3Upload = this.get('s3Upload');
       const mix = this.get('controller.mix');
 
       // for each file, create track and add to mix

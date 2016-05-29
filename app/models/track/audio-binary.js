@@ -11,16 +11,11 @@ export default Ember.Object.extend(
   ReadinessMixin('isArrayBufferLoadedAndDecoded'),
   RequireAttributes('track'), {
 
+  file: Ember.computed.reads('track.file'),
   isLoading: Ember.computed.reads('arrayBuffer.isPending'),
 
   // implement readiness
   isArrayBufferLoadedAndDecoded: Ember.computed.bool('audioBuffer'),
-
-  file: null,
-  fileUrl: Ember.computed('file', function() {
-    const file = this.get('file');
-    return file && URL.createObjectURL(file);
-  }),
 
   // webStreamUrl with proxying
   streamUrl: Ember.computed('webStreamUrl', function() {

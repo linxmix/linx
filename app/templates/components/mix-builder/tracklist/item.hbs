@@ -13,9 +13,24 @@
   </div>
 </td>
 <td>
-  {{mix-builder/input type="text" value=track.title}}</td>
+  <div class="row">
+    {{#if track.isNew}}
+      <div class="small inverted basic green ui icon button no-border {{if (or track.isSaving track.uploadFileTask.isRunning) "disabled"}}" {{action "saveTrack"}}>
+        <i class="save icon"/>
+        Save {{#if track.file}}(file){{/if}}
+      </div>
+
+      {{#if (or track.isSaving track.uploadFileTask.isRunning)}}
+        <div class="ui active small inline loader"></div>
+      {{/if}}
+    {{/if}}
+
+    {{mix-builder/input type="text" value=track.title}}
+  </div>
+</td>
 <td>
-  {{mix-builder/input type="text" value=track.artist}}</td>
+  {{mix-builder/input type="text" value=track.artist}}
+</td>
 <td>
   {{track.audioMeta.camelotKey}}&nbsp;{{track.audioMeta.keyName}}
 </td>
