@@ -16,8 +16,8 @@ export default Ember.Service.extend({
 
     const { signedRequest, url } = yield this._getSignedRequest(fileName, fileType);
 
+    // TODO(TECHDEBT): make this use linx/utils/ajax
     yield new Ember.RSVP.Promise((resolve, reject) => {
-      // TODO(TECHDEBT): make this use linx/utils/ajax
       const xhr = new XMLHttpRequest();
       xhr.open("PUT", signedRequest);
       xhr.setRequestHeader('x-amz-acl', 'public-read');

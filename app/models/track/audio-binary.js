@@ -2,6 +2,8 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
+import { task } from 'ember-concurrency';
+
 import RequireAttributes from 'linx/lib/require-attributes';
 import { isValidNumber, asResolvedPromise } from 'linx/lib/utils';
 import ReadinessMixin from 'linx/mixins/readiness';
@@ -81,6 +83,19 @@ export default Ember.Object.extend(
     }
   }),
 
+  analyzeAudioTask: task(function * () {
+    const audioBuffer = yield this.get('decodedArrayBuffer');
+    if (audioBuffer) {
+      const audioMeta = yield this.get('track.audioMeta');
+
+      // TODO: analyze bpm, key here
+      console.log('audioMeta duration', audioBuffer.duration);
+      audioMeta.setProperties({
+        duration: audioBuffer.duration
+      });
+    }
+  }).drop(),
+
   // TODO(COMPUTEDPROMISE): use that?
   decodedArrayBuffer: Ember.computed('audioContext', 'arrayBuffer', function() {
     let { arrayBuffer, audioContext } = this.getProperties('arrayBuffer', 'audioContext');
@@ -107,37 +122,36 @@ export default Ember.Object.extend(
     if (!audioBuffer) { return asResolvedPromise([]); }
 
     Ember.assert('Cannot AudioBinary.getPeaks without length', isValidNumber(length));
-    startTime = startTime || 0;
+    startTime = isValidNumber(startTime) ? startTime : 0;
+    endTime = isValidNumber(endTime) ? endTime : 0;
 
+    // TODO(REFACTOR): update to use multiple channels
+    const samples = audioBuffer.getChannelData(0);
     const sampleRate = audioBuffer.sampleRate;
     const startSample = startTime * sampleRate;
-    const endSample = isValidNumber(endTime) ? (endTime * sampleRate) : samples.length;
+    const endSample = endTime * sampleRate;
 
     const job = new Parallel({
-      // TODO(REFACTOR): update to use multiple channels
-      samples: audioBuffer.getChannelData(0),
+      samples,
       startSample,
       endSample,
       length,
     });
 
     return job.spawn(({ samples, startSample, endSample, length }) => {
-
       const sampleSize = (endSample - startSample) / length;
       const sampleStep = ~~(sampleSize / 10) || 1; // reduce granularity with small length
       const peaks = [];
 
-      // Ember.Logger.log('getPeaks', length, startTime, endTime, sampleSize, sampleRate, startSample, endSample, audioBuffer.length);
-
       for (let i = 0; i < length; i++) {
         const start = ~~(startSample + i * sampleSize);
         const end = ~~(start + sampleSize);
-        let min = samples[start];
-        let max = samples[start];
+        let min = samples[start] || 0;
+        let max = samples[start] || 0;
 
         // calculate max and min in this sample
         for (let j = start; j < end; j += sampleStep) {
-          const value = samples[j];
+          const value = samples[j] || 0;
 
           if (value > max) {
             max = value;

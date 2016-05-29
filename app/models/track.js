@@ -1,6 +1,7 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
+import { task } from 'ember-concurrency';
 import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 import ReadinessMixin from 'linx/mixins/readiness';
 
@@ -9,8 +10,6 @@ import AudioBinary from './track/audio-binary';
 
 export const DEFAULT_BPM = 128.00;
 export const DEFAULT_DURATION = 200; // seconds
-
-import { task } from 'ember-concurrency';
 
 export default DS.Model.extend(
   ReadinessMixin('isTrackReady'),
@@ -65,7 +64,6 @@ export default DS.Model.extend(
     const file = this.get('file');
     const isFileSaved = this.get('isFileSaved');
 
-    console.log('saveTrack', this.get('title'), file, isFileSaved);
     if (file && !isFileSaved) {
       const uploadFileTask = this.get('uploadFileTask');
       const promise = uploadFileTask.get('last') || uploadFileTask.perform();
@@ -76,7 +74,6 @@ export default DS.Model.extend(
   },
 
   destroyRecord() {
-    console.log("DESTROY TRACK RECORD");
     this.get('uploadFileTask').cancel();
     return this._super.apply(this, arguments);
   },
@@ -87,8 +84,7 @@ export default DS.Model.extend(
   uploadFileTask: task(function * () {
     const file = this.get('file');
     if (file) {
-      let url = yield this.get('s3Upload.uploadFileTask').perform(file);
-      console.log('uploadFileTask complete', url);
+      const url = yield this.get('s3Upload.uploadFileTask').perform(file);
       this.set('s3StreamUrl', url);
       return url;
     }

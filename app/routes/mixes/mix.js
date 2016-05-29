@@ -23,6 +23,7 @@ export default Ember.Route.extend({
         });
 
         track.set('file', file);
+        track.get('audioBinary.analyzeAudioTask').perform();
         mix.appendTrack(track);
       });
     },
