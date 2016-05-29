@@ -68,7 +68,7 @@ export default Ember.Object.extend(
         promise: new Ember.RSVP.Promise((resolve, reject) => {
           const reader = new FileReader();
           reader.addEventListener('progress', function (e) {
-            console.log('progress', e);
+            // console.log('progress', e);
           });
           reader.addEventListener('load', function (e) {
             resolve(e.target.result);
@@ -89,7 +89,7 @@ export default Ember.Object.extend(
       const audioMeta = yield this.get('track.audioMeta');
 
       // TODO: analyze bpm, key here
-      console.log('audioMeta duration', audioBuffer.duration);
+      // console.log('audioMeta duration', audioBuffer.duration);
       audioMeta.setProperties({
         duration: audioBuffer.duration
       });

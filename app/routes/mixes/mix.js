@@ -20,9 +20,9 @@ export default Ember.Route.extend({
 
         const track = store.createRecord('track', {
           title: file.name,
+          file,
         });
 
-        track.set('file', file);
         track.get('audioBinary.analyzeAudioTask').perform();
         mix.appendTrack(track);
       });

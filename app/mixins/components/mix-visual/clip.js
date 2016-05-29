@@ -27,5 +27,4 @@ export default Ember.Mixin.create({
 
   isSelectedTransitionClip: equalProps('selectedTransitionClip.id', 'clip.id'),
   isInSelectedTransition: Ember.computed.or('isSelectedTransitionClip', 'isSelectedFromTrackClip', 'isSelectedToTrackClip'),
-  isInSelectedTransition: Ember.computed.or('isSelectedTransitionClip', 'isSelectedFromTrackClip', 'isSelectedToTrackClip'),
 });

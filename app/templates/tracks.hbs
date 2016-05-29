@@ -1,5 +1,5 @@
 <div class="tracks-page">
-  {{#each track in model}}
+  {{#each model as |track|}}
     <div class="track">
       {{#link-to 'track' track}}
         {{track.title}}

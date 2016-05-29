@@ -21,7 +21,7 @@ export default Ember.Mixin.create(Ember.Evented, {
   isScheduled: false,
   outputNode: Ember.computed.reads('arrangement.inputNode'),
   metronome: Ember.computed.reads('arrangement.metronome'),
-  audioContext: Ember.computed.reads('metronome.audioContext'),
+  audioContext: Ember.computed.reads('arrangement.audioContext'),
   syncBpm: Ember.computed.reads('metronome.bpm'),
 
   // returns current beat from metronome's frame of reference
@@ -87,11 +87,7 @@ export default Ember.Mixin.create(Ember.Evented, {
   // TODO(REFACTOR): turn isValid into validness mixin?
   isValid: Ember.computed.and('isValidStartBeat', 'isValidEndBeat', 'isValidBeatCount'),
 
-  clipScheduleDidChange: Ember.observer('isValid', 'isDisabled', 'startBeat', 'beatCount', 'duration', 'metronome.absSeekTime', 'metronome.isPlaying', 'metronome.bpm', function() {
-    if (this.get('track.title') === "The Way U Do (RL Grime Remix).mp3") {
-      console.log('clipScheduleDidChange', this.get('track.title'), this.get('metronome.isPlaying'));
-
-    }
+  clipScheduleDidChange: Ember.observer('isValid', 'isDisabled', 'startBeat', 'beatCount', 'duration', 'metronome.{absSeekTime,isPlaying,bpm}', function() {
     this.set('isScheduled', this.get('metronome.isPlaying'));
     Ember.run.once(this, 'triggerScheduleEvents');
   }),

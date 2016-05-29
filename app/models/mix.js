@@ -30,14 +30,20 @@ export default DS.Model.extend(
   clips: Ember.computed.uniq('trackClips', 'transitionClips'),
 
   trackAt(index) {
-    let item = this.objectAt(index);
+    const item = this.objectAt(index);
     return item && item.get('track.content');
   },
 
   insertTrackAt(index, track) {
     const item = this.createAt(index);
 
-    return item.setTrack(track);
+    return item.setTrack(track).then(() => {
+      return item.get('trackClip').then((trackClip) => {
+        // TODO(TECHDEBT): why does clip observer not work without this line?
+        trackClip.set('metronome', this.get('metronome'));
+        return item;
+      });
+    });
   },
 
   insertTracksAt(index, tracks) {

@@ -14,7 +14,7 @@
   seekToBeat="seekToBeat"
 }}
   {{#arrangement-visual/row size="mini"}}
-    {{#each clipEvent in clipEvents}}
+    {{#each clipEvents as |clipEvent|}}
       {{arrangement-item
         clipEvent=clipEvent
         metronome=metronome

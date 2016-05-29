@@ -24,7 +24,7 @@ export default function(propertyPath) {
             // Ember.Logger.log("IS READY", this.constructor.toString(), readinessKeys);
             return readinessKeys.every((key) => {
               // Ember.Logger.log("key", key);
-              return !!this.get(key) === true;
+              return (!!this.get(key)) === true;
             });
           }]))
         );
