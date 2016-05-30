@@ -40,15 +40,15 @@ export default Ember.Component.extend({
   },
 
   // TODO(TECHDEBT): update to ember concurrency. should be in container
-  _autoSaveTrack: Ember.observer('track.{title,artist}', 'track.audioMeta.{gain,bpm,transpose}', _.throttle(function() {
-    const track = this.get('track.content');
-    const item = this.get('item');
+  // _autoSaveTrack: Ember.observer('track.{title,artist}', 'track.audioMeta.{gain,bpm,transpose}', _.throttle(function() {
+  //   const track = this.get('track.content');
+  //   const item = this.get('item');
 
-    if (track && track.get('anyDirty') && !item.get('isNew') && !track.get('isSaving')) {
-      console.log('Autosave Track', this.get('track.title'));
-      track.save();
-    }
-  }, 1000)),
+  //   if (track && track.get('anyDirty') && !item.get('isNew') && !track.get('isSaving')) {
+  //     console.log('Autosave Track', this.get('track.title'));
+  //     track.save();
+  //   }
+  // }, 1000)),
 
   // params
   transition: Ember.computed.reads('item.transition'),

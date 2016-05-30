@@ -9,7 +9,7 @@ import multiply from 'linx/lib/computed/multiply';
 import { translate } from 'linx/helpers/svg-translate';
 
 export default Clip.extend(
-  GraphicSupport('displayWaveform', 'waveColor', 'isLoadingAudio', 'trackBeatCount', 'audioStartTime', 'audioEndTime'), {
+  GraphicSupport('displayWaveform', 'waveColor', 'isLoadingAudio', 'trackBeatCount', 'audioStartTime', 'audioEndTime', 'trackBpm'), {
 
   // optional params
   displayWaveform: true,

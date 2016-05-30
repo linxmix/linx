@@ -4,8 +4,10 @@ import DS from 'ember-data';
 import Clip from './clip';
 import TrackClipMixin from 'linx/mixins/playable-arrangement/track-clip';
 import { withDefaultProperty } from 'linx/lib/computed/with-default';
+import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 
 export default Clip.extend(
+  DependentRelationshipMixin('track'),
   TrackClipMixin, {
 
   // implement clip

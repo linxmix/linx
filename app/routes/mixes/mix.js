@@ -4,8 +4,12 @@ import _ from 'npm:underscore';
 
 import PreventDirtyTransitionMixin from 'linx/mixins/routes/prevent-dirty-transition';
 
-// export default Ember.Route.extend(PreventDirtyTransitionMixin, {
-export default Ember.Route.extend({
+export default Ember.Route.extend(PreventDirtyTransitionMixin, {
+
+  // implement prevent dirty transition mixin
+  modelForDirtyTransition() {
+    return this.get('controller.mix');
+  },
 
   actions: {
     // TODO(TECHDEBT): move to mix-builder
