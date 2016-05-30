@@ -170,7 +170,12 @@ export default function(audioParamPath) {
         !Ember.isEmpty(values) && isValidNumber(startTime) && isValidNumber(duration));
 
       const audioParam = this.get('audioParam');
-      audioParam && audioParam.setValueCurveAtTime(values, startTime, duration);
+
+      try {
+        audioParam && audioParam.setValueCurveAtTime(values, startTime, duration);
+      } catch(e) {
+        Ember.Logger.warn('Error with Control.setValueCurveAtTime', e);
+      }
     },
   });
 }
