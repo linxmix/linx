@@ -5,10 +5,12 @@ export default Ember.Component.extend({
 
   // required params
   mix: null,
+  mixSaveTask: null,
+  saveMix: Ember.K,
 
   actions: {
     saveMix() {
-      this.get('mix').save();
+      this.get('saveMix')();
     },
 
     destroyMix() {

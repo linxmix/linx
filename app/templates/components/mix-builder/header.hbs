@@ -20,7 +20,7 @@
           value=mix.title
         }}
         <div class="sub header">
-          {{#if mix.isSaving}}
+          {{#if mixSaveTask.isRunning}}
             Saving...
           {{else if mix.anyDirty}}
             Has dirty changes.
@@ -33,11 +33,16 @@
   </div>
 
   <div class="five wide column ui middle aligned grid MixBuilderHeader-right">
-    <div class="inverted green ui icon button test-save-mix {{if mix.anyDirty "" "basic disabled"}}" {{action "saveMix"}}>
-      <i class="cloud upload icon"></i>
-      Save Mix
-    </div>
-    <div class="inverted red ui icon button test-delete-mix" {{action "destroyMix"}}>
+    {{#unless mixSaveTask.isRunning}}
+      <div class="inverted green ui icon button test-save-mix {{if mix.anyDirty "" "basic disabled"}}" {{action "saveMix"}}>
+        <i class="cloud upload icon"></i>
+        Save Mix
+      </div>
+    {{else}}
+      <div class="inverted basic disabled ui loading button">Saving...</div>
+    {{/unless}}
+
+    <div class="inverted red ui icon button test-delete-mix {{if mixSaveTask.isRunning "basic disabled"}}" {{action "destroyMix"}}>
       <i class="remove icon"></i>
       Delete Mix
     </div>

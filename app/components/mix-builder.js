@@ -1,5 +1,6 @@
 import Ember from 'ember';
 
+import { task } from 'ember-concurrency';
 import _ from 'npm:underscore';
 import { EKMixin, EKOnInsertMixin, keyDown } from 'ember-keyboard';
 
@@ -43,20 +44,28 @@ export default Ember.Component.extend(
   }),
 
   // repeatedely save mix, if any unsaved changes
-  _autoSaveMix: Ember.on('init', function() {
-    if (false && !this.get('isDestroyed')) {
-      const mix = this.get('mix');
+  // _autoSaveMix: Ember.on('init', function() {
+  //   if (!this.get('isDestroyed')) {
+  //     const mix = this.get('mix');
 
-      if (mix && mix.get('anyDirty') && !mix.get('isSaving')) {
-        console.log('Autosave Mix', this.get('mix.title'));
-        mix.save();
-      }
+  //     if (mix && mix.get('anyDirty') && !mix.get('isSaving')) {
+  //       console.log('Autosave Mix', this.get('mix.title'));
+  //       this.get('mixSaveTask').perform();
+  //     }
 
-      Ember.run.later(this, '_autoSaveMix', AUTOSAVE_INTERVAL);
-    }
-  }),
+  //     Ember.run.later(this, '_autoSaveMix', AUTOSAVE_INTERVAL);
+  //   }
+  // }),
+
+  mixSaveTask: task(function * () {
+    yield this.get('mix').save();
+  }).keepLatest(),
 
   actions: {
+    saveMix() {
+      this.get('mixSaveTask').perform();
+    },
+
     play(beat) {
       this.get('mix').play(beat);
     },

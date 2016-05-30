@@ -14,15 +14,8 @@
 </td>
 <td>
   <div class="row">
-    {{#if track.isNew}}
-      <div class="small inverted basic green ui icon button no-border {{if (or track.isSaving track.uploadFileTask.isRunning) "disabled"}}" {{action "saveTrack"}}>
-        <i class="save icon"/>
-        Save {{#if track.file}}(file){{/if}}
-      </div>
-
-      {{#if (or track.isSaving track.uploadFileTask.isRunning)}}
-        <div class="ui active small inline loader"></div>
-      {{/if}}
+    {{#if track.uploadFileTask.isRunning}}
+      Uploading File... <div class="ui active small inline loader"/>
     {{/if}}
 
     {{mix-builder/input type="text" value=track.title}}

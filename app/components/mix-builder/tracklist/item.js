@@ -32,13 +32,9 @@ export default Ember.Component.extend({
     removeItem() {
       this.sendAction('removeItem', this.get('item'));
     },
-
-    saveTrack() {
-      const track = this.get('track.content');
-      track && track.save();
-    }
   },
 
+  // CURRENTLY DISABLED so mix save button controls everything
   // TODO(TECHDEBT): update to ember concurrency. should be in container
   // _autoSaveTrack: Ember.observer('track.{title,artist}', 'track.audioMeta.{gain,bpm,transpose}', _.throttle(function() {
   //   const track = this.get('track.content');
