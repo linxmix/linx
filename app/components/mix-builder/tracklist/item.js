@@ -64,7 +64,5 @@ export default Ember.Component.extend({
   isSelectedTransition: equalProps('selectedTransition.id', 'transition.id'),
   isSelectedFromTrack: Ember.computed.reads('isSelectedTransition'),
   isSelectedToTrack: equalProps('selectedTransition.id', 'item.prevTransition.id'),
-
-  isLastItem: equalProps('item.position', 'mix.length'),
 });
 

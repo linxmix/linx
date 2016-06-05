@@ -10,10 +10,10 @@
     <div class="small inverted teal ui icon button no-border {{if isSelectedTransition "" "basic"}}" {{action "selectTransition"}}>
       <i class="linkify icon"/>
     </div>
-    <div class="small inverted basic yellow ui icon button no-border" {{action "updateItemPosition" -1}}>
+    <div class="small inverted basic yellow ui icon button no-border {{if item.isFirstItem 'disabled'}}" {{action "updateItemPosition" -1}}>
       <i class="caret up icon"/>
     </div>
-    <div class="small inverted basic yellow ui icon button no-border" {{action "updateItemPosition" 1}}>
+    <div class="small inverted basic yellow ui icon button no-border {{if item.isLastItem 'disabled'}}" {{action "updateItemPosition" 1}}>
       <i class="caret down icon"/>
     </div>
     <div class="small inverted basic red ui icon button no-border" {{action "removeItem"}}>

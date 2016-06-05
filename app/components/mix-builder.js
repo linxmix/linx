@@ -34,6 +34,7 @@ export default Ember.Component.extend(
   selectedQuantizations: [BAR_QUANTIZATION],
   selectedQuantization: Ember.computed.reads('selectedQuantizations.firstObject'),
   mixVisualActionReceiver: null,
+  store: Ember.inject.service(),
 
   showAutomation: true,
 
@@ -174,6 +175,25 @@ export default Ember.Component.extend(
       mix.appendTrack(track);
     },
 
+    onPageDrop(files) {
+      Ember.Logger.log("page drop", files);
+
+      const store = this.get('store');
+      const mix = this.get('controller.mix');
+
+      // for each file, create track and add to mix
+      files.map((file) => {
+
+        const track = store.createRecord('track', {
+          title: file.name,
+          file,
+        });
+
+        track.get('audioBinary.analyzeAudioTask').perform();
+        this.send('addTrack', track);
+      });
+    },
+
     // appendRandomTrack() {
     //   const mix = this.get('mix');
     //   const tracks = this.get('searchTracks.content');
@@ -187,7 +207,7 @@ export default Ember.Component.extend(
     // },
   },
 
-  // TODO: make this work
+  // TODO(TECHDEBT): make this work with query param for sleected transition?
   _selectedTransitionDidChange: Ember.observer('selectedTransition', function() {
     const transition = this.get('selectedTransition');
 

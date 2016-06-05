@@ -12,26 +12,6 @@ export default Ember.Route.extend(PreventDirtyTransitionMixin, {
   },
 
   actions: {
-    // TODO(TECHDEBT): move to mix-builder
-    onPageDrop(files) {
-      Ember.Logger.log("page drop", files);
-
-      const store = this.get('store');
-      const mix = this.get('controller.mix');
-
-      // for each file, create track and add to mix
-      files.map((file) => {
-
-        const track = store.createRecord('track', {
-          title: file.name,
-          file,
-        });
-
-        track.get('audioBinary.analyzeAudioTask').perform();
-        mix.appendTrack(track);
-      });
-    },
-
     openTransitionModal(transition) {
       this.transitionTo('mixes.mix.transition', transition.get('id'));
     },
