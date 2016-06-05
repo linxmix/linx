@@ -15,18 +15,18 @@
 <td>
   <div class="row">
     {{#if track.uploadFileTask.isRunning}}
-      Uploading File... <div class="ui active small inline loader"/>
+      <div class="ui active small inline loader"/> Uploading File...
     {{/if}}
 
-    {{mix-builder/input type="text" value=track.title}}
+    {{mix-builder/input type="text" value=track.title update=(action (mut track.title))}}
   </div>
 </td>
 <td>
-  {{mix-builder/input type="text" value=track.artist}}
+  {{mix-builder/input type="text" value=track.artist update=(action (mut track.artist))}}
 </td>
 <td>
   {{track.audioMeta.camelotKey}}&nbsp;{{track.audioMeta.keyName}}
 </td>
 <td>
-  {{mix-builder/input type="number" value=track.audioMeta.bpm}}
+  {{mix-builder/input type="number" value=track.audioMeta.bpm update=(action updateTrackBpm)}}
 </td>

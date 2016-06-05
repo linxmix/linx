@@ -25,7 +25,7 @@ export default DS.Model.extend(
 
   soundcloudTrack: DS.belongsTo('soundcloud/track', { async: true }),
 
-  file: DS.attr(),
+  file: null,
 
   createFromSoundcloudTrack(soundcloudTrack) {
     this.setProperties({
@@ -33,6 +33,8 @@ export default DS.Model.extend(
       title: soundcloudTrack.get('title'),
       scStreamUrl: soundcloudTrack.get('streamUrl'),
     });
+
+    this.get('audioBinary.analyzeAudioTask').perform();
   },
 
   _audioMeta: DS.belongsTo('track/audio-meta', { async: true }),

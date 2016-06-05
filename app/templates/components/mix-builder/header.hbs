@@ -18,6 +18,7 @@
           class="MixBuilderHeader-input"
           type="text"
           value=mix.title
+          update=(action (mut mix.title))
         }}
         <div class="sub header">
           {{#if mixSaveTask.isRunning}}

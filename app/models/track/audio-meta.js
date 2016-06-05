@@ -102,20 +102,20 @@ export default DS.Model.extend(
   mode: DS.attr('number'),
   loudness: DS.attr('number'),
 
-  // calculate gain from loudness (decibels)
-  gain: Ember.computed('loudness', {
-    get() {
-      const loudness = this.get('loudness');
-      return isValidNumber(loudness) ? loudnessToGain(loudness) : DEFAULT_GAIN;
-    },
+  // // calculate gain from loudness (decibels)
+  // gain: Ember.computed('loudness', {
+  //   get() {
+  //     const loudness = this.get('loudness');
+  //     return isValidNumber(loudness) ? loudnessToGain(loudness) : DEFAULT_GAIN;
+  //   },
 
-    set(key, gain) {
-      Ember.assert('Must set audioMeta.gain to valid number', isValidNumber(gain));
+  //   set(key, gain) {
+  //     Ember.assert('Must set audioMeta.gain to valid number', isValidNumber(gain));
 
-      this.set('loudness', gainToLoudness(gain));
-      return gain;
-    },
-  }),
+  //     this.set('loudness', gainToLoudness(gain));
+  //     return gain;
+  //   },
+  // }),
 
   track: DS.belongsTo('track', { async: true }),
   markers: DS.hasMany('track/audio-meta/marker', { async: true }),

@@ -1,6 +1,7 @@
 import Ember from 'ember';
 
 import WebAudioNodeMixin from 'linx/mixins/web-audio/node';
+import { isValidNumber } from 'linx/lib/utils';
 
 export default Ember.ObjectProxy.extend(
   WebAudioNodeMixin, {
@@ -10,9 +11,11 @@ export default Ember.ObjectProxy.extend(
 
   _updateValue: Ember.observer('value', 'node', function() {
     const node = this.get('node');
+    const value = this.get('value');
 
-    if (node) {
-      node.gain.value = parseFloat(this.get('value'));
+    console.log('update gain value', value, isValidNumber(value))
+    if (node && isValidNumber(value)) {
+      node.gain.value = value;
     }
   }).on('init'),
 

@@ -34,6 +34,12 @@ export default Ember.Component.extend({
     },
   },
 
+  updateTrackBpm: _.throttle(function(newBpm) {
+    newBpm = parseFloat(newBpm);
+
+    this.set('track.audioMeta.bpm', newBpm);
+  }, 1000, { leading: false }),
+
   // CURRENTLY DISABLED so mix save button controls everything
   // TODO(TECHDEBT): update to ember concurrency. should be in container
   // _autoSaveTrack: Ember.observer('track.{title,artist}', 'track.audioMeta.{gain,bpm,transpose}', _.throttle(function() {

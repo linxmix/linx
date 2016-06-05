@@ -13,6 +13,7 @@ import multiply from 'linx/lib/computed/multiply';
 import computedObject from 'linx/lib/computed/object';
 import { flatten, isValidNumber, beatToTime } from 'linx/lib/utils';
 
+import { DEFAULT_GAIN } from 'linx/models/track/audio-meta';
 import {
   computedTimeToBeat,
   computedBeatToBar,
@@ -44,6 +45,7 @@ const TrackPitchControl = Ember.Object.extend(
   type: CONTROL_TYPE_PITCH,
 });
 
+
 // TODO(REFACTOR2): merge this with arrangement/track-clip model
 export default Ember.Mixin.create(
   AutomatableClipMixin,
@@ -58,6 +60,7 @@ export default Ember.Mixin.create(
 
   // optional params
   transpose: 0,
+  gain: DEFAULT_GAIN,
 
   // implementing automatable clip mixin
   controls: Ember.computed(function() {
@@ -104,7 +107,7 @@ export default Ember.Mixin.create(
   },
 
   // TODO(V2): dynamic tempo
-  audioScheduleDidChange: Ember.observer('audioStartBeat', 'audioBeatCount', 'tempo', 'transpose', function() {
+  audioScheduleDidChange: Ember.observer('audioStartBeat', 'audioBeatCount', 'tempo', 'transpose', 'gain', function() {
     Ember.run.once(this, 'startSource');
   }).on('schedule'),
 
@@ -160,7 +163,7 @@ export default Ember.Mixin.create(
   }),
 
   trackGainNode: computedObject(GainNode, {
-    'value': 'audioMeta.gain',
+    'value': 'gain',
     'audioContext': 'audioContext',
     'outputNode': 'trackVolumeNode.content',
   }),
