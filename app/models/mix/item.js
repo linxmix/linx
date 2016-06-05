@@ -55,12 +55,4 @@ export default DS.Model.extend(
 
   prevTrackClip: Ember.computed.reads('prevItem.trackClip'),
   nextTrackClip: Ember.computed.reads('nextItem.trackClip'),
-
-  setupTransition() {
-    return this.get('transitionClip').then((transitionClip) => {
-      return transitionClip && transitionClip.get('transition').then((transition) => {
-        return transition && transition.optimize();
-      });
-    });
-  },
 });

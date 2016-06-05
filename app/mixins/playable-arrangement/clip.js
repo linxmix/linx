@@ -4,7 +4,9 @@ import RequireAttributes from 'linx/lib/require-attributes';
 
 import add from 'linx/lib/computed/add';
 import subtract from 'linx/lib/computed/subtract';
+import { variableTernary } from 'linx/lib/computed/ternary';
 import { isValidNumber, clamp } from 'linx/lib/utils';
+import Metronome from './metronome';
 
 // Interface for playable arrangement clips
 // Events: schedule, unschedule
@@ -13,16 +15,24 @@ import { isValidNumber, clamp } from 'linx/lib/utils';
 export default Ember.Mixin.create(Ember.Evented, {
 
   // required params
-  // NOTE: also requires one of endBeat, beatCount
+  // NOTE: also requires one of endBeat OR beatCount
   arrangement: null,
   startBeat: null,
-
   isDisabled: false,
   isScheduled: false,
   outputNode: Ember.computed.reads('arrangement.inputNode'),
-  metronome: Ember.computed.reads('arrangement.metronome'),
-  audioContext: Ember.computed.reads('arrangement.audioContext'),
+  metronome: variableTernary('arrangement.metronome', 'arrangement.metronome', 'fakeMetronome'),
+  audioContext: variableTernary('arrangement.audioContext', 'arrangement.audioContext', 'fakeAudioContext'),
   syncBpm: Ember.computed.reads('metronome.bpm'),
+
+  // TODO(TECHDEBT): only supply false metronome and audioContext so we can delete items
+  session: Ember.inject.service(),
+  fakeAudioContext: Ember.computed.reads('session.audioContext'),
+  fakeMetronome: Ember.computed(function() {
+    return Metronome.create({
+      arrangement: { bpm: 128 }
+    });
+  }),
 
   // returns current beat from metronome's frame of reference
   getCurrentMetronomeBeat() {

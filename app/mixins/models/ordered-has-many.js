@@ -161,14 +161,9 @@ export default function(hasManyPath, itemModelName) {
       let removedObjects = this.get('removedObjects');
       // console.log('hasMany destroyRemovedObjects', this.get('removedObjects.length'))
 
-      return Ember.RSVP.all(removedObjects.toArray().invoke('destroyRecord'))
-        .then((results) => {
-          return this.get(hasManyPath).then((hasManyContent) => {
-            // console.log('hasMany removeObjects', this.constructor.modelName)
-            hasManyContent.removeObjects(removedObjects);
-            return results;
-          });
-      });
+      return Ember.RSVP.all(removedObjects.toArray().map((record) => {
+        return record.destroyRecord();
+      }));
     },
 
     // augment save to destroy removed items

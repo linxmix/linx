@@ -11,8 +11,8 @@
   </div>
 
   <div class="row">
-    {{#mixes-list mixes=mixes}}
-      {{#each mixes as |mix|}}
+    {{#mixes-list mixes=sortedMixes}}
+      {{#each sortedMixes as |mix|}}
         {{#link-to 'mixes.mix' mix.id}}
           {{mixes-list-item
             mix=mix
