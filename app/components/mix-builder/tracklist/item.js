@@ -32,6 +32,10 @@ export default Ember.Component.extend({
     removeItem() {
       this.sendAction('removeItem', this.get('item'));
     },
+
+    updateItemPosition(delta) {
+      this.sendAction('moveItem', this.get('item'), this.get('item.index') + delta);
+    }
   },
 
   updateTrackBpm: _.throttle(function(newBpm) {

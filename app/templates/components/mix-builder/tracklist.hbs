@@ -1,8 +1,8 @@
 <table class="MixBuilderTracklist-table ui inverted very basic table">
   <thead>
     <tr>
-      <th class="three wide"><span style="margin-left: 20px;">#</span></th>
-      <th class="six wide">Song</th>
+      <th class="four wide"><span style="margin-left: 20px;">#</span></th>
+      <th class="five wide">Song</th>
       <th class="five wide">Artist</th>
       <th class="one wide">Key</th>
       <th class="one wide">Tempo</th>
@@ -15,6 +15,7 @@
         selectTransition=(action attrs.selectTransition)
         playItem=(action attrs.playItem)
         removeItem=(action attrs.removeItem)
+        moveItem=(action attrs.moveItem)
         selectedTransition=selectedTransition
       }}
     {{/each}}

@@ -146,7 +146,19 @@ export default Ember.Component.extend(
     removeItem(mixItem) {
       const mix = this.get('mix');
       mix.removeObject(mixItem);
-      mix.save();
+    },
+
+    moveItem(mixItem, newIndex) {
+      console.log('moveItem', mixItem, newIndex)
+      const mix = this.get('mix');
+      const prevIndex = mixItem.get('index');
+
+      // if moving forwards, have to include current index
+      if (newIndex > prevIndex) {
+        newIndex++;
+      }
+
+      mix.insertAt(newIndex, mixItem);
     },
 
     playItem(mixItem) {

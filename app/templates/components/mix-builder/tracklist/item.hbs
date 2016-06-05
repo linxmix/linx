@@ -1,11 +1,20 @@
 <td>
-  <span class="MixBuilderTracklistItem-index">{{item.position}}</span>
+  <span class="MixBuilderTracklistItem-index">
+    {{!-- {{mix-builder/input type="number" value=item.position update=(action updateItemPosition)}} --}}
+    {{item.position}}
+  </span>
   <div class="MixBuilderTracklistItem-buttonGroup">
     <div class="small inverted basic green ui icon button no-border" {{action "playItem"}}>
       <i class="play icon"/>
     </div>
     <div class="small inverted teal ui icon button no-border {{if isSelectedTransition "" "basic"}}" {{action "selectTransition"}}>
       <i class="linkify icon"/>
+    </div>
+    <div class="small inverted basic yellow ui icon button no-border" {{action "updateItemPosition" -1}}>
+      <i class="caret up icon"/>
+    </div>
+    <div class="small inverted basic yellow ui icon button no-border" {{action "updateItemPosition" 1}}>
+      <i class="caret down icon"/>
     </div>
     <div class="small inverted basic red ui icon button no-border" {{action "removeItem"}}>
       <i class="remove icon"/>
