@@ -105,7 +105,7 @@ function generateControlPointParams({ beatCount = 16, direction = 1, n = 4 }) {
   return range.map((x, i) => {
     return {
       beat: beatCount * (i / n),
-      value: 0.7 + 0.2 * (x / n),
+      value: 0.7 + 0.3 * (x / n),
     };
   });
 }
