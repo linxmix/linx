@@ -21,11 +21,10 @@ export default Clip.extend(
   // optional params
   minControlPointBeat: 0,
   maxControlPointBeat: Ember.computed.reads('clip.beatCount'),
-  canMoveControlPoint: true,
+  canMoveSelectedControlPointBeat: true,
 
   actions: {
     onControlPointDrag(d3Context, controlPoint, dBeats, dHeight) {
-      if (this.get('canMoveControlPoint')) {
         const oldValue = this.get('_dragStartValue');
         const oldBeat = this.get('_dragStartBeat');
         const height = this.get('height');
@@ -40,9 +39,13 @@ export default Clip.extend(
         const value = clamp(0, oldValue - (dHeight / height), 1);
 
         // Ember.Logger.log('onControlPointDrag', dBeats, dHeight / height, beat, value)
-
+      if (this.get('canMoveSelectedControlPointBeat')) {
         controlPoint.setProperties({
           beat,
+          value,
+        });
+      } else {
+        controlPoint.setProperties({
           value,
         });
       }

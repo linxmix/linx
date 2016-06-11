@@ -14,6 +14,8 @@ import {
   SAMPLE_QUANTIZATION,
 } from 'linx/models/track/audio-meta/beat-grid';
 
+import { beatToTime } from 'linx/lib/utils';
+
 export const FROM_TRACK_COLOR = '#ac6ac7';
 export const TO_TRACK_COLOR = '#16a085';
 
@@ -124,29 +126,7 @@ export default Ember.Component.extend(
     },
 
     quantizeBeat(beat) {
-      const quantization = this.get('selectedQuantization');
-
-      // TODO(TECHDEBT): does this make sense to always say? how to tell if this event is active?
-      // if alt key is held, suspend quantization
-      const isAltKeyHeld = Ember.get(d3, 'event.sourceEvent.altKey') || false;
-      if (isAltKeyHeld) {
-        return beat;
-      }
-
-      let quantizedBeat = beat;
-      switch (quantization) {
-        case BEAT_QUANTIZATION:
-          quantizedBeat = Math.round(beat);
-          break;
-        case BAR_QUANTIZATION:
-          // TODO(TECHDEBT): implement
-          quantizedBeat = Math.round(beat);
-          // quantizedBeat = beatGrid.barToBeat(beatGrid.quantizeBar(beatGrid.beatToBar(beat)));
-          break;
-        default: quantizedBeat = beat;
-      };
-
-      return quantizedBeat;
+      return this._quantizeBeat(beat);
     },
 
     removeItem(mixItem) {
@@ -177,7 +157,19 @@ export default Ember.Component.extend(
     addTrack(track) {
       const mix = this.get('mix');
 
-      mix.appendTrack(track);
+      const endBeat = this._quantizeBeat(mix.get('endBeat'));
+
+      mix.appendTrack(track).then((mixItem) => {
+        const fromTrackClip = mixItem.get('prevItem.trackClip');
+
+        if (fromTrackClip) {
+          // TODO(TECHDEBT): move to mix model? make work for adding many tracks?
+          // TODO(TECHDEBT): this works, have to do this because we cant directly set endBeat
+          const fromTrackBpm = fromTrackClip.get('track.audioMeta.bpm');
+          const audioEndTime = beatToTime((endBeat - fromTrackClip.get('startBeat')), fromTrackBpm) + fromTrackClip.get('audioStartTime');
+          fromTrackClip.set('audioEndTime', audioEndTime);
+        }
+      });
     },
 
     onPageDrop(files) {
@@ -224,6 +216,32 @@ export default Ember.Component.extend(
       }
     });
   }).on('didInsertElement'),
+
+  _quantizeBeat(beat) {
+    const quantization = this.get('selectedQuantization');
+
+    // TODO(TECHDEBT): does this make sense to always say? how to tell if this event is active?
+    // if alt key is held, suspend quantization
+    const isAltKeyHeld = Ember.get(d3, 'event.sourceEvent.altKey') || false;
+    if (isAltKeyHeld) {
+      return beat;
+    }
+
+    let quantizedBeat = beat;
+    switch (quantization) {
+      case BEAT_QUANTIZATION:
+        quantizedBeat = Math.round(beat);
+        break;
+      case BAR_QUANTIZATION:
+        // TODO(TECHDEBT): implement
+        quantizedBeat = Math.round(beat);
+        // quantizedBeat = beatGrid.barToBeat(beatGrid.quantizeBar(beatGrid.beatToBar(beat)));
+        break;
+      default: quantizedBeat = beat;
+    };
+
+    return quantizedBeat;
+  },
 });
 
 

@@ -13,7 +13,7 @@ export default ArrangementVisualAutomationClip.extend(
   isDraggable: false,
 
   selectedControlPointIsEdge: Ember.computed.or('selectedControlPoint.isFirstItem', 'selectedControlPoint.isLastItem'),
-  canMoveControlPoint: Ember.computed.not('selectedControlPointIsEdge'),
+  canMoveSelectedControlPointBeat: Ember.computed.not('selectedControlPointIsEdge'),
 
   // mix-visual automation clip overlaps with associated transitionClip
   startBeat: add('clip.startBeat', 'clip.transition.transitionClip.startBeat'),
