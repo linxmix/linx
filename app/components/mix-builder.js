@@ -1,4 +1,5 @@
 import Ember from 'ember';
+const { get } = Ember;
 
 import { task } from 'ember-concurrency';
 import _ from 'npm:underscore';
@@ -39,9 +40,13 @@ export default Ember.Component.extend(
   showAutomation: true,
 
   _playpauseMix: Ember.on(keyDown(' '), function(e) {
-    this.send('playpause');
-    e.preventDefault();
-    e.stopPropagation();
+    const tagName = (get(e, 'target.tagName') || '').toUpperCase();
+
+    if (tagName !== 'INPUT' && tagName !== 'TEXTAREA') {
+      this.send('playpause');
+      e.preventDefault();
+      e.stopPropagation();
+    }
   }),
 
   // repeatedely save mix, if any unsaved changes
