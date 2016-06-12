@@ -91,9 +91,11 @@ export default Clip.extend(
     return translate([this.get('endOffsetPx')]);
   }),
 
+  // TODO(TECHDEBT): move to sub components
   startOverlay: join([0], 'rect.ArrangementVisualTrackClip-startOverlay', {
     update(selection) {
       selection
+        .style('visibility', this.get('displayWaveform') ? 'visible' : 'hidden')
         .attr('height', this.get('height'))
         .attr('width', this.get('startOffsetWidth'))
         .attr('transform', this.get('startOffsetTransform'))
@@ -104,6 +106,7 @@ export default Clip.extend(
   endOverlay: join([0], 'rect.ArrangementVisualTrackClip-endOverlay', {
     update(selection) {
       selection
+        .style('visibility', this.get('displayWaveform') ? 'visible' : 'hidden')
         .attr('height', this.get('height'))
         .attr('width', this.get('endOffsetWidth'))
         .attr('transform', this.get('endOffsetTransform'))
