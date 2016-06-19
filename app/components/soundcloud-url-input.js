@@ -1,10 +1,10 @@
 import Ember from 'ember';
 
-import { EKMixin, EKOnInsertMixin, keyDown } from 'ember-keyboard';
+import { EKMixin, EKOnFocusMixin, keyDown } from 'ember-keyboard';
 
 export default Ember.TextField.extend(
   EKMixin,
-  EKOnInsertMixin, {
+  EKOnFocusMixin, {
 
   // expected params
   addTrack: Ember.K,
