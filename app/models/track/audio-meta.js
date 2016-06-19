@@ -99,6 +99,7 @@ export default DS.Model.extend(
   bpm: DS.attr('number'),
   timeSignature: DS.attr('number'),
   key: DS.attr('number'),
+  keyText: DS.attr('string'), // TODO(TECHDEBT)
   mode: DS.attr('number'),
   loudness: DS.attr('number'),
 

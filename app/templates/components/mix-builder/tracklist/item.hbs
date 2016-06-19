@@ -34,7 +34,7 @@
   {{mix-builder/input type="text" value=track.artist update=(action (mut track.artist))}}
 </td>
 <td>
-  {{track.audioMeta.camelotKey}}&nbsp;{{track.audioMeta.keyName}}
+  {{mix-builder/input type="text" value=track.audioMeta.keyText update=(action (mut track.audioMeta.keyText))}}
 </td>
 <td>
   {{mix-builder/input type="number" value=track.audioMeta.bpm update=(action updateTrackBpm)}}
