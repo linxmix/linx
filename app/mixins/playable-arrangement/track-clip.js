@@ -61,6 +61,7 @@ export default Ember.Mixin.create(
   // optional params
   transpose: 0,
   gain: DEFAULT_GAIN,
+  isTempoSynced: true,
 
   // implementing automatable clip mixin
   controls: Ember.computed(function() {
@@ -111,11 +112,12 @@ export default Ember.Mixin.create(
     Ember.run.once(this, 'startSource');
   }).on('schedule'),
 
-  tempo: Ember.computed('syncBpm', 'audioBpm', function() {
+  tempo: Ember.computed('syncBpm', 'audioBpm', 'isTempoSynced', function() {
     const syncBpm = this.get('syncBpm');
     const audioBpm = this.get('audioBpm');
+    const isTempoSynced = this.get('isTempoSynced');
 
-    return (isValidNumber(syncBpm) && isValidNumber(audioBpm)) ? (syncBpm / audioBpm) : 1;
+    return (isTempoSynced && isValidNumber(syncBpm) && isValidNumber(audioBpm)) ? (syncBpm / audioBpm) : 1;
   }),
 
   startSource() {

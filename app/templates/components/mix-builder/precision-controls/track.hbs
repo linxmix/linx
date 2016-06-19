@@ -18,6 +18,11 @@
   <span class="MixBuilderPrecisionControls-number">{{clip.gain}}</span>
 </div>
 
+<div style="margin: 5px 0;">
+  Sync To Mix
+  {{input type="checkbox" checked=clip.isTempoSynced}}
+</div>
+
 <div>
   Audio Start Beat <span class="MixBuilderPrecisionControls-number">{{clip.audioStartBeat}}</span>
   {{!-- {{one-way-input
