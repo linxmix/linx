@@ -108,7 +108,7 @@ request.post(authOptions, function(error, response, body) {
       // use the audio features to print out relevant info
       const audioFeatures = body.audio_features;
 
-      const readableTrackFeatures = audioFeatures.map(function(feature) {
+      const readableTrackFeatures = _.sortBy(audioFeatures.map(function(feature) {
         const track = _.find(tracks, function(track) { return track.id === feature.id });
         return {
           name: track.name,
@@ -116,7 +116,7 @@ request.post(authOptions, function(error, response, body) {
           tempo: feature.tempo,
           key: featureToCamelotKey(feature),
         };
-      });
+      }), 'tempo');
 
       console.log(util.inspect(readableTrackFeatures, { depth: null, colors: true }));
     });
