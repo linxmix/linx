@@ -51,6 +51,10 @@ export default Ember.Component.extend(
     }
   }),
 
+  _pauseMix: Ember.on('willDestroyElement', function() {
+    this.get('mix').pause();
+  }),
+
   // repeatedely save mix, if any unsaved changes
   // _autoSaveMix: Ember.on('init', function() {
   //   if (!this.get('isDestroyed')) {
