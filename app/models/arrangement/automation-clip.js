@@ -94,7 +94,7 @@ export default Clip.extend(
 
   updateControl() {
     let { targetControl, values } = this.getProperties('targetControl', 'values');
-    if (Ember.isNone(targetControl)) { return; }
+    if (Ember.isNone(targetControl) || Ember.isEmpty(values)) { return; }
 
     if (this.get('isScheduled')) {
       let startTime = this.getAbsoluteStartTime();
