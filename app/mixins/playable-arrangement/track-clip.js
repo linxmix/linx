@@ -107,7 +107,7 @@ export default Ember.Mixin.create(
   },
 
   // TODO(V2): dynamic tempo
-  audioScheduleDidChange: Ember.observer('audioStartBeat', 'audioBeatCount', 'tempo', 'transpose', 'gain', function() {
+  audioScheduleDidChange: Ember.observer('audioBinary.isReady', 'audioStartBeat', 'audioBeatCount', 'tempo', 'transpose', 'gain', function() {
     Ember.run.once(this, 'startSource');
   }).on('schedule'),
 
@@ -119,7 +119,7 @@ export default Ember.Mixin.create(
   }),
 
   startSource() {
-    if (this.get('isScheduled')) {
+    if (this.get('isScheduled') && this.get('audioBinary.isReady')) {
       const { tempo, transpose } = this.getProperties('tempo', 'transpose');
       // if starting in past, start now instead
       let startTime = Math.max(this.getAbsoluteTime(), this.getAbsoluteStartTime());
@@ -135,6 +135,8 @@ export default Ember.Mixin.create(
       Ember.Logger.log('startTrack', this.get('track.title'), startTime, offsetTime, endTime, tempo, transpose);
       const node = this.get('soundtouchNode');
       node && node.start(startTime, offsetTime, endTime, tempo, transpose);
+    } else {
+      this.stopSource();
     }
   },
 

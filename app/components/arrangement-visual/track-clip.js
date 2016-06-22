@@ -9,19 +9,21 @@ import multiply from 'linx/lib/computed/multiply';
 import { translate } from 'linx/helpers/svg-translate';
 
 export default Clip.extend(
-  GraphicSupport('displayWaveform', 'waveColor', 'isLoadingAudio', 'trackBeatCount', 'audioStartTime', 'audioEndTime', 'trackBpm'), {
+  GraphicSupport('displayWaveform', 'waveColor', 'isLoadingAudio', 'hasNoAudio', 'trackBeatCount', 'audioStartTime', 'audioEndTime', 'trackBpm'), {
 
   // optional params
   displayWaveform: true,
   waveColor: 'green',
   selectedQuantization: null,
-  isLoadingAudio: Ember.computed.not('audioBinary.isReady'),
+  isLoadingAudio: Ember.computed.reads('audioBinary.isLoading'),
+  isAudioEmpty: Ember.computed.reads('audioBinary.isEmpty'),
 
   call(selection) {
     this._super.apply(this, arguments);
     selection
       .classed('ArrangementVisualTrackClip', true)
-      .classed('is-loading', this.get('isLoadingAudio'));
+      .classed('is-loading', this.get('isLoadingAudio'))
+      .classed('is-empty', this.get('isAudioEmpty'));
 
     this.startOverlay(selection);
     this.endOverlay(selection);

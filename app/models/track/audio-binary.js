@@ -14,7 +14,8 @@ export default Ember.Object.extend(
   RequireAttributes('track'), {
 
   file: Ember.computed.reads('track.file'),
-  isLoading: Ember.computed.reads('arrayBuffer.isPending'),
+  isLoading: Ember.computed.or('arrayBuffer.isPending', 'decodedArrayBuffer.isPending'),
+  isEmpty: Ember.computed.not('arrayBuffer'),
 
   // implement readiness
   isArrayBufferLoadedAndDecoded: Ember.computed.bool('audioBuffer'),

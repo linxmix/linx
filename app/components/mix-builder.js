@@ -159,6 +159,8 @@ export default Ember.Component.extend(
     },
 
     addTrack(track) {
+      track = track ? track : this.get('store').createRecord('track');
+
       const mix = this.get('mix');
 
       const endBeat = this._quantizeBeat(mix.get('endBeat'));

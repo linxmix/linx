@@ -15,7 +15,7 @@ export default DS.Model.extend(
   ReadinessMixin('isTrackReady'),
   DependentRelationshipMixin('audioMeta'), {
 
-  title: DS.attr('string'),
+  title: DS.attr('string', { defaultValue: 'Untitled Track' }),
   artist: DS.attr('string'),
   length: DS.attr('number'),
 
