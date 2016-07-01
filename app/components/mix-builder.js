@@ -40,6 +40,7 @@ export default Ember.Component.extend(
   selectedQuantization: Ember.computed.reads('selectedQuantizations.firstObject'),
   mixVisualActionReceiver: null,
   store: Ember.inject.service(),
+  sonicApi: Ember.inject.service(),
 
   showAutomation: true,
 
@@ -99,7 +100,19 @@ export default Ember.Component.extend(
     Recorder.forceDownload(blob, `${mix.get('title')}.wav`);
   }),
 
+
   actions: {
+    analyzeTrack() {
+      const track = this.get('mix.tracks.firstObject');
+      const sonicApi = this.get('sonicApi');
+      console.log('analyzeTrack', track.get('title'), track.get('audioBinary.webStreamUrl'));
+
+      sonicApi.get('analyzeTempoTask').perform(track.get('audioBinary.webStreamUrl')).then(
+        (result) => console.log('success', result),
+        (error) => console.log('error', error)
+      );
+    },
+
     exportMix() {
       return this.get('mixExportTask').perform();
     },
@@ -169,7 +182,6 @@ export default Ember.Component.extend(
     },
 
     moveItem(mixItem, newIndex) {
-      console.log('moveItem', mixItem, newIndex)
       const mix = this.get('mix');
       const prevIndex = mixItem.get('index');
 
@@ -274,7 +286,7 @@ export default Ember.Component.extend(
         // quantizedBeat = beatGrid.barToBeat(beatGrid.quantizeBar(beatGrid.beatToBar(beat)));
         break;
       default: quantizedBeat = beat;
-    };
+    }
 
     return quantizedBeat;
   },

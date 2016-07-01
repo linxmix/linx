@@ -54,6 +54,8 @@ module.exports = function(environment) {
     ENV.ECHONEST_KEY = process.env.ECHONEST_KEY;
 
     ENV.SC_KEY = process.env.SC_KEY;
+
+    ENV.SONIC_API_ACCESS_ID = process.env.SONIC_API_ACCESS_ID;
   }
 
   if (environment === 'test') {

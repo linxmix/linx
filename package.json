@@ -52,7 +52,7 @@
     "ember-cli-sass": "^4.0.0",
     "ember-cli-uglify": "^1.0.1",
     "ember-component-inbound-actions": "1.0.1",
-    "ember-concurrency": "0.7.1",
+    "ember-concurrency": "0.7.8",
     "ember-data": "2.4.0",
     "ember-data-factory-guy": "2.1.1",
     "ember-keyboard": "1.1.0",
@@ -73,7 +73,8 @@
     "soundcloud": "^3.0.1",
     "underscore": "^1.8.3",
     "waaclock": "^0.5.2",
-    "workerify": "^0.3.0"
+    "workerify": "^0.3.0",
+    "xml2js": "^0.4.16"
   },
   "dependencies": {
     "ember-disable-proxy-controllers": "^1.0.0",
