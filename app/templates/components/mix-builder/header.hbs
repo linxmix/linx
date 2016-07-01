@@ -51,5 +51,14 @@
       <i class="remove icon"></i>
       Delete Mix
     </div>
+
+    {{#unless mixExportTask.isRunning}}
+      <div class="inverted teal ui icon button" {{action exportMix}}>
+        <i class="shuffle icon"></i>
+        Export Mix
+      </div>
+    {{else}}
+      <div class="inverted basic disabled ui loading button">Exporting...</div>
+    {{/unless}}
   </div>
 </div>

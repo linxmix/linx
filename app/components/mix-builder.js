@@ -1,6 +1,8 @@
 import Ember from 'ember';
 const { get } = Ember;
 
+import Recorder from 'npm:recorderjs';
+import d3 from 'd3';
 import { task } from 'ember-concurrency';
 import _ from 'npm:underscore';
 import { EKMixin, EKOnInsertMixin, keyDown } from 'ember-keyboard';
@@ -73,7 +75,35 @@ export default Ember.Component.extend(
     yield this.get('mix').save();
   }).keepLatest(),
 
+  mixExportTask: task(function * () {
+    const mix = this.get('mix');
+    const duration = mix.get('duration');
+
+    const inputNode = mix.get('inputNode.content');
+    const recorderNode = new Recorder(inputNode);
+
+    mix.stop();
+    recorderNode.record();
+    mix.play();
+
+    console.log('recording started', duration);
+    const blob = yield new Ember.RSVP.Promise((resolve, reject) => {
+      Ember.run.later(() => {
+        console.log('recording stopped');
+        mix.pause();
+        recorderNode.stop();
+        recorderNode.exportWAV(resolve);
+      }, duration * 1000);
+    });
+
+    Recorder.forceDownload(blob, `${mix.get('title')}.wav`);
+  }),
+
   actions: {
+    exportMix() {
+      return this.get('mixExportTask').perform();
+    },
+
     saveMix() {
       this.get('mixSaveTask').perform();
     },
