@@ -76,6 +76,12 @@ export default Ember.Mixin.create(
     return this.get('beatCount') / this.get('timeSignature');
   }),
 
+  // duration of arrangement in [s]
+  // TODO(MULTIGRID)
+  duration: Ember.computed('metronome.bpm', 'beatCount', function() {
+    return this.get('metronome').getDuration(0, this.get('beatCount'));
+  }),
+
   //
   // Web Audio Nodes
   //
