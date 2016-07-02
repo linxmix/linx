@@ -318,18 +318,6 @@ export default Ember.Component.extend(
         this.send('addTrack', track);
       });
     },
-
-    // appendRandomTrack() {
-    //   const mix = this.get('mix');
-    //   const tracks = this.get('searchTracks.content');
-    //   const randomTrack = _.sample(tracks.toArray());
-
-    //   mix.appendTrack(randomTrack);
-    // },
-
-    // toggleShowVolumeAutomation() {
-    //   this.toggleProperty('showVolumeAutomation');
-    // },
   },
 
   // TODO(TECHDEBT): make this work with query param for sleected transition?
@@ -350,10 +338,11 @@ export default Ember.Component.extend(
 
     // get default quantization
     // TODO(TECHDEBT): does this make sense to always say? how to tell if this event is active?
-    let defaultQuantization = this.get('selectedQuantization');
+    const defaultQuantization = this.get('selectedQuantization');
     const isAltKeyHeld = Ember.get(d3, 'event.sourceEvent.altKey') || Ember.get(d3, 'event.altKey');
     const isCtrlKeyHeld = Ember.get(d3, 'event.sourceEvent.ctrlKey') || Ember.get(d3, 'event.ctrlKey') ||
       Ember.get(d3, 'event.sourceEvent.metaKey') || Ember.get(d3, 'event.metaKey');
+
     if (isAltKeyHeld) {
       quantization = SAMPLE_QUANTIZATION;
     } else if (isCtrlKeyHeld) {

@@ -73,6 +73,10 @@ export default Ember.Object.extend({
     return this.quantizeBar(this.timeToBar(time));
   },
 
+  timeToQuantizedDownbeatTime(time) {
+    return this.barToTime(this.timeToQuantizedBar(time));
+  },
+
   // Beat Scale
   // domain is time [s]
   // range is beats [b]
@@ -90,6 +94,7 @@ export default Ember.Object.extend({
   quantizeBeatScaleRange: Ember.computed('beatScaleRange', function() {
     let beatScale = this.get('beatScale');
     let [rangeMin, rangeMax] = beatScale.get('range');
+    // TODO: i think below line is deprecated, and can be removed?
     // return d3.range(Math.ceil(rangeMin), Math.floor(rangeMax), 1);
     return [Math.ceil(rangeMin), Math.floor(rangeMax)];
   }),
@@ -128,7 +133,7 @@ export default Ember.Object.extend({
     return timeToBeat(this.get('duration'), this.get('bpm'));
   }),
 
-  // the time of the first actual beat in the raw audio file
+  // the time of the first actual bar in the raw audio file
   // TODO(MULTIGRID): this supposes a constant bpm in the audio file
   firstBarOffset: Ember.computed('barGridTime', 'bpm', 'timeSignature', function() {
     const bpm = this.get('bpm');
@@ -136,14 +141,19 @@ export default Ember.Object.extend({
     const secondsPerBeat = bpmToSpb(bpm);
     const secondsPerBar = secondsPerBeat * timeSignature;
 
+    console.log('calculating firstBarOffset')
+
     let firstBarOffsetTime = this.get('barGridTime');
+    console.log('barGridTime', firstBarOffsetTime)
     if (isValidNumber(bpm) && isValidNumber(timeSignature) && isValidNumber(firstBarOffsetTime)) {
       while ((firstBarOffsetTime - secondsPerBar) >= 0) {
         firstBarOffsetTime -= secondsPerBar;
       }
 
+    console.log('firstBarOffsetTime', firstBarOffsetTime)
       return firstBarOffsetTime * secondsPerBar;
     } else {
+    console.log('no firstBarOffsetTime', 0)
       return 0;
     }
   }),
