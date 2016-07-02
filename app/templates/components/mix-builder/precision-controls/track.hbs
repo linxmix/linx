@@ -6,6 +6,15 @@
   </div>
 </h4>
 
+<div class="inverted basic tiny ui button {{if track.analyzeTask.isRunning "loading disabled"}}"
+  {{action "analyzeTrack"}}>
+  Analyze Track
+</div>
+
+<div>
+  Downbeat <span class="MixBuilderPrecisionControls-number">{{track.audioMeta.barGridTime}}</span>
+</div>
+
 <div style="margin: 5px 0;">
   Transpose
   {{x-slider min=-11 max=11 step=1 value=clip.transpose}}

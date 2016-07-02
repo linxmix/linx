@@ -1,4 +1,6 @@
 import Ember from 'ember';
+const { get } = Ember;
+
 import DS from 'ember-data';
 
 import { task } from 'ember-concurrency';
@@ -80,9 +82,8 @@ export default DS.Model.extend(
     return this._super.apply(this, arguments);
   },
 
-  isFileSaved: Ember.computed.bool('uploadFileTask.lastSuccessful'),
-
   // TODO(TECHDEBT): move to service?
+  isFileSaved: Ember.computed.bool('uploadFileTask.lastSuccessful'),
   uploadFileTask: task(function * () {
     const file = this.get('file');
     if (file) {
@@ -91,4 +92,32 @@ export default DS.Model.extend(
       return url;
     }
   }).drop(),
+
+  sonicApi: Ember.inject.service(),
+  analyzeTask: task(function * () {
+    const sonicApi = this.get('sonicApi');
+    console.log('analyzeTrack', this.get('title'), this.get('audioBinary.webStreamUrl'));
+
+    const {
+      meta,
+      tick_marks: tickMarks
+    } = yield sonicApi.get('analyzeTempoTask').perform(this.get('audioBinary.webStreamUrl'));
+
+    // get time of highest probablility downbeat
+    const barGridTime = get(tickMarks
+      .filterBy('downbeat', 'true')
+      .sortBy('probability')
+      .reverse(),
+      'firstObject.time'
+    );
+
+    this.get('audioMeta.content').setProperties({
+      barGridTime,
+      tempo: meta.overall_tempo_straight,
+      timeSignature: meta.clicks_per_bar,
+    });
+
+    console.log('success', meta, tickMarks, barGridTime);
+
+  }).restartable(),
 });

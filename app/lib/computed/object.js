@@ -17,9 +17,11 @@ export default function computedObject(constructor, attributes) {
         return;
       }
 
+
       let attrs = keysToAttrs(this, keys, attributes);
       attrs.parentPropertyPath = key;
       let object = constructor.create(attrs);
+      // console.log('create new computed object', object.toString());
 
       this.set(`_____${key}`, object);
 

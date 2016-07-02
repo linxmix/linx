@@ -53,12 +53,11 @@
     </div>
 
     {{#unless mixExportTask.isRunning}}
-      <div class="inverted teal ui icon button" {{action exportMix}}>
-        <i class="shuffle icon"></i>
-        Export Mix
+      <div class="inverted ui icon button" {{action exportMix}}>
+        <i class="file audio outline icon icon"></i>
       </div>
     {{else}}
-      <div class="inverted basic disabled ui loading button">Exporting...</div>
+      <div class="inverted basic disabled ui loading button"></div>
     {{/unless}}
   </div>
 </div>

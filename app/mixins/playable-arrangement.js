@@ -6,6 +6,7 @@ import withDefault from 'linx/lib/computed/with-default';
 import Metronome from './playable-arrangement/metronome';
 import WebAudioMergerNode from 'linx/lib/web-audio/merger-node';
 import computedObject from 'linx/lib/computed/object';
+import BeatGrid from 'linx/models/track/audio-meta/beat-grid';
 import { flatten, isValidNumber } from 'linx/lib/utils';
 
 // Interface for playable arrangements of clips
@@ -52,6 +53,12 @@ export default Ember.Mixin.create(
   metronome: computedObject(Metronome, {
     'audioContext': 'audioContext',
     'arrangement': 'this'
+  }),
+
+  beatGrid: computedObject(BeatGrid, {
+    duration: 'duration',
+    bpm: 'bpm',
+    timeSignature: 'timeSignature',
   }),
 
   // TODO(REFACTOR): arrangement shouldn't have to wait on clips? clips will just update when loaded

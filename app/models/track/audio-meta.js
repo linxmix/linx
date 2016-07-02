@@ -1,6 +1,7 @@
 import Ember from 'ember';
 import DS from 'ember-data';
 
+import { task } from 'ember-concurrency';
 import _ from 'npm:underscore';
 
 import ReadinessMixin from 'linx/mixins/readiness';
@@ -26,6 +27,7 @@ import withDefault from 'linx/lib/computed/with-default';
 import subtract from 'linx/lib/computed/subtract';
 import lookup from 'linx/lib/computed/lookup';
 import add from 'linx/lib/computed/add';
+import computedObject from 'linx/lib/computed/object';
 
 export const BEAT_LEAD_TIME = 0.5;
 
@@ -97,11 +99,26 @@ export default DS.Model.extend(
 
   duration: DS.attr('number'),
   bpm: DS.attr('number'),
-  timeSignature: DS.attr('number'),
+  timeSignature: DS.attr('number', { defaultValue: 4 }),
   key: DS.attr('number'),
   keyText: DS.attr('string'), // TODO(TECHDEBT)
   mode: DS.attr('number'),
   loudness: DS.attr('number'),
+  barGridTime: DS.attr('number', { defaultValue: 0 }),
+
+  beatGrid: computedObject(BeatGrid, {
+    duration: 'duration',
+    bpm: 'bpm',
+    timeSignature: 'timeSignature',
+    barGridTime: 'barGridTime',
+  }),
+
+  // TODO(MULTIGRID): adapt for multiple grid markers. Piecewise-Scale? or a long domain/range?
+  nudge(value) {
+    Ember.assert('Cannot nudge AudioMeta.barGridTime without numeric value', isValidNumber(value));
+
+    this.set('barGridTime', this.get('barGridTime') + value);
+  },
 
   // // calculate gain from loudness (decibels)
   // gain: Ember.computed('loudness', {
@@ -145,10 +162,6 @@ export default DS.Model.extend(
 
   fadeInMarker: Ember.computed.reads('sortedFadeInMarkers.firstObject'),
   fadeOutMarker: Ember.computed.reads('sortedFadeOutMarkers.firstObject'),
-
-  beatGrid: Ember.computed(function() {
-    return BeatGrid.create({ audioMeta: this });
-  }),
 
   startBeat: computedTimeToBeat('beatGrid', 0),
   startBar: computedTimeToBar('beatGrid', 0),

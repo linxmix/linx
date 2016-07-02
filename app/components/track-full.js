@@ -23,11 +23,11 @@ export default Ember.Component.extend(
     },
 
     nudgeLeft(scalar = 1) {
-      this.get('beatGrid').nudge(-1.0 * scalar * NUDGE_VALUE);
+      this.get('audioMeta').nudge(-1.0 * scalar * NUDGE_VALUE);
     },
 
     nudgeRight(scalar = 1) {
-      this.get('beatGrid').nudge(scalar * NUDGE_VALUE);
+      this.get('audioMeta').nudge(scalar * NUDGE_VALUE);
     },
 
     onTrackClipDrag(clip, beats) {
@@ -40,7 +40,7 @@ export default Ember.Component.extend(
     },
   },
 
-  beatGrid: Ember.computed.reads('track.audioMeta.beatGrid'),
+  audioMeta: Ember.computed.reads('track.audioMeta'),
 
   arrangement: Ember.computed('track', 'store', function() {
     let store = this.get('store');

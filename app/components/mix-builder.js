@@ -98,7 +98,7 @@ export default Ember.Component.extend(
     });
 
     Recorder.forceDownload(blob, `${mix.get('title')}.wav`);
-  }),
+  }).drop(),
 
 
   actions: {

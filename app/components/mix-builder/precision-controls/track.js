@@ -8,5 +8,12 @@ export default Ember.Component.extend({
 
   // params
   track: Ember.computed.reads('clip.track'),
+
+  actions: {
+    analyzeTrack() {
+      const analyzeTask = this.get('track.analyzeTask');
+      analyzeTask.perform();
+    }
+  }
 });
 
