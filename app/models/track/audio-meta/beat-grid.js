@@ -57,6 +57,14 @@ export default Ember.Object.extend({
     return this.get('quantizeBarScale').getPoint(bar);
   },
 
+  beatToQuantizedBar(beat) {
+    return this.quantizeBar(this.beatToBar(beat));
+  },
+
+  beatToQuantizedDownbeat(beat) {
+    return this.barToBeat(this.beatToQuantizedBar(beat));
+  },
+
   timeToQuantizedBeat(time) {
     return this.quantizeBeat(this.timeToBeat(time));
   },

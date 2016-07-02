@@ -40,7 +40,6 @@ export default Ember.Component.extend(
   selectedQuantization: Ember.computed.reads('selectedQuantizations.firstObject'),
   mixVisualActionReceiver: null,
   store: Ember.inject.service(),
-  sonicApi: Ember.inject.service(),
 
   showAutomation: true,
 
@@ -102,17 +101,6 @@ export default Ember.Component.extend(
 
 
   actions: {
-    analyzeTrack() {
-      const track = this.get('mix.tracks.firstObject');
-      const sonicApi = this.get('sonicApi');
-      console.log('analyzeTrack', track.get('title'), track.get('audioBinary.webStreamUrl'));
-
-      sonicApi.get('analyzeTempoTask').perform(track.get('audioBinary.webStreamUrl')).then(
-        (result) => console.log('success', result),
-        (error) => console.log('error', error)
-      );
-    },
-
     exportMix() {
       return this.get('mixExportTask').perform();
     },
@@ -266,24 +254,26 @@ export default Ember.Component.extend(
   }).on('didInsertElement'),
 
   _quantizeBeat(beat) {
-    const quantization = this.get('selectedQuantization');
+    let quantization = this.get('selectedQuantization');
+    const beatGrid = this.get('mix.beatGrid');
 
     // TODO(TECHDEBT): does this make sense to always say? how to tell if this event is active?
     // if alt key is held, suspend quantization
     const isAltKeyHeld = Ember.get(d3, 'event.sourceEvent.altKey') || false;
+    const isCtrlKeyHeld = Ember.get(d3, 'event.sourceEvent.ctrlKey') || false;
     if (isAltKeyHeld) {
-      return beat;
+      quantization = SAMPLE_QUANTIZATION;
+    } else if (isCtrlKeyHeld) {
+      quantization = BEAT_QUANTIZATION;
     }
 
     let quantizedBeat = beat;
     switch (quantization) {
       case BEAT_QUANTIZATION:
-        quantizedBeat = Math.round(beat);
+        quantizedBeat = beatGrid.quantizeBeat(beat);
         break;
       case BAR_QUANTIZATION:
-        // TODO(TECHDEBT): implement
-        quantizedBeat = Math.round(beat);
-        // quantizedBeat = beatGrid.barToBeat(beatGrid.quantizeBar(beatGrid.beatToBar(beat)));
+        quantizedBeat = beatGrid.beatToQuantizedDownbeat(beat);
         break;
       default: quantizedBeat = beat;
     }
