@@ -14,3 +14,15 @@
   <i class="volume {{if attrs.showAutomation 'up' 'off'}} icon"></i>
   {{if attrs.showAutomation 'Hide' 'Show'}} Volume Automation
 </div>
+
+<div style="margin: 5px 0;">
+  # Points
+  {{x-slider min=2 max=10 step=1 value=optimizeControlPointCount}}
+  <span class="MixBuilderPrecisionControls-number">{{optimizeControlPointCount}}</span>
+</div>
+
+<div style="margin: 5px 0;">
+  Start Volume
+  {{x-slider min=0 max=1 step=0.01 value=optimizeStartVolume}}
+  <span class="MixBuilderPrecisionControls-number">{{optimizeStartVolume}}</span>
+</div>

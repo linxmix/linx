@@ -16,9 +16,16 @@ export default Ember.Component.extend(
   actions: {
     optimizeTransition() {
       const transition = this.get('transition.content') || this.get('transition');
-      transition && transition.optimize();
+      transition && transition.optimize({
+        startVolume: this.get('optimizeStartVolume'),
+        volumeControlPointCount: this.get('optimizeControlPointCount'),
+      });
     },
   },
+
+  // TODO(TECHDEBT): share these with other defaults, ie models/transition
+  optimizeControlPointCount: 5,
+  optimizeStartVolume: 0.7,
 
   // params
   transition: Ember.computed.reads('clip.transition'),
