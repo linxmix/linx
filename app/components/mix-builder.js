@@ -102,10 +102,13 @@ export default Ember.Component.extend(
   jumpTrackTask: task(function * (mixItem) {
     const track = mixItem.get('track');
     const mix = this.get('mix');
-    const jumpTransitionBeatCount = mix.get('timeSignature');
+    const jumpTransitionBeatCount = 2;
     const jumpTransitionStartVolume = 0.2;
+    const jumpTransitionVolumeControlPointCount = 3;
 
+    //
     // get jump beats
+    //
     const { jumpFromBeat, jumpToBeat } = yield new Ember.RSVP.Promise((resolve, reject) => {
       let jumpFromBeat, jumpToBeat;
 
@@ -134,9 +137,14 @@ export default Ember.Component.extend(
     // insert new item in front of existing
     const newMixItem = yield mix.insertTrackAt(mixItem.get('index'), track);
 
+    //
     // set start and end times
+    //
     const prevTrackClip = yield newMixItem.get('trackClip');
     const nextTrackClip = trackClip;
+
+    // duplicate track clip settings
+    prevTrackClip.setProperties(nextTrackClip.getProperties('transpose', 'gain'));
 
     console.log('setting prevtrack clip properties', {
       audioStartTime: nextTrackClip.get('audioStartTime'),
@@ -154,17 +162,16 @@ export default Ember.Component.extend(
       audioStartTime: jumpToTime,
     });
 
+    //
     // setup jump transition
-    const jumpTransition = yield newMixItem.get('transitionClip.transition');
-
-    console.log('optimizing', {
-      beatCount: jumpTransitionBeatCount,
-      startVolume: jumpTransitionStartVolume,
-    });
+    //
+    const jumpTransitionClip = yield newMixItem.get('transitionClip');
+    const jumpTransition = yield jumpTransitionClip.get('transition');
 
     yield jumpTransition.optimize({
       beatCount: jumpTransitionBeatCount,
       startVolume: jumpTransitionStartVolume,
+      volumeControlPointCount: jumpTransitionVolumeControlPointCount,
     });
 
     this.send('selectTransition', jumpTransition);

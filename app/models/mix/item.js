@@ -20,13 +20,8 @@ export default DS.Model.extend(
 
   _transitionClip: DS.belongsTo('mix/transition-clip', { async: true }),
   transitionClip: withDefaultModel('_transitionClip', function() {
-    const transitionClip = this.get('store').createRecord('mix/transition-clip', {
+    return this.get('store').createRecord('mix/transition-clip', {
       mixItem: this,
-    });
-
-    return transitionClip.get('transition').then((transition) => {
-      // TODO(REFACTOR2): why does this not work?
-      return transition.optimize().then(() => transitionClip);
     });
   }),
 

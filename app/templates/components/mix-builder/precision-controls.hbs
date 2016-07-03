@@ -3,7 +3,7 @@
     clip=selectedTransition.fromTrackClip
     jumpTrackTask=jumpTrackTask
 
-    jumpTrack=(action jumpTrack selectedTransition.transitionClip.mixItem)
+    jumpTrack=(action jumpTrack selectedTransition.fromTrackClip.mixItem)
   }}
 </div>
 
@@ -19,5 +19,8 @@
 <div class="five wide column">
   {{mix-builder/precision-controls/track
     clip=selectedTransition.toTrackClip
+    jumpTrackTask=jumpTrackTask
+
+    jumpTrack=(action jumpTrack selectedTransition.toTrackClip.mixItem)
   }}
 </div>

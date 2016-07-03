@@ -110,7 +110,7 @@ export default DS.Model.extend(
     duration: 'duration',
     bpm: 'bpm',
     timeSignature: 'timeSignature',
-    barGridTime: 0,
+    barGridTime: 'barGridTime',
   }),
 
   // TODO(MULTIGRID): adapt for multiple grid markers. Piecewise-Scale? or a long domain/range?
