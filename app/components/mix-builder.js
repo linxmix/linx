@@ -16,7 +16,7 @@ import {
   SAMPLE_QUANTIZATION,
 } from 'linx/models/track/audio-meta/beat-grid';
 
-import { beatToTime } from 'linx/lib/utils';
+import { beatToTime, isValidNumber } from 'linx/lib/utils';
 
 export const FROM_TRACK_COLOR = '#ac6ac7';
 export const TO_TRACK_COLOR = '#16a085';
@@ -99,8 +99,83 @@ export default Ember.Component.extend(
     Recorder.forceDownload(blob, `${mix.get('title')}.wav`);
   }).drop(),
 
+  jumpTrackTask: task(function * (mixItem) {
+    const track = mixItem.get('track');
+    const mix = this.get('mix');
+    const jumpTransitionBeatCount = mix.get('timeSignature');
+    const jumpTransitionStartVolume = 0.2;
+
+    // get jump beats
+    const { jumpFromBeat, jumpToBeat } = yield new Ember.RSVP.Promise((resolve, reject) => {
+      let jumpFromBeat, jumpToBeat;
+
+      function getJumpBeats(beat) {
+
+        // first trigger is jumpFrom
+        if (!(isValidNumber(jumpFromBeat))) {
+          jumpFromBeat = beat;
+
+        // second is jumpTo
+        } else if (!(isValidNumber(jumpToBeat))) {
+          jumpToBeat = beat - jumpTransitionBeatCount;
+          this.off('seekToBeat', this, getJumpBeats);
+          resolve({ jumpFromBeat, jumpToBeat });
+        }
+      }
+
+      this.on('seekToBeat', this, getJumpBeats);
+    });
+
+    // convert arrangement jump beats to track audio time
+    const trackClip = yield mixItem.get('trackClip');
+    const jumpFromTime = trackClip.getAudioTimeFromArrangementBeat(jumpFromBeat);
+    const jumpToTime = trackClip.getAudioTimeFromArrangementBeat(jumpToBeat);
+
+    // insert new item in front of existing
+    const newMixItem = yield mix.insertTrackAt(mixItem.get('index'), track);
+
+    // set start and end times
+    const prevTrackClip = yield newMixItem.get('trackClip');
+    const nextTrackClip = trackClip;
+
+    console.log('setting prevtrack clip properties', {
+      audioStartTime: nextTrackClip.get('audioStartTime'),
+      audioEndTime: jumpFromTime,
+    });
+    prevTrackClip.setProperties({
+      audioStartTime: nextTrackClip.get('audioStartTime'),
+      audioEndTime: jumpFromTime,
+    });
+
+    console.log('setting nexttrack clip properties', {
+      audioStartTime: jumpToTime,
+    });
+    nextTrackClip.setProperties({
+      audioStartTime: jumpToTime,
+    });
+
+    // setup jump transition
+    const jumpTransition = yield newMixItem.get('transitionClip.transition');
+
+    console.log('optimizing', {
+      beatCount: jumpTransitionBeatCount,
+      startVolume: jumpTransitionStartVolume,
+    });
+
+    yield jumpTransition.optimize({
+      beatCount: jumpTransitionBeatCount,
+      startVolume: jumpTransitionStartVolume,
+    });
+
+    this.send('selectTransition', jumpTransition);
+    return jumpTransition;
+  }),
 
   actions: {
+    jumpTrack(mixItem) {
+      return this.get('jumpTrackTask').perform(mixItem);
+    },
+
     exportMix() {
       return this.get('mixExportTask').perform();
     },
@@ -130,7 +205,10 @@ export default Ember.Component.extend(
     },
 
     seekToBeat(beat) {
-      this.get('mix').seekToBeat(beat);
+      const quantizedBeat = this._quantizeBeat(beat);
+
+      this.get('mix').seekToBeat(quantizedBeat);
+      this.trigger('seekToBeat', quantizedBeat);
     },
 
     selectQuantization(quantization) {

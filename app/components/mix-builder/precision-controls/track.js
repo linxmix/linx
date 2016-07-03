@@ -6,7 +6,10 @@ export default Ember.Component.extend({
   // required params
   clip: null,
 
-  // params
+  // optional params
+  jumpTrackTask: null,
+  jumpTrack: Ember.K,
+
   track: Ember.computed.reads('clip.track'),
 
   actions: {

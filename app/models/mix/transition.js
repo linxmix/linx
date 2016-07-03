@@ -8,6 +8,7 @@ import PlayableArrangementMixin from 'linx/mixins/playable-arrangement';
 import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 
 import { CONTROL_TYPE_VOLUME } from 'linx/mixins/playable-arrangement/automatable-clip/control';
+import { isValidNumber } from 'linx/lib/utils';
 
 export default DS.Model.extend(
   PlayableArrangementMixin,
@@ -33,8 +34,12 @@ export default DS.Model.extend(
   bpm: Ember.computed.reads('transitionClip.mix.bpm'),
 
   // optimizes this transition, with given constraints
-  // TODO(REFACTOR2)
+  // TODO(REFACTOR2): rethink this. convert to ember-concurrency
   optimize({
+    beatCount,
+    startVolume,
+    volumeControlPointCount,
+
     fromTrack,
     toTrack,
     preset,
@@ -50,13 +55,16 @@ export default DS.Model.extend(
 
     return this.destroyAutomationClips().then(() => {
       const store = this.get('store');
-      const beatCount = this.get('beatCount');
+      beatCount = isValidNumber(beatCount) ? beatCount : this.get('beatCount');
+
 
       const fromTrackVolumeClip = store.createRecord('mix/transition/from-track-automation-clip', {
         controlType: CONTROL_TYPE_VOLUME,
         transition: this,
       });
       fromTrackVolumeClip.addControlPoints(generateControlPointParams({
+        startValue: startVolume,
+        n: volumeControlPointCount,
         beatCount,
         direction: -1
       }));
@@ -66,6 +74,8 @@ export default DS.Model.extend(
         transition: this,
       });
       toTrackVolumeClip.addControlPoints(generateControlPointParams({
+        startValue: startVolume,
+        n: volumeControlPointCount,
         beatCount,
         direction: 1
       }));
@@ -73,6 +83,7 @@ export default DS.Model.extend(
       this.get('fromTrackAutomationClips').addObject(fromTrackVolumeClip);
       this.get('toTrackAutomationClips').addObject(toTrackVolumeClip);
 
+      this.set('beatCount', beatCount);
       return this;
     });
 
@@ -98,14 +109,14 @@ export default DS.Model.extend(
   },
 });
 
-function generateControlPointParams({ beatCount = 16, direction = 1, n = 4 }) {
-  const range = _.range(0, n + 1);
+function generateControlPointParams({ startValue = 0.7, beatCount = 16, direction = 1, n = 5 }) {
+  const range = _.range(0, n);
   if (direction === -1) { range.reverse(); }
 
   return range.map((x, i) => {
     return {
-      beat: beatCount * (i / n),
-      value: 0.7 + 0.3 * (x / n),
+      beat: beatCount * (i / (n - 1)),
+      value: startValue + (1 - startValue) * (x / (n - 1)),
     };
   });
 }

@@ -106,6 +106,16 @@ export default Ember.Mixin.create(
     return audioBeatGrid && audioBeatGrid.beatToTime(currentAudioBeat);
   },
 
+  // given a beat in arrangement frame of reference, calculate corresponding time in this clip's audio
+  getAudioTimeFromArrangementBeat(arrangementBeat) {
+    console.log('getAudioTimeFromArrangementBeat', arrangementBeat);
+    const audioBeatGrid = this.get('audioBeatGrid');
+
+    const clipBeat = arrangementBeat - this.get('startBeat');
+    const audioStartBeat = this.get('audioStartBeat');
+    return beatToTime(audioStartBeat + clipBeat, this.get('audioBpm'));
+  },
+
   // TODO(V2): dynamic tempo
   audioScheduleDidChange: Ember.observer('audioBinary.isReady', 'audioStartBeat', 'audioBeatCount', 'tempo', 'transpose', 'gain', function() {
     Ember.run.once(this, 'startSource');

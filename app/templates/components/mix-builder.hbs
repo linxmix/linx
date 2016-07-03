@@ -31,10 +31,10 @@
 <div class="MixBuilder-workstation">
   {{mix-builder/playback-controls
     mix=mix
-    selectedTransition=selectedTransition
 
     playpause=(action "playpause")
     skipBack=(action "skipBack")
+    jumpTrack=(action "jumpTrack")
   }}
 
   {{mix-visual
@@ -55,7 +55,9 @@
     isVisible=(not (not selectedTransition))
     selectedTransition=selectedTransition
     showAutomation=showAutomation
+    jumpTrackTask=jumpTrackTask
 
+    jumpTrack=(action "jumpTrack")
     selectTransition=(action "selectTransition")
     toggleShowAutomation=(action toggleProperty "showAutomation")
   }}

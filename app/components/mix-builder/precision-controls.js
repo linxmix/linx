@@ -8,5 +8,7 @@ export default Ember.Component.extend({
 
   // optional params
   showAutomation: false,
+  jumpTrackTask: null,
+  jumpTrack: Ember.K,
 });
 

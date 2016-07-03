@@ -1,6 +1,9 @@
 <div class="five wide column">
   {{mix-builder/precision-controls/track
     clip=selectedTransition.fromTrackClip
+    jumpTrackTask=jumpTrackTask
+
+    jumpTrack=(action jumpTrack selectedTransition.transitionClip.mixItem)
   }}
 </div>
 

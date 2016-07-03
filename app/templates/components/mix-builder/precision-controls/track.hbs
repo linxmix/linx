@@ -6,6 +6,24 @@
   </div>
 </h4>
 
+<div style="margin: 5px 0;">
+  Transpose
+  {{x-slider min=-11 max=11 step=1 value=clip.transpose}}
+  <span class="MixBuilderPrecisionControls-number">{{clip.transpose}}</span>
+</div>
+
+<div style="margin: 5px 0;">
+  Gain
+  {{x-slider min=0 max=2 step=0.01 value=clip.gain}}
+  <span class="MixBuilderPrecisionControls-number">{{clip.gain}}</span>
+</div>
+
+
+<div class="inverted tiny ui button {{unless jumpTrackTask.isRunning "basic"}}"
+  {{action jumpTrack}}>
+  Jump Track
+</div>
+
 <div class="inverted basic tiny ui button {{if track.analyzeTask.isRunning "loading disabled"}}"
   {{action "analyzeTrack"}}>
   Analyze Track
@@ -23,18 +41,6 @@
 
 <div>
   Downbeat <span class="MixBuilderPrecisionControls-number">{{track.audioMeta.barGridTime}}</span>
-</div>
-
-<div style="margin: 5px 0;">
-  Transpose
-  {{x-slider min=-11 max=11 step=1 value=clip.transpose}}
-  <span class="MixBuilderPrecisionControls-number">{{clip.transpose}}</span>
-</div>
-
-<div style="margin: 5px 0;">
-  Gain
-  {{x-slider min=0 max=2 step=0.01 value=clip.gain}}
-  <span class="MixBuilderPrecisionControls-number">{{clip.gain}}</span>
 </div>
 
 <div>
