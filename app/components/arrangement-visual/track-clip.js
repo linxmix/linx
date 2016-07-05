@@ -51,7 +51,7 @@ export default Clip.extend(
   updateTrackPeaks() {
     const { audioBinary, audioBuffer, peaksLength, trackDuration, audioStartTime, audioEndTime, displayOverflowWaveform } = this.getProperties('audioBinary', 'audioBuffer', 'peaksLength', 'trackDuration', 'audioStartTime', 'audioEndTime', 'displayOverflowWaveform');
 
-    Ember.Logger.log('track clip peaks', { audioBinary, audioBuffer, peaksLength, trackDuration, audioStartTime, audioEndTime, displayOverflowWaveform });
+    // Ember.Logger.log('track clip peaks', { audioBinary, audioBuffer, peaksLength, trackDuration, audioStartTime, audioEndTime, displayOverflowWaveform });
 
     audioBinary && audioBinary.getPeaks({
       startTime: displayOverflowWaveform ? 0 : audioStartTime,

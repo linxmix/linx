@@ -119,7 +119,7 @@ export default Ember.Object.extend(
   // from startTime to endTime when broken into length subranges
   // returns a promise
   getPeaks({ startTime, endTime, length }) {
-    Ember.Logger.log('AudioBinary.getPeaks', startTime, endTime, length);
+    // Ember.Logger.log('AudioBinary.getPeaks', startTime, endTime, length);
 
     const audioBuffer = this.get('audioBuffer');
     if (!audioBuffer) { return asResolvedPromise([]); }

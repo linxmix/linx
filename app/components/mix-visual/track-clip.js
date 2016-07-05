@@ -1,5 +1,7 @@
 import Ember from 'ember';
 
+import _ from 'npm:underscore';
+
 import ArrangementVisualTrackClip from 'linx/components/arrangement-visual/track-clip';
 import MixVisualClipMixin from 'linx/mixins/components/mix-visual/clip';
 
@@ -51,8 +53,25 @@ export default ArrangementVisualTrackClip.extend(
     return 'steelblue';
   }),
 
+  elementIndex: 0,
+  _moveToFront(selection) {
+    const $el = selection.node();
+    const $parent = $el.parentNode;
+    this.set('elementIndex', _.indexOf($parent.children, $el));
+    $parent.appendChild($el);
+  },
+
+  _moveToIndex(selection) {
+    const $el = selection.node();
+    const $parent = $el.parentNode;
+    $parent.insertBefore($el, $parent.children[this.get('elementIndex')]);
+  },
+
   call(selection) {
     this._super.apply(this, arguments);
-    selection.classed('MixVisualTrackClip', true);
+    selection.classed('MixVisualTrackClip', true)
+      // move element to top on hover
+      .on('mouseover', this._moveToFront.bind(this, selection))
+      .on('mouseout', this._moveToIndex.bind(this, selection));
   },
 });
