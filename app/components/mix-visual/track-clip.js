@@ -42,6 +42,7 @@ export default ArrangementVisualTrackClip.extend(
 
   // display waveform only if no clip is selected, or this clip is in the selection
   displayWaveform: propertyOrDefault('selectedTransition', 'isInSelectedTransition', true),
+  displayOverflowWaveform: Ember.computed.reads('isInSelectedTransition'),
   row: constantTernary('isSelectedToTrackClip', 2, 0),
 
   waveColor: Ember.computed('isSelectedFromTrackClip', 'isSelectedToTrackClip', function() {

@@ -9,10 +9,11 @@ import multiply from 'linx/lib/computed/multiply';
 import { translate } from 'linx/helpers/svg-translate';
 
 export default Clip.extend(
-  GraphicSupport('displayWaveform', 'waveColor', 'isLoadingAudio', 'hasNoAudio', 'trackBeatCount', 'audioStartTime', 'audioEndTime', 'trackBpm'), {
+  GraphicSupport('displayWaveform', 'displayOverflowWaveform', 'waveColor', 'isLoadingAudio', 'isAudioEmpty', 'trackBeatCount', 'audioStartTime', 'audioEndTime', 'trackBpm'), {
 
   // optional params
   displayWaveform: true,
+  displayOverflowWaveform: false,
   waveColor: 'green',
   selectedQuantization: null,
   isLoadingAudio: Ember.computed.reads('audioBinary.isLoading'),
@@ -43,17 +44,18 @@ export default Clip.extend(
   trackPeaks: [],
 
   // TODO(CLEANUP): shouldnt have to depend on audioBuffer
-  trackPeaksDidChange: Ember.observer('audioBinary', 'audioBuffer', 'pxPerBeat', 'trackBeatCount', 'trackDuration',function() {
+  trackPeaksDidChange: Ember.observer('audioBinary', 'audioBuffer', 'pxPerBeat', 'trackBeatCount', 'trackDuration', 'audioStartTime', 'audioEndTime', 'displayOverflowWaveform', function() {
     Ember.run.once(this, 'updateTrackPeaks');
   }).on('didInsertElement'),
 
   updateTrackPeaks() {
-    const { audioBinary, audioBuffer, peaksLength, trackDuration } = this.getProperties('audioBinary', 'audioBuffer', 'peaksLength', 'trackDuration');
+    const { audioBinary, audioBuffer, peaksLength, trackDuration, audioStartTime, audioEndTime, displayOverflowWaveform } = this.getProperties('audioBinary', 'audioBuffer', 'peaksLength', 'trackDuration', 'audioStartTime', 'audioEndTime', 'displayOverflowWaveform');
 
-    // Ember.Logger.log('track clip peaks', this.getProperties('audioBinary', 'audioBuffer', 'pxPerBeat', 'trackBeatCount', 'trackDuration'));
+    Ember.Logger.log('track clip peaks', { audioBinary, audioBuffer, peaksLength, trackDuration, audioStartTime, audioEndTime, displayOverflowWaveform });
+
     audioBinary && audioBinary.getPeaks({
-      startTime: 0,
-      endTime: trackDuration,
+      startTime: displayOverflowWaveform ? 0 : audioStartTime,
+      endTime: displayOverflowWaveform ? trackDuration : audioEndTime,
       length: peaksLength,
 
     // scale peaks to track-clip
@@ -97,7 +99,7 @@ export default Clip.extend(
   startOverlay: join([0], 'rect.ArrangementVisualTrackClip-startOverlay', {
     update(selection) {
       selection
-        .style('visibility', this.get('displayWaveform') ? 'visible' : 'hidden')
+        .style('visibility', this.get('displayOverflowWaveform') ? 'visible' : 'hidden')
         .attr('height', this.get('height'))
         .attr('width', this.get('startOffsetWidth'))
         .attr('transform', this.get('startOffsetTransform'))
@@ -108,7 +110,7 @@ export default Clip.extend(
   endOverlay: join([0], 'rect.ArrangementVisualTrackClip-endOverlay', {
     update(selection) {
       selection
-        .style('visibility', this.get('displayWaveform') ? 'visible' : 'hidden')
+        .style('visibility', this.get('displayOverflowWaveform') ? 'visible' : 'hidden')
         .attr('height', this.get('height'))
         .attr('width', this.get('endOffsetWidth'))
         .attr('transform', this.get('endOffsetTransform'))
