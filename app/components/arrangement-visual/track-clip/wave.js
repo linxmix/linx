@@ -1,4 +1,3 @@
-
 import Ember from 'ember';
 
 import d3 from 'd3';
@@ -33,20 +32,52 @@ export default Ember.Component.extend(
       const peaksLength = peaks.get('length');
 
       const area = d3.svg.area()
-        .x((peak, i) => {
-          const percent = i / peaksLength;
-          const beat = percent * peaksLength;
-          return beat;
-        })
-        .y0(([ ymin, ymax ]) => median + ymin * median)
-        .y1(([ ymin, ymax ]) => median + ymax * median);
+        .x(([ x, [ ymin, ymax, dominantFreq ] ]) => x)
+        .y0(([ x, [ ymin, ymax, dominantFreq ] ]) => median + ymin * median)
+        .y1(([ x, [ ymin, ymax, dominantFreq ] ]) => median + ymax * median);
 
+
+      console.log("PEAKS", peaks)
 
       if (peaks.length) {
         selection
           .style('fill', this.get('waveColor'))
           .attr('d', area(peaks));
+
+        selection.selectAll('d')
+          .style('fill', (d) => { console.log("FILL", d); return 'green'})
       }
     }
   }),
 });
+
+const FREQUENCY_COLOR_BANDS = [
+  {
+    frequency: 60,
+    color: '#FF0000'
+  },
+  // {
+  //   frequency: 300,
+  //   color: 'red'
+  // },
+  // {
+  //   frequency: 560,
+  //   color: '#00FF00'
+  // },
+  {
+    frequency: 4200,
+    color: '#00FF00'
+  },
+  {
+    frequency: 18000,
+    color: '#0000FF'
+  },
+];
+
+const FREQUENCY_COLOR_SCALE = d3.scale.ordinal()
+  .domain(FREQUENCY_COLOR_BANDS.mapBy('frequency'))
+  .range(FREQUENCY_COLOR_BANDS.mapBy('color'));
+
+function frequencyToColor(freq) {
+  return FREQUENCY_COLOR_SCALE(freq);
+}

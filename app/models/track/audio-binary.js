@@ -1,4 +1,5 @@
 /* global Parallel:true */
+/* global DSPJS:true */
 import Ember from 'ember';
 import DS from 'ember-data';
 
@@ -9,6 +10,8 @@ import RequireAttributes from 'linx/lib/require-attributes';
 import { isValidNumber, asResolvedPromise } from 'linx/lib/utils';
 import ReadinessMixin from 'linx/mixins/readiness';
 import Ajax from 'linx/lib/ajax';
+
+const FFT_BUFFER_SIZE = 2048;
 
 export default Ember.Object.extend(
   ReadinessMixin('isArrayBufferLoadedAndDecoded'),
@@ -103,6 +106,7 @@ export default Ember.Object.extend(
 
   // TODO(COMPUTEDPROMISE): use that?
   decodedArrayBuffer: Ember.computed('audioContext', 'arrayBuffer', function() {
+    console.log('decodedArrayBuffer');
     let { arrayBuffer, audioContext } = this.getProperties('arrayBuffer', 'audioContext');
 
     if (arrayBuffer) {
@@ -121,9 +125,8 @@ export default Ember.Object.extend(
 
   _peaksCache: Ember.computed(() => Ember.Map.create()),
 
-  // returns a promise of an array of arrays of [ymin, ymax] values of the waveform
+  // returns a promise of an array of arrays of [ymin, ymax, frequency] values of the waveform
   // from startTime to endTime when broken into length subranges
-  // returns a promise
   getPeaks({ startTime, endTime, length }) {
     // Ember.Logger.log('AudioBinary.getPeaks', startTime, endTime, length);
 
@@ -137,9 +140,8 @@ export default Ember.Object.extend(
     }
 
     const audioBuffer = this.get('audioBuffer');
-    if (!audioBuffer) { return asResolvedPromise([]); }
+    if (!audioBuffer || !isValidNumber(length)) { return asResolvedPromise([]); }
 
-    Ember.assert('Cannot AudioBinary.getPeaks without length', isValidNumber(length));
     startTime = isValidNumber(startTime) ? startTime : 0;
     endTime = isValidNumber(endTime) ? endTime : 0;
 
@@ -149,49 +151,52 @@ export default Ember.Object.extend(
     const startSample = startTime * sampleRate;
     const endSample = endTime * sampleRate;
 
-    const job = new Parallel({
-      samples,
-      startSample,
-      endSample,
-      length,
-    });
+    const frameSize = 2048;
+    const fft = new DSPJS.FFT(frameSize, audioBuffer.sampleRate);
 
-    const cacheValue = job.spawn(({ samples, startSample, endSample, length }) => {
-      const sampleSize = (endSample - startSample) / length;
-      const sampleStep = ~~(sampleSize / 10) || 1; // reduce granularity with small length
-      const peaks = [];
+    // const job = new Parallel({
+    //   samples,
+    //   startSample,
+    //   endSample,
+    //   length,
+    // });
 
-      for (let i = 0; i < length; i++) {
-        const start = ~~(startSample + i * sampleSize);
-        const end = ~~(start + sampleSize);
-        let min = samples[start] || 0;
-        let max = samples[start] || 0;
+    // const cacheValue = job.spawn(({ samples, startSample, endSample, length }) => {
+      const peaks = new Array(~~length);
 
-        // calculate max and min in this sample
-        for (let j = start; j < end; j += sampleStep) {
-          const value = samples[j] || 0;
+      for (let i = startSample; i < endSample; i += frameSize) {
+        const frame = getFrame(samples, i, frameSize);
+        fft.forward(frame);
 
-          if (value > max) {
-            max = value;
-          }
-          if (value < min) {
-            min = value;
-          }
-        }
+        const dominantFrequency = Math.max.apply(null, fft.spectrum);
+        const min = Math.min.apply(null, frame);
+        const max = Math.max.apply(null, frame);
 
         // add to peaks
-        peaks[i] = [min, max];
+        peaks[i] = [min, max, dominantFrequency];
       }
 
-      return peaks;
-    });
+      const cacheValue = Ember.RSVP.Resolve(peaks);
+    // });
 
     peaksCache.set(cacheKey, cacheValue);
 
     return cacheValue;
   },
 
+
   toString() {
     return '<linx@object:track/audio-binary>';
   },
 });
+
+function getFrame(samples, frameStart, frameSize) {
+  const frame = new Float32Array(frameSize);
+  frame.fill(0);
+
+  for (let i = 0; i < Math.min(frameSize, samples.length - frameStart); i++) {
+    frame[i] = samples[i + frameStart];
+  }
+
+  return frame;
+}
