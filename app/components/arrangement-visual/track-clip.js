@@ -49,6 +49,8 @@ export default Clip.extend(
   }).on('didInsertElement'),
 
   updateTrackPeaks() {
+    if (!this.get('displayWaveform')) { return; }
+
     const { audioBinary, audioBuffer, peaksLength, trackDuration, audioStartTime, audioEndTime, displayOverflowWaveform } = this.getProperties('audioBinary', 'audioBuffer', 'peaksLength', 'trackDuration', 'audioStartTime', 'audioEndTime', 'displayOverflowWaveform');
 
     // Ember.Logger.log('track clip peaks', { audioBinary, audioBuffer, peaksLength, trackDuration, audioStartTime, audioEndTime, displayOverflowWaveform });
@@ -57,17 +59,9 @@ export default Clip.extend(
       startTime: displayOverflowWaveform ? 0 : audioStartTime,
       endTime: displayOverflowWaveform ? trackDuration : audioEndTime,
       length: peaksLength,
-
-    // scale peaks to track-clip
-    }).then((peaks) => {
-      peaks = peaks.map((peak, i) => {
-        const percent = i / peaksLength;
-        const beat = percent * peaksLength;
-        return [beat, peak];
-      });
-
-      if (!this.get('isDestroyed')) {
-        this.set('trackPeaks', peaks || []);
+    }).then((peaks = []) => {
+      if ((peaks !== this.get('trackPeaks')) && !this.get('isDestroyed')) {
+        this.set('trackPeaks', peaks);
       }
     }, (error) => {
       console.log("Error with trackClip.updateTrackPeaks", error);

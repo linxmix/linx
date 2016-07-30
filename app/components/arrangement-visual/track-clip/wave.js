@@ -29,13 +29,18 @@ export default Ember.Component.extend(
   drawWaveform: join([0], 'path.TrackClipWave-waveform', {
     update(selection) {
       const median = this.get('height') / 2.0;
+      const peaks = this.get('peaks');
+      const peaksLength = peaks.get('length');
 
       const area = d3.svg.area()
-        .x(([ x, [ ymin, ymax ] ]) => x)
-        .y0(([ x, [ ymin, ymax ] ]) => median + ymin * median)
-        .y1(([ x, [ ymin, ymax ] ]) => median + ymax * median);
+        .x((peak, i) => {
+          const percent = i / peaksLength;
+          const beat = percent * peaksLength;
+          return beat;
+        })
+        .y0(([ ymin, ymax ]) => median + ymin * median)
+        .y1(([ ymin, ymax ]) => median + ymax * median);
 
-      const peaks = this.get('peaks');
 
       if (peaks.length) {
         selection

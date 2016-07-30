@@ -115,11 +115,22 @@ export default Ember.Object.extend(
     }
   }),
 
+  _peaksCache: Ember.computed(() => Ember.Map.create()),
+
   // returns a promise of an array of arrays of [ymin, ymax] values of the waveform
   // from startTime to endTime when broken into length subranges
   // returns a promise
   getPeaks({ startTime, endTime, length }) {
     // Ember.Logger.log('AudioBinary.getPeaks', startTime, endTime, length);
+
+    const cacheKey = `startTime:${startTime},endTime:${endTime},length:${length}`;
+    const peaksCache = this.get('_peaksCache');
+    const cached = peaksCache.get(cacheKey);
+
+    if (cached) {
+      // Ember.Logger.log('AudioBinary.getPeaks cache hit', startTime, endTime, length);
+      return cached;
+    }
 
     const audioBuffer = this.get('audioBuffer');
     if (!audioBuffer) { return asResolvedPromise([]); }
@@ -141,7 +152,7 @@ export default Ember.Object.extend(
       length,
     });
 
-    return job.spawn(({ samples, startSample, endSample, length }) => {
+    const cacheValue = job.spawn(({ samples, startSample, endSample, length }) => {
       const sampleSize = (endSample - startSample) / length;
       const sampleStep = ~~(sampleSize / 10) || 1; // reduce granularity with small length
       const peaks = [];
@@ -170,6 +181,10 @@ export default Ember.Object.extend(
 
       return peaks;
     });
+
+    peaksCache.set(cacheKey, cacheValue);
+
+    return cacheValue;
   },
 
   toString() {
