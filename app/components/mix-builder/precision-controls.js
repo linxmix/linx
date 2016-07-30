@@ -10,5 +10,6 @@ export default Ember.Component.extend({
   showAutomation: false,
   jumpTrackTask: null,
   jumpTrack: Ember.K,
+  quantizeBeat: Ember.K,
 });
 

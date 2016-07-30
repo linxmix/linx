@@ -258,6 +258,8 @@ export default Ember.Component.extend(
       const mix = this.get('mix');
       const prevIndex = mixItem.get('index');
 
+      console.log('moveItem', mixItem.get('track.title'), newIndex)
+
       // if moving forwards, have to include current index
       if (newIndex > prevIndex) {
         newIndex++;
@@ -338,12 +340,13 @@ export default Ember.Component.extend(
     });
   }).on('didInsertElement'),
 
-  _quantizeBeat(beat) {
-    let quantization = this.get('selectedQuantization');
+  _quantizeBeat(beat, quantization) {
     const beatGrid = this.get('mix.beatGrid');
 
+    // get default quantization
     // TODO(TECHDEBT): does this make sense to always say? how to tell if this event is active?
     // if alt key is held, suspend quantization
+    let defaultQuantization = this.get('selectedQuantization');
     const isAltKeyHeld = Ember.get(d3, 'event.sourceEvent.altKey') || false;
     const isCtrlKeyHeld = Ember.get(d3, 'event.sourceEvent.ctrlKey') || false;
     if (isAltKeyHeld) {
@@ -351,6 +354,10 @@ export default Ember.Component.extend(
     } else if (isCtrlKeyHeld) {
       quantization = BEAT_QUANTIZATION;
     }
+
+    quantization = quantization ? quantization : defaultQuantization;
+
+    // console.log('_quantizeBeat', quantization, beat, beatGrid)
 
     let quantizedBeat = beat;
     switch (quantization) {
