@@ -16,7 +16,8 @@
     "semantic-ui": "~2.1.6",
     "ember-mocha": "~0.8.0",
     "jquery-mockjax": "2.0.1",
-    "sinonjs": "~1.14.1"
+    "sinonjs": "~1.14.1",
+    "bourbon": "4.2.6"
   },
   "devDependencies": {
     "web-audio-test-api": "~0.3.6"
