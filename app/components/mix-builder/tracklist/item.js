@@ -21,8 +21,15 @@ export default Ember.Component.extend({
   selectedTransition: null,
 
   actions: {
-    selectTransition() {
-      this.sendAction('selectTransition', this.get('transition'));
+    selectItem() {
+      this.sendAction('selectItem', this.get('item'));
+
+      Ember.run.next(() => {
+        const $container = Ember.$('.js-MixBuilder-trackList');
+        const $this = this.$();
+
+        $container.scrollTop($this.offset().top - ($container.offset().top - $container.scrollTop()));
+      });
     },
 
     playItem() {

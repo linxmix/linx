@@ -19,7 +19,7 @@ export default Ember.Component.extend(
   pxPerBeat: variableTernary('selectedTransition', 'zoomedPxPerBeat', 'defaultPxPerBeat'),
   defaultPxPerBeat: 1,
   zoomedPxPerBeat: 25,
-  rowHeight: 128,
+  rowHeight: 100,
   showAutomation: false,
 
   _measureVisual: Ember.observer('selectedTransition', function() {

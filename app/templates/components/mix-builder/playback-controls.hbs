@@ -1,12 +1,12 @@
-{{play-buttons
+{{#play-buttons
   isDisabled=false
   isPlaying=mix.isPlaying
   playpause=(action attrs.playpause)
   skipBack=(action attrs.skipBack)
-  skipForth="skipForth"
-}}
+  skipForth="skipForth"}}
+  <span style="margin: 0 5px;">
+    {{mix.bpm}} Tempo
+    {{x-slider min=0 max=200 step=0.01 value=mix.bpm}}
+  </span>
+{{/play-buttons}}
 
-<div style="margin: 5px 0;">
-  {{mix.bpm}} Tempo
-  {{x-slider min=0 max=200 step=0.01 value=mix.bpm}}
-</div>

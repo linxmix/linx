@@ -9,7 +9,20 @@ export default Ember.Component.extend(
   classNames: ['MixBuilderTracklist'],
   classNameBindings: [],
 
-  // params
-  foo: 'bar',
+  // required params
+  mix: null,
+  selectTransition: Ember.K,
+  playItem: Ember.K,
+  removeItem: Ember.K,
+  moveItem: Ember.K,
+
+  // optional params
+  selectedTransition: null,
+
+  actions: {
+    selectItem(item) {
+      this.get('selectTransition')(item.get('transition'));
+    }
+  }
 });
 

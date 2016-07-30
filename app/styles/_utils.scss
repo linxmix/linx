@@ -1,0 +1,67 @@
+//
+// UTILS
+//
+
+// Make it easy to add inertia scrolling to elements.
+@mixin scrollable {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.u-scrollable {
+  @include scrollable;
+}
+
+//
+// LAYOUT STUFF
+//
+.VerticalLayout {
+  @include display(flex);
+  @include flex-direction(column);
+
+  &.VerticalLayout--fullHeight {
+    height: 100%;
+  }
+
+  &.VerticalLayout--page {
+    height: 100vh;
+  }
+
+  > .VerticalLayout-fixedSection {
+    @include flex(0 0 auto);
+  }
+
+  > .VerticalLayout-flexSection {
+    @include flex(1);
+  }
+}
+
+//
+// PAD-XS STUFF
+//
+$_spacing-sizes: 5 10 15 20 30; // Important: keep these unitless
+$_spacing-directions: (t top), (r right), (l left), (b bottom), (tb top bottom), (lr left right);
+
+@mixin create-spacing-classes($screen, $spacingType, $spacingPrefix, $spacing-sizes, $directions) {
+  @each $val in $spacing-sizes {
+    .#{$spacingPrefix}-#{$screen}-#{$val} {
+      #{$spacingType}: #{$val}px;
+    }
+    @each $dir in $directions {
+      .#{$spacingPrefix}-#{$screen}-#{$val}#{nth($dir,1)} {   // .pad-xs-5t
+        #{$spacingType}-#{nth($dir, 2)}: #{$val}px;           // padding-top: 5px;
+        @if (length($dir) == 3) {                             // if two directions provided
+          #{$spacingType}-#{nth($dir, 3)}: #{$val}px;         // output the additional direction
+        }
+      }
+    }
+  }
+  // Provide defaults for 15px
+  .pad-#{$screen} {@extend .pad-#{$screen}-15}
+  @each $dir in $directions {
+    .pad-#{$screen}-#{nth($dir,1)} {@extend .pad-#{$screen}-15#{nth($dir,1)}}
+  }
+}
+
+@include create-spacing-classes(xs, padding, pad, $_spacing-sizes, $_spacing-directions);
+@include create-spacing-classes(xs, margin, mar, $_spacing-sizes, $_spacing-directions);

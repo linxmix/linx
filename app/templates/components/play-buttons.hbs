@@ -18,12 +18,13 @@
     </div>
   {{/unless}}
 
-  {{yield}}
 
   {{!-- Forth --}}
   <div class="ui basic inverted teal forth button" {{action 'skipForth'}}>
     <i class="step forward icon"></i>
   </div>
+
+  {{yield}}
 
 {{else}}
 
@@ -45,12 +46,12 @@
     </div>
   {{/unless}}
 
-  {{yield}}
 
   {{!-- Forth --}}
   <div class="ui basic inverted teal forth disabled button" {{action 'skipForth'}}>
     <i class="step forward icon"></i>
   </div>
 
+  {{yield}}
 
 {{/unless}}

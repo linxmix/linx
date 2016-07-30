@@ -12,10 +12,10 @@
     {{#each mix.items as |item index|}}
       {{mix-builder/tracklist/item
         item=item
-        selectTransition=(action attrs.selectTransition)
-        playItem=(action attrs.playItem)
-        removeItem=(action attrs.removeItem)
-        moveItem=(action attrs.moveItem)
+        selectItem=(action "selectItem")
+        playItem=(action playItem)
+        removeItem=(action removeItem)
+        moveItem=(action moveItem)
         selectedTransition=selectedTransition
       }}
     {{/each}}

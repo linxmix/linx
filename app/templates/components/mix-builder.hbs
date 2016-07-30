@@ -1,10 +1,11 @@
 {{page-drop action="onPageDrop"}}
 
-<div class="ui container grid">
+<div class="VerticalLayout-fixedSection ui container grid">
   <div class="row">
     {{mix-builder/header
       mix=mix
       mixSaveTask=mixSaveTask
+      mixExportTask=mixExportTask
       mixExportTask=mixExportTask
 
       addTrack=(action "addTrack")
@@ -13,7 +14,9 @@
       destroyMix=(action attrs.destroyMix)
     }}
   </div>
+</div>
 
+<div class="js-MixBuilder-trackList VerticalLayout-flexSection u-scrollable ui container grid">
   <div class="row">
     {{mix-builder/tracklist
       mix=mix
@@ -28,8 +31,9 @@
   </div>
 </div>
 
-<div class="MixBuilder-workstation">
+<div class="MixBuilder-workstation VerticalLayout-fixedSection">
   {{mix-builder/playback-controls
+    class="MixBuilder-playbackControls"
     mix=mix
 
     playpause=(action "playpause")

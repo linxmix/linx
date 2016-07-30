@@ -26,7 +26,7 @@ export const AUTOSAVE_INTERVAL = 5000;
 export default Ember.Component.extend(
   EKMixin,
   EKOnInsertMixin, {
-  classNames: ['MixBuilder'],
+  classNames: ['MixBuilder', 'VerticalLayout', 'VerticalLayout--fullHeight'],
 
   // required params
   mix: null,
