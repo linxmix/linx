@@ -83,9 +83,16 @@ export function createSoundtouchNode({ audioContext, filter, startTime, offsetTi
     playbackTime,
     node,
   }) {
+
     // outputs is array of arrays of outputs
     const l = outputs[0][0];
     const r = outputs[0][1];
+
+    // first clear output
+    for (let i = 0; i < l.length; i++) {
+      l[i] = 0;
+      r[i] = 0;
+    }
 
     // naively take first pitch and tempo values for this sample
     const pitch = parameters.pitch && parameters.pitch[0];
