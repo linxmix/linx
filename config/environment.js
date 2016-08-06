@@ -5,9 +5,7 @@ module.exports = function(environment) {
     modulePrefix: 'linx',
     // namespaced directory where resolver will look for resource files
     podModulePrefix: 'linx/pods',
-
     environment: environment,
-    firebase: 'https://linx-2-acceptance.firebaseio.com/',
     baseURL: '/',
     locationType: 'auto',
     EmberENV: {
@@ -17,14 +15,21 @@ module.exports = function(environment) {
       }
     },
 
+    firebase: {
+      apiKey: process.env.FIREBASE_SECRET,
+      authDomain: 'linx-2-acceptance.firebaseapp.com',
+      databaseURL: 'https://linx-2-acceptance.firebaseio.com',
+      storageBucket: 'linx-2-acceptance.appspot.com',
+    },
+
     contentSecurityPolicy: {
       // allow webworkers
       'default-src': "'self'",
 
       // allow firebase
-      'connect-src': "'self' http://*.soundcloud.com https://*.soundcloud.com https://*.sndcdn.com wss://*.firebaseio.com http://developer.echonest.com http://*.amazonaws.com http://localhost:4004",
+      'connect-src': "'self' http://*.soundcloud.com https://*.soundcloud.com https://*.sndcdn.com wss://*.firebaseio.com http://developer.echonest.com http://*.amazonaws.com http://localhost:4004 https://*.googleapis.com",
       'frame-src': "'self' https://*.firebaseio.com",
-      'script-src': "'self' 'unsafe-eval' 'unsafe-inline' https://*.firebaseio.com http://connect.soundcloud.com",
+      'script-src': "'self' 'unsafe-eval' 'unsafe-inline' https://*.firebaseio.com http://connect.soundcloud.com apis.google.com",
 
       // allow semantic-ui fonts and style
       'font-src': "'self' https://fonts.gstatic.com data:",

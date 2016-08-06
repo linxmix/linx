@@ -62,7 +62,7 @@
     "ember-radio-button": "1.0.4",
     "ember-sinon": "0.2.1",
     "ember-truth-helpers": "1.2.0",
-    "emberfire": "1.6.6",
+    "emberfire": "2.0.1",
     "emberx-slider": "1.0.5",
     "express": "^4.13.4",
     "faker": "^3.0.1",

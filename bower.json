@@ -12,7 +12,7 @@
     "loader.js": "ember-cli/loader.js#3.2.0",
     "qunit": "~1.17.1",
     "pace": "vectart/pace#master",
-    "firebase": "^2.1.0",
+    "firebase": "^3.0.0",
     "semantic-ui": "~2.1.6",
     "ember-mocha": "~0.8.0",
     "jquery-mockjax": "2.0.1",

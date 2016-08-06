@@ -11,9 +11,7 @@ let adapter;
 // if (config.environment == "test") {
 //   adapter = DS.RESTAdapter.extend()
 // } else {
-  adapter = FirebaseAdapter.extend({
-    firebase: inject.service(),
-  });
+  adapter = FirebaseAdapter;
 // }
 
 export default adapter;
