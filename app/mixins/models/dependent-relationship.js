@@ -67,7 +67,7 @@ export default function(propertyPath) {
       //   return (dependentModel.get('content.constructor') || '').toString();
       // }));
 
-      return Ember.RSVP.all(this.get('dependentModels').toArray().map((model) => {
+      return Ember.RSVP.all(this.get('dependentModels').toArray().rejectBy('isDeleted').map((model) => {
         model = model.get('content') || model;
         return model && model.deleteRecord && model.deleteRecord();
       }));
@@ -88,7 +88,7 @@ export default function(propertyPath) {
           });
         });
       } else {
-        // console.log('continue to drestoyr master model', this.constructor.modelName, this.get('isDeleted'));
+        console.log('continue to drestoyr master model', this.constructor.modelName, this.get('isDeleted'));
         return this._super.apply(this, arguments);
       }
     },
