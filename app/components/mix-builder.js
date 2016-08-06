@@ -309,6 +309,7 @@ export default Ember.Component.extend(
           file,
         });
 
+        track.get('extractId3TagsTask').perform();
         track.get('audioBinary.analyzeAudioTask').perform();
         this.send('addTrack', track);
       });

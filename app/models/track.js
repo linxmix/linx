@@ -1,9 +1,9 @@
 import Ember from 'ember';
-const { get } = Ember;
-
 import DS from 'ember-data';
 
 import { task } from 'ember-concurrency';
+import JsMediaTags from 'npm:jsmediatags';
+
 import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 import ReadinessMixin from 'linx/mixins/readiness';
 
@@ -12,6 +12,8 @@ import AudioBinary from './track/audio-binary';
 
 export const DEFAULT_BPM = 128.00;
 export const DEFAULT_DURATION = 200; // seconds
+
+const { get } = Ember;
 
 export default DS.Model.extend(
   ReadinessMixin('isTrackReady'),
@@ -117,7 +119,34 @@ export default DS.Model.extend(
       timeSignature: meta.clicks_per_bar,
     });
 
-    console.log('success', meta, tickMarks, barGridTime);
+    console.log('analyzeTask success', meta, tickMarks, barGridTime);
 
   }).restartable(),
+
+  extractId3TagsTask: task(function * () {
+    const file = this.get('file');
+
+    const { tags } = yield new Ember.RSVP.Promise((resolve, reject) => {
+      JsMediaTags.read(file, {
+        onSuccess: resolve,
+        onError: reject,
+      });
+    });
+
+    console.log('extractId3TagsTask success', tags);
+
+    this.setProperties({
+      title: tags.title,
+      artist: tags.artist,
+    });
+
+    const audioMeta = yield this.get('audioMeta');
+
+    audioMeta.setProperties({
+      bpm: tags.TBPM.data,
+      keyText: tags.comment.text,
+    });
+
+  }).restartable(),
+
 });
