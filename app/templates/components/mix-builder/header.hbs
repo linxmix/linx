@@ -2,7 +2,7 @@
   <div class="five wide column ui middle aligned grid">
     {{search-tracks
       tracksPromise=searchTracks
-      action=attrs.addTrack
+      action=addTrack
     }}
 
     {{soundcloud-url-input
@@ -25,9 +25,9 @@
           update=(action (mut mix.title))
         }}
         <div class="sub header">
-          {{#if mixSaveTask.isRunning}}
+          {{#if isSaving}}
             Saving...
-          {{else if mix.anyDirty}}
+          {{else if isDirty}}
             Has dirty changes.
           {{else}}
             All changes saved.
@@ -38,8 +38,8 @@
   </div>
 
   <div class="five wide column ui middle aligned grid MixBuilderHeader-right">
-    {{#unless mixSaveTask.isRunning}}
-      <div class="inverted green ui icon button test-save-mix {{if mix.anyDirty "" "basic disabled"}}" {{action "saveMix"}}>
+    {{#unless isSaving}}
+      <div class="inverted green ui icon button test-save-mix {{if isDirty "" "basic disabled"}}" {{action saveMix}}>
         <i class="cloud upload icon"></i>
         Save Mix
       </div>
@@ -47,7 +47,7 @@
       <div class="inverted basic disabled ui loading button">Saving...</div>
     {{/unless}}
 
-    <div class="inverted red ui icon button test-delete-mix {{if mixSaveTask.isRunning "basic disabled"}}" {{action "destroyMix"}}>
+    <div class="inverted red ui icon button test-delete-mix {{if isSaving "basic disabled"}}" {{action destroyMix}}>
       <i class="remove icon"></i>
       Delete Mix
     </div>

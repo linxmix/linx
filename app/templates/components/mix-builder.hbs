@@ -4,14 +4,14 @@
   <div class="row">
     {{mix-builder/header
       mix=mix
-      mixSaveTask=mixSaveTask
+      isSaving=isSaving
       mixExportTask=mixExportTask
-      mixExportTask=mixExportTask
+      isDirty=isDirty
 
       addTrack=(action "addTrack")
       exportMix=(action "exportMix")
       saveMix=(action "saveMix")
-      destroyMix=(action attrs.destroyMix)
+      destroyMix=(action destroyMix)
     }}
   </div>
 </div>

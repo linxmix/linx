@@ -6,21 +6,29 @@ import _ from 'npm:underscore';
 import OrderedHasManyMixin from 'linx/mixins/models/ordered-has-many';
 import PlayableArrangementMixin from 'linx/mixins/playable-arrangement';
 
+const { computed } = Ember;
+
 export default DS.Model.extend(
   PlayableArrangementMixin,
   OrderedHasManyMixin('_mixItems'), {
 
   // implement ordered has many
   orderedHasManyItemModelName: 'mix/item',
+
+  // TODO: remove underscore. needs DB migration
   _mixItems: DS.hasMany('mix/item', { async: true }),
 
   title: DS.attr('string'),
   bpm: DS.attr('number', { defaultValue: 128 }),
   timeSignature: DS.attr('number', { defaultValue: 4.0 }),
 
+
   // implement playable-arrangement
   session: Ember.inject.service(),
   audioContext: Ember.computed.reads('session.audioContext'),
+
+
+  // orderedMixItems: computed.sort('_mixItems', 'order'),
 
   tracks: Ember.computed.mapBy('items', 'track.content'),
   transitions: Ember.computed.mapBy('items', 'transition.content'),

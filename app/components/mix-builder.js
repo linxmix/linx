@@ -1,11 +1,14 @@
 import Ember from 'ember';
-const { get } = Ember;
 
 import Recorder from 'npm:recorderjs';
 import d3 from 'd3';
 import { task } from 'ember-concurrency';
 import _ from 'npm:underscore';
 import { EKMixin, EKOnInsertMixin, keyDown } from 'ember-keyboard';
+
+import flatGraphMixin from 'linx/mixins/flat-graph';
+// TODO: import PreventDirtyTransitionMixin from 'linx/mixins/components/prevent-dirty-transition';
+import SaveAllMixin from 'linx/mixins/save-all';
 
 import {
   BAR_QUANTIZATION,
@@ -23,7 +26,37 @@ export const TO_TRACK_COLOR = '#16a085';
 
 export const AUTOSAVE_INTERVAL = 5000;
 
+const { get, computed } = Ember;
+
+const Persistence = Ember.Mixin.create(
+  flatGraphMixin([
+    'mix.',
+    'mix._mixItems',
+    'mix._mixItems.@each.trackClip',
+    'mix._mixItems.@each.trackClip.track',
+    'mix._mixItems.@each.transitionClip',
+    'mix._mixItems.@each.transitionClip.transition.',
+    'mix._mixItems.@each.transitionClip.transition.fromTrackAutomationClips.',
+    'mix._mixItems.@each.transitionClip.transition.fromTrackAutomationClips.@each._controlPoints',
+    'mix._mixItems.@each.transitionClip.transition.toTrackAutomationClips.',
+    'mix._mixItems.@each.transitionClip.transition.toTrackAutomationClips.@each._controlPoints'
+  ]),
+  SaveAllMixin, {
+
+  // Required by SaveAllMixin
+  allModelsToSave: computed.reads('flatGraphAllWithMeta'),
+
+  // Required by PreventDirtyTransitionMixin
+  isDirty: computed('flatGraphAll.@each.hasDirtyAttributes', function() {
+    return !!this.get('flatGraphAll').findBy('hasDirtyAttributes');
+  }),
+
+  // Required by PreventDirtyTransitionMixin
+  dirtyTrackingIdentifier: 'component:card-details/container'
+});
+
 export default Ember.Component.extend(
+  Persistence,
   EKMixin,
   EKOnInsertMixin, {
   classNames: ['MixBuilder', 'VerticalLayout', 'VerticalLayout--fullHeight'],
@@ -70,10 +103,6 @@ export default Ember.Component.extend(
   //     Ember.run.later(this, '_autoSaveMix', AUTOSAVE_INTERVAL);
   //   }
   // }),
-
-  mixSaveTask: task(function * () {
-    yield this.get('mix').save();
-  }).keepLatest(),
 
   mixExportTask: task(function * () {
     const mix = this.get('mix');
@@ -188,7 +217,7 @@ export default Ember.Component.extend(
     },
 
     saveMix() {
-      this.get('mixSaveTask').perform();
+      this.saveAll();
     },
 
     play(beat) {
