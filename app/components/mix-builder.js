@@ -35,11 +35,11 @@ const Persistence = Ember.Mixin.create(
     'mix._mixItems.@each.trackClip',
     'mix._mixItems.@each.trackClip.track',
     'mix._mixItems.@each.transitionClip',
-    'mix._mixItems.@each.transitionClip.transition.',
-    'mix._mixItems.@each.transitionClip.transition.fromTrackAutomationClips.',
-    'mix._mixItems.@each.transitionClip.transition.fromTrackAutomationClips.@each._controlPoints',
-    'mix._mixItems.@each.transitionClip.transition.toTrackAutomationClips.',
-    'mix._mixItems.@each.transitionClip.transition.toTrackAutomationClips.@each._controlPoints'
+    'mix._mixItems.@each.transition.',
+    'mix._mixItems.@each.transition.fromTrackAutomationClips.',
+    'mix._mixItems.@each.transition.fromTrackAutomationClips.@each._controlPoints',
+    'mix._mixItems.@each.transition.toTrackAutomationClips.',
+    'mix._mixItems.@each.transition.toTrackAutomationClips.@each._controlPoints'
   ]),
   SaveAllMixin, {
 
@@ -56,7 +56,7 @@ const Persistence = Ember.Mixin.create(
 });
 
 export default Ember.Component.extend(
-  Persistence,
+  // Persistence,
   EKMixin,
   EKOnInsertMixin, {
   classNames: ['MixBuilder', 'VerticalLayout', 'VerticalLayout--fullHeight'],
@@ -89,20 +89,6 @@ export default Ember.Component.extend(
   _pauseMix: Ember.on('willDestroyElement', function() {
     this.get('mix').pause();
   }),
-
-  // repeatedely save mix, if any unsaved changes
-  // _autoSaveMix: Ember.on('init', function() {
-  //   if (!this.get('isDestroyed')) {
-  //     const mix = this.get('mix');
-
-  //     if (mix && mix.get('anyDirty') && !mix.get('isSaving')) {
-  //       console.log('Autosave Mix', this.get('mix.title'));
-  //       this.get('mixSaveTask').perform();
-  //     }
-
-  //     Ember.run.later(this, '_autoSaveMix', AUTOSAVE_INTERVAL);
-  //   }
-  // }),
 
   mixExportTask: task(function * () {
     const mix = this.get('mix');

@@ -33,6 +33,11 @@ export default DS.Model.extend(
   clips: Ember.computed.uniq('fromTrackAutomationClips', 'toTrackAutomationClips'),
   bpm: Ember.computed.reads('transitionClip.mix.bpm'),
 
+  save() {
+    console.log("SAVE TRANSITION")
+    return this._super.apply(this, arguments);
+  },
+
   // optimizes this transition, with given constraints
   // TODO(REFACTOR2): rethink this. convert to ember-concurrency
   optimize({

@@ -15,8 +15,9 @@ export default DS.Model.extend(
   // implement ordered has many
   orderedHasManyItemModelName: 'mix/item',
 
-  // TODO: remove underscore. needs DB migration
+  // TODO(TECHDEBT): DB migration away from underscore
   _mixItems: DS.hasMany('mix/item', { async: true }),
+  mixItems: computed.alias('_mixItems'),
 
   title: DS.attr('string'),
   bpm: DS.attr('number', { defaultValue: 128 }),

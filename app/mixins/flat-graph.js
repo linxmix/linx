@@ -92,6 +92,7 @@ function flatGraphProperties(graphDescriptions) {
         const propName = propertyNameForPath(originalPath);
         const buildMetaObjectFn = buildMetaObject.bind(null, originalPath, propName);
 
+        // console.log("top level", propName, trimmedPath)
         acc[propName] = computed(trimmedPath, function(){
           return getValueOrValues(this.get(trimmedPath));
         });
@@ -104,6 +105,7 @@ function flatGraphProperties(graphDescriptions) {
         const propName = propertyNameForPath(...parts.slice(0, index + 1));
         const buildMetaObjectFn = buildMetaObject.bind(null, originalPath, propName);
 
+        // console.log("nested", propName, `${dependentProp}.@each.${trimmedPath}`)
         acc[propName] = computed(`${dependentProp}.@each.${trimmedPath}`, function() {
           const items = this.get(dependentProp) || [];
           return _.compact(flatten(items.map((item) => get(item, trimmedPath))));
@@ -119,6 +121,8 @@ function flatGraphProperties(graphDescriptions) {
   }, {});
 
   const allProps = graphDescriptions.map((path) => propertyNameForPath(path));
+
+  // console.log('allProps', allProps);
 
   base.flatGraphAll = computed.apply(null, allProps.concat(function() {
     return flatten(allProps.map((prop) => this.get(prop)));

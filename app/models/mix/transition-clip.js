@@ -8,8 +8,8 @@ import subtract from 'linx/lib/computed/subtract';
 import withDefaultModel from 'linx/lib/computed/with-default-model';
 import { isValidNumber } from 'linx/lib/utils';
 
-export default Clip.extend(
-  DependentRelationshipMixin('transition'), {
+export default Clip.extend({
+  // DependentRelationshipMixin('transition'), {
 
   mixItem: DS.belongsTo('mix/item'),
   fromTrackClip: Ember.computed.reads('mixItem.trackClip'),
