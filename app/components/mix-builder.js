@@ -6,9 +6,7 @@ import { task } from 'ember-concurrency';
 import _ from 'npm:underscore';
 import { EKMixin, EKOnInsertMixin, keyDown } from 'ember-keyboard';
 
-import flatGraphMixin from 'linx/mixins/flat-graph';
-// TODO: import PreventDirtyTransitionMixin from 'linx/mixins/components/prevent-dirty-transition';
-import SaveAllMixin from 'linx/mixins/save-all';
+import connect from 'ember-redux/components/connect';
 
 import {
   BAR_QUANTIZATION,
@@ -28,34 +26,106 @@ export const AUTOSAVE_INTERVAL = 5000;
 
 const { get, computed } = Ember;
 
-const Persistence = Ember.Mixin.create(
-  flatGraphMixin([
-    'mix.',
-    'mix._mixItems',
-    'mix._mixItems.@each.trackClip',
-    'mix._mixItems.@each.trackClip.track',
-    'mix._mixItems.@each.transitionClip',
-    'mix._mixItems.@each.transition.',
-    'mix._mixItems.@each.transition.fromTrackAutomationClips.',
-    'mix._mixItems.@each.transition.fromTrackAutomationClips.@each._controlPoints',
-    'mix._mixItems.@each.transition.toTrackAutomationClips.',
-    'mix._mixItems.@each.transition.toTrackAutomationClips.@each._controlPoints'
-  ]),
-  SaveAllMixin, {
+// const Persistence = Ember.Mixin.create(
+//   flatGraphMixin([
+//     'mix.',
+//     'mix._mixItems',
+//     'mix._mixItems.@each.trackClip',
+//     'mix._mixItems.@each.trackClip.track',
+//     'mix._mixItems.@each.transitionClip',
+//     'mix._mixItems.@each.transition.',
+//     'mix._mixItems.@each.transition.fromTrackAutomationClips.',
+//     'mix._mixItems.@each.transition.fromTrackAutomationClips.@each._controlPoints',
+//     'mix._mixItems.@each.transition.toTrackAutomationClips.',
+//     'mix._mixItems.@each.transition.toTrackAutomationClips.@each._controlPoints'
+//   ]),
+//   SaveAllMixin, {
 
-  // Required by SaveAllMixin
-  allModelsToSave: computed.reads('flatGraphAllWithMeta'),
+//   // Required by SaveAllMixin
+//   allModelsToSave: computed.reads('flatGraphAllWithMeta'),
 
-  // Required by PreventDirtyTransitionMixin
-  isDirty: computed('flatGraphAll.@each.hasDirtyAttributes', function() {
-    return !!this.get('flatGraphAll').findBy('hasDirtyAttributes');
-  }),
+//   // Required by PreventDirtyTransitionMixin
+//   isDirty: computed('flatGraphAll.@each.hasDirtyAttributes', function() {
+//     return !!this.get('flatGraphAll').findBy('hasDirtyAttributes');
+//   }),
 
-  // Required by PreventDirtyTransitionMixin
-  dirtyTrackingIdentifier: 'component:card-details/container'
-});
+//   // Required by PreventDirtyTransitionMixin
+//   dirtyTrackingIdentifier: 'component:card-details/container'
+// });
 
-export default Ember.Component.extend(
+const stateToComputed = (state) => {
+  return {
+    mix: state.mix,
+    mixItems: state.mixItems,
+
+    selectedTransition: state.selectedTransition,
+    selectedQuantization: state.selectedQuantization,
+  }
+};
+
+
+//
+// Ember Redux Refactor
+//
+
+// GOALS
+// tracking mix builder component heirarchy state
+// handling actions triggered from ^ components
+// moving as much of ^ logic out of models as possible
+// ex adding a track to the mix
+
+// NON GOALS
+// refactoring web audio graph
+
+// OPEN QUESTIONS
+// in current world: WHY IS SAVE BEING CALLED MULTIPLE TIMES?
+// how/when to pass state from redux state to model state?
+  // important for audio in particular
+  // does all state belong in redux state? (probably not model fields?)
+// how to handle jump track, export tasks?
+// how to handle action receivers?
+// performance concerns with recomputing all properties when state changes?
+  // mostly track wave drawing
+// service vs container component?
+// when does persistence happen? (save ALL models or dirty models?)
+// do any actions get handled inside nested components?
+  // precision controls?
+  // dragging clips / control points?
+// where do tasks fit in?
+
+
+// STRETCH GOALS
+// update UI when dragging, only change playback
+  // POSSIBLY OBVIATED by never needing to drag?
+// rollbacks: undo/redo
+
+
+// reducers:
+// mix
+// track
+//   audio meta
+//   audio binary
+// clip
+//   startBeat (only fire on dragEnd?)
+// automation clip
+//   move control points (only fire on dragEnd?)
+// track clip
+//   gain
+//   transpose
+// transition clip
+// transition
+//   optimize
+
+
+const dispatchToActions = (dispatch) => {
+  return {
+    selectTransition() {},
+    selectQuantization() {},
+    remove: (id) => ajax(`/api/users/${id}`, 'DELETE').then(() => dispatch({type: 'REMOVE_USER', id: id}))
+  };
+};
+
+const MixBuilderContainerComponent = Ember.Component.extend(
   // Persistence,
   EKMixin,
   EKOnInsertMixin, {
@@ -390,4 +460,4 @@ export default Ember.Component.extend(
   },
 });
 
-
+export default connect(stateToComputed, dispatchToActions)(MixBuilderContainerComponent);
