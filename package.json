@@ -37,6 +37,7 @@
     "cors-anywhere": "^0.2.5",
     "ember-backoff": "^0.1.0",
     "ember-browserify": "^1.1.4",
+    "ember-changeset": "0.13.3",
     "ember-cli": "1.13.6",
     "ember-cli-app-version": "0.3.3",
     "ember-cli-babel": "^5.0.0",
