@@ -136,15 +136,15 @@ export default DS.Model.extend(
     console.log('extractId3TagsTask success', tags);
 
     this.setProperties({
-      title: tags.title,
-      artist: tags.artist,
+      title: get(tags, 'title'),
+      artist: get(tags, 'artist'),
     });
 
     const audioMeta = yield this.get('audioMeta');
 
     audioMeta.setProperties({
-      bpm: tags.TBPM.data,
-      keyText: tags.comment.text,
+      bpm:get(tags, 'TBPM.data') || DEFAULT_BPM,
+      keyText: get(tags, 'comment.text'),
     });
 
   }).restartable(),
