@@ -10,7 +10,7 @@ import AliasObjectPropertiesMixin from '../alias-object-properties';
 import RequireAttributes from 'linx/lib/require-attributes';
 
 import withDefault from 'linx/lib/computed/with-default';
-import { isNumber } from 'linx/lib/utils';
+import { isValidNumber } from 'linx/lib/utils';
 
 const OUT_OF_RANGE_EXCEPTION = 'Index out of range';
 
@@ -70,11 +70,11 @@ export const OrderedHasManyProxy = Ember.ArrayProxy.extend(
   _getOrder(prevOrder, nextOrder) {
     let order;
 
-    if (isNumber(prevOrder) && isNumber(nextOrder)) {
+    if (isValidNumber(prevOrder) && isValidNumber(nextOrder)) {
       order = prevOrder + ((nextOrder - prevOrder) / 2.0);
-    } else if (isNumber(prevOrder)) {
+    } else if (isValidNumber(prevOrder)) {
       order = prevOrder * 2.0;
-    } else if (isNumber(nextOrder)) {
+    } else if (isValidNumber(nextOrder)) {
       order = nextOrder / 2.0;
     } else {
       order = 1.000;

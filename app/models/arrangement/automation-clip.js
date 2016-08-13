@@ -18,11 +18,8 @@ export default Clip.extend(
   OrderedHasManyMixin('_controlPoints'), {
 
   addControlPoints(paramsArray = []) {
-    // Ember.Logger.log('addControlPoints', paramsArray);
-    const controlPoints = paramsArray.map((params) => {
-      return this.createItem(_.defaults({
-        automationClip: this,
-      }, params));
+    const controlPoints = paramsArray.map((params, index) => {
+      return this.createAt(index, params);
     });
   },
 

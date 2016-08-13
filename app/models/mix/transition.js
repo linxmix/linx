@@ -62,29 +62,35 @@ export default DS.Model.extend(
         controlType: CONTROL_TYPE_VOLUME,
         transition: this,
       });
-      fromTrackVolumeClip.addControlPoints(generateControlPointParams({
-        startValue: startVolume,
-        n: volumeControlPointCount,
-        beatCount,
-        direction: -1
-      }));
-
       const toTrackVolumeClip = store.createRecord('mix/transition/to-track-automation-clip', {
         controlType: CONTROL_TYPE_VOLUME,
         transition: this,
       });
-      toTrackVolumeClip.addControlPoints(generateControlPointParams({
-        startValue: startVolume,
-        n: volumeControlPointCount,
-        beatCount,
-        direction: 1
-      }));
 
-      this.get('fromTrackAutomationClips').addObject(fromTrackVolumeClip);
-      this.get('toTrackAutomationClips').addObject(toTrackVolumeClip);
+      // TODO(TECHDEBT): save volume clips BEFORE adding items. otherwise, we get a weird bug
+      // where control points are removed from relationship while saving, if only one has changed
+      // - not due to orderedHasMany
+      return Ember.RSVP.all([fromTrackVolumeClip, toTrackVolumeClip].invoke('save')).then(() => {
+        fromTrackVolumeClip.addControlPoints(generateControlPointParams({
+          startValue: startVolume,
+          n: volumeControlPointCount,
+          beatCount,
+          direction: -1
+        }));
 
-      this.set('beatCount', beatCount);
-      return this;
+        toTrackVolumeClip.addControlPoints(generateControlPointParams({
+          startValue: startVolume,
+          n: volumeControlPointCount,
+          beatCount,
+          direction: 1
+        }));
+
+        this.get('fromTrackAutomationClips').addObject(fromTrackVolumeClip);
+        this.get('toTrackAutomationClips').addObject(toTrackVolumeClip);
+
+        this.set('beatCount', beatCount);
+        return this;
+      });
     });
 
   },
