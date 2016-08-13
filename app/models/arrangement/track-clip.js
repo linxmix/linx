@@ -8,7 +8,7 @@ import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationshi
 import { DEFAULT_GAIN } from 'linx/models/track/audio-meta';
 
 export default Clip.extend(
-  DependentRelationshipMixin('track'),
+  DependentRelationshipMixin('track', { deleteDependents: false }),
   TrackClipMixin, {
 
   // implement clip

@@ -162,7 +162,8 @@ export default function(hasManyPath, itemModelName) {
       // console.log('hasMany destroyRemovedObjects', this.get('removedObjects.length'))
 
       return Ember.RSVP.all(removedObjects.toArray().map((record) => {
-        return record.destroyRecord();
+        record = record.get('content') || record;
+        return record && record.destroyRecord && record.destroyRecord();
       }));
     },
 

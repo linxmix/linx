@@ -103,10 +103,12 @@ export default Ember.Mixin.create(Ember.Evented, {
   }),
 
   triggerScheduleEvents() {
-    this.trigger('unschedule');
+    if (!this.get('isDeleted')) {
+      this.trigger('unschedule');
 
-    if (this.get('isScheduled')) {
-      this.trigger('schedule');
+      if (this.get('isScheduled')) {
+        this.trigger('schedule');
+      }
     }
   },
 

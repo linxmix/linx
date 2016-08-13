@@ -15,8 +15,14 @@ import isEvery from 'linx/lib/computed/is-every';
 // Provides observable properties `hasDirtyDependentModels` and `anyDirty`.
 // On save, saves dirtyDependentModels.
 // On destroy, destroys dependentModels
-export default function(propertyPath) {
+export default function(propertyPath, options = {}) {
   Ember.assert('Need propertyPath for DependentModelMixin', !!propertyPath);
+
+  // TODO(TECHDEBT): hack to not always delete all dependents.
+  // NOTE: defaults to true. DOES NOT WORK if mixing in multiple times with diff values!
+  if (!options.hasOwnProperty('deleteDependents')) {
+    options.deleteDependents = true;
+  }
 
   let mixinParams = {
     concatenatedProperties: ['_dependentModelPaths'],
@@ -63,32 +69,20 @@ export default function(propertyPath) {
     anyDirty: Ember.computed.or('hasDirtyDependentModels', 'hasDirtyAttributes'),
 
     deleteDependentModels() {
-      console.log('delete dependent models', this.constructor.modelName, this.get('id'));
-      this.get('dependentModels').rejectBy('isDeleted').invoke('deleteRecord');
+      console.log('delete dependent models', this.constructor.modelName);
+
+      this.get('dependentModels').toArray().rejectBy('isDeleted').map((model) => {
+        model = model.get('content') || model;
+        model && model.deleteRecord && model.deleteRecord();
+      });
     },
 
-    // deleteRecord() {
-    //   this.deleteDependentModels();
-
-    //   return this._super.apply(this, arguments);
-    // },
-
-    destroyRecord(options = {}) {
-      const skipPath = `___dependentRelationship_destroy_${this._getSkipPathPart()}`;
-      const hasPropertyPath = options[skipPath];
-
-      if (!(hasPropertyPath || options.skipDependents)) {
+    deleteRecord() {
+      if (options.deleteDependents) {
         this.deleteDependentModels();
-
-        return new Ember.RSVP.Promise((resolve, reject) => {
-          return this.destroyRecord(_.extend(options, {
-            [skipPath]: true
-          })).then(resolve, reject);
-        });
-      } else {
-        Ember.Logger.log("destroy master model", this.constructor.modelName, this.get('id'));
-        return this._super.apply(this, arguments);
       }
+
+      return this._super.apply(this, arguments);
     },
 
     saveDirtyDependentModels() {
