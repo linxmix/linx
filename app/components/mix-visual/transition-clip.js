@@ -54,7 +54,7 @@ export default ArrangementVisualClip.extend(
     onResizeRight(d3Context, d, dBeats) {
       dBeats = this.attrs.quantizeBeat(dBeats);
       const newBeatCount = this.get('_resizeStartValue') + dBeats;
-      const newEndBeat = this.get('_dragStartBeat') + dBeats;
+      const newEndBeat = this.get('_resizeFromTrackClipEndBeat') + dBeats;
       const fromTrackClip = this.get('fromTrackClip');
       const transition = this.get('transition');
 
@@ -65,14 +65,18 @@ export default ArrangementVisualClip.extend(
     onResizeLeft(d3Context, d, dBeats) {
       dBeats = this.attrs.quantizeBeat(dBeats);
       const newBeatCount = this.get('_resizeStartValue') - dBeats;
+      const newStartBeat = this.get('_resizeToTrackClipStartBeat') + dBeats;
+      const toTrackClip = this.get('toTrackClip');
       const transition = this.get('transition');
 
       transition.set('beatCount', Math.max(newBeatCount, 0));
+      toTrackClip.set('audioStartBeat', newStartBeat);
     },
 
     onResizeStart(d3Context, d) {
       this.set('_resizeStartValue', this.get('transition.beatCount'));
-      this.set('_dragStartBeat', this.get('fromTrackClip.audioEndBeat'));
+      this.set('_resizeFromTrackClipEndBeat', this.get('fromTrackClip.audioEndBeat'));
+      this.set('_resizeToTrackClipStartBeat', this.get('toTrackClip.audioStartBeat'));
     },
   },
 

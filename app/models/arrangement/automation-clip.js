@@ -116,7 +116,7 @@ export default Clip.extend(
         values = values.slice(index, values.length);
       }
 
-      // Ember.Logger.log('updateControl', targetControl.get('type'), startTime, duration);
+      Ember.Logger.log('updateControl', targetControl.get('type'), startTime, duration);
       targetControl.addAutomation(this, {
         values,
         startTime,
