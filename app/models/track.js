@@ -115,8 +115,8 @@ export default DS.Model.extend(
 
     this.get('audioMeta.content').setProperties({
       barGridTime,
-      tempo: meta.overall_tempo_straight,
-      timeSignature: meta.clicks_per_bar,
+      tempo: parseFloat(meta.overall_tempo_straight),
+      timeSignature: parseInt(meta.clicks_per_bar),
     });
 
     console.log('analyzeTask success', meta, tickMarks, barGridTime);
@@ -143,8 +143,8 @@ export default DS.Model.extend(
     const audioMeta = yield this.get('audioMeta');
 
     audioMeta.setProperties({
-      bpm:get(tags, 'TBPM.data') || DEFAULT_BPM,
-      keyText: get(tags, 'comment.text'),
+      bpm: parseFloat(get(tags, 'TBPM.data') || DEFAULT_BPM),
+      keyText: parseInt(get(tags, 'comment.text')),
     });
 
   }).restartable(),
