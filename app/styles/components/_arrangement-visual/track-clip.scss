@@ -24,3 +24,31 @@
 .ArrangementVisualTrackClip-startOverlay, .ArrangementVisualTrackClip-endOverlay {
   fill: rgba(#000, 0.5);
 }
+
+.ArrangementVisualTrackClip-beatAxis, .ArrangementVisualTrackClip-barAxis {
+  height: 30px;
+  color: white;
+  stroke: white;
+
+  text {
+    display: none;
+  }
+
+  .data-visual {
+    width: 100%;
+    height: 100%;
+  }
+
+  .tick line {
+    stroke-width: 1;
+    stroke: rgba(#f0f, 0.8);
+  }
+
+  .domain {
+    fill: none;
+  }
+}
+
+.ArrangementVisualTrackClip-barAxis {
+  stroke: rgba(#fff, 0.3);
+}

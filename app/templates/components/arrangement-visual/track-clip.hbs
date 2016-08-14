@@ -1,15 +1,13 @@
-{{!-- {{arrangement-visual/track-clip/axis
-  select=select
-  clip=clip
-  pxPerBeat=pxPerBeat
-}}
- --}}
-
 {{arrangement-visual/track-clip/wave
   select=select.TrackClip-wave
   isD3Visible=displayWaveform
   waveColor=waveColor
   transform=(if displayOverflowWaveform startOffsetTransform)
+  startBar=audioMeta.startBar
+  endBar=audioMeta.endBar
+  trackBarCount=trackBarCount
+  trackBeatCount=trackBeatCount
+  pxPerBeat=pxPerBeat
   peaks=trackPeaks
   height=height
 }}

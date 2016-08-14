@@ -36,6 +36,7 @@ export default Clip.extend(
   audioMeta: Ember.computed.reads('track.audioMeta'),
   trackBpm: Ember.computed.reads('audioMeta.bpm'),
   trackBeatCount: Ember.computed.reads('audioMeta.beatCount'),
+  trackBarCount: Ember.computed.reads('audioMeta.barCount'),
   trackDuration: Ember.computed.reads('audioMeta.duration'),
   audioBinary: Ember.computed.reads('track.audioBinary'),
   audioBuffer: Ember.computed.reads('audioBinary.audioBuffer'),

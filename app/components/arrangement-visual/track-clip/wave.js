@@ -8,14 +8,26 @@ import { join } from 'ember-cli-d3/utils/d3';
 import multiply from 'linx/lib/computed/multiply';
 
 export default Ember.Component.extend(
-  GraphicSupport('peaks.[]', 'waveColor', 'height'), {
+  GraphicSupport('peaks.[]', 'waveColor', 'height', 'startBar', 'endBar', 'pxPerBeat', 'trackBarCount', 'showBarGrid'), {
 
   // required params
   peaks: null,
+  trackBarCount: 0,
 
   // optional params
   height: 125,
   waveColor: 'green',
+  showBarGrid: true,
+
+  minX: 0,
+  maxX: multiply('trackBeatCount', 'pxPerBeat'),
+
+  barScale: Ember.computed('startBar', 'endBar', 'minX', 'maxX', function () {
+    const domainMin = this.get('startBar');
+    const domainMax = this.get('endBar');
+
+    return d3.scale.linear().domain([domainMin, domainMax]).range([this.get('minX'), this.get('maxX')]);
+  }).readOnly(),
 
   call(selection) {
     this._super.apply(this, arguments);

@@ -101,7 +101,7 @@ export default DS.Model.extend(
   bpm: DS.attr('number'),
   timeSignature: DS.attr('number', { defaultValue: 4 }),
   key: DS.attr('number'),
-  keyText: DS.attr('string'), // TODO(TECHDEBT)
+  keyText: DS.attr('string'), // TODO(TECHDEBT): dedupe with key, mode fields
   mode: DS.attr('number'),
   loudness: DS.attr('number'),
   barGridTime: DS.attr('number', { defaultValue: 0 }),
@@ -120,6 +120,7 @@ export default DS.Model.extend(
     this.set('barGridTime', this.get('barGridTime') + value);
   },
 
+  // TODO(TECHDEBT)
   // // calculate gain from loudness (decibels)
   // gain: Ember.computed('loudness', {
   //   get() {
@@ -176,16 +177,14 @@ export default DS.Model.extend(
   }),
   centerBeat: add('startBeat', 'halfBeatCount'),
 
+  barCount: Ember.computed('beatCount', 'timeSignature', function() {
+    return this.get('beatCount') / this.get('timeSignature');
+  }),
+
   firstWholeBeat: 0,
   firstWholeBar: 0,
   lastWholeBeat: computedBarToBeat('beatGrid', 'lastWholeBar'),
   lastWholeBar: computedQuantizeBar('beatGrid', 'endBar'),
-
-  // TODO: implement this, and move to audio-meta/beat-grid?
-  // amount by which echonest analysis is off from the downbeats
-  // calculated by diff from echonest section markers and the grid marker
-  echonestBeatOffset: Ember.computed('beatGrid.beatScale', 'beatGrid.barScale', function() {
-  }),
 
   destroyMarkers: function() {
     return this.get('markers').then((markers) => {
