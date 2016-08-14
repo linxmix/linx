@@ -56,7 +56,7 @@ export default Ember.Component.extend(
       selection
         .attr('height', this.get('height'))
         .attr('width', this.get('widthPx'))
-        .on('click', () => this.send('onClick'));
+        .on('click', (...args) => this.send('onClick', ...args));
     },
   }),
 });

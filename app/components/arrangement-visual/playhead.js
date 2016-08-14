@@ -4,9 +4,6 @@ import GraphicSupport from 'linx/mixins/d3/graphic-support';
 
 import RequireAttributes from 'linx/lib/require-attributes';
 
-// used for cancelAnimationFrame
-let playheadAnimationId;
-
 export default Ember.Component.extend(
   GraphicSupport(),
   RequireAttributes('arrangement', 'pxPerBeat'), {
@@ -15,8 +12,13 @@ export default Ember.Component.extend(
   selection: Ember.computed.reads('select.selection'),
   playheadSelection: Ember.computed('selection', function() {
     const selection = this.get('selection');
-    return selection && selection.append('line').classed('ArrangementVisualPlayhead', true);
+    return selection && selection.append('line')
+      .classed('ArrangementVisualPlayhead', true)
+      .classed('ArrangementVisual-playhead', true);
   }),
+
+  // used for cancelAnimationFrame
+  _playheadAnimationId: null,
 
   updatePlayhead() {
     const metronome = this.get('metronome');
@@ -45,11 +47,8 @@ export default Ember.Component.extend(
 
       context.updatePlayhead();
 
-      if (metronome.get('isPlaying')) {
-        playheadAnimationId = window.requestAnimationFrame(animatePlayhead);
-      } else {
-        playheadAnimationId = undefined;
-      }
+      context.set('_playheadAnimationId',
+        metronome.get('isPlaying') ? window.requestAnimationFrame(animatePlayhead) : undefined);
     }
 
     this.stopPlayheadAnimation();
@@ -57,6 +56,6 @@ export default Ember.Component.extend(
   }).on('didInsertElement'),
 
   stopPlayheadAnimation: Ember.on('willDestroyElement', function() {
-    window.cancelAnimationFrame(playheadAnimationId);
+    window.cancelAnimationFrame(this.get('_playheadAnimationId'));
   }),
 });

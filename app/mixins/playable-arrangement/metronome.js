@@ -97,11 +97,16 @@ export default Ember.Object.extend(
   pause() {
     if (!this.get('isPaused')) {
       this.setProperties({
-        seekBeat: this.getCurrentBeat(),
         isPlaying: false,
       });
       this.trigger('pause');
     }
+  },
+
+  stop() {
+    this.seekToBeat(0);
+    this.pause();
+    this.trigger('stop');
   },
 
   // TODO(MULTIGRID): turn into beatgrid

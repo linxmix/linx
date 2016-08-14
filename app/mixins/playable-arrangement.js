@@ -28,8 +28,7 @@ export default Ember.Mixin.create(
   },
 
   stop() {
-    this.pause();
-    this.get('metronome').seekToBeat(0);
+    this.get('metronome').stop();
   },
 
   skipBack() {

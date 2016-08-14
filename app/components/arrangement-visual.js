@@ -24,6 +24,7 @@ export default DataVisual.extend(
   // optional params
   showBarGrid: true,
   isReady: true,
+  showLastPlayMarker: false,
   zoom: Ember.computed(() => d3.behavior.zoom()),
 
   classNames: ['ArrangementVisual'],
@@ -87,6 +88,8 @@ export default DataVisual.extend(
   svg: Ember.computed.reads('stage.svg.select'),
   select: Ember.computed.reads('svg.ArrangementVisual-arrangement'),
   selection: Ember.computed.reads('select.selection'),
+
+  lastPlayPx: multiply('arrangement.metronome.seekBeat', 'pxPerBeat'),
 
   // used for constraining zoom
   minX: 0,
