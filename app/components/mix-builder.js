@@ -54,7 +54,7 @@ export default Ember.Component.extend(
   }),
 
   _pauseMix: Ember.on('willDestroyElement', function() {
-    this.get('mix').pause();
+    this.send('pause');
   }),
 
   // repeatedely save mix, if any unsaved changes
@@ -197,10 +197,14 @@ export default Ember.Component.extend(
 
     pause(beat) {
       this.get('mix').pause(beat);
+
+      if (this.get('selectedTransition')) {
+        this.get('mix').seekToBeat(this.get('mix.metronome.lastPlayBeat'));
+      }
     },
 
     playpause(beat) {
-      this.get('mix').playpause(beat);
+      this.send(this.get('mix.isPlaying') ? 'pause' : 'play', beat);
     },
 
     skipBack() {
@@ -348,8 +352,9 @@ export default Ember.Component.extend(
     // TODO(TECHDEBT): does this make sense to always say? how to tell if this event is active?
     // if alt key is held, suspend quantization
     let defaultQuantization = this.get('selectedQuantization');
-    const isAltKeyHeld = Ember.get(d3, 'event.sourceEvent.altKey') || false;
-    const isCtrlKeyHeld = Ember.get(d3, 'event.sourceEvent.ctrlKey') || false;
+    const isAltKeyHeld = Ember.get(d3, 'event.sourceEvent.altKey') || Ember.get(d3, 'event.altKey');
+    const isCtrlKeyHeld = Ember.get(d3, 'event.sourceEvent.ctrlKey') || Ember.get(d3, 'event.ctrlKey') ||
+      Ember.get(d3, 'event.sourceEvent.metaKey') || Ember.get(d3, 'event.metaKey');
     if (isAltKeyHeld) {
       quantization = SAMPLE_QUANTIZATION;
     } else if (isCtrlKeyHeld) {
@@ -358,7 +363,7 @@ export default Ember.Component.extend(
 
     quantization = quantization ? quantization : defaultQuantization;
 
-    // console.log('_quantizeBeat', quantization, beat, beatGrid)
+    console.log('_quantizeBeat', quantization, beat, beatGrid, Ember.get(d3, 'event'))
 
     let quantizedBeat = beat;
     switch (quantization) {
