@@ -1,8 +1,10 @@
 <div class="five wide column">
   {{mix-builder/precision-controls/track
     clip=selectedTransition.fromTrackClip
+    isFromTrackClip=true
     jumpTrackTask=jumpTrackTask
 
+    quantizeBeat=(action quantizeBeat)
     jumpTrack=(action jumpTrack selectedTransition.fromTrackClip.mixItem)
   }}
 </div>
@@ -10,16 +12,17 @@
 <div class="six wide column">
   {{mix-builder/precision-controls/transition
     clip=selectedTransition.transitionClip
-    showAutomation=attrs.showAutomation
+    showAutomation=showAutomation
 
-    quantizeBeat=(action attrs.quantizeBeat)
-    toggleShowAutomation=(action attrs.toggleShowAutomation)
+    quantizeBeat=(action quantizeBeat)
+    toggleShowAutomation=(action toggleShowAutomation)
   }}
 </div>
 
 <div class="five wide column">
   {{mix-builder/precision-controls/track
     clip=selectedTransition.toTrackClip
+    isToTrackClip=true
     jumpTrackTask=jumpTrackTask
 
     jumpTrack=(action jumpTrack selectedTransition.toTrackClip.mixItem)
