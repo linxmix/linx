@@ -3,6 +3,7 @@
     clip=selectedTransition.fromTrackClip
     jumpTrackTask=jumpTrackTask
 
+    quantizeBeat=(action quantizeBeat)
     jumpTrack=(action jumpTrack selectedTransition.fromTrackClip.mixItem)
   }}
 </div>
@@ -10,10 +11,10 @@
 <div class="six wide column">
   {{mix-builder/precision-controls/transition
     clip=selectedTransition.transitionClip
-    showAutomation=attrs.showAutomation
+    showAutomation=showAutomation
 
-    quantizeBeat=(action attrs.quantizeBeat)
-    toggleShowAutomation=(action attrs.toggleShowAutomation)
+    quantizeBeat=(action quantizeBeat)
+    toggleShowAutomation=(action toggleShowAutomation)
   }}
 </div>
 
