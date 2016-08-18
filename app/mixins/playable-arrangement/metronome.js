@@ -18,7 +18,6 @@ export default Ember.Object.extend(
   // params
   seekBeat: 0,        // [b] last seeked beat
   absSeekTime: 0,     // [s] time of last seek in clock frame of reference
-  lastPlayBeat: 0,    // [b] beat at which metronome was last played
   bpm: 128.0,
   isPlaying: false,
 
@@ -87,7 +86,6 @@ export default Ember.Object.extend(
 
     if (!this.get('isPlaying')) {
       this.setProperties({
-        lastPlayBeat: this.get('seekBeat'),
         isPlaying: true,
       });
       this.trigger('play');
@@ -96,6 +94,7 @@ export default Ember.Object.extend(
 
   pause() {
     if (!this.get('isPaused')) {
+      this.seekToBeat(this.getCurrentBeat());
       this.setProperties({
         isPlaying: false,
       });
@@ -104,9 +103,12 @@ export default Ember.Object.extend(
   },
 
   stop() {
-    this.seekToBeat(0);
-    this.pause();
-    this.trigger('stop');
+    if (!this.get('isPaused')) {
+      this.setProperties({
+        isPlaying: false,
+      });
+      this.trigger('stop');
+    }
   },
 
   // TODO(MULTIGRID): turn into beatgrid

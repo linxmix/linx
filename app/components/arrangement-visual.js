@@ -89,7 +89,7 @@ export default DataVisual.extend(
   select: Ember.computed.reads('svg.ArrangementVisual-arrangement'),
   selection: Ember.computed.reads('select.selection'),
 
-  lastPlayPx: multiply('arrangement.metronome.seekBeat', 'pxPerBeat'),
+  seekBeatPx: multiply('arrangement.metronome.seekBeat', 'pxPerBeat'),
 
   // used for constraining zoom
   minX: 0,

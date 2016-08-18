@@ -195,11 +195,11 @@ export default Ember.Component.extend(
       this.get('mix').play(beat);
     },
 
-    pause(beat) {
-      this.get('mix').pause(beat);
-
+    pause() {
       if (this.get('selectedTransition')) {
-        this.get('mix').seekToBeat(this.get('mix.metronome.seekBeat'));
+        this.get('mix').stop();
+      } else {
+        this.get('mix').pause();
       }
     },
 
