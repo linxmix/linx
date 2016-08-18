@@ -164,10 +164,14 @@ export default function(audioParamPath) {
     }),
 
     setValueCurveAtTime({ values, startTime, duration }) {
-      Ember.assert('Must provide values as Float32Array to Control.setValueCurveAtTime',
-        values instanceof Float32Array);
-      Ember.assert('Must provide valid values, startTime, and duration to Control.setValueCurveAtTime',
-        !Ember.isEmpty(values) && isValidNumber(startTime) && isValidNumber(duration));
+      if (!(values instanceof Float32Array &&
+        isValidNumber(startTime) &&
+        isValidNumber(duration)
+      )) {
+        Ember.Logger.warn('Must provide valid values, startTime, and duration to Control.setValueCurveAtTime',
+          values, startTime, duration);
+        return;
+      }
 
       const audioParam = this.get('audioParam');
 
