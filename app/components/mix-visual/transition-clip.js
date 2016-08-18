@@ -21,8 +21,11 @@ export default ArrangementVisualClip.extend(
   toTrackClip: Ember.computed.reads('clip.toTrackClip'),
 
   // used to keep track of where things were when drag started
-  _dragStartBeat: 0,
+  _dragFromTrackClipEndBeat: 0,
+  _dragToTrackClipStartBeat: 0,
   _resizeStartValue: 0,
+  _resizeFromTrackClipEndBeat: 0,
+  _resizeToTrackClipStartBeat: 0,
 
   actions: {
     onClick() {
@@ -40,14 +43,20 @@ export default ArrangementVisualClip.extend(
 
     onDrag(d3Context, d, dBeats) {
       dBeats = this.attrs.quantizeBeat(dBeats);
-      const newBeat = this.get('_dragStartBeat') + dBeats;
+      const newEndBeat = this.get('_dragFromTrackClipEndBeat') + dBeats;
+      const newStartBeat = this.get('_dragToTrackClipStartBeat') + dBeats;
       const fromTrackClip = this.get('fromTrackClip');
+      const toTrackClip = this.get('toTrackClip');
 
-      Ember.run.throttle(fromTrackClip, fromTrackClip.set, 'audioEndBeat', newBeat, 10, true);
+      Ember.run.throttle(fromTrackClip, fromTrackClip.set, 'audioEndBeat', newEndBeat, 10, true);
+      Ember.run.throttle(toTrackClip, toTrackClip.set, 'audioStartBeat', newStartBeat, 10, true);
     },
 
     onDragStart(d3Context, d) {
-      this.set('_dragStartBeat', this.get('fromTrackClip.audioEndBeat'));
+      this.setProperties({
+        _dragFromTrackClipEndBeat: this.get('fromTrackClip.audioEndBeat'),
+        _dragToTrackClipStartBeat: this.get('toTrackClip.audioStartBeat'),
+      });
     },
 
     // TODO(TECHDEBT): resize isnt implemented well
