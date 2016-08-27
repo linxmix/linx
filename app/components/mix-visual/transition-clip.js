@@ -49,7 +49,8 @@ export default ArrangementVisualClip.extend(
       const toTrackClip = this.get('toTrackClip');
 
       Ember.run.throttle(fromTrackClip, fromTrackClip.set, 'audioEndBeat', newEndBeat, 10, true);
-      Ember.run.throttle(toTrackClip, toTrackClip.set, 'audioStartBeat', newStartBeat, 10, true);
+      // do not move toTrackClip
+      // Ember.run.throttle(toTrackClip, toTrackClip.set, 'audioStartBeat', newStartBeat, 10, true);
     },
 
     onDragStart(d3Context, d) {
