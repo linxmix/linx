@@ -6,8 +6,8 @@ import PlayableClipMixin from './clip';
 import TrackSourceNode from 'linx/lib/web-audio/track-source-node';
 import GainNode from 'linx/lib/web-audio/gain-node';
 import TunaDelayNode from 'linx/lib/web-audio/tuna/delay-node';
+import TunaFilterNode from 'linx/lib/web-audio/tuna/filter-node';
 import SoundtouchNode from 'linx/lib/web-audio/soundtouch-node';
-import FxNode from 'linx/lib/web-audio/fx-node';
 import ReadinessMixin from '../readiness';
 import subtract from 'linx/lib/computed/subtract';
 import multiply from 'linx/lib/computed/multiply';
@@ -26,7 +26,8 @@ import {
   CONTROL_TYPE_BPM,
   CONTROL_TYPE_PITCH,
   CONTROL_TYPE_DELAY_WET,
-  CONTROL_TYPE_DELAY_CUTOFF
+  CONTROL_TYPE_DELAY_CUTOFF,
+  CONTROL_TYPE_FILTER_CUTOFF
 } from './automatable-clip/control';
 
 // TODO(CLEANUP): nest under track-clip/controls/gain?
@@ -60,6 +61,12 @@ const TrackDelayCutoffControl = Ember.Object.extend(
   type: CONTROL_TYPE_DELAY_CUTOFF,
 });
 
+const TrackFilterCutoffControl = Ember.Object.extend(
+  AutomatableClipControlMixin('tunaFilterNode.filter.frequency'), {
+
+  type: CONTROL_TYPE_FILTER_CUTOFF,
+});
+
 
 // TODO(REFACTOR2): merge this with arrangement/track-clip model
 export default Ember.Mixin.create(
@@ -84,7 +91,8 @@ export default Ember.Mixin.create(
       TrackTempoControl.create({ clip: this }),
       TrackPitchControl.create({ clip: this }),
       TrackDelayWetControl.create({ clip: this }),
-      TrackDelayCutoffControl.create({ clip: this })
+      TrackDelayCutoffControl.create({ clip: this }),
+      TrackFilterCutoffControl.create({ clip: this })
     ];
   }).readOnly(),
 
@@ -208,6 +216,11 @@ export default Ember.Mixin.create(
 
   tunaDelayNode: computedObject(TunaDelayNode, {
     'delayTime': 'quarterNoteDelayTime',
+    'audioContext': 'audioContext',
+    'outputNode': 'tunaFilterNode.content',
+  }),
+
+  tunaFilterNode: computedObject(TunaFilterNode, {
     'audioContext': 'audioContext',
     'outputNode': 'outputNode.content',
   }),

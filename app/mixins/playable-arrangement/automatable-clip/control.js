@@ -9,13 +9,15 @@ export const CONTROL_TYPE_BPM = 'bpm';
 export const CONTROL_TYPE_PITCH = 'pitch';
 export const CONTROL_TYPE_DELAY_WET = 'delay-wet';
 export const CONTROL_TYPE_DELAY_CUTOFF = 'delay-cutoff';
+export const CONTROL_TYPE_FILTER_CUTOFF = 'filter-cutoff';
 
 export const CONTROL_TYPES = [
   CONTROL_TYPE_VOLUME,
   CONTROL_TYPE_BPM,
   CONTROL_TYPE_PITCH,
   CONTROL_TYPE_DELAY_WET,
-  CONTROL_TYPE_DELAY_CUTOFF
+  CONTROL_TYPE_DELAY_CUTOFF,
+  CONTROL_TYPE_FILTER_CUTOFF
 ];
 
 // Interface for Automatable Controls

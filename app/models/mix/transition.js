@@ -10,7 +10,8 @@ import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationshi
 import {
   CONTROL_TYPE_VOLUME,
   CONTROL_TYPE_DELAY_WET,
-  CONTROL_TYPE_DELAY_CUTOFF
+  CONTROL_TYPE_DELAY_CUTOFF,
+  CONTROL_TYPE_FILTER_CUTOFF
 } from 'linx/mixins/playable-arrangement/automatable-clip/control';
 import { isValidNumber } from 'linx/lib/utils';
 
@@ -74,6 +75,11 @@ export default DS.Model.extend(
         controlType: CONTROL_TYPE_DELAY_CUTOFF,
         transition: this,
       });
+      const fromTrackFilterCutoffClip = store.createRecord('mix/transition/from-track-automation-clip', {
+        controlType: CONTROL_TYPE_FILTER_CUTOFF,
+        transition: this,
+      });
+
       const toTrackVolumeClip = store.createRecord('mix/transition/to-track-automation-clip', {
         controlType: CONTROL_TYPE_VOLUME,
         transition: this,
@@ -82,7 +88,8 @@ export default DS.Model.extend(
       const fromTrackAutomationClips = [
         fromTrackVolumeClip,
         fromTrackDelayWetClip,
-        fromTrackDelayCutoffClip
+        fromTrackDelayCutoffClip,
+        fromTrackFilterCutoffClip
       ];
 
       const toTrackAutomationClips = [
@@ -129,6 +136,21 @@ export default DS.Model.extend(
           {
             beat: beatCount,
             value: 2000,
+          }
+        ]);
+
+        fromTrackFilterCutoffClip.addControlPoints([
+          {
+            beat: 0,
+            value: 0,
+          },
+          {
+            beat: 3 * (beatCount / 4),
+            value: 20,
+          },
+          {
+            beat: beatCount,
+            value: 500,
           }
         ]);
 
