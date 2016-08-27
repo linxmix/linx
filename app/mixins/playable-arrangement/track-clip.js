@@ -90,6 +90,7 @@ export default Ember.Mixin.create(
   // optional params
   transpose: 0,
   gain: DEFAULT_GAIN,
+  delayBypass: 0,
 
   // implementing automatable clip mixin
   controls: Ember.computed(function() {
@@ -223,6 +224,7 @@ export default Ember.Mixin.create(
   }),
 
   tunaDelayNode: computedObject(TunaDelayNode, {
+    'bypass': 'delayBypass',
     'delayTime': 'quarterNoteDelayTime',
     'audioContext': 'audioContext',
     'outputNode': 'tunaHighpassFilterNode.content',
@@ -231,6 +233,7 @@ export default Ember.Mixin.create(
   highpassFilterType: 'highpass',
   tunaHighpassFilterNode: computedObject(TunaFilterNode, {
     'filterType': 'highpassFilterType',
+    'frequency': 20,
     'audioContext': 'audioContext',
     'outputNode': 'tunaLowpassFilterNode.content',
   }),
@@ -238,6 +241,7 @@ export default Ember.Mixin.create(
   lowpassFilterType: 'lowpass',
   tunaLowpassFilterNode: computedObject(TunaFilterNode, {
     'filterType': 'lowpassFilterType',
+    'frequency': 22050,
     'audioContext': 'audioContext',
     'outputNode': 'outputNode.content',
   }),

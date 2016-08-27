@@ -48,7 +48,12 @@ export default Ember.Component.extend(
       const fromTrackClip = transitionClip.get('fromTrackClip.content');
 
       fromTrackClip.set('audioEndTime', fromTrackClip.getAudioTimeFromArrangementBeat(quantizedBeat));
-    }
+    },
+
+    delayBypass() {
+      const fromTrackClip = this.get('clip.fromTrackClip');
+      fromTrackClip && fromTrackClip.toggleProperty('delayBypass');
+    },
   },
 
   // TODO(TECHDEBT): share these with other defaults, ie models/transition

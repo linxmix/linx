@@ -20,6 +20,7 @@ export default Clip.extend(
   audioEndTime: withDefaultProperty('_audioEndTime', '_defaultAudioEndTime'),
   transpose: DS.attr('number', { defaultValue: 0 }),
   gain: DS.attr('number', { defaultValue: DEFAULT_GAIN }),
+  delayBypass: DS.attr('boolean'),
 
   _audioStartTime: DS.attr('number'),
   _audioEndTime: DS.attr('number'),

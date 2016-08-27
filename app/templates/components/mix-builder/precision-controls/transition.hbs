@@ -10,9 +10,16 @@
   Optimize Transition
 </div>
 
+{{!--
 <div class="inverted teal ui icon button {{if attrs.selectedAutomation '' 'basic'}}" {{action "toggleShowAutomation"}}>
   <i class="volume {{if attrs.selectedAutomation 'up' 'off'}} icon"></i>
   {{if attrs.selectedAutomation 'Hide' 'Show'}} Volume Automation
+</div>
+ --}}
+
+<div class="inverted tiny ui basic button"
+  {{action "snapToBeat"}}>
+  Snap
 </div>
 
 <div style="margin: 5px 0;">
@@ -25,11 +32,6 @@
   Start Volume
   {{x-slider min=0 max=1 step=0.01 value=optimizeStartVolume}}
   <span class="MixBuilderPrecisionControls-number">{{optimizeStartVolume}}</span>
-</div>
-
-<div class="inverted tiny ui basic button"
-  {{action "snapToBeat"}}>
-  Snap
 </div>
 
 {{#lx-dropdown
@@ -45,3 +47,8 @@
     {{/each-in}}
   </div>
 {{/lx-dropdown}}
+
+<div class="inverted teal ui icon button {{if (not clip.fromTrackClip.delayBypass) '' 'basic'}}" {{action "delayBypass"}}>
+  <i class="volume {{if (not clip.fromTrackClip.delayBypass) 'up' 'off'}} icon"></i>
+  Delay {{if (not clip.fromTrackClip.delayBypass) 'On' 'Off'}}
+</div>

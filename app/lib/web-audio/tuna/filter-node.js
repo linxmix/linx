@@ -9,7 +9,7 @@ export default Ember.ObjectProxy.extend(
   WebAudioNodeMixin, {
 
   // optional params
-  frequency: 440,          // 20 to 22050
+  frequency: 20,           // 20 to 22050
   Q: 1,                    // 0.001 to 100
   gain: 0,                 // -40 to 40
   filterType: 'highpass',  // lowpass, highpass, bandpass, lowshelf, highshelf, peaking, notch, allpass
@@ -23,7 +23,6 @@ export default Ember.ObjectProxy.extend(
   node: Ember.computed('tuna', 'frequency', 'Q', 'gain', 'filterType', 'bypass', function() {
     const tuna = this.get('tuna');
     const properties = this.getProperties('frequency', 'Q', 'gain', 'filterType', 'bypass');
-    console.log("TUNA FILTER PROPERS", properties)
 
     return new tuna.Filter(properties);
   }),
