@@ -5,13 +5,14 @@ import AutomatableClipMixin from './automatable-clip';
 import PlayableClipMixin from './clip';
 import TrackSourceNode from 'linx/lib/web-audio/track-source-node';
 import GainNode from 'linx/lib/web-audio/gain-node';
+import TunaDelayNode from 'linx/lib/web-audio/tuna/delay-node';
 import SoundtouchNode from 'linx/lib/web-audio/soundtouch-node';
 import FxNode from 'linx/lib/web-audio/fx-node';
 import ReadinessMixin from '../readiness';
 import subtract from 'linx/lib/computed/subtract';
 import multiply from 'linx/lib/computed/multiply';
 import computedObject from 'linx/lib/computed/object';
-import { flatten, isValidNumber, beatToTime } from 'linx/lib/utils';
+import { flatten, isValidNumber, beatToTime, bpmToSpb } from 'linx/lib/utils';
 
 import { DEFAULT_GAIN } from 'linx/models/track/audio-meta';
 import {
@@ -23,7 +24,9 @@ import {
   default as AutomatableClipControlMixin,
   CONTROL_TYPE_VOLUME,
   CONTROL_TYPE_BPM,
-  CONTROL_TYPE_PITCH
+  CONTROL_TYPE_PITCH,
+  CONTROL_TYPE_DELAY_WET,
+  CONTROL_TYPE_DELAY_CUTOFF
 } from './automatable-clip/control';
 
 // TODO(CLEANUP): nest under track-clip/controls/gain?
@@ -43,6 +46,18 @@ const TrackPitchControl = Ember.Object.extend(
   AutomatableClipControlMixin('soundtouchNode.pitch'), {
 
   type: CONTROL_TYPE_PITCH,
+});
+
+const TrackDelayWetControl = Ember.Object.extend(
+  AutomatableClipControlMixin('tunaDelayNode.wet.gain'), {
+
+  type: CONTROL_TYPE_DELAY_WET,
+});
+
+const TrackDelayCutoffControl = Ember.Object.extend(
+  AutomatableClipControlMixin('tunaDelayNode.filter.frequency'), {
+
+  type: CONTROL_TYPE_DELAY_CUTOFF,
 });
 
 
@@ -67,7 +82,9 @@ export default Ember.Mixin.create(
     return [
       TrackVolumeControl.create({ clip: this }),
       TrackTempoControl.create({ clip: this }),
-      TrackPitchControl.create({ clip: this })
+      TrackPitchControl.create({ clip: this }),
+      TrackDelayWetControl.create({ clip: this }),
+      TrackDelayCutoffControl.create({ clip: this })
     ];
   }).readOnly(),
 
@@ -181,13 +198,19 @@ export default Ember.Mixin.create(
 
   trackVolumeNode: computedObject(GainNode, {
     'audioContext': 'audioContext',
-    'outputNode': 'outputNode.content',
+    'outputNode': 'tunaDelayNode.content',
   }),
 
-  // fxNode: computedObject(FxNode, {
-  //   'audioContext': 'audioContext',
-  //   'outputNode': 'outputNode',
-  // }),
+  quarterNoteDelayTime: Ember.computed('syncBpm', function() {
+    // return bpmToSpb(this.get('syncBpm')) * 1000 * 3 / 4;
+    return bpmToSpb(this.get('syncBpm')) * 1000;
+  }),
+
+  tunaDelayNode: computedObject(TunaDelayNode, {
+    'delayTime': 'quarterNoteDelayTime',
+    'audioContext': 'audioContext',
+    'outputNode': 'outputNode.content',
+  }),
 
   // nodes: Ember.computed.collect('trackSourceNode', 'soundtouchNode', 'gainNode', 'fxNode'),
   // controls: Ember.computed('nodes.@each.controls', function() {

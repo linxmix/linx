@@ -7,7 +7,11 @@ import ReadinessMixin from 'linx/mixins/readiness';
 import PlayableArrangementMixin from 'linx/mixins/playable-arrangement';
 import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 
-import { CONTROL_TYPE_VOLUME } from 'linx/mixins/playable-arrangement/automatable-clip/control';
+import {
+  CONTROL_TYPE_VOLUME,
+  CONTROL_TYPE_DELAY_WET,
+  CONTROL_TYPE_DELAY_CUTOFF
+} from 'linx/mixins/playable-arrangement/automatable-clip/control';
 import { isValidNumber } from 'linx/lib/utils';
 
 export default DS.Model.extend(
@@ -62,21 +66,71 @@ export default DS.Model.extend(
         controlType: CONTROL_TYPE_VOLUME,
         transition: this,
       });
+      const fromTrackDelayWetClip = store.createRecord('mix/transition/from-track-automation-clip', {
+        controlType: CONTROL_TYPE_DELAY_WET,
+        transition: this,
+      });
+      const fromTrackDelayCutoffClip = store.createRecord('mix/transition/from-track-automation-clip', {
+        controlType: CONTROL_TYPE_DELAY_CUTOFF,
+        transition: this,
+      });
       const toTrackVolumeClip = store.createRecord('mix/transition/to-track-automation-clip', {
         controlType: CONTROL_TYPE_VOLUME,
         transition: this,
       });
 
-      // TODO(TECHDEBT): save volume clips BEFORE adding items. otherwise, we get a weird bug
+      const fromTrackAutomationClips = [
+        fromTrackVolumeClip,
+        fromTrackDelayWetClip,
+        fromTrackDelayCutoffClip
+      ];
+
+      const toTrackAutomationClips = [
+        toTrackVolumeClip
+      ];
+
+      const clips = fromTrackAutomationClips.concat(toTrackAutomationClips);
+
+      // TODO(TECHDEBT): save automation clips BEFORE adding items. otherwise, we get a weird bug
       // where control points are removed from relationship while saving, if only one has changed
       // - not due to orderedHasMany
-      return Ember.RSVP.all([fromTrackVolumeClip, toTrackVolumeClip].invoke('save')).then(() => {
+      return Ember.RSVP.all(clips.invoke('save')).then(() => {
         fromTrackVolumeClip.addControlPoints(generateControlPointParams({
           startValue: startVolume,
           n: volumeControlPointCount,
           beatCount,
           direction: -1
         }));
+
+        fromTrackDelayWetClip.addControlPoints([
+          {
+            beat: 0,
+            value: 0,
+          },
+          {
+            beat: 3 * (beatCount / 4),
+            value: 0,
+          },
+          {
+            beat: beatCount,
+            value: 0.8
+          }
+        ]);
+
+        fromTrackDelayCutoffClip.addControlPoints([
+          {
+            beat: 0,
+            value: 0,
+          },
+          {
+            beat: 3 * (beatCount / 4),
+            value: 10000,
+          },
+          {
+            beat: beatCount,
+            value: 2000,
+          }
+        ]);
 
         toTrackVolumeClip.addControlPoints(generateControlPointParams({
           startValue: startVolume,
@@ -85,8 +139,8 @@ export default DS.Model.extend(
           direction: 1
         }));
 
-        this.get('fromTrackAutomationClips').addObject(fromTrackVolumeClip);
-        this.get('toTrackAutomationClips').addObject(toTrackVolumeClip);
+        this.get('fromTrackAutomationClips').addObjects(fromTrackAutomationClips);
+        this.get('toTrackAutomationClips').addObjects(toTrackAutomationClips);
 
         this.set('beatCount', beatCount);
         return this;
@@ -115,14 +169,14 @@ export default DS.Model.extend(
   },
 });
 
-function generateControlPointParams({ startValue = 0.7, beatCount = 16, direction = 1, n = 5 }) {
+function generateControlPointParams({ startValue = 0.7, endValue = 1, beatCount = 16, direction = 1, n = 5 }) {
   const range = _.range(0, n);
   if (direction === -1) { range.reverse(); }
 
   return range.map((x, i) => {
     return {
       beat: beatCount * (i / (n - 1)),
-      value: startValue + (1 - startValue) * (x / (n - 1)),
+      value: startValue + (endValue - startValue) * (x / (n - 1)),
     };
   });
 }
