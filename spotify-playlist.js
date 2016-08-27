@@ -81,7 +81,10 @@ request.post(authOptions, function(error, response, body) {
   // use the access token to access the Spotify Web API
   const token = body.access_token;
   const playlistRequestOptions = {
-    url: 'https://api.spotify.com/v1/users/12101500688/playlists/1kj7ZNejTZvjyFHYrm2ACC/tracks',
+    // caio list
+    // url: 'https://api.spotify.com/v1/users/12101500688/playlists/1kj7ZNejTZvjyFHYrm2ACC/tracks',
+    // jas list
+    url: 'https://api.spotify.com/v1/users/12145773870/playlists/1spxWIO4imwkeiKk54ovH1/tracks',
     headers: {
       'Authorization': 'Bearer ' + token
     },
