@@ -39,7 +39,7 @@ FifoSampleBuffer.prototype.clear = function() {
 //  [function] createSoundtouchScriptNode(audioContext, filter, when, offset, endTime)
 //
 const MAX_BUFFER_SIZE = 16384;
-const BUFFER_SIZE = MAX_BUFFER_SIZE / 16;
+const BUFFER_SIZE = MAX_BUFFER_SIZE;
 const SAMPLE_DRIFT_TOLERANCE = 512;
 
 export function SoundtouchBufferSource(buffer) {
@@ -88,12 +88,6 @@ export function createSoundtouchNode({ audioContext, filter, startTime, offsetTi
     const l = outputs[0][0];
     const r = outputs[0][1];
 
-    // first clear output
-    for (let i = 0; i < l.length; i++) {
-      l[i] = 0;
-      r[i] = 0;
-    }
-
     // naively take first pitch and tempo values for this sample
     const pitch = parameters.pitch && parameters.pitch[0];
     const tempo = parameters.tempo && parameters.tempo[0];
@@ -125,12 +119,12 @@ export function createSoundtouchNode({ audioContext, filter, startTime, offsetTi
       // if we've drifed past tolerance, adjust frames to extract
       if (Math.abs(sampleDelta) >= SAMPLE_DRIFT_TOLERANCE) {
 
-        console.log("DRIFT", sampleDelta, extractFrameCount, BUFFER_SIZE);
         // console.log('actualElapsedSamples', actualElapsedSamples);
         // console.log('expectedElapsedSamples', expectedElapsedSamples);
 
         // if we're behind where we should be, extract dummy frames to catch up
         if (sampleDelta > 0) {
+          // console.log("DRIFT", sampleDelta, extractFrameCount, BUFFER_SIZE);
           const dummySamples = new Float32Array(sampleDelta * channelCount);
           const dummyFramesExtracted = filter.extract(dummySamples, sampleDelta);
 
