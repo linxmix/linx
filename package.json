@@ -73,6 +73,7 @@
     "request": "^2.72.0",
     "semantic-ui-ember": "0.9.0",
     "soundcloud": "^3.0.1",
+    "tunajs": "^0.4.5",
     "underscore": "^1.8.3",
     "waaclock": "^0.5.2",
     "workerify": "^0.3.0",
