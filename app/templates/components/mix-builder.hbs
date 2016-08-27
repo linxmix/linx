@@ -44,7 +44,7 @@
   {{mix-visual
     class="MixBuilder-mixVisual"
     mix=mix
-    showAutomation=showAutomation
+    selectedAutomation=selectedAutomation
     selectedTransition=selectedTransition
     selectedClip=selectedClip
     actionReceiver=mixVisualActionReceiver
@@ -58,13 +58,14 @@
   {{mix-builder/precision-controls
     isVisible=(not (not selectedTransition))
     selectedTransition=selectedTransition
-    showAutomation=showAutomation
+    selectedAutomation=selectedAutomation
     jumpTrackTask=jumpTrackTask
 
     jumpTrack=(action "jumpTrack")
     selectTransition=(action "selectTransition")
+    selectAutomation=(action "selectAutomation")
     quantizeBeat=(action "quantizeBeat")
-    toggleShowAutomation=(action toggleProperty "showAutomation")
+    toggleShowAutomation=(action toggleProperty "selectedAutomation")
   }}
 
   {{!-- {{quantize-dropdown

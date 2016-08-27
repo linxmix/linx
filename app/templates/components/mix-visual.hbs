@@ -10,7 +10,11 @@
 }}
 
   {{!-- Track Clips --}}
-  {{#zip-entries select=gridSelect.MixVisual-trackClips items=mix.trackClips as |trackClip tag|}}
+  {{#zip-entries
+    select=gridSelect.MixVisual-trackClips
+    items=mix.trackClips
+    as |trackClip tag|}}
+
     {{mix-visual/track-clip
       select=tag
       clip=trackClip
@@ -24,7 +28,11 @@
   {{/zip-entries}}
 
   {{!-- Transition Clips --}}
-  {{#zip-entries select=gridSelect.MixVisual-transitionClips items=mix.transitionClips as |transitionClip tag|}}
+  {{#zip-entries
+    select=gridSelect.MixVisual-transitionClips
+    items=mix.transitionClips
+    as |transitionClip tag|}}
+
     {{mix-visual/transition-clip
       select=tag
       clip=transitionClip
@@ -42,12 +50,12 @@
   {{!-- From Track Automation Clips --}}
   {{#zip-entries
     select=gridSelect.MixVisual-FromTrackAutomationClips
-    items=selectedTransition.fromTrackAutomationClips
-    as |automationClip tag|
-  }}
+    items=selectedTransition.fromTrackAutomationClips.content
+    as |automationClip tag|}}
+
     {{mix-visual/automation-clip
       select=tag
-      isD3Visible=attrs.showAutomation
+      isD3Visible=(eq selectedAutomation automationClip.controlType)
       clip=automationClip
       pxPerBeat=pxPerBeat
       height=rowHeight
@@ -58,12 +66,14 @@
   {{!-- To Track Automation Clips --}}
   {{#zip-entries
     select=gridSelect.MixVisual-ToTrackAutomationClips
-    items=selectedTransition.toTrackAutomationClips
-    as |automationClip tag|
-  }}
+    items=selectedTransition.toTrackAutomationClips.content
+    as |automationClip tag|}}
+
     {{mix-visual/automation-clip
       select=tag
-      isD3Visible=attrs.showAutomation
+      isD3Visible=(and
+        (not (not selectedTransition.toTrackClip))
+        (eq selectedAutomation automationClip.controlType))
       clip=automationClip
       pxPerBeat=pxPerBeat
       height=rowHeight

@@ -6,7 +6,7 @@ import { join } from 'ember-cli-d3/utils/d3';
 import SelectionProxy from 'ember-cli-d3/system/selection-proxy';
 
 export default Ember.Component.extend(
-  GraphicSupport(), {
+  GraphicSupport('items.[]'), {
 
   // required params
   requiredProperties: ['items'],

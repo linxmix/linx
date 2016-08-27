@@ -27,7 +27,8 @@ import {
   CONTROL_TYPE_PITCH,
   CONTROL_TYPE_DELAY_WET,
   CONTROL_TYPE_DELAY_CUTOFF,
-  CONTROL_TYPE_FILTER_CUTOFF
+  CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF,
+  CONTROL_TYPE_FILTER_LOWPASS_CUTOFF
 } from './automatable-clip/control';
 
 // TODO(CLEANUP): nest under track-clip/controls/gain?
@@ -61,10 +62,16 @@ const TrackDelayCutoffControl = Ember.Object.extend(
   type: CONTROL_TYPE_DELAY_CUTOFF,
 });
 
-const TrackFilterCutoffControl = Ember.Object.extend(
-  AutomatableClipControlMixin('tunaFilterNode.filter.frequency'), {
+const TrackHighpassFilterCutoffControl = Ember.Object.extend(
+  AutomatableClipControlMixin('tunaHighpassFilterNode.filter.frequency'), {
 
-  type: CONTROL_TYPE_FILTER_CUTOFF,
+  type: CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF,
+});
+
+const TrackLowpassFilterCutoffControl = Ember.Object.extend(
+  AutomatableClipControlMixin('tunaLowpassFilterNode.filter.frequency'), {
+
+  type: CONTROL_TYPE_FILTER_LOWPASS_CUTOFF,
 });
 
 
@@ -92,7 +99,8 @@ export default Ember.Mixin.create(
       TrackPitchControl.create({ clip: this }),
       TrackDelayWetControl.create({ clip: this }),
       TrackDelayCutoffControl.create({ clip: this }),
-      TrackFilterCutoffControl.create({ clip: this })
+      TrackHighpassFilterCutoffControl.create({ clip: this }),
+      TrackLowpassFilterCutoffControl.create({ clip: this })
     ];
   }).readOnly(),
 
@@ -217,10 +225,19 @@ export default Ember.Mixin.create(
   tunaDelayNode: computedObject(TunaDelayNode, {
     'delayTime': 'quarterNoteDelayTime',
     'audioContext': 'audioContext',
-    'outputNode': 'tunaFilterNode.content',
+    'outputNode': 'tunaHighpassFilterNode.content',
   }),
 
-  tunaFilterNode: computedObject(TunaFilterNode, {
+  highpassFilterType: 'highpass',
+  tunaHighpassFilterNode: computedObject(TunaFilterNode, {
+    'filterType': 'highpassFilterType',
+    'audioContext': 'audioContext',
+    'outputNode': 'tunaLowpassFilterNode.content',
+  }),
+
+  lowpassFilterType: 'lowpass',
+  tunaLowpassFilterNode: computedObject(TunaFilterNode, {
+    'filterType': 'lowpassFilterType',
     'audioContext': 'audioContext',
     'outputNode': 'outputNode.content',
   }),

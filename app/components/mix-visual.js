@@ -14,13 +14,13 @@ export default Ember.Component.extend(
   mix: null,
   selectedTransition: null,
   selectedClip: null,
+  selectedAutomation: null,
 
   // optional params
   pxPerBeat: variableTernary('selectedTransition', 'zoomedPxPerBeat', 'defaultPxPerBeat'),
   defaultPxPerBeat: 1,
   zoomedPxPerBeat: 25,
   rowHeight: 100,
-  showAutomation: false,
 
   _measureVisual: Ember.observer('selectedTransition', function() {
     Ember.run.next(() => {

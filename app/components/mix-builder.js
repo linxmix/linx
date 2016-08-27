@@ -16,6 +16,10 @@ import {
   SAMPLE_QUANTIZATION,
 } from 'linx/models/track/audio-meta/beat-grid';
 
+import {
+  CONTROL_TYPE_VOLUME,
+} from 'linx/mixins/playable-arrangement/automatable-clip/control';
+
 import { beatToTime, isValidNumber } from 'linx/lib/utils';
 
 export const FROM_TRACK_COLOR = '#ac6ac7';
@@ -41,7 +45,7 @@ export default Ember.Component.extend(
   mixVisualActionReceiver: null,
   store: Ember.inject.service(),
 
-  showAutomation: true,
+  selectedAutomation: CONTROL_TYPE_VOLUME,
 
   _playpauseMix: Ember.on(keyDown(' '), function(e) {
     const tagName = (get(e, 'target.tagName') || '').toUpperCase();
@@ -224,6 +228,10 @@ export default Ember.Component.extend(
 
     selectQuantization(quantization) {
       this.set('selectedQuantizations', [quantization]);
+    },
+
+    selectAutomation(automation) {
+      this.set('selectedAutomation', automation);
     },
 
     selectClip(clip) {

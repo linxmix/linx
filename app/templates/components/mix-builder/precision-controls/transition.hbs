@@ -10,9 +10,9 @@
   Optimize Transition
 </div>
 
-<div class="inverted teal ui icon button {{if attrs.showAutomation '' 'basic'}}" {{action "toggleShowAutomation"}}>
-  <i class="volume {{if attrs.showAutomation 'up' 'off'}} icon"></i>
-  {{if attrs.showAutomation 'Hide' 'Show'}} Volume Automation
+<div class="inverted teal ui icon button {{if attrs.selectedAutomation '' 'basic'}}" {{action "toggleShowAutomation"}}>
+  <i class="volume {{if attrs.selectedAutomation 'up' 'off'}} icon"></i>
+  {{if attrs.selectedAutomation 'Hide' 'Show'}} Volume Automation
 </div>
 
 <div style="margin: 5px 0;">
@@ -31,3 +31,17 @@
   {{action "snapToBeat"}}>
   Snap
 </div>
+
+{{#lx-dropdown
+  selected=selectedAutomation
+  onSelect=(action selectAutomation)
+  class="basic inverted inline button selection"
+}}
+  <input type="hidden" name="selectAutomation">
+  <div class="default text">Select Automation</div>
+  <div class="menu">
+    {{#each-in automationOptions as |key value|}}
+      <div class="item" data-value="{{key}}" data-text="{{value}}">{{value}}</div>
+    {{/each-in}}
+  </div>
+{{/lx-dropdown}}

@@ -5,11 +5,12 @@ export default Ember.Component.extend({
 
   // required params
   selectedTransition: null,
+  selectedAutomation: null,
 
   // optional params
-  showAutomation: false,
   jumpTrackTask: null,
   jumpTrack: Ember.K,
   quantizeBeat: Ember.K,
+  selectAutomation: Ember.K,
 });
 

@@ -12,9 +12,10 @@
 <div class="six wide column">
   {{mix-builder/precision-controls/transition
     clip=selectedTransition.transitionClip
-    showAutomation=showAutomation
+    selectedAutomation=selectedAutomation
 
     quantizeBeat=(action quantizeBeat)
+    selectAutomation=(action selectAutomation)
     toggleShowAutomation=(action toggleShowAutomation)
   }}
 </div>

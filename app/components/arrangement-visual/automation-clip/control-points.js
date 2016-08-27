@@ -8,7 +8,7 @@ import DraggableMixin from 'linx/mixins/components/arrangement-visual/draggable'
 
 export default Ember.Component.extend(
   DraggableMixin,
-  GraphicSupport('controlPoints.@each.{beat,value}'), {
+  GraphicSupport('controlPoints.@each.{beat,scaledValue}'), {
 
   // required params
   controlPoints: null,
@@ -27,7 +27,7 @@ export default Ember.Component.extend(
 
       selection
         .attr('cx', (controlPoint) => controlPoint.get('beat') * pxPerBeat)
-        .attr('cy', (controlPoint) => (1 - controlPoint.get('value')) * height)
+        .attr('cy', (controlPoint) => (1 - controlPoint.get('scaledValue')) * height)
         .attr('r', 10)
         .style('fill', '#B8DE44')
         .call(this.get('drag'));

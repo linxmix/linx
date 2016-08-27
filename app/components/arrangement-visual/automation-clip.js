@@ -12,7 +12,7 @@ import {
 } from 'linx/lib/utils';
 
 export default Clip.extend(
-  GraphicSupport('controlPoints.@each.{beat,value}'), {
+  GraphicSupport('controlPoints.@each.{beat,scaledValue}'), {
 
   // required params
   controlPoints: Ember.computed.reads('clip.controlPoints'),
@@ -36,17 +36,17 @@ export default Clip.extend(
         const maxBeat = nextControlPoint ? nextControlPoint.get('beat') : this.get('maxControlPointBeat');
 
         const beat = clamp(minBeat, oldBeat + dBeats, maxBeat);
-        const value = clamp(0, oldValue - (dHeight / height), 1);
+        const scaledValue = clamp(0, oldValue - (dHeight / height), 1);
 
-        // Ember.Logger.log('onControlPointDrag', dBeats, dHeight / height, beat, value)
+        // Ember.Logger.log('onControlPointDrag', dBeats, dHeight / height, beat, scaledValue)
       if (this.get('canMoveSelectedControlPointBeat')) {
         controlPoint.setProperties({
           beat,
-          value,
+          scaledValue,
         });
       } else {
         controlPoint.setProperties({
-          value,
+          scaledValue,
         });
       }
     },
@@ -55,7 +55,7 @@ export default Clip.extend(
       this.setProperties({
         selectedControlPoint: controlPoint,
         _dragStartBeat: controlPoint.get('beat'),
-        _dragStartValue: controlPoint.get('value')
+        _dragStartValue: controlPoint.get('scaledValue')
       });
     },
 
@@ -94,7 +94,7 @@ export default Clip.extend(
       const pxPerBeat = this.get('pxPerBeat');
       const line = d3.svg.line()
         .x((controlPoint) => controlPoint.get('beat') * pxPerBeat)
-        .y((controlPoint) => (1 - controlPoint.get('value')) * height)
+        .y((controlPoint) => (1 - controlPoint.get('scaledValue')) * height)
         .interpolate('linear');
 
       if (controlPoints.length) {
@@ -113,7 +113,7 @@ export default Clip.extend(
       const pxPerBeat = this.get('pxPerBeat');
       const area = d3.svg.area()
         .x((controlPoint) => controlPoint.get('beat') * pxPerBeat)
-        .y((controlPoint) => (1 - controlPoint.get('value')) * height)
+        .y((controlPoint) => (1 - controlPoint.get('scaledValue')) * height)
         .y0(0)
         .interpolate('linear');
 

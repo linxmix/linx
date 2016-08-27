@@ -39,6 +39,8 @@ export default Clip.extend(
   startValue: Ember.computed.reads('controlPoints.firstObject.value'),
   endValue: Ember.computed.reads('controlPoints.lastObject.value'),
 
+  valueRange: Ember.computed.reads('targetControl.valueRange'),
+
   // TODO(CLEANUP): why cant i depend on firstControlPoint.beat?
   // firstControlPoint: Ember.computed.reads('controlPoints.firstObject'),
   // lastControlPoint: Ember.computed.reads('controlPoints.lastObject'),

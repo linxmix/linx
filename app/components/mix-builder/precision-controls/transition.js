@@ -6,6 +6,18 @@ import {
   BEAT_QUANTIZATION,
 } from 'linx/models/track/audio-meta/beat-grid';
 
+import {
+  CONTROL_TYPE_VOLUME,
+  CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF,
+  CONTROL_TYPE_FILTER_LOWPASS_CUTOFF
+} from 'linx/mixins/playable-arrangement/automatable-clip/control';
+
+const AUTOMATION_OPTIONS = {
+  [CONTROL_TYPE_VOLUME]: 'Volume',
+  [CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF]: 'Highpass',
+  [CONTROL_TYPE_FILTER_LOWPASS_CUTOFF]: 'Lowpass',
+};
+
 export default Ember.Component.extend(
   BubbleActions('toggleShowAutomation'), {
 
@@ -13,10 +25,13 @@ export default Ember.Component.extend(
 
   // required params
   clip: null,
+  selectedAutomation: null,
 
   // optional params
-  showAutomation: true,
   quantizeBeat: Ember.K,
+  selectAutomation: Ember.K,
+
+  automationOptions: AUTOMATION_OPTIONS,
 
   actions: {
     optimizeTransition() {

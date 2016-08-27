@@ -23,6 +23,7 @@ export default Ember.ObjectProxy.extend(
   node: Ember.computed('tuna', 'frequency', 'Q', 'gain', 'filterType', 'bypass', function() {
     const tuna = this.get('tuna');
     const properties = this.getProperties('frequency', 'Q', 'gain', 'filterType', 'bypass');
+    console.log("TUNA FILTER PROPERS", properties)
 
     return new tuna.Filter(properties);
   }),

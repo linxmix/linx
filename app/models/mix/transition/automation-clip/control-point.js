@@ -9,13 +9,13 @@ export default ArrangementAutomationClipControlPoint.extend({
   automationClip: DS.belongsTo('mix/transition/automation-clip'),
 
   deleteRecord() {
-    console.log('delete control point', this.get('id'))
+    // console.log('delete control point', this.get('id'))
     return this._super.apply(this, arguments);
   },
 
   save() {
     if (isValidNumber(this.get('beat')) && isValidNumber(this.get('value'))) {
-      console.log("save mix control point", this.get('id'));
+      // console.log("save mix control point", this.get('id'));
       return this._super.apply(this, arguments);
     } else {
       return Ember.RSVP.Promise.resolve();
