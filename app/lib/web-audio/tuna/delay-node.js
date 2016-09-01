@@ -9,7 +9,7 @@ export default Ember.ObjectProxy.extend(
   WebAudioNodeMixin, {
 
   // optional params
-  feedback: 0.6,      // 0 to 1+
+  feedback: 0.7,      // 0 to 1+
   delayTime: 150,     // how many milliseconds should the wet signal be delayed?
   wetLevel: 0,        // 0 to 1+
   dryLevel: 1,        // 0 to 1+

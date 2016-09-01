@@ -1,5 +1,17 @@
 <div class="tracks-page">
-  {{#each model as |track|}}
+  <h1>Mike's Favorites</h1>
+
+  {{#each favoriteTracks as |track|}}
+    <div class="track">
+      {{#link-to 'track' track}}
+        {{track.title}}
+      {{/link-to}}
+    </div>
+  {{/each}}
+
+
+  <h1>All Tracks</h1>
+  {{#each tracks as |track|}}
     <div class="track">
       {{#link-to 'track' track}}
         {{track.title}}
