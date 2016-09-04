@@ -6,9 +6,10 @@ export default Ember.Component.extend({
   // required params
   mix: null,
   mixSaveTask: null,
-  mixExportTask: null,
+  mixRecordTask: null,
   saveMix: Ember.K,
-  exportMix: Ember.K,
+  recordMix: Ember.K,
+  stopRecord: Ember.K,
 
   actions: {
     saveMix() {

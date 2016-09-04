@@ -38,26 +38,28 @@
   </div>
 
   <div class="five wide column ui middle aligned grid MixBuilderHeader-right">
-    {{#unless mixSaveTask.isRunning}}
-      <div class="inverted green ui icon button test-save-mix {{if mix.anyDirty "" "basic disabled"}}" {{action "saveMix"}}>
-        <i class="cloud upload icon"></i>
-        Save Mix
+    {{#unless mixRecordTask.isRunning}}
+      {{#unless mixSaveTask.isRunning}}
+        <div class="inverted basic green ui icon button no-border test-save-mix {{if mix.anyDirty "" "basic disabled"}}" {{action "saveMix"}}>
+          <i class="cloud upload icon"></i>
+          Save Mix
+        </div>
+      {{else}}
+        <div class="inverted basic disabled ui no-border loading button">Saving...</div>
+      {{/unless}}
+
+      <div class="inverted basic red no-border ui icon button test-delete-mix {{if mixSaveTask.isRunning "basic disabled"}}" {{action "destroyMix"}}>
+        <i class="remove icon"></i>
+        Delete Mix
+      </div>
+
+      <div class="inverted basic orange ui icon no-border button" {{action recordMix}}>
+        <i class="circle icon"></i> Record
       </div>
     {{else}}
-      <div class="inverted basic disabled ui loading button">Saving...</div>
-    {{/unless}}
-
-    <div class="inverted red ui icon button test-delete-mix {{if mixSaveTask.isRunning "basic disabled"}}" {{action "destroyMix"}}>
-      <i class="remove icon"></i>
-      Delete Mix
-    </div>
-
-    {{#unless mixExportTask.isRunning}}
-      <div class="inverted ui icon button" {{action exportMix}}>
-        <i class="file audio outline icon icon"></i>
+      <div class="inverted red ui no-border icon button" {{action stopRecord}}>
+        <i class="stop circle icon"></i> <span class="anim-blink">Recording...</span>
       </div>
-    {{else}}
-      <div class="inverted basic disabled ui loading button">L</div>
     {{/unless}}
   </div>
 </div>

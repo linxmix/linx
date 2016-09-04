@@ -79,31 +79,42 @@ export default Ember.Component.extend(
     yield this.get('mix').save();
   }).keepLatest(),
 
-  outputFile: null,
-  mixExportTask: task(function * () {
-    const mix = this.get('mix');
-    const duration = mix.get('duration');
+  recorderNode: null,
+  mixRecordTask: task(function * () {
+    const mix = yield this.get('mix');
+    const duration = mix.getRemainingDuration();
 
     const inputNode = mix.get('inputNode.content');
     const recorderNode = new Recorder(inputNode);
+    this.setProperties({
+      recorderNode,
+    });
 
-    mix.stop();
     recorderNode.record();
     mix.play();
 
+    // record until mix end or manually ended
     console.log('recording started', duration);
+    let didStopRecording = false;
     const blob = yield new Ember.RSVP.Promise((resolve, reject) => {
-      Ember.run.later(() => {
-        console.log('recording stopped');
+      const onStopRecording = () => {
+        if (didStopRecording) {
+          return console.log('recording already stopped');
+        } else {
+          console.log('stop recording');
+          didStopRecording = true;
+        }
+
         mix.pause();
         recorderNode.stop();
         recorderNode.exportWAV(resolve);
-      }, duration * 1000);
+      }
+
+      // TODO(TECHDEBT): this should be mix.once('didFinish')
+      Ember.run.later(onStopRecording, duration * 1000);
+      this.one('stopRecord', onStopRecording);
     });
 
-    mix.set('outputFile', blob);
-    mix.set('recorder', Recorder);
-    mix.set('recorderNode', recorderNode);
     Recorder.forceDownload(blob, `${mix.get('title')}.wav`);
   }).drop(),
 
@@ -191,8 +202,12 @@ export default Ember.Component.extend(
       return this.get('jumpTrackTask').perform(mixItem);
     },
 
-    exportMix() {
-      return this.get('mixExportTask').perform();
+    recordMix() {
+      return this.get('mixRecordTask').perform();
+    },
+
+    stopRecord() {
+      this.trigger('stopRecord');
     },
 
     saveMix() {

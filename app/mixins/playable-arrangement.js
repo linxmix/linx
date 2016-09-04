@@ -88,6 +88,13 @@ export default Ember.Mixin.create(
     return this.get('metronome').getDuration(0, this.get('beatCount'));
   }),
 
+  getRemainingDuration() {
+    const metronome = this.get('metronome');
+    const beatCount = this.get('beatCount');
+    const currentBeat = metronome.getCurrentBeat();
+    return metronome.getDuration(currentBeat, beatCount - currentBeat);
+  },
+
   //
   // Web Audio Nodes
   //
