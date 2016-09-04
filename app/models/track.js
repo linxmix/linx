@@ -144,7 +144,7 @@ export default DS.Model.extend(
 
     audioMeta.setProperties({
       bpm: parseFloat(get(tags, 'TBPM.data') || DEFAULT_BPM),
-      keyText: parseInt(get(tags, 'comment.text')),
+      keyText: get(tags, 'comment.text'),
     });
 
   }).restartable(),
