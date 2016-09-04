@@ -33,6 +33,7 @@ export default Clip.extend(
   track: Ember.computed.reads('clip.track'),
   audioStartTime: Ember.computed.reads('clip.audioStartTime'),
   audioEndTime: Ember.computed.reads('clip.audioEndTime'),
+  clipBeatCount: Ember.computed.reads('clip.beatCount'),
   audioMeta: Ember.computed.reads('track.audioMeta'),
   trackBpm: Ember.computed.reads('audioMeta.bpm'),
   trackBeatCount: Ember.computed.reads('audioMeta.beatCount'),
@@ -40,7 +41,9 @@ export default Clip.extend(
   audioBinary: Ember.computed.reads('track.audioBinary'),
   audioBuffer: Ember.computed.reads('audioBinary.audioBuffer'),
 
-  peaksLength: multiply('trackBeatCount', 'pxPerBeat'),
+  peaksLength: Ember.computed('displayOverflowWaveform', 'trackBeatCount', 'clipBeatCount', 'pxPerBeat', function() {
+    return (this.get('displayOverflowWaveform') ? this.get('trackBeatCount') : this.get('clipBeatCount')) * this.get('pxPerBeat');
+  }),
   trackPeaks: [],
 
   // TODO(CLEANUP): shouldnt have to depend on audioBuffer
