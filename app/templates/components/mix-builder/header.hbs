@@ -1,8 +1,17 @@
 <div class="ui container grid">
   <div class="five wide column ui middle aligned grid">
-    {{search-tracks
-      tracksPromise=searchTracks
-      action=attrs.addTrack
+    <span style="display: inline-block;">
+      {{search-tracks
+        tracksPromise=searchTracks
+        action=attrs.addTrack
+      }}
+    </span>
+
+    {{mix-builder/input
+      class="MixBuilderHeader-positionInput"
+      type="text"
+      value=newTrackPosition
+      update=(action (mut newTrackPosition))
     }}
 
     {{soundcloud-url-input

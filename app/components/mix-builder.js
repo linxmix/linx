@@ -20,7 +20,7 @@ import {
   CONTROL_TYPE_VOLUME,
 } from 'linx/mixins/playable-arrangement/automatable-clip/control';
 
-import { beatToTime, isValidNumber } from 'linx/lib/utils';
+import { beatToTime, isValidNumber, clamp } from 'linx/lib/utils';
 
 export const FROM_TRACK_COLOR = '#ac6ac7';
 export const TO_TRACK_COLOR = '#16a085';
@@ -46,6 +46,9 @@ export default Ember.Component.extend(
   store: Ember.inject.service(),
 
   selectedAutomation: CONTROL_TYPE_VOLUME,
+  newTrackPosition: Ember.computed('mix.length', function() {
+    return this.get('mix.length') + 1;
+  }),
 
   _playpauseMix: Ember.on(keyDown(' '), function(e) {
     const tagName = (get(e, 'target.tagName') || '').toUpperCase();
@@ -320,10 +323,10 @@ export default Ember.Component.extend(
       track = track ? track : this.get('store').createRecord('track');
 
       const mix = this.get('mix');
-
+      const index = clamp(0, this.get('newTrackPosition') - 1, mix.get('length'));
       const endBeat = this._quantizeBeat(mix.get('endBeat'));
 
-      mix.appendTrack(track).then((mixItem) => {
+      mix.insertTrackAt(index, track).then((mixItem) => {
         const fromTrackClip = mixItem.get('prevItem.trackClip');
 
         if (fromTrackClip) {
