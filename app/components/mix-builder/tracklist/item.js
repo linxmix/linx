@@ -5,6 +5,7 @@ import _ from 'npm:underscore';
 import add from 'linx/lib/computed/add';
 import equalProps from 'linx/lib/computed/equal-props';
 import { FROM_TRACK_COLOR, TO_TRACK_COLOR } from 'linx/components/mix-builder';
+import { isValidNumber } from 'linx/lib/utils';
 
 export default Ember.Component.extend({
   tagName: 'tr',
@@ -48,7 +49,7 @@ export default Ember.Component.extend({
   updateTrackBpm: _.throttle(function(newBpm) {
     newBpm = parseFloat(newBpm);
 
-    this.set('track.audioMeta.bpm', newBpm);
+    isValidNumber(newBpm) && this.set('track.audioMeta.bpm', newBpm);
   }, 1000, { leading: false }),
 
   // CURRENTLY DISABLED so mix save button controls everything
