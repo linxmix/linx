@@ -38,8 +38,9 @@ FifoSampleBuffer.prototype.clear = function() {
 //  [class] SoundtouchBufferSource(buffer)
 //  [function] createSoundtouchScriptNode(audioContext, filter, when, offset, endTime)
 //
-const MAX_BUFFER_SIZE = 16384;
-const BUFFER_SIZE = MAX_BUFFER_SIZE / 8;
+// TODO(TECHDEBT): window.BUFFER_SIZE set by mix builder
+window.MAX_BUFFER_SIZE = 16384;
+window.BUFFER_SIZE = MAX_BUFFER_SIZE / 8;
 const SAMPLE_DRIFT_TOLERANCE = 512;
 
 export function SoundtouchBufferSource(buffer) {
@@ -59,7 +60,9 @@ SoundtouchBufferSource.prototype = {
 };
 
 export function createSoundtouchNode({ audioContext, filter, startTime, offsetTime, endTime, defaultTempo, defaultPitch }) {
+  console.log('createSoundtouchNode')
   const channelCount = 2;
+  const windowBufferSize = window.BUFFER_SIZE;
 
   if (!(audioContext && filter
     && isValidNumber(startTime) && isValidNumber(offsetTime) && isValidNumber(endTime))) {
@@ -67,7 +70,7 @@ export function createSoundtouchNode({ audioContext, filter, startTime, offsetTi
     return;
   }
 
-  const samples = new Float32Array(BUFFER_SIZE * channelCount);
+  const samples = new Float32Array(windowBufferSize * channelCount);
   const sampleRate = audioContext.sampleRate || 44100;
   const startSample = ~~(offsetTime * sampleRate);
 
@@ -124,7 +127,7 @@ export function createSoundtouchNode({ audioContext, filter, startTime, offsetTi
 
         // if we're behind where we should be, extract dummy frames to catch up
         if (sampleDelta > 0) {
-          // console.log("DRIFT", sampleDelta, extractFrameCount, BUFFER_SIZE);
+          // console.log("DRIFT", sampleDelta, extractFrameCount, windowBufferSize);
           const dummySamples = new Float32Array(sampleDelta * channelCount);
           const dummyFramesExtracted = filter.extract(dummySamples, sampleDelta);
 
@@ -156,8 +159,8 @@ export function createSoundtouchNode({ audioContext, filter, startTime, offsetTi
   const node = new AudioWorkerNode(audioContext, onaudioprocess, {
     numberOfInputs: 2,
     numberOfOutputs: 2,
-    bufferLength: BUFFER_SIZE,
-    dspBufLength: BUFFER_SIZE,
+    bufferLength: windowBufferSize,
+    dspBufLength: windowBufferSize,
     parameters: [
       {
         name: 'pitch',

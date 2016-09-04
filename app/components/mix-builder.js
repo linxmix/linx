@@ -93,6 +93,8 @@ export default Ember.Component.extend(
       recorderNode,
     });
 
+    // TODO(TECHDEBT): do not share state this way
+    window.BUFFER_SIZE = window.MAX_BUFFER_SIZE;
     recorderNode.record();
     mix.play();
 
@@ -111,6 +113,7 @@ export default Ember.Component.extend(
         mix.pause();
         recorderNode.stop();
         recorderNode.exportWAV(resolve);
+        window.BUFFER_SIZE = ~~(window.MAX_BUFFER_SIZE / 8);
       }
 
       // TODO(TECHDEBT): this should be mix.once('didFinish')
