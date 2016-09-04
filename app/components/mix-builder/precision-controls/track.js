@@ -28,9 +28,10 @@ export default Ember.Component.extend({
         if (this.get('isFromTrackClip')) {
           clip.set('audioEndTime', clip.getAudioTimeFromArrangementBeat(beat));
         } else {
-          const transitionBeatCount = this.get('clip.mixItem.transition.beatCount');
-          const time = clip.getAudioTimeFromArrangementBeat(beat - transitionBeatCount);
-          clip.set('audioStartTime', time);
+          // this code was to allow moving transition to end beat
+          // const transitionBeatCount = this.get('clip.mixItem.transition.beatCount');
+          // const time = clip.getAudioTimeFromArrangementBeat(beat - transitionBeatCount);
+          clip.set('audioStartTime', clip.getAudioTimeFromArrangementBeat(beat));
         }
       });
     }
