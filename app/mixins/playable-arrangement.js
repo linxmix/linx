@@ -8,6 +8,7 @@ import WebAudioMergerNode from 'linx/lib/web-audio/merger-node';
 import computedObject from 'linx/lib/computed/object';
 import BeatGrid from 'linx/models/track/audio-meta/beat-grid';
 import { flatten, isValidNumber } from 'linx/lib/utils';
+import GainNode from 'linx/lib/web-audio/gain-node';
 
 // Interface for playable arrangements of clips
 export default Ember.Mixin.create(
@@ -103,6 +104,12 @@ export default Ember.Mixin.create(
   // Web Audio Nodes
   //
   inputNode: computedObject(WebAudioMergerNode, {
+    'audioContext': 'audioContext',
+    'outputNode': 'gainNode.content',
+  }),
+
+  gainNode: computedObject(GainNode, {
+    'value': 1.3,
     'audioContext': 'audioContext',
     'outputNode': 'outputNode',
   }),
