@@ -91,8 +91,12 @@ export default Ember.Mixin.create(
   getRemainingDuration() {
     const metronome = this.get('metronome');
     const beatCount = this.get('beatCount');
-    const currentBeat = metronome.getCurrentBeat();
+    const currentBeat = this.getCurrentBeat();
     return metronome.getDuration(currentBeat, beatCount - currentBeat);
+  },
+
+  getCurrentBeat() {
+    return this.get('metronome').getCurrentBeat();
   },
 
   //

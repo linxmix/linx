@@ -234,6 +234,11 @@ export default Ember.Component.extend(
       this.get('mix').seekToBeat(0);
     },
 
+    centerView() {
+      const mix = this.get('mix');
+      this.send('zoomToBeat', mix.getCurrentBeat());
+    },
+
     skipForth() {
       Ember.Logger.log("skip forth unimplemented");
     },
@@ -274,6 +279,11 @@ export default Ember.Component.extend(
     resetZoom(...args) {
       const mixVisual = this.get('mixVisualActionReceiver');
       mixVisual && mixVisual.send.apply(mixVisual, ['resetZoom'].concat(args));
+    },
+
+    zoomToBeat(...args) {
+      const mixVisual = this.get('mixVisualActionReceiver');
+      mixVisual && mixVisual.send.apply(mixVisual, ['zoomToBeat'].concat(args));
     },
 
     quantizeBeat(beat) {

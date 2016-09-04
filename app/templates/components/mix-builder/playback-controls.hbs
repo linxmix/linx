@@ -4,6 +4,11 @@
   playpause=(action attrs.playpause)
   skipBack=(action attrs.skipBack)
   skipForth="skipForth"}}
+
+  <div class="ui basic inverted button" {{action centerView}}>
+    <i class="marker icon"></i> Recenter
+  </div>
+
   Tempo:
   <span class="MixBuilderPlaybackControls-tempo">
     {{mix-builder/input type="number" value=mix.bpm update=(action updateMixBpm)}}

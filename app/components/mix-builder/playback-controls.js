@@ -9,6 +9,7 @@ export default Ember.Component.extend({
 
   // required params
   mix: null,
+  centerView: Ember.K,
 
   updateMixBpm: _.throttle(function(newBpm) {
     newBpm = parseFloat(newBpm);
