@@ -32,7 +32,6 @@ export default ArrangementVisualClip.extend(
       if (!this.get('isSelectedTransitionClip')) {
         this.sendAction('selectTransition', this.get('transition'));
 
-        // TODO(TECHDEBT): why does this not work?
         const event = Ember.get(d3, 'event.sourceEvent') || Ember.get(d3, 'event');
         if (event) {
           event.preventDefault();

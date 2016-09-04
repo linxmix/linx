@@ -154,6 +154,6 @@ export default DataVisual.extend(
         const beat = d3.mouse(this)[0] / context.get('pxPerBeat');
         context.sendAction('seekToBeat', beat);
       }
-    }, true);
+    });
   }).on('didInsertElement'),
 });
