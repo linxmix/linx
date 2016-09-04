@@ -18,9 +18,9 @@ export default Ember.ObjectProxy.extend(
   headers: null,
 
   // sets promise and sends xhr
-  execute() {
-    let xhr = this.get('xhr');
-    let promise = new Ember.RSVP.Promise((resolve, reject) => {
+  execute(...args) {
+    const xhr = this.get('xhr');
+    const promise = new Ember.RSVP.Promise((resolve, reject) => {
       xhr.addEventListener('load', (e) => {
         if (this.get('progress') !== 100) {
           this.updateProgress(e);
@@ -37,13 +37,17 @@ export default Ember.ObjectProxy.extend(
     });
 
     this.set('promise', promise);
-    xhr.send();
+    xhr.send(...args);
     return promise;
   },
 
+  setRequestHeader(...args) {
+    return this.get('xhr').setRequestHeader(...args);
+  },
+
   xhr: Ember.computed('url', 'method', 'responseType', function() {
-    let { url, method, responseType } = this.getProperties('url', 'method', 'responseType');
-    let xhr = new XMLHttpRequest();
+    const { url, method, responseType } = this.getProperties('url', 'method', 'responseType');
+    const xhr = new XMLHttpRequest();
 
     xhr.open(method, url, true);
     xhr.responseType = responseType;
@@ -66,6 +70,7 @@ export default Ember.ObjectProxy.extend(
       percentComplete = e.loaded / (e.loaded + 1000000);
     }
 
-    this.set('progress', Math.round(percentComplete * 100), e.target);
+    const progress = Math.round(percentComplete * 100);
+    this.set('progress', progress);
   },
 });

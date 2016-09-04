@@ -1,6 +1,6 @@
 <td>
   <span class="MixBuilderTracklistItem-index">
-    {{!-- {{mix-builder/input type="number" value=item.position update=(action updateItemPosition)}} --}}
+    {{!-- {{mix-builder/input type="number" value=item.position update=(action "updateItemPosition")}} --}}
     {{item.position}}
   </span>
   <div class="MixBuilderTracklistItem-buttonGroup">
@@ -23,7 +23,9 @@
 </td>
 <td>
   <div class="row">
-    {{#if track.uploadFileTask.isRunning}}
+    {{#if track.uploadFileTask.last.error}}
+      <i class="warning sign icon"></i> File Upload Failed!
+    {{else if track.uploadFileTask.isRunning}}
       <div class="ui active small inline loader"/> Uploading File...
     {{/if}}
 

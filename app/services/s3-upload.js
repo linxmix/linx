@@ -1,12 +1,14 @@
 import Ember from 'ember';
 
 import { task } from 'ember-concurrency';
+import retryWithBackoff from 'ember-backoff/retry-with-backoff';
 
 import ENV from 'linx/config/environment';
+import Ajax from 'linx/lib/ajax';
+// import ajax from 'ic-ajax';
 
 // S3 file upload service
 export default Ember.Service.extend({
-
   uploadFileTask: task(function * (file) {
     Ember.assert('Cannot s3Upload.uploadFileTask without valid file.{name,type}', Ember.isPresent(file.name) && Ember.isPresent(file.type));
 
@@ -16,16 +18,17 @@ export default Ember.Service.extend({
 
     const { signedRequest, url } = yield this._getSignedRequest(fileName, fileType);
 
-    // TODO(TECHDEBT): make this use linx/utils/ajax
-    yield new Ember.RSVP.Promise((resolve, reject) => {
-      const xhr = new XMLHttpRequest();
-      xhr.open("PUT", signedRequest);
-      xhr.setRequestHeader('x-amz-acl', 'public-read');
-      xhr.onload = () => { resolve(url); };
-      xhr.send(file);
-    });
+    return retryWithBackoff(function() {
+      const ajax = Ajax.create({
+        method: 'put',
+        url: signedRequest
+      });
+      ajax.setRequestHeader('x-amz-acl', 'public-read');
 
-    return url;
+      return ajax.execute(file).then(() => {
+        return url;
+      });
+    }, 5, 200);
   }),
 
   _getSignedRequest(fileName, fileType) {
