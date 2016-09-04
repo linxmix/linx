@@ -79,6 +79,7 @@ export default Ember.Component.extend(
     yield this.get('mix').save();
   }).keepLatest(),
 
+  outputFile: null,
   mixExportTask: task(function * () {
     const mix = this.get('mix');
     const duration = mix.get('duration');
@@ -100,6 +101,9 @@ export default Ember.Component.extend(
       }, duration * 1000);
     });
 
+    mix.set('outputFile', blob);
+    mix.set('recorder', Recorder);
+    mix.set('recorderNode', recorderNode);
     Recorder.forceDownload(blob, `${mix.get('title')}.wav`);
   }).drop(),
 

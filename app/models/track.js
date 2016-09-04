@@ -136,7 +136,7 @@ export default DS.Model.extend(
     console.log('extractId3TagsTask success', tags);
 
     this.setProperties({
-      title: get(tags, 'title'),
+      title: get(tags, 'title') || file.name,
       artist: get(tags, 'artist'),
     });
 

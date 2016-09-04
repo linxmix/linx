@@ -111,16 +111,22 @@ request.post(authOptions, function(error, response, body) {
       // use the audio features to print out relevant info
       const audioFeatures = body.audio_features;
 
-      const readableTrackFeatures = _.sortBy(audioFeatures.map(function(feature) {
-        const track = _.find(tracks, function(track) { return track.id === feature.id });
-        return {
-          name: track.name,
-          artist: track.artists[0].name,
-          tempo: feature.tempo,
-          key: featureToCamelotKey(feature),
-        };
-      }), 'tempo');
+      const readableTrackFeatures = _.sortBy(audioFeatures
+        .map(function(feature) {
+          const track = _.find(tracks, function(track) { return track.id === feature.id });
+          return {
+            name: track.name,
+            artist: track.artists[0].name,
+            tempo: feature.tempo,
+            key: featureToCamelotKey(feature),
+          };
+        })
+        .filter((track) => {
+          return track.tempo > 122 && track.tempo < 130
+        })
+      , 'key');
 
+      console.log('TOTAL TRACKS: ', readableTrackFeatures.length);
       console.log(util.inspect(readableTrackFeatures, { depth: null, colors: true }));
     });
   });

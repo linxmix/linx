@@ -39,7 +39,7 @@ FifoSampleBuffer.prototype.clear = function() {
 //  [function] createSoundtouchScriptNode(audioContext, filter, when, offset, endTime)
 //
 const MAX_BUFFER_SIZE = 16384;
-const BUFFER_SIZE = MAX_BUFFER_SIZE / 8;
+const BUFFER_SIZE = MAX_BUFFER_SIZE;
 const SAMPLE_DRIFT_TOLERANCE = 512;
 
 export function SoundtouchBufferSource(buffer) {
