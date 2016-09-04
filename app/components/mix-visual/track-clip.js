@@ -40,7 +40,10 @@ export default ArrangementVisualTrackClip.extend(
   layoutName: 'components/arrangement-visual/track-clip',
 
   // only to tracks in selected transition can be dragged (or first track)
-  isDraggable: Ember.computed.or('isSelectedToTrackClip', 'clip.mixItem.isFirstItem'),
+  isDraggable: Ember.computed('selectedTransition', 'isSelectedToTrackClip', 'clip.mixItem.isFirstItem', function() {
+    return this.get('selectedTransition') &&
+      (this.get('isSelectedToTrackClip') || this.get('clip.mixItem.isFirstItem'));
+  }),
 
   // display waveform only if no clip is selected, or this clip is in the selection
   displayWaveform: propertyOrDefault('selectedTransition', 'isInSelectedTransition', true),
