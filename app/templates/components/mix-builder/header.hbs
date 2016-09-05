@@ -33,14 +33,9 @@
           value=mix.title
           update=(action (mut mix.title))
         }}
+
         <div class="sub header">
-          {{#if mixSaveTask.isRunning}}
-            Saving...
-          {{else if mix.anyDirty}}
-            Has dirty changes.
-          {{else}}
-            All changes saved.
-          {{/if}}
+          {{durationText}}
         </div>
       </div>
     </h2>
