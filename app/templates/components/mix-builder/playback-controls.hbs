@@ -5,8 +5,12 @@
   skipBack=(action attrs.skipBack)
   skipForth="skipForth"}}
 
-  <div class="ui basic inverted button" {{action centerView}}>
-    <i class="marker icon"></i> Recenter
+  <div class="inverted ui icon button {{if followPlayhead 'orange' 'basic'}}" {{action
+    (if followPlayhead
+      (action toggleFollowPlayhead)
+      (pipe-action (action toggleFollowPlayhead) (action centerView))
+    )}}>
+    <i class="marker icon"></i>
   </div>
 
   Tempo:

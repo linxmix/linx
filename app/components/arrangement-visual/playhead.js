@@ -4,9 +4,18 @@ import GraphicSupport from 'linx/mixins/d3/graphic-support';
 
 import RequireAttributes from 'linx/lib/require-attributes';
 
+
 export default Ember.Component.extend(
   GraphicSupport(),
   RequireAttributes('arrangement', 'pxPerBeat'), {
+
+  // required params
+  arrangement: null,
+  pxPerBeat: 20,
+
+  // optional params
+  followPlayhead: false,
+  centerView: Ember.K,
 
   metronome: Ember.computed.reads('arrangement.metronome'),
   selection: Ember.computed.reads('select.selection'),
@@ -30,6 +39,10 @@ export default Ember.Component.extend(
       .attr('transform', `translate(${currentPx})`)
       .attr('y1', 0)
       .attr('y2', this.get('height'))
+
+    if (this.get('followPlayhead')) {
+      this.centerView(false);
+    }
   },
 
   call(selection) {

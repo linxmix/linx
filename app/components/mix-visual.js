@@ -17,6 +17,7 @@ export default Ember.Component.extend(
   selectedAutomation: null,
 
   // optional params
+  followPlayhead: false,
   pxPerBeat: variableTernary('selectedTransition', 'zoomedPxPerBeat', 'defaultPxPerBeat'),
   defaultPxPerBeat: 1,
   zoomedPxPerBeat: 25,

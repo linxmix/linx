@@ -9,7 +9,9 @@ export default Ember.Component.extend({
 
   // required params
   mix: null,
+  followPlayhead: false,
   centerView: Ember.K,
+  toggleFollowPlayhead: Ember.K,
 
   updateMixBpm: _.throttle(function(newBpm) {
     newBpm = parseFloat(newBpm);

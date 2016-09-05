@@ -27,6 +27,11 @@ export const TO_TRACK_COLOR = '#16a085';
 
 export const AUTOSAVE_INTERVAL = 5000;
 
+// max blob size in chrome is 500Mib
+// max record time
+const MAX_BLOB_SIZE = 500000000;
+const MAX_RECORD_SECONDS = 5; // [s] max record time in seconds
+
 export default Ember.Component.extend(
   EKMixin,
   EKOnInsertMixin, {
@@ -45,6 +50,7 @@ export default Ember.Component.extend(
   mixVisualActionReceiver: null,
   store: Ember.inject.service(),
 
+  followPlayhead: false,
   selectedAutomation: CONTROL_TYPE_VOLUME,
   newTrackPosition: Ember.computed('mix.length', function() {
     return this.get('mix.length') + 1;
@@ -83,45 +89,86 @@ export default Ember.Component.extend(
   }).keepLatest(),
 
   recorderNode: null,
+  // maxRecordTime: multiply('audioContext.sampleRate', MAX_BLOB_SIZE)'', function() {
+  //   const sampleRate = this.get('audioContext.sampleRate');
+  //   return this.get('sampleRate') *
+  // })
+
+// mix record task auto stop
+// - start record task with record duration (default to remaining mix time)
+// - record gets task blobs from internal blob task, #iterations based on max blob size and record duration
+// - two ways to end:
+//     - on “stopRecording”, stop blob task and download rest
+//     - on record duration elapsed, stop blob task and download rest
+
+  recorderNode: Ember.computed('mix.inputNode.content', function() {
+    const inputNode = this.get('mix.inputNode.content');
+
+    return inputNode && new Recorder(inputNode);
+  }),
+
+  outputBlobsCount: 0,
   mixRecordTask: task(function * () {
     const mix = yield this.get('mix');
-    const duration = mix.getRemainingDuration();
+    const recorderNode = this.get('recorderNode');
 
-    const inputNode = mix.get('inputNode.content');
-    const recorderNode = new Recorder(inputNode);
-    this.setProperties({
-      recorderNode,
-    });
+    const totalRecordDuration = mix.getRemainingDuration();
+    const totalBlobs = Math.ceil(totalRecordDuration / MAX_RECORD_SECONDS);
 
+    this.set('outputBlobsCount', 0);
+
+    // add extra buffer while recording
     // TODO(TECHDEBT): do not share state this way
     window.BUFFER_SIZE = window.MAX_BUFFER_SIZE;
-    recorderNode.record();
-    mix.play();
 
-    // record until mix end or manually ended
-    console.log('recording started', duration);
     let didStopRecording = false;
-    const blob = yield new Ember.RSVP.Promise((resolve, reject) => {
-      const onStopRecording = () => {
-        if (didStopRecording) {
-          return console.log('recording already stopped');
-        } else {
-          console.log('stop recording');
-          didStopRecording = true;
-        }
 
-        mix.pause();
-        recorderNode.stop();
-        recorderNode.exportWAV(resolve);
-        window.BUFFER_SIZE = ~~(window.MAX_BUFFER_SIZE / 8);
-      }
-
-      // TODO(TECHDEBT): this should be mix.once('didFinish')
-      Ember.run.later(onStopRecording, duration * 1000);
-      this.one('stopRecord', onStopRecording);
+    this.one('stopRecord', () => {
+      mix.pause();
+      return exportBlob(true);
     });
 
-    Recorder.forceDownload(blob, `${mix.get('title')}.wav`);
+    const exportBlob = (isLastBlob = false) => {
+      if (didStopRecording) {
+        console.warn('cannot exportBlob after didStopRecording');
+      } else {
+        didStopRecording = isLastBlob;
+      }
+
+      recorderNode.stop();
+      return new Ember.RSVP.Promise((resolve, reject) => {
+        recorderNode.exportWAV((blob) => {
+          Recorder.forceDownload(blob, `${mix.get('title')} - ${this.get('outputBlobsCount')}.wav`);
+          resolve();
+        });
+        this.incrementProperty('outputBlobsCount');
+
+        if (isLastBlob) {
+          // reset buffer size
+          window.BUFFER_SIZE = ~~(window.MAX_BUFFER_SIZE / 8);
+          console.log('finish recording', this.get('outputBlobsCount'));
+        }
+      });
+    }
+
+    console.log('recording started', { totalRecordDuration, totalBlobs });
+
+    while ((this.get('outputBlobsCount') < totalBlobs)) {
+
+      // record chunk
+      recorderNode.clear();
+      recorderNode.record();
+      mix.play(mix.getCurrentBeat() - 1.75); // ensure slight overlap
+      yield new Ember.RSVP.Promise((resolve) => {
+        Ember.run.later(resolve, 1000 * Math.min(MAX_RECORD_SECONDS, mix.getRemainingDuration()));
+      });
+
+      if (didStopRecording) break;
+
+      // export chunk
+      mix.pause();
+      exportBlob();
+    }
   }).drop(),
 
   jumpTrackTask: task(function * (mixItem) {
@@ -240,9 +287,10 @@ export default Ember.Component.extend(
       this.get('mix').seekToBeat(0);
     },
 
-    centerView() {
+    // TODO(TECHDEBT): just use arr-visual.centerView
+    centerView(doAnimate) {
       const mix = this.get('mix');
-      this.send('zoomToBeat', mix.getCurrentBeat());
+      this.send('zoomToBeat', mix.getCurrentBeat(), doAnimate);
     },
 
     skipForth() {

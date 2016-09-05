@@ -36,11 +36,13 @@
   {{mix-builder/playback-controls
     class="MixBuilder-playbackControls"
     mix=mix
+    followPlayhead=followPlayhead
 
+    centerView=(action "centerView" true)
+    toggleFollowPlayhead=(action toggleProperty "followPlayhead")
     playpause=(action "playpause")
     skipBack=(action "skipBack")
     jumpTrack=(action "jumpTrack")
-    centerView=(action "centerView")
   }}
 
   {{mix-visual
@@ -50,6 +52,7 @@
     selectedTransition=selectedTransition
     selectedClip=selectedClip
     actionReceiver=mixVisualActionReceiver
+    followPlayhead=followPlayhead
 
     selectTransition=(action "selectTransition")
     selectClip=(action "selectClip")

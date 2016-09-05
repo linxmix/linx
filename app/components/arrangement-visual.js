@@ -22,6 +22,7 @@ export default DataVisual.extend(
   pxPerBeat: 0,
 
   // optional params
+  followPlayhead: false,
   showBarGrid: true,
   isReady: true,
   showLastPlayMarker: false,
@@ -60,13 +61,15 @@ export default DataVisual.extend(
       const pxPerBeat = this.get('pxPerBeat');
       const svgSelection = this.get('selection');
 
-      Ember.assert('Must have svgSelection to zoom', !!svgSelection);
+      if (!svgSelection) {
+        return console.warn('Must have svgSelection to zoom', svgSelection);
+      }
 
       // calculate desired center
       const viewWidthPx = this.get('width');
       translateX = (viewWidthPx / 2.0) - (beat * pxPerBeat * scale);
 
-      Ember.Logger.log('zoomToBeat', scale, translateX, translateY);
+      // Ember.Logger.log('zoomToBeat', scale, translateX, translateY);
 
       // possibly animate zoom on svg selection
       if (doAnimate) {
@@ -82,7 +85,12 @@ export default DataVisual.extend(
           .call(zoom.scale(scale).event)
           .call(zoom.translate([ translateX, translateY ]).event);
       }
-    }
+    },
+
+    centerView(doAnimate) {
+      const arrangement = this.get('arrangement');
+      this.send('zoomToBeat', arrangement.getCurrentBeat(), null, doAnimate);
+    },
   },
 
   svg: Ember.computed.reads('stage.svg.select'),
