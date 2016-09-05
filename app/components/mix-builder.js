@@ -28,9 +28,9 @@ export const TO_TRACK_COLOR = '#16a085';
 export const AUTOSAVE_INTERVAL = 5000;
 
 // max blob size in chrome is 500Mib
-// max record time
+// which allows ~45min of recording time per blob
 const MAX_BLOB_SIZE = 500000000;
-const MAX_RECORD_SECONDS = 5; // [s] max record time in seconds
+const MAX_RECORD_SECONDS = 47 * 60; // [s] max record time in seconds
 
 export default Ember.Component.extend(
   EKMixin,
