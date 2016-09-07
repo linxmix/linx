@@ -41,26 +41,25 @@ module.exports = function(environment) {
     }
   };
 
+  // Client API Keys
+  ENV.S3_SECRET = process.env.S3_SECRET;
+  ENV.S3_KEY = process.env.S3_KEY;
+  ENV.S3_BUCKET = process.env.S3_BUCKET;
+  ENV.S3_REGION = process.env.S3_REGION;
+  ENV.S3_SIGNATURE_URL = process.env.S3_SIGNATURE_URL || 'http://localhost:4005';
+
+  ENV.ECHONEST_KEY = process.env.ECHONEST_KEY;
+
+  ENV.SC_KEY = process.env.SC_KEY;
+
+  ENV.SONIC_API_ACCESS_ID = process.env.SONIC_API_ACCESS_ID;
+
   if (environment === 'development') {
     // ENV.APP.LOG_RESOLVER = true;
     // ENV.APP.LOG_ACTIVE_GENERATION = true;
     ENV.APP.LOG_TRANSITIONS = true;
     // ENV.APP.LOG_TRANSITIONS_INTERNAL = true;
     // ENV.APP.LOG_VIEW_LOOKUPS = true;
-
-    ENV.API_HOST = 'http://localhost:4005';
-
-    // Client API Keys
-    ENV.S3_SECRET = process.env.S3_SECRET;
-    ENV.S3_KEY = process.env.S3_KEY;
-    ENV.S3_BUCKET = process.env.S3_BUCKET;
-    ENV.S3_REGION = process.env.S3_REGION;
-
-    ENV.ECHONEST_KEY = process.env.ECHONEST_KEY;
-
-    ENV.SC_KEY = process.env.SC_KEY;
-
-    ENV.SONIC_API_ACCESS_ID = process.env.SONIC_API_ACCESS_ID;
   }
 
   if (environment === 'test') {

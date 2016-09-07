@@ -33,7 +33,7 @@ export default Ember.Service.extend({
 
   _getSignedRequest(fileName, fileType) {
     return new Ember.RSVP.Promise((resolve, reject) => {
-      const url = `${ENV.API_HOST}/signed-request`;
+      const url = `${ENV.S3_SIGNATURE_URL}/signed-request`;
       const params = { file: fileName, type: fileType };
 
       Ember.$.ajax({
