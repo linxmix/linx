@@ -17,9 +17,9 @@ module.exports = function(environment) {
 
     firebase: {
       apiKey: process.env.FIREBASE_SECRET,
-      authDomain: 'linx-2-acceptance.firebaseapp.com',
-      databaseURL: 'https://linx-2-acceptance.firebaseio.com',
-      storageBucket: 'linx-2-acceptance.appspot.com',
+      authDomain: process.env.FIREBASE_DB + '.firebaseapp.com',
+      databaseURL: 'https://' + process.env.FIREBASE_DB + '.firebaseio.com',
+      storageBucket: process.env.FIREBASE_DB + '.appspot.com',
     },
 
     contentSecurityPolicy: {
@@ -73,14 +73,9 @@ module.exports = function(environment) {
     ENV.APP.LOG_VIEW_LOOKUPS = false;
 
     ENV.APP.rootElement = '#ember-testing';
-
-    // set test backend
-    ENV.firebase = 'https://linx-2-test.firebaseio.com/';
   }
 
   if (environment === 'production') {
-    // set prod backend
-    ENV.firebase = 'https://linx-2.firebaseio.com/';
   }
 
   return ENV;

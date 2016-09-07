@@ -12,7 +12,10 @@ module.exports = function(defaults) {
     },
     // ember-cli-dotenv
     dotEnv: {
-      clientAllowedKeys: ['S3_SECRET', 'S3_KEY', 'ECHONEST_KEY', 'SC_KEY']
+      clientAllowedKeys: [
+        'S3_SECRET', 'S3_KEY', 'ECHONEST_KEY', 'SC_KEY',
+        'FIREBASE_SECRET', 'FIREBASE_DB', 'SONIC_API_ACCESS_ID'
+      ]
     }
   });
 
