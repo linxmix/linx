@@ -4,6 +4,7 @@ import DS from 'ember-data';
 
 import { task } from 'ember-concurrency';
 
+import ENV from 'linx/config/environment';
 import RequireAttributes from 'linx/lib/require-attributes';
 import { isValidNumber, asResolvedPromise } from 'linx/lib/utils';
 import ReadinessMixin from 'linx/mixins/readiness';
@@ -25,7 +26,7 @@ export default Ember.Object.extend(
     const webStreamUrl = this.get('webStreamUrl');
 
     if (webStreamUrl) {
-      return encodeURI(`/${webStreamUrl}`);
+      return ENV.PROXY_URL + encodeURI(`/${webStreamUrl}`);
     }
   }),
 

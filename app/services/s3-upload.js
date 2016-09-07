@@ -21,7 +21,7 @@ export default Ember.Service.extend({
     return retryWithBackoff(function() {
       const ajax = Ajax.create({
         method: 'put',
-        url: `/${signedRequest}`
+        url: ENV.PROXY_URL + `/${signedRequest}`
       });
       ajax.setRequestHeader('x-amz-acl', 'public-read');
 

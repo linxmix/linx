@@ -54,6 +54,8 @@ module.exports = function(environment) {
 
   ENV.SONIC_API_ACCESS_ID = process.env.SONIC_API_ACCESS_ID;
 
+  ENV.PROXY_URL = process.env.PROXY_URL || 'http://localhost:4004';
+
   if (environment === 'development') {
     // ENV.APP.LOG_RESOLVER = true;
     // ENV.APP.LOG_ACTIVE_GENERATION = true;
