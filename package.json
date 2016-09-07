@@ -8,7 +8,7 @@
     "test": "tests"
   },
   "scripts": {
-    "start": "export $(cat .env) && ember server --port=$PORT --proxy=$PROXY_URL",
+    "start": "ember server --port=$PORT",
     "start:test": "ember server --port=$PORT --proxy=$PROXY_URL --environment=test",
     "spotify:playlist": "export $(cat .env) && node spotify-playlist.js",
     "build": "ember build",
