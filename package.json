@@ -10,9 +10,10 @@
   "scripts": {
     "start": "ember server --port=${PORT:-3000}",
     "start:test": "ember server --port=$PORT --proxy=$PROXY_URL --environment=test",
+    "start:production": "FIREBASE_DB=linx-production ember server --port=${PORT:-3000}",
     "spotify:playlist": "export $(cat .env) && node spotify-playlist.js",
     "build": "ember build",
-    "deploy": "git push dokku master",
+    "deploy": "git checkout production && git push dokku master",
     "test": "ember test",
     "clean": "rm -rf ./node_modules ./bower_components ./dist ./tmp",
     "clean:all": "npm run clean && npm cache clean && bower cache clean"
