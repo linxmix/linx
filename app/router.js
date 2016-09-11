@@ -15,8 +15,8 @@ Router.map(function() {
     });
   });
 
-  // TODO - delete fakes
-  this.route('upload');
+  this.route('login');
+  this.route('logout');
 });
 
 export default Router;

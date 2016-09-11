@@ -1,6 +1,8 @@
 import Ember from 'ember';
 
-export default Ember.Service.extend({
+import SessionService from 'ember-simple-auth/services/session';
+
+export default SessionService.extend({
   store: Ember.inject.service(),
 
   audioContext: Ember.computed(function() {

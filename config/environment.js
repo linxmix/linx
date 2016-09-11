@@ -22,6 +22,19 @@ module.exports = function(environment) {
       storageBucket: process.env.FIREBASE_DB + '.appspot.com',
     },
 
+    torii: {
+      sessionServiceName: 'session',
+      providers: {
+        'firebase-simple-auth': {
+        }
+      }
+    },
+
+    'ember-simple-auth': {
+      authenticationRoute: 'login',
+      routeAfterAuthentication: 'mixes',
+    },
+
     contentSecurityPolicy: {
       // allow webworkers
       'default-src': "'self'",

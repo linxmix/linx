@@ -1,11 +1,15 @@
 import Ember from 'ember';
 
-// TODO: have to import faker here to get it to load into the tests
+import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mixin';
+
+// TODO(TECHDEBT): have to import faker here to get it to load into the tests
 import Faker from 'npm:faker';
 
 import Migrate from 'linx/lib/migrations/linx-meteor';
 
-export default Ember.Route.extend({
+export default Ember.Route.extend(
+  ApplicationRouteMixin, {
+
   setupController: function(controller, models) {
     controller.setProperties(models);
 
