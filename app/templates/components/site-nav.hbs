@@ -5,13 +5,14 @@
   {{#link-to 'mixes' class='item'}}
     <i class="inverted green shuffle icon"></i> Mixes
   {{/link-to}}
-  {{#link-to 'upload' class='item'}}
-    <i class="inverted orange cloud upload icon"></i> Upload
-  {{/link-to}}
 
   <div class="right icon menu">
-    <a class="item">
-      <i class="inverted purple user icon"></i> Login
-    </a>
+    {{#link-to "login" class="item"}}
+      {{#if userSession.isAuthenticated}}
+        <i class="inverted purple user icon"></i> {{userSession.currentUser.email}}
+      {{else}}
+        <i class="inverted user icon"></i> Login
+      {{/if}}
+    {{/link-to}}
   </div>
 </div>

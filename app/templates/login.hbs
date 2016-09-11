@@ -1,0 +1,59 @@
+<div class="login">
+  <div class="ui center aligned grid">
+    <div class="row">
+      <div class="ui violet message">
+        <div class="header">
+          Welcome to Linx!
+        </div>
+
+        <p>
+          Linx is an experimental prototype for building mixes on the web.
+        </p>
+        <p>
+          Some of the material may be copyrighted; to comply with
+          <a href="https://en.wikipedia.org/wiki/Fair_use">Fair Use</a>,
+          access is restricted to testing purposes only.
+        </p>
+        <p>
+          If you would like to help test Linx, please email wolfbiter -at- gmail -dot- com
+          expressing your interest!
+        </p>
+      </div>
+    </div>
+
+    <div class="row">
+      {{#unless userSession.isAuthenticated}}
+        <div>
+          <form class="ui inverted attached fluid form segment" {{action "login" on="submit"}}>
+            <div class="field">
+              <label for="identification">Email</label>
+              {{input value=identification placeholder="Enter Email"}}
+            </div>
+
+            <div class="field">
+              <label for="password">Password</label>
+              {{input value=password type="password" placeholder="Enter Password"}}
+            </div>
+
+            <button class="ui blue submit button" type="submit">Submit</button>
+            <button class="inverted basic ui button" {{action "sendPasswordReset"}}>
+              Send Password Reset Email
+            </button>
+          </form>
+
+          {{#if (or message userSession.isWorking)}}
+            <div class="ui inverted attached segment">
+              {{if userSession.isWorking "Working..." message}}
+            </div>
+          {{/if}}
+        </div>
+      {{else}}
+        <button class="ui blue button" {{action "logout"}}>Logout</button>
+        <button class="inverted basic ui button" {{action "sendPasswordReset"}}>
+          Send Password Reset Email
+        </button>
+      {{/unless}}
+
+    </div>
+  </div>
+</div>

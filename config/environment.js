@@ -22,6 +22,10 @@ module.exports = function(environment) {
       storageBucket: process.env.FIREBASE_DB + '.appspot.com',
     },
 
+    torii: {
+      sessionServiceName: 'userSession',
+    },
+
     contentSecurityPolicy: {
       // allow webworkers
       'default-src': "'self'",
