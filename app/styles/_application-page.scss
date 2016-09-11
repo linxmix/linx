@@ -1,9 +1,9 @@
 $site-top-padding: 20px;
 
 .ApplicationPage {
-  padding-top: $site-nav-height + $site-top-padding;
-  height: 100vh; // make sure bg color covers page
-  overflow: hidden;
+  padding-top: $site-top-padding + $site-nav-height;
+  height: 100vh;
+  overflow-x: hidden;
 
   color: gray;
   background-color: #121314 !important; // override semantic

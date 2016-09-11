@@ -1,27 +1,55 @@
 <div class="mixes ui center aligned container grid">
-  <div class="row">
-    <div class="inverted green ui icon button test-create-mix" {{action 'createMix'}}>
-      <i class="add icon"></i>
-      New Mix
+
+  <h2 class="ui inverted header">
+    <div class="content">
+      My Mixes
     </div>
-    <div class="inverted orange ui icon button" {{action 'createCategoryMix'}}>
-      <i class="add icon"></i>
-      New Category Mix
+  </h2>
+  <div class="row">
+    <div>
+      <div class="inverted green ui icon button test-create-mix" {{action "createMix"}}>
+        <i class="add icon"></i>
+        New Mix
+      </div>
+
+      {{#mixes-list mixes=myMixes}}
+        {{#each myMixes as |mix|}}
+          {{#link-to "mixes.mix" mix.id}}
+            {{mixes-list-item
+              mix=mix
+              select="selectMix"
+            }}
+          {{/link-to}}
+        {{/each}}
+      {{/mixes-list}}
     </div>
   </div>
 
+  <h2 class="ui inverted header">
+    <div class="content">
+      Other Users' Mixes
+      <div class="sub header">
+        Try to respect their work
+      </div>
+    </div>
+  </h2>
   <div class="row">
-    {{#mixes-list mixes=sortedMixes}}
-      {{#each sortedMixes as |mix|}}
-        {{#link-to 'mixes.mix' mix.id}}
+    {{#mixes-list mixes=otherMixes}}
+      {{#each otherMixes as |mix|}}
+        {{#link-to "mixes.mix" mix.id}}
           {{mixes-list-item
             mix=mix
             select="selectMix"
           }}
         {{/link-to}}
+      {{else}}
+        <div class="inverted ui segment">
+          No mixes found.
+        </div>
       {{/each}}
     {{/mixes-list}}
   </div>
+
 </div>
 
 {{!-- {{bezier-curve}} --}}

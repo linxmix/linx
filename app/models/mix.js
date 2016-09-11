@@ -3,10 +3,13 @@ import DS from 'ember-data';
 
 import _ from 'npm:underscore';
 
+import CrudMixin from 'linx/mixins/models/crud';
+
 import OrderedHasManyMixin from 'linx/mixins/models/ordered-has-many';
 import PlayableArrangementMixin from 'linx/mixins/playable-arrangement';
 
 export default DS.Model.extend(
+  CrudMixin,
   PlayableArrangementMixin,
   OrderedHasManyMixin('_mixItems'), {
 
