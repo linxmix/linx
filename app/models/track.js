@@ -4,6 +4,7 @@ import DS from 'ember-data';
 import { task } from 'ember-concurrency';
 import JsMediaTags from 'npm:jsmediatags';
 
+import CrudMixin from 'linx/mixins/models/crud';
 import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
 import ReadinessMixin from 'linx/mixins/readiness';
 
@@ -16,6 +17,7 @@ export const DEFAULT_DURATION = 200; // seconds
 const { get } = Ember;
 
 export default DS.Model.extend(
+  CrudMixin,
   ReadinessMixin('isTrackReady'),
   DependentRelationshipMixin('audioMeta'), {
 
