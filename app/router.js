@@ -6,10 +6,10 @@ var Router = Ember.Router.extend({
 });
 
 Router.map(function() {
-  this.route('tracks');
-  this.route('track', { path: 'tracks/:id' });
+  this.authenticatedRoute('tracks');
+  this.authenticatedRoute('track', { path: 'tracks/:id' });
 
-  this.route('mixes', function() {
+  this.authenticatedRoute('mixes', function() {
     this.route('mix', { path: ':mix_id' }, function() {
       this.route('transition', { path: 'transitions/:transition_id' });
     });

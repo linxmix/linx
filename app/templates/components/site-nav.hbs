@@ -8,10 +8,10 @@
 
   <div class="right icon menu">
     {{#link-to "login" class="item"}}
-      {{#if session.isAuthenticated}}
-        <i class="inverted purple user icon"></i> Logged in as {{session.data}}
+      {{#if userSession.isAuthenticated}}
+        <i class="inverted purple user icon"></i> {{userSession.currentUser.email}}
       {{else}}
-        <i class="inverted purple user icon"></i> Not Logged In
+        <i class="inverted purple user icon"></i> Log in
       {{/if}}
     {{/link-to}}
   </div>

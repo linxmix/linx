@@ -1,11 +1,19 @@
-<form {{action "login" on="submit"}}>
- <label for="identification">Email</label>
-  {{input value=identification placeholder="Enter Login" class="form-control"}}
-  <label for="password">Password</label>
-  {{input value=password type="password" placeholder="Enter Password"}}
-  <button type="submit">Login</button>
-</form>
+{{#if userSession.isWorking}}
+  Working...
+{{else}}
+  {{#unless userSession.isAuthenticated}}
+    <form {{action "login" on="submit"}}>
+     <label for="identification">Email</label>
+      {{input value=identification placeholder="Enter Login" class="form-control"}}
+      <label for="password">Password</label>
+      {{input value=password type="password" placeholder="Enter Password"}}
+      <button type="submit">Login</button>
+    </form>
 
-{{#if errorMessage}}
-  {{errorMessage}}
+    {{#if errorMessage}}
+      {{errorMessage}}
+    {{/if}}
+  {{else}}
+  <div class="inverted ui button" {{action "logout"}}>Logout</div>
+  {{/unless}}
 {{/if}}

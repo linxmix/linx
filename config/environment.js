@@ -23,16 +23,7 @@ module.exports = function(environment) {
     },
 
     torii: {
-      sessionServiceName: 'session',
-      providers: {
-        'firebase-simple-auth': {
-        }
-      }
-    },
-
-    'ember-simple-auth': {
-      authenticationRoute: 'login',
-      routeAfterAuthentication: 'mixes',
+      sessionServiceName: 'userSession',
     },
 
     contentSecurityPolicy: {

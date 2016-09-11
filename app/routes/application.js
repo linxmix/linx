@@ -1,14 +1,19 @@
 import Ember from 'ember';
 
-import ApplicationRouteMixin from 'ember-simple-auth/mixins/application-route-mixin';
-
 // TODO(TECHDEBT): have to import faker here to get it to load into the tests
 import Faker from 'npm:faker';
 
 import Migrate from 'linx/lib/migrations/linx-meteor';
 
-export default Ember.Route.extend(
-  ApplicationRouteMixin, {
+export default Ember.Route.extend({
+
+  userSession: Ember.inject.service(),
+
+  beforeModel() {
+    return this.get('userSession').fetch().catch((e) => {
+      console.log('User not logged in', e);
+    });
+  },
 
   setupController: function(controller, models) {
     controller.setProperties(models);
@@ -26,5 +31,12 @@ export default Ember.Route.extend(
 
     return Ember.RSVP.hash({
     });
+  },
+
+  actions: {
+    accessDenied: function() {
+      console.log('access denied');
+      this.transitionTo('login');
+    }
   }
 });
