@@ -13,7 +13,7 @@
     "start:production": "export $(cat .env) && FIREBASE_DB=$FIREBASE_DB_PRODUCTION FIREBASE_SECRET=$FIREBASE_SECRET_PRODUCTION ember server --port=${PORT:-3000}",
     "spotify:playlist": "export $(cat .env) && node spotify-playlist.js",
     "build": "ember build",
-    "deploy": "git checkout production && git merge master && git push dokku master",
+    "deploy": "git checkout production && git merge master && git push dokku master && git checkout master",
     "test": "ember test",
     "clean": "rm -rf ./node_modules ./bower_components ./dist ./tmp",
     "clean:all": "npm run clean && npm cache clean && bower cache clean"

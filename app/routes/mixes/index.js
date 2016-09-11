@@ -14,12 +14,12 @@ export default Ember.Route.extend({
       });
 
       // create the mix with a transition
-      const tracks = this.get('controller.tracks');
-      const [fromTrack, toTrack] = _.sample(tracks.toArray(), 2);
+      // const tracks = this.get('controller.tracks');
+      // const [fromTrack, toTrack] = _.sample(tracks.toArray(), 2);
       // const [fromTrack, toTrack] = [tracks.objectAt(0), tracks.objectAt(1)];
 
-      Ember.Logger.log('fromTrack', fromTrack.get('title'));
-      Ember.Logger.log('toTrack', toTrack.get('title'));
+      // Ember.Logger.log('fromTrack', fromTrack.get('title'));
+      // Ember.Logger.log('toTrack', toTrack.get('title'));
 
       this.transitionTo('mixes.mix', mix.get('id'));
     },
@@ -80,7 +80,7 @@ export default Ember.Route.extend({
     return Ember.RSVP.hash({
       mixes: store.findAll('mix'),
       // me: store.findRecord('soundcloud/me'),
-      tracks: store.findAll('track'),
+      // tracks: store.findAll('track'),
     });
   }
 });
