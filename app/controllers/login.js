@@ -12,7 +12,6 @@ export default Ember.Controller.extend({
     login() {
       const { identification, password } = this.getProperties('identification', 'password');
 
-      console.log('login', identification, password)
       this.get('userSession').open('firebase', {
         provider: 'password',
         email: identification,
