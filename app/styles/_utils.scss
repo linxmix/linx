@@ -31,7 +31,7 @@
   @include flex-direction(column);
 
   &.VerticalLayout--fullHeight {
-    height: 100%;
+    height: calc(100% - 2px); // TODO(TECHDEBT): is this ok? why does svg on bottom cause app page scroll?
   }
 
   &.VerticalLayout--page {
