@@ -88,7 +88,6 @@ export default Ember.Component.extend(
     yield this.get('mix').save();
   }).keepLatest(),
 
-  recorderNode: null,
   // maxRecordTime: multiply('audioContext.sampleRate', MAX_BLOB_SIZE)'', function() {
   //   const sampleRate = this.get('audioContext.sampleRate');
   //   return this.get('sampleRate') *
@@ -149,7 +148,7 @@ export default Ember.Component.extend(
           console.log('finish recording', this.get('outputBlobsCount'));
         }
       });
-    }
+    };
 
     console.log('recording started', { totalRecordDuration, totalBlobs });
 
@@ -163,7 +162,7 @@ export default Ember.Component.extend(
         Ember.run.later(resolve, 1000 * Math.min(MAX_RECORD_SECONDS, mix.getRemainingDuration()));
       });
 
-      if (didStopRecording) break;
+      if (didStopRecording) { break; }
 
       // export chunk
       mix.pause();
@@ -353,7 +352,7 @@ export default Ember.Component.extend(
       const mix = this.get('mix');
       const prevIndex = mixItem.get('index');
 
-      console.log('moveItem', mixItem.get('track.title'), newIndex)
+      console.log('moveItem', mixItem.get('track.title'), newIndex);
 
       // if moving forwards, have to include current index
       if (newIndex > prevIndex) {
@@ -385,7 +384,10 @@ export default Ember.Component.extend(
           // TODO(TECHDEBT): this works, have to do this because we cant directly set endBeat
           const fromTrackBpm = fromTrackClip.get('track.audioMeta.bpm');
           const audioEndTime = beatToTime((endBeat - fromTrackClip.get('startBeat')), fromTrackBpm) + fromTrackClip.get('audioStartTime');
-          fromTrackClip.set('audioEndTime', audioEndTime);
+
+          if (isValidNumber(audioEndTime)) {
+            fromTrackClip.set('audioEndTime', audioEndTime);
+          }
         }
       });
     },
