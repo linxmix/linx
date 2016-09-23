@@ -124,6 +124,10 @@ export default Ember.Component.extend(
 
     this.one('stopRecord', () => {
       mix.pause();
+
+      // TODO(TECHDEBT): make this more elegant than just canceling
+      this.get('mixRecordTask').cancelAll();
+
       return exportBlob(true);
     });
 
@@ -137,7 +141,8 @@ export default Ember.Component.extend(
       recorderNode.stop();
       return new Ember.RSVP.Promise((resolve, reject) => {
         recorderNode.exportWAV((blob) => {
-          Recorder.forceDownload(blob, `${mix.get('title')} - ${this.get('outputBlobsCount')}.wav`);
+          const fileName = `${mix.get('title')} - ${this.get('outputBlobsCount')}.wav`;
+          _forceDownload(blob, fileName);
           resolve();
         });
         this.incrementProperty('outputBlobsCount');
@@ -162,7 +167,7 @@ export default Ember.Component.extend(
         Ember.run.later(resolve, 1000 * Math.min(MAX_RECORD_SECONDS, mix.getRemainingDuration()));
       });
 
-      if (didStopRecording) { break; }
+      if (didStopRecording) { return; }
 
       // export chunk
       mix.pause();
@@ -472,4 +477,14 @@ export default Ember.Component.extend(
   },
 });
 
-
+// adapted from Recorder.forceDownload, which stopped working
+function _forceDownload(blob, fileName) {
+  const url = (window.URL || window.webkitURL).createObjectURL(blob);
+  const link = window.document.createElement('a');
+  link.href = url;
+  link.download = fileName || 'output.wav';
+  // const click = document.createEvent("Event");
+  // click.initEvent("click", true, true);
+  // link.dispatchEvent(click);
+  link.click();
+}
