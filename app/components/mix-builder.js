@@ -252,7 +252,7 @@ export default Ember.Component.extend(
 
     this.send('selectTransition', jumpTransition);
     return jumpTransition;
-  }),
+  }).drop(),
 
   actions: {
     jumpTrack(mixItem) {
