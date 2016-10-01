@@ -18,6 +18,7 @@
   select=select.ArrangementVisualTrackClip-markers
   transform=(if displayOverflowWaveform startOffsetTransform)
   items=clip.markers
+  cssExpr='.ArrangementVisualTrackClipMarker'
   as |marker tag|}}
   {{arrangement-visual/marker
     select=tag
@@ -26,3 +27,5 @@
     transform=(svg-translate (multiply pxPerBeat (time-to-beat marker.time trackBpm)))
   }}
 {{/zip-entries}}
+
+{{yield}}

@@ -254,6 +254,8 @@ export default Ember.Component.extend(
     return jumpTransition;
   }).drop(),
 
+  beatDetection: Ember.inject.service(),
+
   actions: {
     jumpTrack(mixItem) {
       return this.get('jumpTrackTask').perform(mixItem);
@@ -382,18 +384,40 @@ export default Ember.Component.extend(
       const endBeat = this._quantizeBeat(mix.get('endBeat'));
 
       mix.insertTrackAt(index, track).then((mixItem) => {
-        const fromTrackClip = mixItem.get('prevItem.trackClip');
+        mixItem.get('trackClip').then((trackClip) => {
 
-        if (fromTrackClip) {
-          // TODO(TECHDEBT): move to mix model? make work for adding many tracks?
-          // TODO(TECHDEBT): this works, have to do this because we cant directly set endBeat
-          const fromTrackBpm = fromTrackClip.get('track.audioMeta.bpm');
-          const audioEndTime = beatToTime((endBeat - fromTrackClip.get('startBeat')), fromTrackBpm) + fromTrackClip.get('audioStartTime');
-
-          if (isValidNumber(audioEndTime)) {
-            fromTrackClip.set('audioEndTime', audioEndTime);
+          //
+          // set or update default beat grid
+          //
+          let barGridTime = track.get('audioMeta.barGridTime');
+          if (!isValidNumber(barGridTime)) {
+            this.get('beatDetection.analyzeTrackTask').perform(track).then(({ peaks }) => {
+              barGridTime = peaks[0].time;
+              track.set('audioMeta.barGridTime', barGridTime);
+              trackClip.set('audioStartTime', barGridTime);
+            });
+          } else {
+            trackClip.set('audioStartTime', barGridTime);
           }
-        }
+
+
+          //
+          // possibly move transition clip
+          //
+          const fromTrackClip = mixItem.get('prevItem.trackClip');
+
+          if (fromTrackClip) {
+            // TODO(TECHDEBT): move to mix model? make work for adding many tracks?
+            // TODO(TECHDEBT): this works, have to do this because we cant directly set endBeat
+            const fromTrackBpm = fromTrackClip.get('track.audioMeta.bpm');
+            const audioEndTime = beatToTime((endBeat - fromTrackClip.get('startBeat')), fromTrackBpm) + fromTrackClip.get('audioStartTime');
+
+            if (isValidNumber(audioEndTime)) {
+              fromTrackClip.set('audioEndTime', audioEndTime);
+            }
+          }
+
+        });
       });
     },
 

@@ -6,7 +6,7 @@ import { join } from 'ember-cli-d3/utils/d3';
 import SelectionProxy from 'ember-cli-d3/system/selection-proxy';
 
 export default Ember.Component.extend(
-  GraphicSupport('items.[]'), {
+  GraphicSupport('items.[]', 'cssExpr'), {
 
   // required params
   requiredProperties: ['items'],
@@ -14,6 +14,9 @@ export default Ember.Component.extend(
   items: null,
   select: null,
   tags: null,
+
+  // optional params
+  cssExpr: '.item', // NOTE: nested zip-entries cannot use the same cssExpr
 
   entries: Ember.computed('items.[]', 'tags.[]', function () {
     if (this.get('tags.length') && this.get('items.length')) {
@@ -30,13 +33,19 @@ export default Ember.Component.extend(
     this.createTags(selection);
   },
 
-  createTags: join('items', '.item', {
-    // 'selection' is a d3 selection, not an ember-cli-d3 selection
-    update(selection) {
-      // for each element, create a new ember-cli-d3 selection
-      this.set('tags', selection[0].map((selection) => {
-        return SelectionProxy.create({ element: selection }).get('select');
-      }));
-    }
+  createTags(selection) {
+    return this.get('_joinFunction').call(this, selection);
+  },
+
+  _joinFunction: Ember.computed('cssExpr', function() {
+    return join('items', this.get('cssExpr'), {
+      // 'selection' is a d3 selection, not an ember-cli-d3 selection
+      update(selection) {
+        // for each element, create a new ember-cli-d3 selection
+        this.set('tags', selection[0].map((selection) => {
+          return SelectionProxy.create({ element: selection }).get('select');
+        }));
+      },
+    });
   }),
 });

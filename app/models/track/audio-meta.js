@@ -104,13 +104,14 @@ export default DS.Model.extend(
   keyText: DS.attr('string'), // TODO(TECHDEBT)
   mode: DS.attr('number'),
   loudness: DS.attr('number'),
-  barGridTime: DS.attr('number', { defaultValue: 0 }),
+  barGridTime: DS.attr('number'),
 
   beatGrid: computedObject(BeatGrid, {
     duration: 'duration',
     bpm: 'bpm',
     timeSignature: 'timeSignature',
-    barGridTime: 'barGridTime',
+    // TODO(MULTIGRID): make this use real thing
+    barGridTime: 0,
   }),
 
   // TODO(MULTIGRID): adapt for multiple grid markers. Piecewise-Scale? or a long domain/range?

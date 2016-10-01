@@ -21,10 +21,13 @@ export default Ember.Component.extend({
       const task = this.get('beatDetection.analyzeTrackTask');
       const track = this.get('track');
       task.perform(track).then(({ peaks, intervals }) => {
-        console.log('analyze track markers', peaks, intervals);
         const trackClip = this.get('clip');
 
-        trackClip.set('markers', peaks);
+        console.log('analyze track markers', peaks, intervals);
+        trackClip.setProperties({
+          markers: peaks,
+          // audioStartTime: peaks[0].time,
+        });
       });
     },
 
