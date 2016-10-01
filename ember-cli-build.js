@@ -4,6 +4,12 @@ var EmberApp = require('ember-cli/lib/broccoli/ember-app');
 
 module.exports = function(defaults) {
   var app = new EmberApp(defaults, {
+    minifyJS: {
+      options: {
+        // exclude pre-minified vendor files
+        exclude: ['vendor/js/*']
+      }
+    },
     babel: {
       includePolyfill: true
     },
@@ -33,6 +39,7 @@ module.exports = function(defaults) {
   // along with the exports of each module as its value.
 
   app.import('vendor/js/soundtouch.min.js');
+  app.import('vendor/js/jsmediatags.min.js');
   app.import('vendor/js/parallel.js'); // TODO(TECHDEBT): minify
 
   // WebAudioTestApi overrides native globals; only import when testing
