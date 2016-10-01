@@ -455,17 +455,17 @@ export default Ember.Component.extend(
   },
 
   // TODO(TECHDEBT): make this work with query param for sleected transition?
-  _selectedTransitionDidChange: Ember.observer('selectedTransition', function() {
-    const transition = this.get('selectedTransition');
+  // _selectedTransitionDidChange: Ember.observer('selectedTransition', function() {
+  //   const transition = this.get('selectedTransition');
 
-    Ember.run.next(() => {
-      if (transition) {
-        this.send('zoomToClip', transition.get('transitionClip'), true);
-      } else {
-        this.send('resetZoom', true);
-      }
-    });
-  }).on('didInsertElement'),
+  //   Ember.run.next(() => {
+  //     if (transition) {
+  //       this.send('zoomToClip', transition.get('transitionClip'), true);
+  //     } else {
+  //       this.send('resetZoom', true);
+  //     }
+  //   });
+  // }).on('didInsertElement'),
 
   _quantizeBeat(beat, quantization) {
     const beatGrid = this.get('mix.beatGrid');
