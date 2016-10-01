@@ -84,7 +84,9 @@ request.post(authOptions, function(error, response, body) {
     // caio list
     // url: 'https://api.spotify.com/v1/users/12101500688/playlists/1kj7ZNejTZvjyFHYrm2ACC/tracks',
     // jas list
-    url: 'https://api.spotify.com/v1/users/12145773870/playlists/1spxWIO4imwkeiKk54ovH1/tracks',
+    // url: 'https://api.spotify.com/v1/users/12145773870/playlists/1spxWIO4imwkeiKk54ovH1/tracks',
+    // lindsay list
+    url: 'https://api.spotify.com/v1/users/cadeparade/playlists/7LGv5LTmeidMuGauDMrSRN/tracks',
     headers: {
       'Authorization': 'Bearer ' + token
     },
@@ -122,7 +124,8 @@ request.post(authOptions, function(error, response, body) {
           };
         })
         .filter((track) => {
-          return track.tempo > 122 && track.tempo < 130
+          // return track.tempo > 122 && track.tempo < 130
+          return true
         })
       , 'key');
 
