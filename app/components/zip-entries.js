@@ -25,7 +25,12 @@ export default Ember.Component.extend(
     }
   }),
 
-  call: join('items', '.item', {
+  call(selection) {
+    this._super.apply(this, arguments);
+    this.createTags(selection);
+  },
+
+  createTags: join('items', '.item', {
     // 'selection' is a d3 selection, not an ember-cli-d3 selection
     update(selection) {
       // for each element, create a new ember-cli-d3 selection

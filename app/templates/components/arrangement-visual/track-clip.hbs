@@ -13,3 +13,16 @@
   peaks=trackPeaks
   height=height
 }}
+
+{{#zip-entries
+  select=select.ArrangementVisualTrackClip-markers
+  transform=(if displayOverflowWaveform startOffsetTransform)
+  items=clip.markers
+  as |marker tag|}}
+  {{arrangement-visual/marker
+    select=tag
+    height=height
+    pxPerBeat=pxPerBeat
+    transform=(svg-translate (multiply pxPerBeat (time-to-beat marker.time trackBpm)))
+  }}
+{{/zip-entries}}

@@ -24,3 +24,8 @@
 .ArrangementVisualTrackClip-startOverlay, .ArrangementVisualTrackClip-endOverlay {
   fill: rgba(#000, 0.5);
 }
+
+.ArrangementVisualTrackClip-markers {
+  stroke-width: 0.5;
+  stroke: rgba(#00ff00, 1);
+}

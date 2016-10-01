@@ -9,7 +9,12 @@ export default Ember.Component.extend(
   height: 0,
   width: 0,
 
-  call: join([0], 'rect.ArrangementVisualBackdrop', {
+  call(selection) {
+    this._super.apply(this, arguments);
+    this.drawBackdrop(selection);
+  },
+
+  drawBackdrop: join([0], 'rect.ArrangementVisualBackdrop', {
     update(selection) {
       selection
         .attr('height', this.get('height'))

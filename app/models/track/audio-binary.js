@@ -38,7 +38,6 @@ export default Ember.Object.extend(
   audioContext: Ember.computed.reads('session.audioContext'),
   arrayBuffer: Ember.computed.or('fileArrayBuffer', 'streamUrlArrayBuffer'),
 
-  // TODO(REFACTOR): add test
   audioBuffer: Ember.computed.reads('decodedArrayBuffer.content'),
 
   // TODO(COMPUTEDPROMISE): use that?
