@@ -12,7 +12,7 @@ import multiply from 'linx/lib/computed/multiply';
 const ZOOM_THROTTLE_DELAY = 0;
 
 // when zooming to clip, leave some space
-const ZOOM_TO_CLIP_SCALE_FACTOR = 0.5;
+const ZOOM_TO_CLIP_SCALE_FACTOR = 0.25;
 
 export default DataVisual.extend(
   InboundActions, {
