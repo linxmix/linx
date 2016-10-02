@@ -22,10 +22,14 @@ export default Ember.Object.extend(
   isArrayBufferLoadedAndDecoded: Ember.computed.bool('audioBuffer'),
 
   // webStreamUrl with proxying
-  streamUrl: Ember.computed('webStreamUrl', function() {
+  streamUrl: Ember.computed('webStreamUrl', 'scStreamUrl', function() {
     const webStreamUrl = this.get('webStreamUrl');
+    const scStreamUrl = this.get('scStreamUrl');
 
-    if (webStreamUrl) {
+    // TODO(TECHDEBT): this is a hack to not proxy soundcloud stream requests
+    if (webStreamUrl && scStreamUrl) {
+      return scStreamUrl;
+    } else if (webStreamUrl) {
       return ENV.PROXY_URL + encodeURI(`/${webStreamUrl}`);
     }
   }),
