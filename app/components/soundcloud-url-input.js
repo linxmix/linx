@@ -25,6 +25,7 @@ export default Ember.TextField.extend(
       const track = store.createRecord('track')
       track.createFromSoundcloudTrack(soundcloudTrack);
 
+      track.get('audioBinary.analyzeAudioTask').perform();
       this.get('addTrack')(track);
     }, (error) => {
       Ember.Logger.warn('error with resolveUrl', error);

@@ -128,6 +128,8 @@ export default DS.Model.extend(
   extractId3TagsTask: task(function * () {
     const file = this.get('file');
 
+    if (!file) { return; }
+
     const { tags } = yield new Ember.RSVP.Promise((resolve, reject) => {
       JsMediaTags.read(file, {
         onSuccess: resolve,
