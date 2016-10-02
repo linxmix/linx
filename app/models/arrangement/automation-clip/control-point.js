@@ -5,6 +5,7 @@ import d3 from 'd3';
 
 import OrderedHasManyItemMixin from 'linx/mixins/models/ordered-has-many/item';
 import withDefault from 'linx/lib/computed/with-default';
+import { isValidNumber } from 'linx/lib/utils';
 
 const { computed } = Ember;
 
@@ -20,7 +21,8 @@ export default DS.Model.extend(
   scaledValue: computed('value', 'automationClip.valueScale', {
     get() {
       const scale = this.get('valueScale');
-      return scale(this.get('value'));
+      const value = scale(this.get('value'));
+      return isValidNumber(value) ? value : 0;
     },
 
     set(key, scaledValue) {
