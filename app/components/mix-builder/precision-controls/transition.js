@@ -11,13 +11,15 @@ import {
   CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF,
   CONTROL_TYPE_FILTER_LOWPASS_CUTOFF,
   CONTROL_TYPE_DELAY_WET,
+  CONTROL_TYPE_DELAY_CUTOFF,
 } from 'linx/mixins/playable-arrangement/automatable-clip/control';
 
 const AUTOMATION_OPTIONS = {
   [CONTROL_TYPE_VOLUME]: 'Volume',
   [CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF]: 'Highpass',
   [CONTROL_TYPE_FILTER_LOWPASS_CUTOFF]: 'Lowpass',
-  [CONTROL_TYPE_DELAY_WET]: 'Delay',
+  [CONTROL_TYPE_DELAY_WET]: 'Delay Wet',
+  [CONTROL_TYPE_DELAY_CUTOFF]: 'Delay Cutoff'
 };
 
 export default Ember.Component.extend(

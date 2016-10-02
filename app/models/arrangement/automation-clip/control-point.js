@@ -4,6 +4,7 @@ import DS from 'ember-data';
 import d3 from 'd3';
 
 import OrderedHasManyItemMixin from 'linx/mixins/models/ordered-has-many/item';
+import withDefault from 'linx/lib/computed/with-default';
 
 const { computed } = Ember;
 
@@ -14,14 +15,16 @@ export default DS.Model.extend(
   value: DS.attr('number'),
   automationClip: DS.belongsTo('arrangement/automation-clip'),
 
+  valueScale: withDefault('automationClip.valueScale', d3.scale.identity()),
+
   scaledValue: computed('value', 'automationClip.valueScale', {
     get() {
-      const scale = this.get('automationClip.valueScale');
+      const scale = this.get('valueScale');
       return scale(this.get('value'));
     },
 
     set(key, scaledValue) {
-      const scale = this.get('automationClip.valueScale');
+      const scale = this.get('valueScale');
       const newValue = scale.invert(scaledValue);
 
       this.set('value', newValue);

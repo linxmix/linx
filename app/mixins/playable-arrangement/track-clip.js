@@ -23,7 +23,6 @@ import {
 import {
   default as AutomatableClipControlMixin,
   CONTROL_TYPE_VOLUME,
-  CONTROL_TYPE_BPM,
   CONTROL_TYPE_PITCH,
   CONTROL_TYPE_DELAY_WET,
   CONTROL_TYPE_DELAY_CUTOFF,
@@ -36,42 +35,42 @@ const TrackVolumeControl = Ember.Object.extend(
   AutomatableClipControlMixin('trackVolumeNode.gain'), {
 
   type: CONTROL_TYPE_VOLUME,
-});
-
-const TrackTempoControl = Ember.Object.extend(
-  AutomatableClipControlMixin('soundtouchNode.bpm'), {
-
-  type: CONTROL_TYPE_BPM,
+  defaultValue: 1,
 });
 
 const TrackPitchControl = Ember.Object.extend(
   AutomatableClipControlMixin('soundtouchNode.pitch'), {
 
   type: CONTROL_TYPE_PITCH,
+  defaultValue: 0,
 });
 
 const TrackDelayWetControl = Ember.Object.extend(
   AutomatableClipControlMixin('tunaDelayNode.wet.gain'), {
 
   type: CONTROL_TYPE_DELAY_WET,
+  defaultValue: 0,
 });
 
 const TrackDelayCutoffControl = Ember.Object.extend(
   AutomatableClipControlMixin('tunaDelayNode.filter.frequency'), {
 
   type: CONTROL_TYPE_DELAY_CUTOFF,
+  defaultValue: 2000,
 });
 
 const TrackHighpassFilterCutoffControl = Ember.Object.extend(
   AutomatableClipControlMixin('tunaHighpassFilterNode.filter.frequency'), {
 
   type: CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF,
+  defaultValue: 20,
 });
 
 const TrackLowpassFilterCutoffControl = Ember.Object.extend(
   AutomatableClipControlMixin('tunaLowpassFilterNode.filter.frequency'), {
 
   type: CONTROL_TYPE_FILTER_LOWPASS_CUTOFF,
+  defaultValue: 22050,
 });
 
 
@@ -96,7 +95,6 @@ export default Ember.Mixin.create(
   controls: Ember.computed(function() {
     return [
       TrackVolumeControl.create({ clip: this }),
-      TrackTempoControl.create({ clip: this }),
       TrackPitchControl.create({ clip: this }),
       TrackDelayWetControl.create({ clip: this }),
       TrackDelayCutoffControl.create({ clip: this }),

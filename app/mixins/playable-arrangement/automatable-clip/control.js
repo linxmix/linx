@@ -1,5 +1,7 @@
 import Ember from 'ember';
 
+import d3 from 'd3';
+
 import RequireAttributes from 'linx/lib/require-attributes';
 
 import { isValidNumber } from 'linx/lib/utils';
@@ -37,7 +39,8 @@ export default function(audioParamPath) {
 
     // optional params
     description: '',
-    isSuspended: false,
+    // isSuspended: false,
+    defaultValue: 0,
 
     // TODO(TECHDEBT): share more cleanly
     valueScale: Ember.computed('type', function() {
@@ -48,7 +51,7 @@ export default function(audioParamPath) {
           return d3.scale.log().domain([20, 22050]).range([0, 1]);
         default:
           return d3.scale.identity();
-      };
+      }
     }),
 
     _initClipListeners: Ember.on('init', function() {
@@ -57,11 +60,13 @@ export default function(audioParamPath) {
       clip && clip.on('unschedule', this, this.scheduleDidChange);
     }),
 
-    _removeClipListeners: Ember.on('willDestroy', function() {
+    willDestroy() {
       const clip = this.get('clip');
       clip && clip.off('schedule', this, this.scheduleDidChange);
       clip && clip.off('unschedule', this, this.scheduleDidChange);
-    }),
+
+      return this._super.apply(this, arguments);
+    },
 
     scheduleDidChange() {
       Ember.run.next(this, 'updateValue');
@@ -107,7 +112,7 @@ export default function(audioParamPath) {
       // if no last value, use next value set by automation
       // Ember.Logger.log('updateValue', this.get('clip.track.title'), isInAutomation, lastEndTime, nextStartTime);
       if (!isInAutomation) {
-        let value;
+        let value = this.get('defaultValue');
 
         if (isValidNumber(lastEndTime[1])) {
           value = lastEndTime[1];

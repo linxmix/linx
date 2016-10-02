@@ -25,20 +25,20 @@ export default Clip.extend(
 
   actions: {
     onControlPointDrag(d3Context, controlPoint, dBeats, dHeight) {
-        const oldValue = this.get('_dragStartValue');
-        const oldBeat = this.get('_dragStartBeat');
-        const height = this.get('height');
+      const oldValue = this.get('_dragStartValue');
+      const oldBeat = this.get('_dragStartBeat');
+      const height = this.get('height');
 
-        // calculate new beat and value
-        const prevControlPoint = controlPoint.get('prevItem');
-        const nextControlPoint = controlPoint.get('nextItem');
-        const minBeat = prevControlPoint ? prevControlPoint.get('beat') : this.get('minControlPointBeat');
-        const maxBeat = nextControlPoint ? nextControlPoint.get('beat') : this.get('maxControlPointBeat');
+      // calculate new beat and value
+      const prevControlPoint = controlPoint.get('prevItem');
+      const nextControlPoint = controlPoint.get('nextItem');
+      const minBeat = prevControlPoint ? prevControlPoint.get('beat') : this.get('minControlPointBeat');
+      const maxBeat = nextControlPoint ? nextControlPoint.get('beat') : this.get('maxControlPointBeat');
 
-        const beat = clamp(minBeat, oldBeat + dBeats, maxBeat);
-        const scaledValue = clamp(0, oldValue - (dHeight / height), 1);
+      const beat = clamp(minBeat, oldBeat + dBeats, maxBeat);
+      const scaledValue = clamp(0, oldValue - (dHeight / height), 1);
 
-        // Ember.Logger.log('onControlPointDrag', dBeats, dHeight / height, beat, scaledValue)
+      // Ember.Logger.log('onControlPointDrag', dBeats, dHeight / height, beat, scaledValue)
       if (this.get('canMoveSelectedControlPointBeat')) {
         controlPoint.setProperties({
           beat,

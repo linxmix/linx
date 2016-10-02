@@ -84,7 +84,6 @@ export default DS.Model.extend(
         controlType: CONTROL_TYPE_FILTER_LOWPASS_CUTOFF,
         transition: this,
       });
-
       const toTrackVolumeClip = store.createRecord('mix/transition/to-track-automation-clip', {
         controlType: CONTROL_TYPE_VOLUME,
         transition: this,
@@ -157,7 +156,7 @@ export default DS.Model.extend(
         fromTrackDelayCutoffClip.addControlPoints([
           {
             beat: 0,
-            value: 0,
+            value: 20,
           },
           {
             beat: 3 * (beatCount / 4),
