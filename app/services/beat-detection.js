@@ -22,7 +22,7 @@ export default Ember.Service.extend({
     return {
       peaks: peaks.map(({ position, volume }) => {
         return {
-          time: position / SAMPLE_RATE,
+          time: (position / SAMPLE_RATE) - (45 / 1000), // adjust to be slightly before beat
           volume,
         };
       }),
