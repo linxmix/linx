@@ -179,7 +179,7 @@ export default Ember.Component.extend(
     const track = mixItem.get('track');
     const mix = this.get('mix');
     const jumpTransitionBeatCount = 2;
-    const jumpTransitionStartVolume = 0.2;
+    const jumpTransitionStartVolume = 0;
     const jumpTransitionVolumeControlPointCount = 3;
 
     //
@@ -248,6 +248,7 @@ export default Ember.Component.extend(
       beatCount: jumpTransitionBeatCount,
       startVolume: jumpTransitionStartVolume,
       volumeControlPointCount: jumpTransitionVolumeControlPointCount,
+      isFromTrackDelayBypassed: true,
     });
 
     this.send('selectTransition', jumpTransition);

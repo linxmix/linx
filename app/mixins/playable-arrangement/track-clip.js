@@ -89,7 +89,7 @@ export default Ember.Mixin.create(
   // optional params
   transpose: 0,
   gain: DEFAULT_GAIN,
-  delayBypass: 0,
+  delayBypass: false,
 
   // implementing automatable clip mixin
   controls: Ember.computed(function() {

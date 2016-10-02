@@ -45,6 +45,7 @@ export default DS.Model.extend(
     beatCount,
     startVolume,
     volumeControlPointCount,
+    isFromTrackDelayBypassed,
 
     fromTrack,
     toTrack,
@@ -188,6 +189,10 @@ export default DS.Model.extend(
           n: volumeControlPointCount,
           beatCount,
         }));
+
+        if (isFromTrackDelayBypassed) {
+          this.set('fromTrackClip.delayBypass', true);
+        }
 
         this.get('fromTrackAutomationClips').addObjects(fromTrackAutomationClips);
         this.get('toTrackAutomationClips').addObjects(toTrackAutomationClips);
