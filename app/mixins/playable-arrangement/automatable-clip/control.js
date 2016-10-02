@@ -43,11 +43,9 @@ export default function(audioParamPath) {
     valueScale: Ember.computed('type', function() {
       switch (this.get('type')) {
         case CONTROL_TYPE_DELAY_CUTOFF:
-          return d3.scale.linear().domain([20, 22050]).range([0, 1]);
         case CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF:
-          return d3.scale.linear().domain([20, 22050]).range([0, 1]);
         case CONTROL_TYPE_FILTER_LOWPASS_CUTOFF:
-          return d3.scale.linear().domain([20, 22050]).range([0, 1]);
+          return d3.scale.log().domain([20, 22050]).range([0, 1]);
         default:
           return d3.scale.identity();
       };
