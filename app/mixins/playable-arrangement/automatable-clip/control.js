@@ -40,16 +40,16 @@ export default function(audioParamPath) {
     isSuspended: false,
 
     // TODO(TECHDEBT): share more cleanly
-    valueRange: Ember.computed('type', function() {
+    valueScale: Ember.computed('type', function() {
       switch (this.get('type')) {
         case CONTROL_TYPE_DELAY_CUTOFF:
-          return [20, 22050];
+          return d3.scale.linear().domain([20, 22050]).range([0, 1]);
         case CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF:
-          return [20, 22050];
+          return d3.scale.linear().domain([20, 22050]).range([0, 1]);
         case CONTROL_TYPE_FILTER_LOWPASS_CUTOFF:
-          return [20, 22050];
+          return d3.scale.linear().domain([20, 22050]).range([0, 1]);
         default:
-          return [0, 1];
+          return d3.scale.identity();
       };
     }),
 
