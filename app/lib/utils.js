@@ -2,6 +2,8 @@ import Ember from 'ember';
 import DS from 'ember-data';
 import _ from 'npm:underscore';
 
+const { get } = Ember;
+
 export const flatten = function(array) {
   return array.reduce(function(flattened, el) {
     flattened.push.apply(flattened, Ember.isArray(el) ? flatten(el) : [el]);
@@ -119,3 +121,15 @@ export const roundTo = function(x, n) {
     return x + n - rest;
   }
 };
+
+// TODO(TECHDEBT): should the input field stop propagation instead?
+export const makeKeybinding = function(fn) {
+  return function(e) {
+    const tagName = (get(e, 'target.tagName') || '').toUpperCase();
+    if (tagName !== 'INPUT' && tagName !== 'TEXTAREA') {
+      e.preventDefault();
+      e.stopPropagation();
+      fn.call(this, e);
+    }
+  };
+}

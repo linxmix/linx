@@ -1,6 +1,141 @@
 import Ember from 'ember';
 
-export default Ember.Component.extend({
+import { EKMixin, EKOnInsertMixin, keyDown } from 'ember-keyboard';
+
+import { makeKeybinding } from 'linx/lib/utils';
+
+const NUDGE_VALUE = 0.005;
+
+const BEAT_JUMP_KEYBINDINGS = [
+  // from track backward
+  {
+    key: 'alt+KeyE',
+    beats: NUDGE_VALUE,
+    direction: -1,
+    isFromTrackClip: true,
+    isNudge: true,
+  },
+  {
+    key: 'cmd+KeyE',
+    beats: 1,
+    direction: -1,
+    isFromTrackClip: true,
+  },
+  {
+    key: 'KeyE',
+    beats: 4,
+    direction: -1,
+    isFromTrackClip: true,
+  },
+  {
+    key: 'shift+KeyE',
+    beats: 16,
+    direction: -1,
+    isFromTrackClip: true,
+  },
+
+  // from track forward
+  {
+    key: 'alt+KeyR',
+    beats: NUDGE_VALUE,
+    direction: 1,
+    isFromTrackClip: true,
+    isNudge: true,
+  },
+  {
+    key: 'cmd+KeyR',
+    beats: 1,
+    direction: 1,
+    isFromTrackClip: true,
+  },
+  {
+    key: 'KeyR',
+    beats: 4,
+    direction: 1,
+    isFromTrackClip: true,
+  },
+  {
+    key: 'shift+KeyR',
+    beats: 16,
+    direction: 1,
+    isFromTrackClip: true,
+  },
+
+  // to track backward
+  {
+    key: 'alt+KeyD',
+    beats: NUDGE_VALUE,
+    direction: -1,
+    isNudge: true,
+  },
+  {
+    key: 'cmd+KeyD',
+    beats: 1,
+    direction: -1,
+  },
+  {
+    key: 'KeyD',
+    beats: 4,
+    direction: -1,
+  },
+  {
+    key: 'shift+KeyD',
+    beats: 16,
+    direction: -1,
+  },
+
+  // to track forward
+  {
+    key: 'alt+KeyF',
+    beats: NUDGE_VALUE,
+    direction: 1,
+    isNudge: true,
+  },
+  {
+    key: 'cmd+KeyF',
+    beats: 1,
+    direction: 1,
+  },
+  {
+    key: 'KeyF',
+    beats: 4,
+    direction: 1,
+  },
+  {
+    key: 'shift+KeyF',
+    beats: 16,
+    direction: 1,
+  },
+];
+
+const KeyboardBeatJumpMixin = Ember.Mixin.create(BEAT_JUMP_KEYBINDINGS.reduce(
+  (props, { key, beats, direction, isFromTrackClip, isNudge }) => {
+    const propertyName = `____${key}-${beats}-${direction}`;
+
+    props[propertyName] = Ember.on(keyDown(key), makeKeybinding(function(e) {
+      if (!this.get('clip')) { return; }
+
+      if (isFromTrackClip) {
+        if (this.get('isFromTrackClip')) {
+          this.beatJump(beats, direction, isNudge);
+        }
+      } else {
+        if (!this.get('isFromTrackClip')) {
+          this.beatJump(beats, direction, isNudge);
+        }
+      }
+    }));
+
+    return props;
+  },
+  {}
+));
+
+export default Ember.Component.extend(
+  KeyboardBeatJumpMixin,
+  EKMixin,
+  EKOnInsertMixin, {
+
   classNames: ['MixBuilderPrecisionControlsTrack'],
 
   // required params
@@ -15,6 +150,28 @@ export default Ember.Component.extend({
 
   track: Ember.computed.reads('clip.track'),
   beatDetection: Ember.inject.service(),
+
+  // used by KeyboardBeatJumpMixin
+  beatJump(beats, direction, isNudge) {
+    const clip = this.get('clip');
+    const beatGrid = clip.get('audioMeta.beatGrid');
+
+    console.log('beatJump', beats, direction, isNudge, clip.get('track.title'));
+
+    if (isNudge || this.get('isToTrackClip')) {
+      const audioStartBeat = clip.get('audioStartBeat');
+      const newAudioStartBeat = audioStartBeat - (beats * direction);
+      const newAudioStartTime = beatGrid.beatToTime(newAudioStartBeat);
+
+      clip.set('audioStartTime', newAudioStartTime);
+    } else if (this.get('isFromTrackClip')) {
+      const audioEndBeat = clip.get('audioEndBeat');
+      const newAudioEndBeat = audioEndBeat + (beats * direction);
+      const newAudioEndTime = beatGrid.beatToTime(newAudioEndBeat);
+
+      clip.set('audioEndTime', newAudioEndTime);
+    }
+  },
 
   actions: {
     analyzeTrack() {
@@ -37,7 +194,7 @@ export default Ember.Component.extend({
 
         if (this.get('isFromTrackClip')) {
           clip.set('audioEndTime', clip.getAudioTimeFromArrangementBeat(beat));
-        } else {
+        } else if (this.get('isToTrackClip')) {
           // this code was to allow moving transition to end beat
           // const transitionBeatCount = this.get('clip.mixItem.transition.beatCount');
           // const time = clip.getAudioTimeFromArrangementBeat(beat - transitionBeatCount);
@@ -47,4 +204,3 @@ export default Ember.Component.extend({
     }
   }
 });
-

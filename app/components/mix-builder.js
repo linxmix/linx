@@ -20,7 +20,7 @@ import {
   CONTROL_TYPE_VOLUME,
 } from 'linx/mixins/playable-arrangement/automatable-clip/control';
 
-import { beatToTime, isValidNumber, clamp } from 'linx/lib/utils';
+import { beatToTime, isValidNumber, clamp, makeKeybinding } from 'linx/lib/utils';
 
 export const FROM_TRACK_COLOR = '#ac6ac7';
 export const TO_TRACK_COLOR = '#16a085';
@@ -56,15 +56,9 @@ export default Ember.Component.extend(
     return this.get('mix.length') + 1;
   }),
 
-  _playpauseMix: Ember.on(keyDown(' '), function(e) {
-    const tagName = (get(e, 'target.tagName') || '').toUpperCase();
-
-    if (tagName !== 'INPUT' && tagName !== 'TEXTAREA') {
-      this.send('playpause');
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  }),
+  _playpauseMix: Ember.on(keyDown('Space'), makeKeybinding(function(e) {
+    this.send('playpause');
+  })),
 
   _pauseMix: Ember.on('willDestroyElement', function() {
     this.send('pause');
