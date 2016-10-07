@@ -1,6 +1,9 @@
 import Ember from 'ember';
 
+import { EKMixin, EKOnInsertMixin, keyDown } from 'ember-keyboard';
+
 import BubbleActions from 'linx/lib/bubble-actions';
+import { clamp, makeKeybinding } from 'linx/lib/utils';
 
 import {
   BEAT_QUANTIZATION,
@@ -21,8 +24,11 @@ const AUTOMATION_OPTIONS = {
   [CONTROL_TYPE_DELAY_WET]: 'Delay Wet',
   [CONTROL_TYPE_DELAY_CUTOFF]: 'Delay Cutoff'
 };
+const AUTOMATION_KEYS = Object.keys(AUTOMATION_OPTIONS);
 
 export default Ember.Component.extend(
+  EKMixin,
+  EKOnInsertMixin,
   BubbleActions('toggleShowAutomation'), {
 
   classNames: ['MixBuilderPrecisionControlsTransition'],
@@ -36,6 +42,26 @@ export default Ember.Component.extend(
   selectAutomation: Ember.K,
 
   automationOptions: AUTOMATION_OPTIONS,
+
+  _selectPreviousAutomation: Ember.on(keyDown('ArrowUp'), makeKeybinding(function(e) {
+    if (!this.get('clip')) { return; }
+
+    const selectedAutomation = this.get('selectedAutomation');
+
+    const currentIndex = AUTOMATION_KEYS.indexOf(selectedAutomation);
+    const prevIndex = clamp(0, currentIndex - 1, AUTOMATION_KEYS.length);
+    this.get('selectAutomation')(AUTOMATION_KEYS[prevIndex]);
+  })),
+
+  _selectNextAutomation: Ember.on(keyDown('ArrowDown'), makeKeybinding(function(e) {
+    if (!this.get('clip')) { return; }
+
+    const selectedAutomation = this.get('selectedAutomation');
+
+    const currentIndex = AUTOMATION_KEYS.indexOf(selectedAutomation);
+    const nextIndex = clamp(0, currentIndex + 1, AUTOMATION_KEYS.length);
+    this.get('selectAutomation')(AUTOMATION_KEYS[nextIndex]);
+  })),
 
   actions: {
     optimizeTransition() {

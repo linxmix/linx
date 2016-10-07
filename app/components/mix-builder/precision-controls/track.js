@@ -16,12 +16,6 @@ const BEAT_JUMP_KEYBINDINGS = [
     isNudge: true,
   },
   {
-    key: 'cmd+KeyE',
-    beats: 1,
-    direction: -1,
-    isFromTrackClip: true,
-  },
-  {
     key: 'KeyE',
     beats: 4,
     direction: -1,
@@ -41,12 +35,6 @@ const BEAT_JUMP_KEYBINDINGS = [
     direction: 1,
     isFromTrackClip: true,
     isNudge: true,
-  },
-  {
-    key: 'cmd+KeyR',
-    beats: 1,
-    direction: 1,
-    isFromTrackClip: true,
   },
   {
     key: 'KeyR',
@@ -69,11 +57,6 @@ const BEAT_JUMP_KEYBINDINGS = [
     isNudge: true,
   },
   {
-    key: 'cmd+KeyD',
-    beats: 1,
-    direction: -1,
-  },
-  {
     key: 'KeyD',
     beats: 4,
     direction: -1,
@@ -90,11 +73,6 @@ const BEAT_JUMP_KEYBINDINGS = [
     beats: NUDGE_VALUE,
     direction: 1,
     isNudge: true,
-  },
-  {
-    key: 'cmd+KeyF',
-    beats: 1,
-    direction: 1,
   },
   {
     key: 'KeyF',
@@ -173,6 +151,14 @@ export default Ember.Component.extend(
     }
   },
 
+  _moveFromTrack: Ember.on(keyDown('KeyW'), makeKeybinding(function(e) {
+    this.send('moveTransition');
+  })),
+
+  _moveToTrack: Ember.on(keyDown('KeyS'), makeKeybinding(function(e) {
+    this.send('moveTransition');
+  })),
+
   actions: {
     analyzeTrack() {
       const task = this.get('beatDetection.analyzeTrackTask');
@@ -190,6 +176,8 @@ export default Ember.Component.extend(
 
     moveTransition() {
       Ember.RSVP.resolve(this.get('clip')).then((clip) => {
+        if (!clip) { return; }
+
         const beat = this.get('clip.arrangement.metronome.seekBeat');
 
         if (this.get('isFromTrackClip')) {
