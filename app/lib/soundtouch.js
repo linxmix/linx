@@ -50,10 +50,20 @@ export function SoundtouchBufferSource(buffer) {
 SoundtouchBufferSource.prototype = {
   extract: function(target, numFrames, position) {
     const l = this.buffer.getChannelData(0);
-    const r = this.buffer.getChannelData(1);
-    for (let i = 0; i < numFrames; i++) {
-      target[i * 2] = l[i + position];
-      target[i * 2 + 1] = r[i + position];
+
+    if (this.buffer.numberOfChannels >= 2) {
+      const r = this.buffer.getChannelData(1);
+      for (let i = 0; i < numFrames; i++) {
+        target[i * 2] = l[i + position];
+        target[i * 2 + 1] = r[i + position];
+      }
+
+    // buffer is mono
+    } else {
+      for (let i = 0; i < numFrames; i++) {
+        target[i * 2] = l[i + position];
+        target[i * 2 + 1] = l[i + position];
+      }
     }
     return Math.min(numFrames, l.length - position);
   }
