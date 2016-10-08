@@ -63,6 +63,10 @@ export default Ember.Component.extend(
     this.get('selectAutomation')(AUTOMATION_KEYS[nextIndex]);
   })),
 
+  _snapTransitionToBeat: Ember.observer('transition.fromTrackClip.audioStartTime', function() {
+    this.send('snapToBeat');
+  }),
+
   actions: {
     optimizeTransition() {
       const transition = this.get('transition.content') || this.get('transition');
@@ -74,6 +78,8 @@ export default Ember.Component.extend(
 
     snapToBeat() {
       const transitionClip = this.get('clip');
+      if (!transitionClip) { return; }
+
       const quantizedBeat = this.get('quantizeBeat')(transitionClip.get('endBeat'), BEAT_QUANTIZATION);
       const fromTrackClip = transitionClip.get('fromTrackClip.content');
 
