@@ -4,7 +4,7 @@ import d3 from 'd3';
 import LinearScale from 'linx/lib/linear-scale';
 import QuantizeScale from 'linx/lib/quantize-scale';
 import computedObject from 'linx/lib/computed/object';
-import { timeToBeat, bpmToSpb, isValidNumber } from 'linx/lib/utils';
+import { timeToBeatUtil, bpmToSpb, isValidNumber } from 'linx/lib/utils';
 
 export const BAR_QUANTIZATION = 'bar';
 export const BEAT_QUANTIZATION = 'beat';
@@ -15,22 +15,22 @@ export const SAMPLE_QUANTIZATION = 'sample';
 
 export const TICKS_PER_BEAT = 120;
 
+
 export default Ember.Object.extend({
 
   // required params
-  duration: null,
-  bpm: null,
+  bpmScale: null,
+  beatCount: null,
 
   // optional params
-  barGridTime: 0,
   timeSignature: 4,
 
   timeToBeat(time) {
-    return this.get('beatScale').getPoint(time);
+    return this.get('beatScale')(time);
   },
 
   beatToTime(beat) {
-    return this.get('beatScale').getInverse(beat);
+    return this.get('beatScale').invert(beat);
   },
 
   beatToBar(beat) {
@@ -42,19 +42,19 @@ export default Ember.Object.extend({
   },
 
   timeToBar(time) {
-    return this.get('barScale').getPoint(time);
+    return this.get('barScale')(time);
   },
 
   barToTime(bar) {
-    return this.get('barScale').getInverse(bar);
+    return this.get('barScale').invert(bar);
   },
 
   quantizeBeat(beat) {
-    return this.get('quantizeBeatScale').getPoint(beat);
+    return this.get('quantizeBeatScale')(beat);
   },
 
   quantizeBar(bar) {
-    return this.get('quantizeBarScale').getPoint(bar);
+    return this.get('quantizeBarScale')(bar);
   },
 
   beatToQuantizedBar(beat) {
@@ -62,6 +62,12 @@ export default Ember.Object.extend({
   },
 
   beatToQuantizedDownbeat(beat) {
+    // console.log('beatToQuantizedDownbeat', {
+    //   beat,
+    //   bar: this.beatToBar(beat),
+    //   quantizedBar: this.beatToQuantizedBar(beat),
+    //   quantizedBeat: this.barToBeat(this.beatToQuantizedBar(beat)),
+    // });
     return this.barToBeat(this.beatToQuantizedBar(beat));
   },
 
@@ -73,83 +79,109 @@ export default Ember.Object.extend({
     return this.quantizeBar(this.timeToBar(time));
   },
 
+  duration: Ember.computed('beatScale', 'beatCount', function() {
+    return this.beatToTime(this.get('beatCount'));
+  }),
+
+  // returns time duration of given beat interval
+  getDuration(startBeat, endBeat) {
+    const startTime = this.beatToTime(startBeat);
+    const endTime = this.beatToTime(endBeat);
+    return endTime - startTime;
+  },
+
+  // returns beat count of given time interval
+  getBeatCount(startTime, endTime) {
+    const startBeat = this.timeToBeat(startTime);
+    const endBeat = this.timeToBeat(endTime);
+    return endBeat - startBeat;
+  },
+
   // Beat Scale
   // domain is time [s]
   // range is beats [b]
-  beatScaleDomain: Ember.computed('duration', function() {
-    return [0, this.get('duration')];
+  beatScaleDomain: Ember.computed('bpmScale', function() {
+    const { bpmScale } = this.getProperties('beatCount', 'bpmScale');
+
+    // add durations from each linear interval
+    const domain = bpmScale.domain();
+    return domain.reduce((range, endBeat, i) => {
+      if (i === 0) {
+        range.push(0);
+        return range;
+      }
+
+      const prevDuration = range[i - 1];
+
+      const startBeat = domain[i - 1];
+      const startBpm = bpmScale(startBeat);
+      const endBpm = bpmScale(endBeat);
+
+      const intervalBeatCount = endBeat - startBeat;
+      const averageBpm = (endBpm + startBpm) / 2.0;
+      const minutes = intervalBeatCount / averageBpm;
+      const seconds = minutes * 60;
+
+      console.log('calculate seconds', {
+        startBeat,
+        endBeat,
+        startBpm,
+        endBpm,
+        intervalBeatCount,
+        averageBpm,
+        minutes,
+        seconds,
+        prevDuration
+      });
+
+      if (isValidNumber(seconds)) {
+        range.push(prevDuration + seconds);
+      } else {
+        range.push(prevDuration);
+      }
+
+      return range;
+    }, []);
   }),
-  beatScaleRange: Ember.computed('firstBarOffset', 'beatCount', function() {
-    let { firstBarOffset, beatCount } = this.getProperties('firstBarOffset', 'beatCount');
-    return [-firstBarOffset, beatCount - firstBarOffset];
+  beatScaleRange: Ember.computed('bpmScale', function() {
+    return this.get('bpmScale').domain();
   }),
-  beatScale: computedObject(LinearScale, {
-    'domain': 'beatScaleDomain',
-    'range': 'beatScaleRange',
+  beatScale: Ember.computed('beatScaleDomain', 'beatScaleRange', function() {
+    return d3.scale.linear()
+      .domain(this.get('beatScaleDomain') || [])
+      .range(this.get('beatScaleRange') || []);
   }),
-  quantizeBeatScaleRange: Ember.computed('beatScaleRange', function() {
-    let beatScale = this.get('beatScale');
-    let [rangeMin, rangeMax] = beatScale.get('range');
-    // return d3.range(Math.ceil(rangeMin), Math.floor(rangeMax), 1);
-    return [Math.ceil(rangeMin), Math.floor(rangeMax)];
-  }),
-  quantizeBeatScale: computedObject(QuantizeScale, {
-    'domain': 'beatScaleRange',
-    'range': 'quantizeBeatScaleRange',
+  quantizeBeatScale: Ember.computed('beatScale', function() {
+    const beatScale = this.get('beatScale');
+
+    return d3.scale.linear()
+      .domain(beatScale.range())
+      .rangeRound(beatScale.range().map(Math.round));
   }),
 
   // Bar Scale
   // domain is time [s]
-  // range is bars [ba]
+  // range is beats [b]
   barScaleRange: Ember.computed('beatScaleRange', 'timeSignature', function() {
     const { beatScale, timeSignature } = this.getProperties('beatScale', 'timeSignature');
-    const [rangeMin, rangeMax] = beatScale.get('range');
 
-    return [rangeMin / timeSignature, rangeMax / timeSignature];
+    return beatScale.range().map((n) => n / timeSignature);
   }),
-  barScale: computedObject(LinearScale, {
-    'domain': 'beatScaleDomain',
-    'range': 'barScaleRange',
+  barScale: Ember.computed('beatScaleDomain', 'barScaleRange', function() {
+    return d3.scale.linear()
+      .domain(this.get('beatScaleDomain') || [])
+      .range(this.get('barScaleRange') || []);
   }),
-  quantizeBarScaleRange: Ember.computed('barScaleRange', function() {
+  quantizeBarScale: Ember.computed('barScale', function() {
     const barScale = this.get('barScale');
-    const [rangeMin, rangeMax] = barScale.get('range');
-    // TODO: i think below line is deprecated, and can be removed?
-    // return d3.range(Math.ceil(rangeMin), Math.floor(rangeMax), 1);
-    return [Math.ceil(rangeMin), Math.floor(rangeMax)];
-  }),
-  quantizeBarScale: computedObject(QuantizeScale, {
-    'domain': 'barScaleRange',
-    'range': 'quantizeBarScaleRange',
-  }),
 
-  // TODO(TRACKMULTIGRID): this will depend on the grid markers and bpm
-  beatCount: Ember.computed('duration', 'bpm', function() {
-    return timeToBeat(this.get('duration'), this.get('bpm'));
-  }),
-
-  // the time of the first actual beat in the raw audio file
-  // TODO(TRACKMULTIGRID): this supposes a constant bpm in the audio file
-  firstBarOffset: Ember.computed('barGridTime', 'bpm', 'timeSignature', function() {
-    const bpm = this.get('bpm');
-    const timeSignature = this.get('timeSignature');
-    const secondsPerBeat = bpmToSpb(bpm);
-    const secondsPerBar = secondsPerBeat * timeSignature;
-
-    let firstBarOffsetTime = this.get('barGridTime');
-    if (isValidNumber(bpm) && isValidNumber(timeSignature) && isValidNumber(firstBarOffsetTime)) {
-      while ((firstBarOffsetTime - secondsPerBar) >= 0) {
-        firstBarOffsetTime -= secondsPerBar;
-      }
-
-      return firstBarOffsetTime * secondsPerBar;
-    } else {
-      return 0;
-    }
+    return d3.scale.linear()
+      .domain(barScale.range())
+      .rangeRound(barScale.range().map(Math.round));
   }),
 
   toString() {
-    return '<linx@object:track/audio-meta/beat-grid>';
+    return '<linx@object:mixin/playable-arrangement/beat-grid>';
   },
 });
 
@@ -202,3 +234,4 @@ export const computedTimeToBar = beatGridPropertyGenerator('timeToBar');
 // quantize
 export const computedQuantizeBeat = beatGridPropertyGenerator('quantizeBeat');
 export const computedQuantizeBar = beatGridPropertyGenerator('quantizeBar');
+

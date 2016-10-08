@@ -4,7 +4,6 @@ import DS from 'ember-data';
 import MixTransitionAutomationClip from './automation-clip';
 
 export default MixTransitionAutomationClip.extend({
-  transition: DS.belongsTo('mix/transition'),
 
   // overrides
   targetClip: Ember.computed.reads('transition.toTrackClip'),

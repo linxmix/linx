@@ -3,22 +3,20 @@ import Ember from 'ember';
 import _ from 'npm:underscore';
 
 import RequireAttributes from 'linx/lib/require-attributes';
-import { beatToTime, timeToBeat, clamp, isNumber, isValidNumber } from 'linx/lib/utils';
+import { clamp, isNumber, isValidNumber } from 'linx/lib/utils';
 import Clock from 'linx/lib/clock';
 
 // Holds rhythym based on clock
-// TODO(REFACTOR): TODO(MULTIGRID): refactor metronome to have a beatgrid?
 export default Ember.Object.extend(
   Ember.Evented, {
 
   // required params
   audioContext: null,
-  arrangement: null,
+  beatGrid: null,
 
   // params
   seekBeat: 0,        // [b] last seeked beat
   absSeekTime: 0,     // [s] time of last seek in clock frame of reference
-  bpm: 128.0,
   isPlaying: false,
 
   // clock: Ember.computed('audioContext', function() {
@@ -44,23 +42,8 @@ export default Ember.Object.extend(
 
   // returns WAAclock event
   // callbackAtBeat(callback, beat) {
-  //   return this.callbackAtTime(callback, this.beatToTime(beat));
+  //   return this.callbackAtTime(callback, this.beatToAbsTime(beat));
   // },
-
-  // TODO(V2): clean this up
-  _updateBpm: Ember.observer('arrangement.bpm', function() {
-    const bpm = this.get('arrangement.bpm');
-
-    if (isValidNumber(bpm)) {
-      this.seekToBeat(this.getCurrentBeat());
-      this.set('bpm', bpm);
-    }
-  }).on('init'),
-
-  // TODO(MULTIRGID) TODO(REFACTOR)
-  getDuration(startBeat, beatCount) {
-    return beatToTime(beatCount, this.get('bpm'));
-  },
 
   seekToBeat(beat) {
     // Ember.Logger.log("metronome seekToBeat", beat);
@@ -111,12 +94,11 @@ export default Ember.Object.extend(
     }
   },
 
-  // TODO(MULTIGRID): turn into beatgrid
   // returns absolute time at which given beat will occur in audioContext
-  beatToTime(beat) {
+  beatToAbsTime(beat) {
     beat -= this.getCurrentBeat();
 
-    return this.getAbsTime() + beatToTime(beat, this.get('bpm'));
+    return this.getAbsTime() + this.get('beatGrid').beatToTime(beat);
   },
 
   // Returns current metronome beat
@@ -137,7 +119,11 @@ export default Ember.Object.extend(
   },
 
   _getPlayedBeats() {
-    return timeToBeat(this._getPlayedTime(), this.get('bpm'));
+    const beatGrid = this.get('beatGrid');
+    const startBeat = this.get('seekBeat');
+    const startTime = beatGrid.beatToTime(startBeat);
+    const endTime = startTime + this._getPlayedTime();
+    return beatGrid.getBeatCount(startTime, endTime);
   },
 
   destroy() {

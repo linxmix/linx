@@ -1,9 +1,10 @@
 import Ember from 'ember';
 
+import d3 from 'd3';
+
 import RequireAttributes from 'linx/lib/require-attributes';
 import AutomatableClipMixin from './automatable-clip';
 import PlayableClipMixin from './clip';
-import TrackSourceNode from 'linx/lib/web-audio/track-source-node';
 import GainNode from 'linx/lib/web-audio/gain-node';
 import TunaDelayNode from 'linx/lib/web-audio/tuna/delay-node';
 import TunaFilterNode from 'linx/lib/web-audio/tuna/filter-node';
@@ -23,6 +24,7 @@ import {
 import {
   default as AutomatableClipControlMixin,
   CONTROL_TYPE_VOLUME,
+  CONTROL_TYPE_TEMPO,
   CONTROL_TYPE_LOW_BAND,
   CONTROL_TYPE_MID_BAND,
   CONTROL_TYPE_HIGH_BAND,
@@ -35,11 +37,26 @@ import {
   CONTROL_TYPE_FILTER_LOWPASS_Q,
 } from './automatable-clip/control';
 
-// TODO(CLEANUP): nest under track-clip/controls/gain?
+function _createFilterCutoffScale() {
+  return d3.scale.log().domain([20, 22050]).range([0, 1]);
+}
+function _createBandEqScale() {
+  return d3.scale.linear().domain([-40, 40]).range([0, 1]);
+}
+function _createFilterQScale() {
+  return d3.scale.linear().domain([0.001, 10]).range([0, 1]);
+}
+
 const TrackVolumeControl = Ember.Object.extend(
   new AutomatableClipControlMixin('trackVolumeNode.gain'), {
 
   type: CONTROL_TYPE_VOLUME,
+  defaultValue: 1,
+});
+const TrackTempoControl = Ember.Object.extend(
+  AutomatableClipControlMixin('soundtouchNode.tempo'), {
+
+  type: CONTROL_TYPE_TEMPO,
   defaultValue: 1,
 });
 
@@ -48,6 +65,7 @@ const TrackLowBandControl = Ember.Object.extend(
 
   type: CONTROL_TYPE_LOW_BAND,
   defaultValue: 6,
+  valueScale: Ember.computed(() => _createBandEqScale()),
 });
 
 const TrackMidBandControl = Ember.Object.extend(
@@ -55,6 +73,7 @@ const TrackMidBandControl = Ember.Object.extend(
 
   type: CONTROL_TYPE_MID_BAND,
   defaultValue: 6,
+  valueScale: Ember.computed(() => _createBandEqScale()),
 });
 
 const TrackHighBandControl = Ember.Object.extend(
@@ -62,6 +81,7 @@ const TrackHighBandControl = Ember.Object.extend(
 
   type: CONTROL_TYPE_HIGH_BAND,
   defaultValue: 6,
+  valueScale: Ember.computed(() => _createBandEqScale()),
 });
 
 const TrackPitchControl = Ember.Object.extend(
@@ -83,6 +103,7 @@ const TrackDelayCutoffControl = Ember.Object.extend(
 
   type: CONTROL_TYPE_DELAY_CUTOFF,
   defaultValue: 2000,
+  valueScale: Ember.computed(() => _createFilterCutoffScale()),
 });
 
 const TrackHighpassFilterCutoffControl = Ember.Object.extend(
@@ -90,12 +111,14 @@ const TrackHighpassFilterCutoffControl = Ember.Object.extend(
 
   type: CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF,
   defaultValue: 20,
+  valueScale: Ember.computed(() => _createFilterCutoffScale()),
 });
 const TrackHighpassFilterQControl = Ember.Object.extend(
   new AutomatableClipControlMixin('tunaHighpassFilterNode.filter.Q'), {
 
   type: CONTROL_TYPE_FILTER_HIGHPASS_Q,
   defaultValue: 1,
+  valueScale: Ember.computed(() => _createFilterQScale()),
 });
 
 const TrackLowpassFilterCutoffControl = Ember.Object.extend(
@@ -103,12 +126,14 @@ const TrackLowpassFilterCutoffControl = Ember.Object.extend(
 
   type: CONTROL_TYPE_FILTER_LOWPASS_CUTOFF,
   defaultValue: 22050,
+  valueScale: Ember.computed(() => _createFilterCutoffScale()),
 });
 const TrackLowpassFilterQControl = Ember.Object.extend(
   new AutomatableClipControlMixin('tunaLowpassFilterNode.filter.Q'), {
 
   type: CONTROL_TYPE_FILTER_LOWPASS_Q,
   defaultValue: 1,
+  valueScale: Ember.computed(() => _createFilterQScale()),
 });
 
 
@@ -133,6 +158,7 @@ export default Ember.Mixin.create(
   controls: Ember.computed(function() {
     return [
       TrackVolumeControl.create({ clip: this }),
+      TrackTempoControl.create({ clip: this }),
       TrackLowBandControl.create({ clip: this }),
       TrackMidBandControl.create({ clip: this }),
       TrackHighBandControl.create({ clip: this }),
@@ -167,7 +193,6 @@ export default Ember.Mixin.create(
   audioBeatCount: subtract('audioEndBeat', 'audioStartBeat'),
   audioDuration: subtract('audioEndTime', 'audioStartTime'),
   audioBarCount: subtract('audioEndBar', 'audioStartBar'),
-  audioBpm: Ember.computed.reads('audioMeta.bpm'),
 
   getCurrentAudioBeat() {
     const currentClipBeat = this.getCurrentClipBeat();
@@ -190,21 +215,13 @@ export default Ember.Mixin.create(
     return audioBeatGrid.beatToTime(audioStartBeat + clipBeat);
   },
 
-  // TODO(V2): dynamic tempo
-  audioScheduleDidChange: Ember.observer('audioBinary.isReady', 'audioStartBeat', 'audioBeatCount', 'tempo', 'transpose', 'gain', function() {
+  audioScheduleDidChange: Ember.observer('audioBinary.isReady', 'audioStartBeat', 'audioBeatCount', 'transpose', 'gain', function() {
     Ember.run.once(this, 'startSource');
   }).on('schedule'),
 
-  tempo: Ember.computed('syncBpm', 'audioBpm', function() {
-    const syncBpm = this.get('syncBpm');
-    const audioBpm = this.get('audioBpm');
-
-    return (isValidNumber(syncBpm) && isValidNumber(audioBpm)) ? (syncBpm / audioBpm) : 1;
-  }),
-
   startSource() {
     if (this.get('isScheduled') && this.get('audioBinary.isReady')) {
-      const { tempo, transpose } = this.getProperties('tempo', 'transpose');
+      const { transpose } = this.getProperties('transpose');
       // if starting in past, start now instead
       let startTime = Math.max(this.getAbsoluteTime(), this.getAbsoluteStartTime());
       let offsetTime = this.getCurrentAudioTime();
@@ -216,9 +233,9 @@ export default Ember.Mixin.create(
         offsetTime = 0;
       }
 
-      Ember.Logger.log('startTrack', this.get('track.title'), startTime, offsetTime, endTime, tempo, transpose);
+      Ember.Logger.log('startTrack', this.get('track.title'), startTime, offsetTime, endTime, transpose);
       const node = this.get('soundtouchNode');
-      node && node.start(startTime, offsetTime, endTime, tempo, transpose);
+      node && node.start(startTime, offsetTime, endTime, transpose);
     } else {
       this.stopSource();
     }
@@ -233,15 +250,6 @@ export default Ember.Mixin.create(
   //
   // Web Audio Nodes
   //
-  // TODO(REFACTOR): how to distinguish between track gain, fx gain, arrangement gain?
-  // TODO(REFACTOR): set GainControl.defaultValue based on track.audioMeta.loudness
-  // that might mean making a specific TrackGainNode?
-  // trackSourceNode: computedObject(TrackSourceNode, {
-  //   'audioContext': 'audioContext',
-  //   'track': 'track',
-  //   'outputNode': 'outputNode.content',
-  // }),
-
   soundtouchNode: computedObject(SoundtouchNode, {
     'audioContext': 'audioContext',
     'audioBuffer': 'audioBinary.audioBuffer',

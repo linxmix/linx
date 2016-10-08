@@ -78,7 +78,6 @@ describe('BeatGrid', function() {
     });
   });
 
-  // TODO(MULTIGRID): rework
   describe('#nudge', function() {
     let nudgeAmount = 0.005, previousStart;
 

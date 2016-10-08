@@ -304,6 +304,7 @@ export default Ember.Component.extend(
 
     seekToBeat(beat) {
       const quantizedBeat = this._quantizeBeat(beat);
+      console.log('seekToBeat', beat, quantizedBeat);
 
       this.get('mix').seekToBeat(quantizedBeat);
       this.trigger('seekToBeat', quantizedBeat);

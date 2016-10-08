@@ -13,7 +13,7 @@ export default Ember.ObjectProxy.extend(
     const node = this.get('node');
     const value = this.get('value');
 
-    console.log('update gain value', value, isValidNumber(value))
+    // console.log('update gain value', value, isValidNumber(value))
     if (node && isValidNumber(value)) {
       node.gain.value = value;
     }

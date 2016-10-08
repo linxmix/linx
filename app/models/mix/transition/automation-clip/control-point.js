@@ -13,6 +13,8 @@ export default ArrangementAutomationClipControlPoint.extend({
     return this._super.apply(this, arguments);
   },
 
+  transitionStartBeat: Ember.computed.reads('automationClip.transition.transitionClip.startBeat'),
+
   save() {
     if (isValidNumber(this.get('beat')) && isValidNumber(this.get('value'))) {
       // console.log("save mix control point", this.get('id'));

@@ -51,6 +51,7 @@ export default ArrangementVisualTrackClip.extend(
         (currentAudioTime + MARKER_CLICK_WINDOW >= time);
     });
 
+    // TODO(TRACKMULTIGRID): refactor to use dynamic beatgrids instead of static time
     if (marker && isValidNumber(marker.time)) {
       console.log('clicked marker', marker);
 

@@ -61,7 +61,6 @@ describe('AudioMetaModel', function() {
       lastWholeBeat: 776,
       lastWholeBar: 194,
 
-      // TODO(MULTIGRID): this needs to change
       'sortedGridMarkers.length': 1,
       'sortedSectionMarkers.length': function() { return analysis.get('confidentSections.length'); },
     });

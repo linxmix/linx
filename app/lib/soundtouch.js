@@ -40,7 +40,8 @@ FifoSampleBuffer.prototype.clear = function() {
 //
 // TODO(TECHDEBT): window.BUFFER_SIZE set by mix builder
 window.MAX_BUFFER_SIZE = 16384;
-window.BUFFER_SIZE = MAX_BUFFER_SIZE / 8;
+window.BUFFER_SIZE = window.MAX_BUFFER_SIZE / 8;
+const DSP_BUFFER_LENGTH = 128;
 const SAMPLE_DRIFT_TOLERANCE = 512;
 
 export function SoundtouchBufferSource(buffer) {
@@ -69,13 +70,12 @@ SoundtouchBufferSource.prototype = {
   }
 };
 
-export function createSoundtouchNode({ audioContext, filter, startTime, offsetTime, endTime, defaultTempo, defaultPitch }) {
-  console.log('createSoundtouchNode')
+export function createSoundtouchNode({ audioContext, filter, startTime, offsetTime, endTime, defaultPitch }) {
   const channelCount = 2;
   const windowBufferSize = window.BUFFER_SIZE;
 
-  if (!(audioContext && filter
-    && isValidNumber(startTime) && isValidNumber(offsetTime) && isValidNumber(endTime))) {
+  if (!(audioContext && filter &&
+    isValidNumber(startTime) && isValidNumber(offsetTime) && isValidNumber(endTime))) {
     Ember.Logger.warn('Must provide all params to createSoundtouchNode', endTime);
     return;
   }
@@ -87,6 +87,7 @@ export function createSoundtouchNode({ audioContext, filter, startTime, offsetTi
   filter.sourcePosition = startSample;
 
   const filterStartPosition = filter.position;
+  const soundtouch = filter.pipe;
 
   function onaudioprocess({
     type,
@@ -101,10 +102,9 @@ export function createSoundtouchNode({ audioContext, filter, startTime, offsetTi
     const l = outputs[0][0];
     const r = outputs[0][1];
 
-    // naively take first pitch and tempo values for this sample
+    // TODO(MULTIGRID): average tempo, pitch across buffer
     const pitch = parameters.pitch && parameters.pitch[0];
     const tempo = parameters.tempo && parameters.tempo[0];
-    const soundtouch = filter.pipe;
 
     if (isValidNumber(pitch)) {
       soundtouch.pitchSemitones = pitch;
@@ -158,18 +158,16 @@ export function createSoundtouchNode({ audioContext, filter, startTime, offsetTi
       r[i] = (samples[filterFrame * 2 + 1] * isPlaying[i]) || 0;
       filterFrame += isPlaying[i];
     }
-  };
+  }
 
   defaultPitch = parseFloat(defaultPitch);
   defaultPitch = isValidNumber(defaultPitch) ? defaultPitch : 0;
-
-  defaultTempo = parseFloat(defaultTempo);
-  defaultTempo = isValidNumber(defaultTempo) ? defaultTempo : 1;
 
   const node = new AudioWorkerNode(audioContext, onaudioprocess, {
     numberOfInputs: 2,
     numberOfOutputs: 2,
     bufferLength: windowBufferSize,
+    dspBufLength: DSP_BUFFER_LENGTH,
     parameters: [
       {
         name: 'pitch',
@@ -177,7 +175,7 @@ export function createSoundtouchNode({ audioContext, filter, startTime, offsetTi
       },
       {
         name: 'tempo',
-        defaultValue: defaultTempo,
+        defaultValue: 1,
       },
       {
         name: 'isPlaying',

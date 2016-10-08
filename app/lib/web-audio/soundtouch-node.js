@@ -20,8 +20,8 @@ export default Ember.ObjectProxy.extend(
   node: null, // set by `start` method, unset by `disconnect`
   outputNode: null,
 
-  // TODO(V2): TODO(MULTIGRID): tempo, transpose dynamic
-  start(startTime, offsetTime, endTime, tempo, transpose) {
+  // TODO(V2): transpose dynamic
+  start(startTime, offsetTime, endTime, transpose) {
     // Ember.Logger.log('currentTime', this.get('audioContext.currentTime'));
     // Ember.Logger.log('startSource', startTime, offsetTime);
     this.stop();
@@ -36,7 +36,6 @@ export default Ember.ObjectProxy.extend(
         startTime,
         offsetTime,
         endTime,
-        defaultTempo: tempo,
         defaultPitch: transpose,
       });
       this.set('node', node);
