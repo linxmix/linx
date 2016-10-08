@@ -125,7 +125,7 @@ export function createSoundtouchNode({ audioContext, filter, startTime, offsetTi
     // if playing, calculate expected vs actual position
     if (extractFrameCount !== 0) {
       const actualElapsedSamples = Math.max(0, filter.position - filterStartPosition + extractFrameCount);
-      const elapsedTime = Math.min(audioContext.currentTime, endTime) - startTime;
+      const elapsedTime = Math.min(playbackTime, endTime) - startTime;
       const expectedElapsedSamples = Math.max(0, elapsedTime * sampleRate);
       const sampleDelta = ~~(expectedElapsedSamples - actualElapsedSamples);
 
@@ -137,7 +137,7 @@ export function createSoundtouchNode({ audioContext, filter, startTime, offsetTi
 
         // if we're behind where we should be, extract dummy frames to catch up
         if (sampleDelta > 0) {
-          // console.log("DRIFT", sampleDelta, extractFrameCount, windowBufferSize);
+          // console.log("DRIFT", playbackTime, sampleDelta, extractFrameCount, windowBufferSize);
           const dummySamples = new Float32Array(sampleDelta * channelCount);
           const dummyFramesExtracted = filter.extract(dummySamples, sampleDelta);
 
@@ -170,7 +170,6 @@ export function createSoundtouchNode({ audioContext, filter, startTime, offsetTi
     numberOfInputs: 2,
     numberOfOutputs: 2,
     bufferLength: windowBufferSize,
-    dspBufLength: windowBufferSize,
     parameters: [
       {
         name: 'pitch',
