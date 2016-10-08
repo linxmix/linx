@@ -49,7 +49,7 @@ export default Ember.Component.extend(
     const selectedAutomation = this.get('selectedAutomation');
 
     const currentIndex = AUTOMATION_KEYS.indexOf(selectedAutomation);
-    const prevIndex = clamp(0, currentIndex - 1, AUTOMATION_KEYS.length);
+    const prevIndex = clamp(0, currentIndex - 1, AUTOMATION_KEYS.length - 1);
     this.get('selectAutomation')(AUTOMATION_KEYS[prevIndex]);
   })),
 
@@ -59,7 +59,7 @@ export default Ember.Component.extend(
     const selectedAutomation = this.get('selectedAutomation');
 
     const currentIndex = AUTOMATION_KEYS.indexOf(selectedAutomation);
-    const nextIndex = clamp(0, currentIndex + 1, AUTOMATION_KEYS.length);
+    const nextIndex = clamp(0, currentIndex + 1, AUTOMATION_KEYS.length - 1);
     this.get('selectAutomation')(AUTOMATION_KEYS[nextIndex]);
   })),
 
