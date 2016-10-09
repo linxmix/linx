@@ -15,7 +15,7 @@
   "forin": false,
   "immed": false,
   "laxbreak": false,
-  "newcap": false,
+  "newcap": true,
   "noarg": true,
   "noempty": false,
   "nonew": false,
@@ -28,7 +28,7 @@
   "strict": false,
   "white": false,
   "eqnull": true,
-  "esnext": true,
+  "esversion": 6,
   "unused": false,
 
   /* do not expect assignment call */

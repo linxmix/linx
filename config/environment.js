@@ -6,7 +6,7 @@ module.exports = function(environment) {
     // namespaced directory where resolver will look for resource files
     podModulePrefix: 'linx/pods',
     environment: environment,
-    baseURL: '/',
+    rootURL: '/',
     locationType: 'auto',
     EmberENV: {
       FEATURES: {
