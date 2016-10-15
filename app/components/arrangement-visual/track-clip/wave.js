@@ -25,31 +25,52 @@ export default Ember.Component.extend(
     this.drawWaveform(selection);
   },
 
-  drawWaveform: join([0], 'path.TrackClipWave-waveform', {
+  drawWaveform: join('peaks', 'line.TrackClipWave-waveform', {
     update(selection) {
       const median = this.get('height') / 2.0;
-      const peaks = this.get('peaks');
-      const peaksLength = peaks.get('length');
+      const peaksLength = this.get('peaks.length');
 
-      const area = d3.svg.area()
-        .x(([ x, [ ymin, ymax, dominantFreq ] ]) => x)
-        .y0(([ x, [ ymin, ymax, dominantFreq ] ]) => median + ymin * median)
-        .y1(([ x, [ ymin, ymax, dominantFreq ] ]) => median + ymax * median);
+      selection
+        .attr('x1', (peak, i) => {
+          return i + 0.5;
+        })
+        .attr('x2', (peak, i) => {
+          return i + 0.5;
+        })
+        .attr('y1', ([ x, [ ymin, ymax, dominantFreq ] ]) => median + ymin * median)
+        .attr('y2', ([ x, [ ymin, ymax, dominantFreq ] ]) => median + ymax * median)
+        .attr('stroke-width', 1)
+        .style('stroke', (d, i) => {
+          const percent = i / peaksLength;
+          // console.log("FILL STYLE", d, i, d3.hsl(percent * 360, 1, 0.5) + "");
 
-
-      console.log("PEAKS", peaks)
-
-      if (peaks.length) {
-        selection
-          .style('fill', this.get('waveColor'))
-          .attr('d', area(peaks));
-
-        selection.selectAll('d')
-          .style('fill', (d) => { console.log("FILL", d); return 'green'})
-      }
+          // TODO: map dominant frequency to color
+          return (d3.hsl(percent * 360, 1, 0.5) + "") || this.get('waveColor');
+        })
     }
   }),
 });
+
+// OLD drawWaveform
+  // const peaks = this.get('peaks');
+  // const peaksLength = peaks.get('length');
+
+  // const area = d3.svg.area()
+  //   .x(([ x, [ ymin, ymax, dominantFreq ] ]) => x)
+  //   .y0(([ x, [ ymin, ymax, dominantFreq ] ]) => median + ymin * median)
+  //   .y1(([ x, [ ymin, ymax, dominantFreq ] ]) => median + ymax * median);
+
+
+  // console.log("PEAKS", peaks)
+
+  // if (peaks.length) {
+  //   selection
+  //     .style('fill', this.get('waveColor'))
+  //     .attr('d', area(peaks));
+
+  //   selection.selectAll('d')
+  //     .style('fill', (d) => { console.log("FILL", d); return 'green'})
+  // }
 
 const FREQUENCY_COLOR_BANDS = [
   {
