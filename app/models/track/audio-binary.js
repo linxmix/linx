@@ -14,8 +14,8 @@ import Ajax from 'linx/lib/ajax';
 const FFT_BUFFER_SIZE = 2048;
 
 export default Ember.Object.extend(
-  ReadinessMixin('isArrayBufferLoadedAndDecoded'),
-  RequireAttributes('track'), {
+  new ReadinessMixin('isArrayBufferLoadedAndDecoded'),
+  new RequireAttributes('track'), {
 
   file: Ember.computed.reads('track.file'),
   isLoading: Ember.computed.or('arrayBuffer.isPending', 'decodedArrayBuffer.isPending'),
@@ -128,7 +128,7 @@ export default Ember.Object.extend(
   // returns a promise of an array of arrays of [ymin, ymax, frequency] values of the waveform
   // from startTime to endTime when broken into length subranges
   getPeaks({ startTime, endTime, length }) {
-    // Ember.Logger.log('AudioBinary.getPeaks', startTime, endTime, length);
+    Ember.Logger.log('AudioBinary.getPeaks', startTime, endTime, length);
 
     const cacheKey = `startTime:${startTime},endTime:${endTime},length:${length}`;
     const peaksCache = this.get('_peaksCache');
@@ -148,35 +148,69 @@ export default Ember.Object.extend(
     // TODO(REFACTOR): update to use multiple channels
     const samples = audioBuffer.getChannelData(0);
     const sampleRate = audioBuffer.sampleRate;
-    const startSample = startTime * sampleRate;
-    const endSample = endTime * sampleRate;
+    const startSample = ~~(startTime * sampleRate);
+    const endSample = ~~(endTime * sampleRate);
 
-    const frameSize = 2048;
-    const fft = new DSPJS.FFT(frameSize, audioBuffer.sampleRate);
 
-    // const job = new Parallel({
-    //   samples,
-    //   startSample,
-    //   endSample,
-    //   length,
-    // });
+
+    const job = new Parallel({
+      samples,
+      startSample,
+      endSample,
+      length,
+    });
+
 
     // const cacheValue = job.spawn(({ samples, startSample, endSample, length }) => {
+
+      const sampleSize = ~~((endSample - startSample) / length); // number of samples per pixel
+      const sampleStep = ~~(sampleSize / 100) || 1; // reduce granularity with small length
       const peaks = new Array(~~length);
 
-      for (let i = startSample; i < endSample; i += frameSize) {
-        const frame = getFrame(samples, i, frameSize);
-        fft.forward(frame);
+      // compute largest frameSize which is a power of 2
+      let frameSize = 2;
+      while (frameSize < sampleSize) {
+        frameSize *= 2;
+      }
+      const fft = new DSPJS.FFT(frameSize, sampleRate);
 
-        const dominantFrequency = Math.max.apply(null, fft.spectrum);
-        const min = Math.min.apply(null, frame);
-        const max = Math.max.apply(null, frame);
+      console.log({ sampleSize, sampleStep, frameSize })
+
+
+      for (let i = 0; i < length; i++) {
+        const start = ~~(startSample + i * sampleSize);
+        const end = ~~(start + sampleSize);
+        let min = samples[start] || 0;
+        let max = samples[start] || 0;
+        let dominantFrequency = 0;
+
+        // calculate min and max for this peak
+        for (let j = start; j < end; j += sampleStep) {
+          const value = samples[j] || 0;
+
+          min = Math.min(value, min);
+          max = Math.max(value, max);
+        }
+
+        // calculate dominant frequency for this peak
+        // using as many samples from given sampleSize as possible
+        const frame = new Float32Array(frameSize);
+        frame.fill(0);
+        for (let k = 0; k < sampleSize; k++) {
+          frame[k] = samples[start + k];
+        }
+
+        fft.forward(frame);
+        const spectrum = fft.spectrum.slice(0, ~~(frameSize / 2) - 1); // ignore beyond N/2, Nyquist Frequency
+        const dominantFrequencyIndex = indexOfMax(spectrum);
+        dominantFrequency = dominantFrequencyIndex * sampleRate / frameSize;
 
         // add to peaks
         peaks[i] = [min, max, dominantFrequency];
       }
 
-      const cacheValue = Ember.RSVP.Resolve(peaks);
+      const cacheValue = asResolvedPromise(peaks);
+      // return peaks;
     // });
 
     peaksCache.set(cacheKey, cacheValue);
@@ -190,13 +224,20 @@ export default Ember.Object.extend(
   },
 });
 
-function getFrame(samples, frameStart, frameSize) {
-  const frame = new Float32Array(frameSize);
-  frame.fill(0);
-
-  for (let i = 0; i < Math.min(frameSize, samples.length - frameStart); i++) {
-    frame[i] = samples[i + frameStart];
+function indexOfMax(arr) {
+  if (arr.length === 0) {
+    return -1;
   }
 
-  return frame;
+  let max = arr[0];
+  let maxIndex = 0;
+
+  for (let i = 1; i < arr.length; i++) {
+    if (arr[i] > max) {
+      maxIndex = i;
+      max = arr[i];
+    }
+  }
+
+  return maxIndex;
 }
