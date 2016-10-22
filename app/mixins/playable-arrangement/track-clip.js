@@ -30,7 +30,9 @@ import {
   CONTROL_TYPE_DELAY_WET,
   CONTROL_TYPE_DELAY_CUTOFF,
   CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF,
-  CONTROL_TYPE_FILTER_LOWPASS_CUTOFF
+  CONTROL_TYPE_FILTER_HIGHPASS_Q,
+  CONTROL_TYPE_FILTER_LOWPASS_CUTOFF,
+  CONTROL_TYPE_FILTER_LOWPASS_Q,
 } from './automatable-clip/control';
 
 // TODO(CLEANUP): nest under track-clip/controls/gain?
@@ -89,12 +91,24 @@ const TrackHighpassFilterCutoffControl = Ember.Object.extend(
   type: CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF,
   defaultValue: 20,
 });
+const TrackHighpassFilterQControl = Ember.Object.extend(
+  new AutomatableClipControlMixin('tunaHighpassFilterNode.filter.Q'), {
+
+  type: CONTROL_TYPE_FILTER_HIGHPASS_Q,
+  defaultValue: 1,
+});
 
 const TrackLowpassFilterCutoffControl = Ember.Object.extend(
   new AutomatableClipControlMixin('tunaLowpassFilterNode.filter.frequency'), {
 
   type: CONTROL_TYPE_FILTER_LOWPASS_CUTOFF,
   defaultValue: 22050,
+});
+const TrackLowpassFilterQControl = Ember.Object.extend(
+  new AutomatableClipControlMixin('tunaLowpassFilterNode.filter.Q'), {
+
+  type: CONTROL_TYPE_FILTER_LOWPASS_Q,
+  defaultValue: 1,
 });
 
 
@@ -126,7 +140,9 @@ export default Ember.Mixin.create(
       TrackDelayWetControl.create({ clip: this }),
       TrackDelayCutoffControl.create({ clip: this }),
       TrackHighpassFilterCutoffControl.create({ clip: this }),
-      TrackLowpassFilterCutoffControl.create({ clip: this })
+      TrackHighpassFilterQControl.create({ clip: this }),
+      TrackLowpassFilterCutoffControl.create({ clip: this }),
+      TrackLowpassFilterQControl.create({ clip: this })
     ];
   }).readOnly(),
 

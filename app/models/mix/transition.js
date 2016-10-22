@@ -15,7 +15,9 @@ import {
   CONTROL_TYPE_DELAY_WET,
   CONTROL_TYPE_DELAY_CUTOFF,
   CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF,
+  CONTROL_TYPE_FILTER_HIGHPASS_Q,
   CONTROL_TYPE_FILTER_LOWPASS_CUTOFF,
+  CONTROL_TYPE_FILTER_LOWPASS_Q,
 } from 'linx/mixins/playable-arrangement/automatable-clip/control';
 import { isValidNumber } from 'linx/lib/utils';
 
@@ -96,8 +98,16 @@ export default DS.Model.extend(
         controlType: CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF,
         transition: this,
       });
+      const fromTrackHighpassQClip = store.createRecord('mix/transition/from-track-automation-clip', {
+        controlType: CONTROL_TYPE_FILTER_HIGHPASS_Q,
+        transition: this,
+      });
       const fromTrackLowpassCutoffClip = store.createRecord('mix/transition/from-track-automation-clip', {
         controlType: CONTROL_TYPE_FILTER_LOWPASS_CUTOFF,
+        transition: this,
+      });
+      const fromTrackLowpassQClip = store.createRecord('mix/transition/from-track-automation-clip', {
+        controlType: CONTROL_TYPE_FILTER_LOWPASS_Q,
         transition: this,
       });
 
@@ -121,8 +131,16 @@ export default DS.Model.extend(
         controlType: CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF,
         transition: this,
       });
+      const toTrackHighpassQClip = store.createRecord('mix/transition/to-track-automation-clip', {
+        controlType: CONTROL_TYPE_FILTER_HIGHPASS_Q,
+        transition: this,
+      });
       const toTrackLowpassCutoffClip = store.createRecord('mix/transition/to-track-automation-clip', {
         controlType: CONTROL_TYPE_FILTER_LOWPASS_CUTOFF,
+        transition: this,
+      });
+      const toTrackLowpassQClip = store.createRecord('mix/transition/to-track-automation-clip', {
+        controlType: CONTROL_TYPE_FILTER_LOWPASS_Q,
         transition: this,
       });
 
@@ -134,7 +152,9 @@ export default DS.Model.extend(
         fromTrackDelayWetClip,
         fromTrackDelayCutoffClip,
         fromTrackHighpassCutoffClip,
-        fromTrackLowpassCutoffClip
+        fromTrackHighpassQClip,
+        fromTrackLowpassCutoffClip,
+        fromTrackLowpassQClip
       ];
 
       const toTrackAutomationClips = [
@@ -143,7 +163,9 @@ export default DS.Model.extend(
         toTrackMidBandClip,
         toTrackHighBandClip,
         toTrackHighpassCutoffClip,
-        toTrackLowpassCutoffClip
+        toTrackHighpassQClip,
+        toTrackLowpassCutoffClip,
+        toTrackLowpassQClip
       ];
 
       const clips = fromTrackAutomationClips.concat(toTrackAutomationClips);
@@ -184,10 +206,22 @@ export default DS.Model.extend(
           n: volumeControlPointCount,
           beatCount,
         }));
+        fromTrackHighpassQClip.addControlPoints(generateControlPointParams({
+          startValue: 1,
+          endValue: 1,
+          n: volumeControlPointCount,
+          beatCount,
+        }));
 
         fromTrackLowpassCutoffClip.addControlPoints(generateControlPointParams({
           startValue: 22050,
           endValue: 22050,
+          n: volumeControlPointCount,
+          beatCount,
+        }));
+        fromTrackLowpassQClip.addControlPoints(generateControlPointParams({
+          startValue: 1,
+          endValue: 1,
           n: volumeControlPointCount,
           beatCount,
         }));
@@ -254,10 +288,22 @@ export default DS.Model.extend(
           n: volumeControlPointCount,
           beatCount,
         }));
+        toTrackHighpassQClip.addControlPoints(generateControlPointParams({
+          startValue: 1,
+          endValue: 1,
+          n: volumeControlPointCount,
+          beatCount,
+        }));
 
         toTrackLowpassCutoffClip.addControlPoints(generateControlPointParams({
           startValue: 22050,
           endValue: 22050,
+          n: volumeControlPointCount,
+          beatCount,
+        }));
+        toTrackLowpassQClip.addControlPoints(generateControlPointParams({
+          startValue: 1,
+          endValue: 1,
           n: volumeControlPointCount,
           beatCount,
         }));

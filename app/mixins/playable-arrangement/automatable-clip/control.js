@@ -15,7 +15,9 @@ export const CONTROL_TYPE_PITCH = 'pitch';
 export const CONTROL_TYPE_DELAY_WET = 'delay-wet';
 export const CONTROL_TYPE_DELAY_CUTOFF = 'delay-cutoff';
 export const CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF = 'filter-highpass-cutoff';
+export const CONTROL_TYPE_FILTER_HIGHPASS_Q = 'filter-highpass-q';
 export const CONTROL_TYPE_FILTER_LOWPASS_CUTOFF = 'filter-lowpass-cutoff';
+export const CONTROL_TYPE_FILTER_LOWPASS_Q = 'filter-lowpass-q';
 
 export const CONTROL_TYPES = [
   CONTROL_TYPE_VOLUME,
@@ -24,7 +26,9 @@ export const CONTROL_TYPES = [
   CONTROL_TYPE_DELAY_WET,
   CONTROL_TYPE_DELAY_CUTOFF,
   CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF,
+  CONTROL_TYPE_FILTER_HIGHPASS_Q,
   CONTROL_TYPE_FILTER_LOWPASS_CUTOFF,
+  CONTROL_TYPE_FILTER_LOWPASS_Q,
   CONTROL_TYPE_LOW_BAND,
   CONTROL_TYPE_MID_BAND,
   CONTROL_TYPE_HIGH_BAND
@@ -59,6 +63,9 @@ export default function(audioParamPath) {
         case CONTROL_TYPE_MID_BAND:
         case CONTROL_TYPE_HIGH_BAND:
           return d3.scale.linear().domain([-40, 40]).range([0, 1]);
+        case CONTROL_TYPE_FILTER_HIGHPASS_Q:
+        case CONTROL_TYPE_FILTER_LOWPASS_Q:
+          return d3.scale.linear().domain([0.001, 10]).range([0, 1]);
         default:
           return d3.scale.identity();
       }
