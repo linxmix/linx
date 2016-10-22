@@ -1,4 +1,5 @@
 /* global Parallel:true */
+/* global DSPJS:true */
 import Ember from 'ember';
 import DS from 'ember-data';
 
@@ -10,9 +11,11 @@ import { isValidNumber, asResolvedPromise } from 'linx/lib/utils';
 import ReadinessMixin from 'linx/mixins/readiness';
 import Ajax from 'linx/lib/ajax';
 
+const FFT_BUFFER_SIZE = 2048;
+
 export default Ember.Object.extend(
-  ReadinessMixin('isArrayBufferLoadedAndDecoded'),
-  RequireAttributes('track'), {
+  new ReadinessMixin('isArrayBufferLoadedAndDecoded'),
+  new RequireAttributes('track'), {
 
   file: Ember.computed.reads('track.file'),
   isLoading: Ember.computed.or('arrayBuffer.isPending', 'decodedArrayBuffer.isPending'),
@@ -103,6 +106,7 @@ export default Ember.Object.extend(
 
   // TODO(COMPUTEDPROMISE): use that?
   decodedArrayBuffer: Ember.computed('audioContext', 'arrayBuffer', function() {
+    console.log('decodedArrayBuffer');
     let { arrayBuffer, audioContext } = this.getProperties('arrayBuffer', 'audioContext');
 
     if (arrayBuffer) {
@@ -121,11 +125,10 @@ export default Ember.Object.extend(
 
   _peaksCache: Ember.computed(() => Ember.Map.create()),
 
-  // returns a promise of an array of arrays of [ymin, ymax] values of the waveform
+  // returns a promise of an array of arrays of [ymin, ymax, frequency] values of the waveform
   // from startTime to endTime when broken into length subranges
-  // returns a promise
   getPeaks({ startTime, endTime, length }) {
-    // Ember.Logger.log('AudioBinary.getPeaks', startTime, endTime, length);
+    Ember.Logger.log('AudioBinary.getPeaks', startTime, endTime, length);
 
     const cacheKey = `startTime:${startTime},endTime:${endTime},length:${length}`;
     const peaksCache = this.get('_peaksCache');
@@ -137,17 +140,18 @@ export default Ember.Object.extend(
     }
 
     const audioBuffer = this.get('audioBuffer');
-    if (!audioBuffer) { return asResolvedPromise([]); }
+    if (!audioBuffer || !isValidNumber(length)) { return asResolvedPromise([]); }
 
-    Ember.assert('Cannot AudioBinary.getPeaks without length', isValidNumber(length));
     startTime = isValidNumber(startTime) ? startTime : 0;
     endTime = isValidNumber(endTime) ? endTime : 0;
 
     // TODO(REFACTOR): update to use multiple channels
     const samples = audioBuffer.getChannelData(0);
     const sampleRate = audioBuffer.sampleRate;
-    const startSample = startTime * sampleRate;
-    const endSample = endTime * sampleRate;
+    const startSample = ~~(startTime * sampleRate);
+    const endSample = ~~(endTime * sampleRate);
+
+
 
     const job = new Parallel({
       samples,
@@ -156,42 +160,84 @@ export default Ember.Object.extend(
       length,
     });
 
-    const cacheValue = job.spawn(({ samples, startSample, endSample, length }) => {
-      const sampleSize = (endSample - startSample) / length;
-      const sampleStep = ~~(sampleSize / 10) || 1; // reduce granularity with small length
-      const peaks = [];
+
+    // const cacheValue = job.spawn(({ samples, startSample, endSample, length }) => {
+
+      const sampleSize = ~~((endSample - startSample) / length); // number of samples per pixel
+      const sampleStep = ~~(sampleSize / 100) || 1; // reduce granularity with small length
+      const peaks = new Array(~~length);
+
+      // compute largest frameSize which is a power of 2
+      let frameSize = 2;
+      while (frameSize < sampleSize) {
+        frameSize *= 2;
+      }
+      const fft = new DSPJS.FFT(frameSize, sampleRate);
+
+      console.log({ sampleSize, sampleStep, frameSize })
+
 
       for (let i = 0; i < length; i++) {
         const start = ~~(startSample + i * sampleSize);
         const end = ~~(start + sampleSize);
         let min = samples[start] || 0;
         let max = samples[start] || 0;
+        let dominantFrequency = 0;
 
-        // calculate max and min in this sample
+        // calculate min and max for this peak
         for (let j = start; j < end; j += sampleStep) {
           const value = samples[j] || 0;
 
-          if (value > max) {
-            max = value;
-          }
-          if (value < min) {
-            min = value;
-          }
+          min = Math.min(value, min);
+          max = Math.max(value, max);
         }
 
+        // calculate dominant frequency for this peak
+        // using as many samples from given sampleSize as possible
+        const frame = new Float32Array(frameSize);
+        frame.fill(0);
+        for (let k = 0; k < sampleSize; k++) {
+          frame[k] = samples[start + k];
+        }
+
+        fft.forward(frame);
+        const spectrum = fft.spectrum.slice(0, ~~(frameSize / 2) - 1); // ignore beyond N/2, Nyquist Frequency
+        const dominantFrequencyIndex = indexOfMax(spectrum);
+        dominantFrequency = dominantFrequencyIndex * sampleRate / frameSize;
+
         // add to peaks
-        peaks[i] = [min, max];
+        peaks[i] = [min, max, dominantFrequency];
       }
 
-      return peaks;
-    });
+      const cacheValue = asResolvedPromise(peaks);
+      // return peaks;
+    // });
 
     peaksCache.set(cacheKey, cacheValue);
 
     return cacheValue;
   },
 
+
   toString() {
     return '<linx@object:track/audio-binary>';
   },
 });
+
+function indexOfMax(arr) {
+  if (arr.length === 0) {
+    return -1;
+  }
+
+  let max = arr[0];
+  let maxIndex = 0;
+
+  for (let i = 1; i < arr.length; i++) {
+    if (arr[i] > max) {
+      maxIndex = i;
+      max = arr[i];
+    }
+  }
+
+  return maxIndex;
+}
