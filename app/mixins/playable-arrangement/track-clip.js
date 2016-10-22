@@ -213,19 +213,12 @@ export default Ember.Mixin.create(
 
   trackVolumeNode: computedObject(GainNode, {
     'audioContext': 'audioContext',
-    'outputNode': 'tunaDelayNode.content',
+    'outputNode': 'tunaHighpassFilterNode.content',
   }),
 
   quarterNoteDelayTime: Ember.computed('syncBpm', function() {
     // return bpmToSpb(this.get('syncBpm')) * 1000 * 3 / 4;
     return bpmToSpb(this.get('syncBpm')) * 1000;
-  }),
-
-  tunaDelayNode: computedObject(TunaDelayNode, {
-    'bypass': 'delayBypass',
-    'delayTime': 'quarterNoteDelayTime',
-    'audioContext': 'audioContext',
-    'outputNode': 'tunaHighpassFilterNode.content',
   }),
 
   highpassFilterType: 'highpass',
@@ -240,6 +233,13 @@ export default Ember.Mixin.create(
   tunaLowpassFilterNode: computedObject(TunaFilterNode, {
     'filterType': 'lowpassFilterType',
     'frequency': 22050,
+    'audioContext': 'audioContext',
+    'outputNode': 'tunaDelayNode.content',
+  }),
+
+  tunaDelayNode: computedObject(TunaDelayNode, {
+    'bypass': 'delayBypass',
+    'delayTime': 'quarterNoteDelayTime',
     'audioContext': 'audioContext',
     'outputNode': 'outputNode.content',
   }),
