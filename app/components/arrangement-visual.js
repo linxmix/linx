@@ -24,6 +24,7 @@ export default DataVisual.extend(
   // optional params
   followPlayhead: false,
   showBarGrid: true,
+  showPhaseGrid: true,
   isReady: true,
   showLastPlayMarker: false,
   zoom: Ember.computed(() => d3.behavior.zoom()),
@@ -113,6 +114,12 @@ export default DataVisual.extend(
 
   barScale: Ember.computed('arrangement.barCount', 'minX', 'maxX', function () {
     let domainMax = this.get('arrangement.barCount');
+
+    return d3.scale.linear().domain([0, domainMax + 0]).range([this.get('minX'), this.get('maxX')]);
+  }).readOnly(),
+
+  phraseScale: Ember.computed('arrangement.barCount', 'minX', 'maxX', function () {
+    let domainMax = this.get('arrangement.barCount') / 8;
 
     return d3.scale.linear().domain([0, domainMax + 0]).range([this.get('minX'), this.get('maxX')]);
   }).readOnly(),

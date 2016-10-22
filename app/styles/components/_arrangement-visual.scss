@@ -20,7 +20,7 @@
   stroke: rgba(#0000ff, 1);
 }
 
-.ArrangementVisual-beatAxis, .ArrangementVisual-barAxis {
+.ArrangementVisual-beatAxis, .ArrangementVisual-barAxis, .ArrangementVisual-phraseAxis {
   height: 30px;
   color: white;
   stroke: white;
@@ -45,5 +45,9 @@
 }
 
 .ArrangementVisual-barAxis {
-  stroke: rgba(#fff, 0.3);
+  stroke: rgba(#fff, 0.2);
+}
+
+.ArrangementVisual-phraseAxis {
+  stroke: rgba(#fff, 1.0);
 }

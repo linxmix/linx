@@ -24,6 +24,16 @@
   tickSize=height
 }}
 
+{{d3-axis
+  isD3Visible=showPhaseGrid
+  select=select.ArrangementVisual-phraseAxis
+  transform=(svg-translate 0 height)
+  scale=phraseScale
+  orient="top"
+  ticks=(multiply arrangement.barCount 0.125)
+  tickSize=height
+}}
+
 {{yield select maxX maxY}}
 
 {{arrangement-visual/playhead
