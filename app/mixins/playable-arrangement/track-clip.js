@@ -23,6 +23,9 @@ import {
 import {
   default as AutomatableClipControlMixin,
   CONTROL_TYPE_VOLUME,
+  CONTROL_TYPE_LOW_BAND,
+  CONTROL_TYPE_MID_BAND,
+  CONTROL_TYPE_HIGH_BAND,
   CONTROL_TYPE_PITCH,
   CONTROL_TYPE_DELAY_WET,
   CONTROL_TYPE_DELAY_CUTOFF,
@@ -32,42 +35,63 @@ import {
 
 // TODO(CLEANUP): nest under track-clip/controls/gain?
 const TrackVolumeControl = Ember.Object.extend(
-  AutomatableClipControlMixin('trackVolumeNode.gain'), {
+  new AutomatableClipControlMixin('trackVolumeNode.gain'), {
 
   type: CONTROL_TYPE_VOLUME,
   defaultValue: 1,
 });
 
+const TrackLowBandControl = Ember.Object.extend(
+  new AutomatableClipControlMixin('lowBandEqNode.filter.gain'), {
+
+  type: CONTROL_TYPE_LOW_BAND,
+  defaultValue: 6,
+});
+
+const TrackMidBandControl = Ember.Object.extend(
+  new AutomatableClipControlMixin('midBandEqNode.filter.gain'), {
+
+  type: CONTROL_TYPE_MID_BAND,
+  defaultValue: 6,
+});
+
+const TrackHighBandControl = Ember.Object.extend(
+  new AutomatableClipControlMixin('highBandEqNode.filter.gain'), {
+
+  type: CONTROL_TYPE_HIGH_BAND,
+  defaultValue: 6,
+});
+
 const TrackPitchControl = Ember.Object.extend(
-  AutomatableClipControlMixin('soundtouchNode.pitch'), {
+  new AutomatableClipControlMixin('soundtouchNode.pitch'), {
 
   type: CONTROL_TYPE_PITCH,
   defaultValue: 0,
 });
 
 const TrackDelayWetControl = Ember.Object.extend(
-  AutomatableClipControlMixin('tunaDelayNode.wet.gain'), {
+  new AutomatableClipControlMixin('tunaDelayNode.wet.gain'), {
 
   type: CONTROL_TYPE_DELAY_WET,
   defaultValue: 0,
 });
 
 const TrackDelayCutoffControl = Ember.Object.extend(
-  AutomatableClipControlMixin('tunaDelayNode.filter.frequency'), {
+  new AutomatableClipControlMixin('tunaDelayNode.filter.frequency'), {
 
   type: CONTROL_TYPE_DELAY_CUTOFF,
   defaultValue: 2000,
 });
 
 const TrackHighpassFilterCutoffControl = Ember.Object.extend(
-  AutomatableClipControlMixin('tunaHighpassFilterNode.filter.frequency'), {
+  new AutomatableClipControlMixin('tunaHighpassFilterNode.filter.frequency'), {
 
   type: CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF,
   defaultValue: 20,
 });
 
 const TrackLowpassFilterCutoffControl = Ember.Object.extend(
-  AutomatableClipControlMixin('tunaLowpassFilterNode.filter.frequency'), {
+  new AutomatableClipControlMixin('tunaLowpassFilterNode.filter.frequency'), {
 
   type: CONTROL_TYPE_FILTER_LOWPASS_CUTOFF,
   defaultValue: 22050,
@@ -78,7 +102,7 @@ const TrackLowpassFilterCutoffControl = Ember.Object.extend(
 export default Ember.Mixin.create(
   AutomatableClipMixin,
   PlayableClipMixin,
-  ReadinessMixin('isTrackClipReady'), {
+  new ReadinessMixin('isTrackClipReady'), {
 
   // required params
   track: null,
@@ -95,6 +119,9 @@ export default Ember.Mixin.create(
   controls: Ember.computed(function() {
     return [
       TrackVolumeControl.create({ clip: this }),
+      TrackLowBandControl.create({ clip: this }),
+      TrackMidBandControl.create({ clip: this }),
+      TrackHighBandControl.create({ clip: this }),
       TrackPitchControl.create({ clip: this }),
       TrackDelayWetControl.create({ clip: this }),
       TrackDelayCutoffControl.create({ clip: this }),
@@ -213,12 +240,34 @@ export default Ember.Mixin.create(
 
   trackVolumeNode: computedObject(GainNode, {
     'audioContext': 'audioContext',
-    'outputNode': 'tunaHighpassFilterNode.content',
+    'outputNode': 'lowBandEqNode.content',
   }),
 
-  quarterNoteDelayTime: Ember.computed('syncBpm', function() {
-    // return bpmToSpb(this.get('syncBpm')) * 1000 * 3 / 4;
-    return bpmToSpb(this.get('syncBpm')) * 1000;
+  lowBandFilterType: 'lowshelf',
+  lowBandEqNode: computedObject(TunaFilterNode, {
+    'filterType': 'lowBandFilterType',
+    'frequency': 70,
+    'gain': 6,
+    'audioContext': 'audioContext',
+    'outputNode': 'midBandEqNode.content',
+  }),
+
+  midBandFilterType: 'peaking',
+  midBandEqNode: computedObject(TunaFilterNode, {
+    'filterType': 'midBandFilterType',
+    'frequency': 1000,
+    'gain': 6,
+    'audioContext': 'audioContext',
+    'outputNode': 'highBandEqNode.content',
+  }),
+
+  highBandFilterType: 'highshelf',
+  highBandEqNode: computedObject(TunaFilterNode, {
+    'filterType': 'highBandFilterType',
+    'frequency': 13000,
+    'gain': 6,
+    'audioContext': 'audioContext',
+    'outputNode': 'tunaHighpassFilterNode.content',
   }),
 
   highpassFilterType: 'highpass',
@@ -235,6 +284,11 @@ export default Ember.Mixin.create(
     'frequency': 22050,
     'audioContext': 'audioContext',
     'outputNode': 'tunaDelayNode.content',
+  }),
+
+  quarterNoteDelayTime: Ember.computed('syncBpm', function() {
+    // return bpmToSpb(this.get('syncBpm')) * 1000 * 3 / 4;
+    return bpmToSpb(this.get('syncBpm')) * 1000;
   }),
 
   tunaDelayNode: computedObject(TunaDelayNode, {

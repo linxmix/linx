@@ -9,6 +9,9 @@ import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationshi
 
 import {
   CONTROL_TYPE_VOLUME,
+  CONTROL_TYPE_LOW_BAND,
+  CONTROL_TYPE_MID_BAND,
+  CONTROL_TYPE_HIGH_BAND,
   CONTROL_TYPE_DELAY_WET,
   CONTROL_TYPE_DELAY_CUTOFF,
   CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF,
@@ -69,6 +72,18 @@ export default DS.Model.extend(
         controlType: CONTROL_TYPE_VOLUME,
         transition: this,
       });
+      const fromTrackLowBandClip = store.createRecord('mix/transition/from-track-automation-clip', {
+        controlType: CONTROL_TYPE_LOW_BAND,
+        transition: this,
+      });
+      const fromTrackMidBandClip = store.createRecord('mix/transition/from-track-automation-clip', {
+        controlType: CONTROL_TYPE_MID_BAND,
+        transition: this,
+      });
+      const fromTrackHighBandClip = store.createRecord('mix/transition/from-track-automation-clip', {
+        controlType: CONTROL_TYPE_HIGH_BAND,
+        transition: this,
+      });
       const fromTrackDelayWetClip = store.createRecord('mix/transition/from-track-automation-clip', {
         controlType: CONTROL_TYPE_DELAY_WET,
         transition: this,
@@ -85,8 +100,21 @@ export default DS.Model.extend(
         controlType: CONTROL_TYPE_FILTER_LOWPASS_CUTOFF,
         transition: this,
       });
+
       const toTrackVolumeClip = store.createRecord('mix/transition/to-track-automation-clip', {
         controlType: CONTROL_TYPE_VOLUME,
+        transition: this,
+      });
+      const toTrackLowBandClip = store.createRecord('mix/transition/to-track-automation-clip', {
+        controlType: CONTROL_TYPE_LOW_BAND,
+        transition: this,
+      });
+      const toTrackMidBandClip = store.createRecord('mix/transition/to-track-automation-clip', {
+        controlType: CONTROL_TYPE_MID_BAND,
+        transition: this,
+      });
+      const toTrackHighBandClip = store.createRecord('mix/transition/to-track-automation-clip', {
+        controlType: CONTROL_TYPE_HIGH_BAND,
         transition: this,
       });
       const toTrackHighpassCutoffClip = store.createRecord('mix/transition/to-track-automation-clip', {
@@ -100,6 +128,9 @@ export default DS.Model.extend(
 
       const fromTrackAutomationClips = [
         fromTrackVolumeClip,
+        fromTrackLowBandClip,
+        fromTrackMidBandClip,
+        fromTrackHighBandClip,
         fromTrackDelayWetClip,
         fromTrackDelayCutoffClip,
         fromTrackHighpassCutoffClip,
@@ -108,6 +139,9 @@ export default DS.Model.extend(
 
       const toTrackAutomationClips = [
         toTrackVolumeClip,
+        toTrackLowBandClip,
+        toTrackMidBandClip,
+        toTrackHighBandClip,
         toTrackHighpassCutoffClip,
         toTrackLowpassCutoffClip
       ];
@@ -123,6 +157,25 @@ export default DS.Model.extend(
           n: volumeControlPointCount,
           beatCount,
           direction: -1
+        }));
+
+        fromTrackLowBandClip.addControlPoints(generateControlPointParams({
+          startValue: 6,
+          endValue: 6,
+          n: volumeControlPointCount,
+          beatCount,
+        }));
+        fromTrackMidBandClip.addControlPoints(generateControlPointParams({
+          startValue: 6,
+          endValue: 6,
+          n: volumeControlPointCount,
+          beatCount,
+        }));
+        fromTrackHighBandClip.addControlPoints(generateControlPointParams({
+          startValue: 6,
+          endValue: 6,
+          n: volumeControlPointCount,
+          beatCount,
         }));
 
         fromTrackHighpassCutoffClip.addControlPoints(generateControlPointParams({
@@ -174,6 +227,25 @@ export default DS.Model.extend(
           n: volumeControlPointCount,
           beatCount,
           direction: 1
+        }));
+
+        toTrackLowBandClip.addControlPoints(generateControlPointParams({
+          startValue: 6,
+          endValue: 6,
+          n: volumeControlPointCount,
+          beatCount,
+        }));
+        toTrackMidBandClip.addControlPoints(generateControlPointParams({
+          startValue: 6,
+          endValue: 6,
+          n: volumeControlPointCount,
+          beatCount,
+        }));
+        toTrackHighBandClip.addControlPoints(generateControlPointParams({
+          startValue: 6,
+          endValue: 6,
+          n: volumeControlPointCount,
+          beatCount,
         }));
 
         toTrackHighpassCutoffClip.addControlPoints(generateControlPointParams({

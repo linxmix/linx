@@ -7,6 +7,9 @@ import RequireAttributes from 'linx/lib/require-attributes';
 import { isValidNumber } from 'linx/lib/utils';
 
 export const CONTROL_TYPE_VOLUME = 'gain';
+export const CONTROL_TYPE_LOW_BAND = 'low-band';
+export const CONTROL_TYPE_MID_BAND = 'mid-band';
+export const CONTROL_TYPE_HIGH_BAND = 'high-band';
 export const CONTROL_TYPE_BPM = 'bpm';
 export const CONTROL_TYPE_PITCH = 'pitch';
 export const CONTROL_TYPE_DELAY_WET = 'delay-wet';
@@ -21,7 +24,10 @@ export const CONTROL_TYPES = [
   CONTROL_TYPE_DELAY_WET,
   CONTROL_TYPE_DELAY_CUTOFF,
   CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF,
-  CONTROL_TYPE_FILTER_LOWPASS_CUTOFF
+  CONTROL_TYPE_FILTER_LOWPASS_CUTOFF,
+  CONTROL_TYPE_LOW_BAND,
+  CONTROL_TYPE_MID_BAND,
+  CONTROL_TYPE_HIGH_BAND
 ];
 
 // Interface for Automatable Controls
@@ -49,6 +55,10 @@ export default function(audioParamPath) {
         case CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF:
         case CONTROL_TYPE_FILTER_LOWPASS_CUTOFF:
           return d3.scale.log().domain([20, 22050]).range([0, 1]);
+        case CONTROL_TYPE_LOW_BAND:
+        case CONTROL_TYPE_MID_BAND:
+        case CONTROL_TYPE_HIGH_BAND:
+          return d3.scale.linear().domain([-40, 40]).range([0, 1]);
         default:
           return d3.scale.identity();
       }
