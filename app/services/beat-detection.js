@@ -7,7 +7,7 @@ import { validNumberOrDefault } from 'linx/lib/utils';
 const SAMPLE_RATE = 44100;
 
 export default Ember.Service.extend({
-  analyzeTrackTask: task(function * (track, options) {
+  analyzeTrackTask: task(function * (track, options = {}) {
     console.log('analyze track', track && track.get('title'), options);
     Ember.assert('Must provide track to BeatDetection#analyzeTrack', !!track);
 
