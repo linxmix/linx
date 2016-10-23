@@ -60,6 +60,10 @@ export default Ember.Component.extend(
     this.send('playpause');
   })),
 
+  _exitTransitionOnEscape: Ember.on(keyDown('Escape'), makeKeybinding(function(e) {
+    this.send('selectTransition', null);
+  })),
+
   _pauseMix: Ember.on('willDestroyElement', function() {
     this.send('pause');
   }),
