@@ -37,6 +37,10 @@ export const isValidNumber = function(number) {
   return isNumber(number) && isFinite(number);
 };
 
+export const validNumberOrDefault = function(number, _default) {
+  return isValidNumber(number) ? number : _default;
+};
+
 export const isObject = function(object) {
   return Ember.typeOf(object) === 'object';
 };

@@ -109,6 +109,8 @@ const KeyboardBeatJumpMixin = Ember.Mixin.create(BEAT_JUMP_KEYBINDINGS.reduce(
   {}
 ));
 
+const SECONDS_TO_ANALYZE = 20;
+
 export default Ember.Component.extend(
   KeyboardBeatJumpMixin,
   EKMixin,
@@ -133,8 +135,6 @@ export default Ember.Component.extend(
   beatJump(beats, direction, isNudge) {
     const clip = this.get('clip');
     const beatGrid = clip.get('audioMeta.beatGrid');
-
-    console.log('beatJump', beats, direction, isNudge, clip.get('track.title'));
 
     if (isNudge || this.get('isToTrackClip')) {
       const audioStartBeat = clip.get('audioStartBeat');
@@ -167,13 +167,18 @@ export default Ember.Component.extend(
     analyzeTrack() {
       const task = this.get('beatDetection.analyzeTrackTask');
       const track = this.get('track');
-      task.perform(track).then(({ peaks, intervals }) => {
-        const trackClip = this.get('clip');
+      const trackClip = this.get('clip.content');
+      const currentAudioTime = trackClip.getCurrentAudioTime();
+      console.log({ currentAudioTime})
+
+      task.perform(track, {
+        startTime: currentAudioTime - SECONDS_TO_ANALYZE / 2,
+        endTime: currentAudioTime + SECONDS_TO_ANALYZE / 2,
+      }).then(({ peaks, intervals }) => {
 
         console.log('analyze track markers', peaks, intervals);
         trackClip.setProperties({
           markers: peaks,
-          // audioStartTime: peaks[0].time,
         });
       });
     },
