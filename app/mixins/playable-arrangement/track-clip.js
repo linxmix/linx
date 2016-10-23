@@ -35,6 +35,16 @@ import {
   CONTROL_TYPE_FILTER_LOWPASS_Q,
 } from './automatable-clip/control';
 
+function _createFilterCutoffScale() {
+  return d3.scale.log().domain([20, 22050]).range([0, 1]);
+}
+function _createBandEqScale() {
+  return d3.scale.linear().domain([-40, 40]).range([0, 1]);
+}
+function _createFilterQScale() {
+  return d3.scale.linear().domain([0.001, 10]).range([0, 1]);
+}
+
 // TODO(CLEANUP): nest under track-clip/controls/gain?
 const TrackVolumeControl = Ember.Object.extend(
   new AutomatableClipControlMixin('trackVolumeNode.gain'), {
@@ -48,6 +58,7 @@ const TrackLowBandControl = Ember.Object.extend(
 
   type: CONTROL_TYPE_LOW_BAND,
   defaultValue: 6,
+  valueScale: Ember.computed(() => _createBandEqScale()),
 });
 
 const TrackMidBandControl = Ember.Object.extend(
@@ -55,6 +66,7 @@ const TrackMidBandControl = Ember.Object.extend(
 
   type: CONTROL_TYPE_MID_BAND,
   defaultValue: 6,
+  valueScale: Ember.computed(() => _createBandEqScale()),
 });
 
 const TrackHighBandControl = Ember.Object.extend(
@@ -62,6 +74,7 @@ const TrackHighBandControl = Ember.Object.extend(
 
   type: CONTROL_TYPE_HIGH_BAND,
   defaultValue: 6,
+  valueScale: Ember.computed(() => _createBandEqScale()),
 });
 
 const TrackPitchControl = Ember.Object.extend(
@@ -83,6 +96,7 @@ const TrackDelayCutoffControl = Ember.Object.extend(
 
   type: CONTROL_TYPE_DELAY_CUTOFF,
   defaultValue: 2000,
+  valueScale: Ember.computed(() => _createFilterCutoffScale()),
 });
 
 const TrackHighpassFilterCutoffControl = Ember.Object.extend(
@@ -90,12 +104,14 @@ const TrackHighpassFilterCutoffControl = Ember.Object.extend(
 
   type: CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF,
   defaultValue: 20,
+  valueScale: Ember.computed(() => _createFilterCutoffScale()),
 });
 const TrackHighpassFilterQControl = Ember.Object.extend(
   new AutomatableClipControlMixin('tunaHighpassFilterNode.filter.Q'), {
 
   type: CONTROL_TYPE_FILTER_HIGHPASS_Q,
   defaultValue: 1,
+  valueScale: Ember.computed(() => _createFilterQScale()),
 });
 
 const TrackLowpassFilterCutoffControl = Ember.Object.extend(
@@ -103,12 +119,14 @@ const TrackLowpassFilterCutoffControl = Ember.Object.extend(
 
   type: CONTROL_TYPE_FILTER_LOWPASS_CUTOFF,
   defaultValue: 22050,
+  valueScale: Ember.computed(() => _createFilterCutoffScale()),
 });
 const TrackLowpassFilterQControl = Ember.Object.extend(
   new AutomatableClipControlMixin('tunaLowpassFilterNode.filter.Q'), {
 
   type: CONTROL_TYPE_FILTER_LOWPASS_Q,
   defaultValue: 1,
+  valueScale: Ember.computed(() => _createFilterQScale()),
 });
 
 

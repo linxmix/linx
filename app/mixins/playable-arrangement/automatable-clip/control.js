@@ -49,27 +49,8 @@ export default function(audioParamPath) {
 
     // optional params
     description: '',
-    // isSuspended: false,
     defaultValue: 0,
-
-    // TODO(TECHDEBT): share more cleanly
-    valueScale: Ember.computed('type', function() {
-      switch (this.get('type')) {
-        case CONTROL_TYPE_DELAY_CUTOFF:
-        case CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF:
-        case CONTROL_TYPE_FILTER_LOWPASS_CUTOFF:
-          return d3.scale.log().domain([20, 22050]).range([0, 1]);
-        case CONTROL_TYPE_LOW_BAND:
-        case CONTROL_TYPE_MID_BAND:
-        case CONTROL_TYPE_HIGH_BAND:
-          return d3.scale.linear().domain([-40, 40]).range([0, 1]);
-        case CONTROL_TYPE_FILTER_HIGHPASS_Q:
-        case CONTROL_TYPE_FILTER_LOWPASS_Q:
-          return d3.scale.linear().domain([0.001, 10]).range([0, 1]);
-        default:
-          return d3.scale.identity();
-      }
-    }),
+    valueScale: Ember.computed(() => d3.scale.identity()),
 
     _initClipListeners: Ember.on('init', function() {
       const clip = this.get('clip');
