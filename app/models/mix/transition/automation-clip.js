@@ -18,18 +18,25 @@ export default AutomationClip.extend({
   beatCount: Ember.computed.reads('transition.beatCount'),
 
   // transition automation-clip must have controlPoints within transition
-  _updateControlPoints: Ember.observer('beatCount', function() {
-    const beatCount = this.get('beatCount')
-    // Ember.Logger.log('_updateControlPoints', beatCount);
+  _beatCountDidChange: Ember.observer('beatCount', function() {
+    Ember.run.once(this, '_updateControlPoints');
+  }).on('init'),
+
+  _updateControlPoints() {
+    const beatCount = this.get('beatCount');
+    Ember.Logger.log('_updateControlPoints', beatCount);
 
     if (isValidNumber(beatCount)) {
-      this.get('controlPoints').forEach((controlPoint) => {
+      const controlPoints = this.get('controlPoints');
+
+      controlPoints.forEach((controlPoint, i) => {
+        if (controlPoint.get('isLoading') || controlPoints.get('isSaving')) { return; }
         const oldBeat = controlPoint.get('beat');
 
         let newBeat;
-        if (controlPoint.get('isFirstItem')) {
+        if (i === 0) {
           newBeat = 0;
-        } else if (controlPoint.get('isLastItem')) {
+        } else if (i === (controlPoints.get('length') - 1)) {
           newBeat = beatCount;
         } else {
           newBeat = clamp(0, oldBeat, beatCount);
@@ -38,5 +45,5 @@ export default AutomationClip.extend({
         controlPoint.set('beat', newBeat);
       });
     }
-  }).on('init'),
+  },
 });
