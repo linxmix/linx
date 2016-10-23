@@ -23,39 +23,43 @@ export default DS.Model.extend(
   timeSignature: DS.attr('number', { defaultValue: 4.0 }),
 
   // DEPRECATED, from pre-multigrid
-  bpm: DS.attr('number', { defaultValue: 128 }),
+  bpm: DS.attr('number'),
 
   // implement playable-arrangement
   session: Ember.inject.service(),
   audioContext: Ember.computed.reads('session.audioContext'),
   bpmControlPoints: Ember.computed('bpm',
-    '_transitionBpmControlPoints.@each.{beat,value,transitionStartBeat}', function() {
-    const bpmControlPoints = this.get('_transitionBpmControlPoints');
+    'transitions.@each.{startBpm,endBpm}',
+    'transitionClips.@each.{startBeat,endBeat}',
+      function() {
 
-    // if we dont have any bpm control points, fake it with base mix bpm
-    if (Ember.isEmpty(bpmControlPoints)) {
-      const mixBpm = this.get('bpm');
+      // legacy default to 'bpm' if using a mix with bpm
+      if (this.get('bpm')) {
+        const mixBpm = this.get('bpm');
 
-      // because the bpmScale is clamped, this sets a constant bpm
-      return [
-        {
-          beat: 0,
-          value: mixBpm,
-        },
-      ];
-    } else {
-      return bpmControlPoints.map((controlPoint) => {
-        // offset control point by transitionClip startBeat
-        const transitionStartBeat = controlPoint.get('transitionStartBeat');
-        const beat = isValidNumber(transitionStartBeat) ?
-          controlPoint.get('beat') + transitionStartBeat : controlPoint.get('beat');
+        // because the bpmScale is clamped, this sets a constant bpm
+        return [
+          {
+            beat: 0,
+            value: mixBpm,
+          },
+        ];
+      } else {
+        return this.get('transitions')
+          .reject((transition) => !transition)
+          .reduce((controlPoints, transition) => {
+            controlPoints.addObject({
+              beat: transition.get('transitionClip.startBeat'),
+              value: transition.get('startBpm'),
+            });
+            controlPoints.addObject({
+              beat: transition.get('transitionClip.endBeat'),
+              value: transition.get('endBpm'),
+            });
 
-        return {
-          beat,
-          value: controlPoint.get('value'),
-        };
-      });
-    }
+            return controlPoints;
+          }, []);
+      }
   }),
 
   tracks: Ember.computed.mapBy('items', 'track'),
@@ -64,10 +68,6 @@ export default DS.Model.extend(
   trackClips: Ember.computed.mapBy('items', 'trackClip'),
   transitionClips: Ember.computed.mapBy('items', 'transitionClip'),
   clips: Ember.computed.uniq('trackClips', 'transitionClips'),
-
-  _transitionBpmControlPoints: Ember.computed('transitions.@each.bpmControlPoints', function() {
-    return flatten(this.get('transitions').without(undefined).mapBy('bpmControlPoints')).without(undefined);
-  }),
 
   trackAt(index) {
     const item = this.objectAt(index);

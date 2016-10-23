@@ -16,7 +16,7 @@ export default Ember.Mixin.create({
 
   // required params
   clips: null,
-  bpmControlPoints: null,
+  bpmControlPoints: null, // or bpmScale
   audioContext: null,
 
   // optional params

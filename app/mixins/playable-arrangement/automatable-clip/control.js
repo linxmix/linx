@@ -8,7 +8,6 @@ import { isValidNumber } from 'linx/lib/utils';
 
 export const CONTROL_TYPE_VOLUME = 'gain';
 export const CONTROL_TYPE_TEMPO = 'tempo';
-export const CONTROL_TYPE_BPM = 'bpm'; // currently only exists in transition
 export const CONTROL_TYPE_PITCH = 'pitch';
 
 export const CONTROL_TYPE_LOW_BAND = 'low-band';
@@ -25,7 +24,6 @@ export const CONTROL_TYPE_FILTER_LOWPASS_Q = 'filter-lowpass-q';
 
 export const CONTROL_TYPES = [
   CONTROL_TYPE_VOLUME,
-  CONTROL_TYPE_BPM,
   CONTROL_TYPE_TEMPO,
   CONTROL_TYPE_PITCH,
   CONTROL_TYPE_DELAY_WET,
