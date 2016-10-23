@@ -117,7 +117,7 @@ export default DS.Model.extend(
 
     this.get('audioMeta.content').setProperties({
       barGridTime,
-      tempo: parseFloat(meta.overall_tempo_straight),
+      bpm: parseFloat(meta.overall_tempo_straight),
       timeSignature: parseInt(meta.clicks_per_bar),
     });
 

@@ -2,31 +2,68 @@ import Ember from 'ember';
 import DS from 'ember-data';
 
 import _ from 'npm:underscore';
+import d3 from 'd3';
 
 import CrudMixin from 'linx/mixins/models/crud';
 
 import OrderedHasManyMixin from 'linx/mixins/models/ordered-has-many';
 import PlayableArrangementMixin from 'linx/mixins/playable-arrangement';
+import { flatten, isValidNumber } from 'linx/lib/utils';
 
 export default DS.Model.extend(
   CrudMixin,
   PlayableArrangementMixin,
-  OrderedHasManyMixin('_mixItems'), {
+  new OrderedHasManyMixin('_mixItems'), {
 
   // implement ordered has many
   orderedHasManyItemModelName: 'mix/item',
   _mixItems: DS.hasMany('mix/item', { async: true }),
 
   title: DS.attr('string'),
-  bpm: DS.attr('number', { defaultValue: 128 }),
   timeSignature: DS.attr('number', { defaultValue: 4.0 }),
+
+  // DEPRECATED, from pre-multigrid
+  bpm: DS.attr('number'),
 
   // implement playable-arrangement
   session: Ember.inject.service(),
   audioContext: Ember.computed.reads('session.audioContext'),
+  bpmControlPoints: Ember.computed('bpm',
+    'transitions.@each.{startBpm,endBpm}',
+    'transitionClips.@each.{startBeat,endBeat}',
+      function() {
 
-  tracks: Ember.computed.mapBy('items', 'track.content'),
-  transitions: Ember.computed.mapBy('items', 'transition.content'),
+      // legacy default to 'bpm' if using a mix with bpm
+      if (this.get('bpm')) {
+        const mixBpm = this.get('bpm');
+
+        // because the bpmScale is clamped, this sets a constant bpm
+        return [
+          {
+            beat: 0,
+            value: mixBpm,
+          },
+        ];
+      } else {
+        return this.get('transitions')
+          .reject((transition) => !transition)
+          .reduce((controlPoints, transition) => {
+            controlPoints.addObject({
+              beat: transition.get('transitionClip.startBeat'),
+              value: transition.get('startBpm'),
+            });
+            controlPoints.addObject({
+              beat: transition.get('transitionClip.endBeat'),
+              value: transition.get('endBpm'),
+            });
+
+            return controlPoints;
+          }, []);
+      }
+  }),
+
+  tracks: Ember.computed.mapBy('items', 'track'),
+  transitions: Ember.computed.mapBy('items', 'transition'),
 
   trackClips: Ember.computed.mapBy('items', 'trackClip'),
   transitionClips: Ember.computed.mapBy('items', 'transitionClip'),
@@ -55,7 +92,6 @@ export default DS.Model.extend(
       return item.setTrack(track);
     });
 
-    // TODO(REFACTOR2): possible bug with items being proxies
     return Ember.RSVP.all(items).then((items) => {
       return this.replace(index, 0, items);
     });

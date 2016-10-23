@@ -7,13 +7,16 @@ import RequireAttributes from 'linx/lib/require-attributes';
 import { isValidNumber } from 'linx/lib/utils';
 
 export const CONTROL_TYPE_VOLUME = 'gain';
+export const CONTROL_TYPE_TEMPO = 'tempo';
+export const CONTROL_TYPE_PITCH = 'pitch';
+
 export const CONTROL_TYPE_LOW_BAND = 'low-band';
 export const CONTROL_TYPE_MID_BAND = 'mid-band';
 export const CONTROL_TYPE_HIGH_BAND = 'high-band';
-export const CONTROL_TYPE_BPM = 'bpm';
-export const CONTROL_TYPE_PITCH = 'pitch';
+
 export const CONTROL_TYPE_DELAY_WET = 'delay-wet';
 export const CONTROL_TYPE_DELAY_CUTOFF = 'delay-cutoff';
+
 export const CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF = 'filter-highpass-cutoff';
 export const CONTROL_TYPE_FILTER_HIGHPASS_Q = 'filter-highpass-q';
 export const CONTROL_TYPE_FILTER_LOWPASS_CUTOFF = 'filter-lowpass-cutoff';
@@ -21,7 +24,7 @@ export const CONTROL_TYPE_FILTER_LOWPASS_Q = 'filter-lowpass-q';
 
 export const CONTROL_TYPES = [
   CONTROL_TYPE_VOLUME,
-  CONTROL_TYPE_BPM,
+  CONTROL_TYPE_TEMPO,
   CONTROL_TYPE_PITCH,
   CONTROL_TYPE_DELAY_WET,
   CONTROL_TYPE_DELAY_CUTOFF,
@@ -39,7 +42,7 @@ export const CONTROL_TYPES = [
 // audioParamPath is a path to a Web Audio AudioParam
 export default function(audioParamPath) {
   return Ember.Mixin.create(
-    RequireAttributes('clip'), {
+    new RequireAttributes('clip'), {
 
     audioParamPath,
 
@@ -49,27 +52,8 @@ export default function(audioParamPath) {
 
     // optional params
     description: '',
-    // isSuspended: false,
+    valueScale: Ember.computed(() => d3.scale.identity()),
     defaultValue: 0,
-
-    // TODO(TECHDEBT): share more cleanly
-    valueScale: Ember.computed('type', function() {
-      switch (this.get('type')) {
-        case CONTROL_TYPE_DELAY_CUTOFF:
-        case CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF:
-        case CONTROL_TYPE_FILTER_LOWPASS_CUTOFF:
-          return d3.scale.log().domain([20, 22050]).range([0, 1]);
-        case CONTROL_TYPE_LOW_BAND:
-        case CONTROL_TYPE_MID_BAND:
-        case CONTROL_TYPE_HIGH_BAND:
-          return d3.scale.linear().domain([-40, 40]).range([0, 1]);
-        case CONTROL_TYPE_FILTER_HIGHPASS_Q:
-        case CONTROL_TYPE_FILTER_LOWPASS_Q:
-          return d3.scale.linear().domain([0.001, 10]).range([0, 1]);
-        default:
-          return d3.scale.identity();
-      }
-    }),
 
     _initClipListeners: Ember.on('init', function() {
       const clip = this.get('clip');

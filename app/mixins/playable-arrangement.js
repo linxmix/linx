@@ -1,21 +1,28 @@
 import Ember from 'ember';
 
-import ReadinessMixin from 'linx/mixins/readiness';
-import RequireAttributes from 'linx/lib/require-attributes';
+import d3 from 'd3';
+
 import withDefault from 'linx/lib/computed/with-default';
 import Metronome from './playable-arrangement/metronome';
 import WebAudioMergerNode from 'linx/lib/web-audio/merger-node';
 import computedObject from 'linx/lib/computed/object';
-import BeatGrid from 'linx/models/track/audio-meta/beat-grid';
+import BeatGrid from './playable-arrangement/beat-grid';
 import { flatten, isValidNumber } from 'linx/lib/utils';
 import GainNode from 'linx/lib/web-audio/gain-node';
 
 // Interface for playable arrangements of clips
-export default Ember.Mixin.create(
-  RequireAttributes('clips', 'audioContext'),
-  ReadinessMixin('isPlayableArrangementReady'), {
+export default Ember.Mixin.create({
+  // ReadinessMixin('isPlayableArrangementReady'), {
 
-  // params
+  // required params
+  clips: null,
+  bpmControlPoints: null, // or bpmScale
+  audioContext: null,
+
+  // optional params
+  outputNode: Ember.computed.reads('audioContext.destination'),
+  timeSignature: 4,
+
   playpause(beat) {
     this.get('metronome').playpause(beat);
   },
@@ -44,21 +51,32 @@ export default Ember.Mixin.create(
     this.get('metronome').seekToBeat(beat);
   },
 
-  // optional params
-  outputNode: Ember.computed.reads('audioContext.destination'),
-  bpm: 128.0,
-
   isPlaying: Ember.computed.reads('metronome.isPlaying'),
+  duration: Ember.computed.reads('beatGrid.duration'),
 
   metronome: computedObject(Metronome, {
     'audioContext': 'audioContext',
-    'arrangement': 'this'
+    'beatGrid': 'beatGrid',
   }),
 
-  beatGrid: computedObject(BeatGrid, {
-    duration: 'duration',
-    bpm: 'bpm',
-    timeSignature: 'timeSignature',
+  bpmScale: Ember.computed('bpmControlPoints.@each.{beat,value}', 'beatCount', function() {
+    const beatCount = this.get('beatCount');
+    const bpmControlPoints = this.get('bpmControlPoints') || [];
+
+    const bpmControlBeats = bpmControlPoints.mapBy('beat');
+    const bpmControlValues = bpmControlPoints.mapBy('value');
+
+    const firstBpmValue = bpmControlValues.get('firstObject');
+    const lastBpmValue = bpmControlValues.get('lastObject');
+
+    return d3.scale.linear()
+      .domain([0].concat(bpmControlBeats).concat([beatCount]))
+      .range([firstBpmValue].concat(bpmControlValues).concat([lastBpmValue]))
+      .clamp(true);
+  }),
+
+  beatGrid: Ember.computed('bpmScale', 'beatCount', 'timeSignature', function() {
+    return BeatGrid.create(this.getProperties('bpmScale', 'beatCount', 'timeSignature'));
   }),
 
   // TODO(REFACTOR): arrangement shouldn't have to wait on clips? clips will just update when loaded
@@ -69,13 +87,26 @@ export default Ember.Mixin.create(
 
   validClips: Ember.computed.filterBy('clips', 'isValid', true),
   readyClips: Ember.computed.filterBy('clips', 'isReady', true),
-  // TODO(CLEANUP): why?
+
+  // TODO(TECHDEBT): have to async update sortedClips in next runloop,
+  // weird bug with computed properties not updating correctly otherwise
   // clipSort: ['endBeat:asc', 'startBeat:asc'],
   // sortedClips: Ember.computed.sort('clips', 'clipSort'),
-  sortedClips: Ember.computed('clips.@each.endBeat', function() {
-    return this.get('clips').sortBy('endBeat');
-  }),
-  timeSignature: 4,
+  // sortedClips: Ember.computed('clips.@each.endBeat', function() {
+  //   return this.get('clips').sortBy('endBeat');
+  // }),
+  _updateSortedClips: Ember.observer('clips.@each.endBeat', function() {
+    Ember.RSVP.all(this.get('clips')).then((clips) => {
+      Ember.run.next(() => {
+        this.set('sortedClips', this.get('clips')
+          .reject((clip) => !clip)
+          .sortBy('endBeat')
+        );
+      });
+    });
+  }).on('init'),
+  sortedClips: Ember.computed(() => []),
+
   endBeat: Ember.computed.reads('sortedClips.lastObject.endBeat'),
   beatCount: withDefault('endBeat', 0),
 
@@ -83,17 +114,11 @@ export default Ember.Mixin.create(
     return this.get('beatCount') / this.get('timeSignature');
   }),
 
-  // duration of arrangement in [s]
-  // TODO(MULTIGRID)
-  duration: Ember.computed('metronome.bpm', 'beatCount', function() {
-    return this.get('metronome').getDuration(0, this.get('beatCount'));
-  }),
-
   getRemainingDuration() {
-    const metronome = this.get('metronome');
+    const beatGrid = this.get('beatGrid');
     const beatCount = this.get('beatCount');
     const currentBeat = this.getCurrentBeat();
-    return metronome.getDuration(currentBeat, beatCount - currentBeat);
+    return beatGrid.getDuration(currentBeat, beatCount - currentBeat);
   },
 
   getCurrentBeat() {

@@ -60,6 +60,10 @@ export default Ember.Component.extend(
     this.send('playpause');
   })),
 
+  _exitTransitionOnEscape: Ember.on(keyDown('Escape'), makeKeybinding(function(e) {
+    this.send('selectTransition', null);
+  })),
+
   _pauseMix: Ember.on('willDestroyElement', function() {
     this.send('pause');
   }),
@@ -300,6 +304,7 @@ export default Ember.Component.extend(
 
     seekToBeat(beat) {
       const quantizedBeat = this._quantizeBeat(beat);
+      console.log('seekToBeat', beat, quantizedBeat);
 
       this.get('mix').seekToBeat(quantizedBeat);
       this.trigger('seekToBeat', quantizedBeat);

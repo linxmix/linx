@@ -7,6 +7,9 @@ import MixVisualClipMixin from 'linx/mixins/components/mix-visual/clip';
 
 import { constantTernary, propertyOrDefault } from 'linx/lib/computed/ternary';
 import { FROM_TRACK_COLOR, TO_TRACK_COLOR } from 'linx/components/mix-builder';
+import { isValidNumber } from 'linx/lib/utils';
+
+const MARKER_CLICK_WINDOW = 0.05; // [s] how close to a marker a click has to be
 
 export default ArrangementVisualTrackClip.extend(
   MixVisualClipMixin, {
@@ -16,9 +19,12 @@ export default ArrangementVisualTrackClip.extend(
 
   actions: {
     onClick() {
-      // if (this.get('selectedTransition')) {
+      if (this.get('selectedTransition')) {
+        Ember.run.next(() => {
+          this._checkForMarkerClick();
+        });
         this.sendAction('selectClip', this.get('clip'));
-      // }
+      }
     },
 
     onDrag(d3Context, d, dBeats) {
@@ -32,6 +38,32 @@ export default ArrangementVisualTrackClip.extend(
     onDragStart(d3Context, d) {
       this.set('_dragStartBeat', this.get('clip.audioStartBeat'));
     },
+  },
+
+  // if marker was clicked, set as beatgrid and clear markers
+  _checkForMarkerClick() {
+    const trackClip = this.get('clip.content');
+    const currentAudioTime = trackClip.getCurrentAudioTime();
+    const markers = trackClip.get('markers') || [];
+
+    const marker = markers.find(({ time }) => {
+      return (currentAudioTime - MARKER_CLICK_WINDOW <= time) &&
+        (currentAudioTime + MARKER_CLICK_WINDOW >= time);
+    });
+
+    // TODO(TRACKMULTIGRID): refactor to use dynamic beatgrids instead of static time
+    if (marker && isValidNumber(marker.time)) {
+      console.log('clicked marker', marker);
+
+      const arrangement = trackClip.get('arrangement.content');
+      const quantizedBeat = arrangement.get('beatGrid').quantizeBeat(arrangement.getCurrentBeat());
+      const quantizedAudioTime = trackClip.getAudioTimeFromArrangementBeat(quantizedBeat);
+
+      const prevAudioStartTime = trackClip.get('audioStartTime');
+      const timeDelta = quantizedAudioTime - marker.time;
+      trackClip.set('audioStartTime', prevAudioStartTime - timeDelta);
+      trackClip.set('markers', []);
+    }
   },
 
   // used to keep track of where audio was when drag started
@@ -51,8 +83,8 @@ export default ArrangementVisualTrackClip.extend(
   row: constantTernary('isSelectedToTrackClip', 2, 0),
 
   waveColor: Ember.computed('isSelectedFromTrackClip', 'isSelectedToTrackClip', function() {
-    if (this.get('isSelectedFromTrackClip')) return FROM_TRACK_COLOR;
-    if (this.get('isSelectedToTrackClip')) return TO_TRACK_COLOR;
+    if (this.get('isSelectedFromTrackClip')) { return FROM_TRACK_COLOR; }
+    if (this.get('isSelectedToTrackClip')) { return TO_TRACK_COLOR; }
     return 'steelblue';
   }),
 

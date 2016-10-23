@@ -6,13 +6,18 @@ import _ from 'npm:underscore';
 import ReadinessMixin from 'linx/mixins/readiness';
 import PlayableArrangementMixin from 'linx/mixins/playable-arrangement';
 import DependentRelationshipMixin from 'linx/mixins/models/dependent-relationship';
+import withDefaultModel from 'linx/lib/computed/with-default-model';
+import {
+  default as withDefault,
+  withDefaultProperty
+} from 'linx/lib/computed/with-default';
 
 import {
   CONTROL_TYPE_VOLUME,
+  CONTROL_TYPE_DELAY_WET,
   CONTROL_TYPE_LOW_BAND,
   CONTROL_TYPE_MID_BAND,
   CONTROL_TYPE_HIGH_BAND,
-  CONTROL_TYPE_DELAY_WET,
   CONTROL_TYPE_DELAY_CUTOFF,
   CONTROL_TYPE_FILTER_HIGHPASS_CUTOFF,
   CONTROL_TYPE_FILTER_HIGHPASS_Q,
@@ -23,17 +28,41 @@ import { isValidNumber } from 'linx/lib/utils';
 
 export default DS.Model.extend(
   PlayableArrangementMixin,
-  DependentRelationshipMixin('fromTrackAutomationClips'),
-  DependentRelationshipMixin('toTrackAutomationClips'),
-  ReadinessMixin('isTransitionReady'), {
+  new DependentRelationshipMixin('fromTrackAutomationClips'),
+  new DependentRelationshipMixin('toTrackAutomationClips'),
+  new DependentRelationshipMixin('fromTrackTempoClip'),
+  new DependentRelationshipMixin('toTrackTempoClip'),
+  new ReadinessMixin('isTransitionReady'), {
 
   title: DS.attr('string'),
   description: DS.attr('string'),
   beatCount: DS.attr('number', { defaultValue: 16 }),
   transitionClip: DS.belongsTo('mix/transition-clip'),
+  _startBpm: DS.attr('number'),
+  _endBpm: DS.attr('number'),
+
+  startBpm: withDefaultProperty('_startBpm', '_defaultStartBpm'),
+  endBpm: withDefaultProperty('_endBpm', '_defaultEndBpm'),
+
+  _defaultStartBpm: withDefault('fromTrackClip.track.audioMeta.bpm', 128),
+  _defaultEndBpm: withDefaultProperty('toTrackClip.track.audioMeta.bpm', '_defaultStartBpm'),
 
   fromTrackClip: Ember.computed.reads('transitionClip.fromTrackClip'),
   toTrackClip: Ember.computed.reads('transitionClip.toTrackClip'),
+
+  _fromTrackTempoClip: DS.belongsTo('mix/transition/from-track-tempo-clip', { async: true }),
+  fromTrackTempoClip: withDefaultModel('_fromTrackTempoClip', function() {
+    return this.get('store').createRecord('mix/transition/from-track-tempo-clip', {
+      transition: this,
+    });
+  }),
+
+  _toTrackTempoClip: DS.belongsTo('mix/transition/to-track-tempo-clip', { async: true }),
+  toTrackTempoClip: withDefaultModel('_toTrackTempoClip', function() {
+    return this.get('store').createRecord('mix/transition/to-track-tempo-clip', {
+      transition: this,
+    });
+  }),
 
   fromTrackAutomationClips: DS.hasMany('mix/transition/from-track-automation-clip'),
   toTrackAutomationClips: DS.hasMany('mix/transition/to-track-automation-clip'),
@@ -41,8 +70,15 @@ export default DS.Model.extend(
   // implementing PlayableArrangement
   audioContext: Ember.computed.reads('transitionClip.audioContext'),
   outputNode: Ember.computed.reads('transitionClip.outputNode.content'),
-  clips: Ember.computed.uniq('fromTrackAutomationClips', 'toTrackAutomationClips'),
-  bpm: Ember.computed.reads('transitionClip.mix.bpm'),
+  clips: Ember.computed.uniq('fromTrackAutomationClips', 'toTrackAutomationClips', '_tempoClips'),
+  bpmScale: Ember.computed.reads('transitionClip.mixItem.mix.bpmScale'),
+
+  _tempoClips: Ember.computed('fromTrackTempoClip', 'toTrackTempoClip', function() {
+    return [
+      this.get('fromTrackTempoClip'),
+      this.get('toTrackTempoClip'),
+    ].filter((clip) => !!clip);
+  }),
 
   // optimizes this transition, with given constraints
   // TODO(REFACTOR2): rethink this. convert to ember-concurrency
@@ -312,6 +348,12 @@ export default DS.Model.extend(
           this.set('fromTrackClip.delayBypass', true);
         }
 
+        // TODO(TRACKMULTIGRID): needs update
+        let fromTrackBpm = this.get('fromTrackClip.track.audioMeta.bpm');
+        fromTrackBpm = isValidNumber(fromTrackBpm) ? fromTrackBpm : 128;
+        let toTrackBpm = this.get('fromTrackClip.track.audioMeta.bpm');
+        toTrackBpm = isValidNumber(toTrackBpm) ? toTrackBpm : fromTrackBpm;
+
         this.get('fromTrackAutomationClips').addObjects(fromTrackAutomationClips);
         this.get('toTrackAutomationClips').addObjects(toTrackAutomationClips);
 
@@ -334,10 +376,17 @@ export default DS.Model.extend(
     });
   },
 
+  destroyToTrackAutomationClips() {
+    return this.get('_tempoClips').then((_tempoClips) => {
+      return Ember.RSVP.all(_tempoClips.toArray().map((clip) => clip.destroyRecord()));
+    });
+  },
+
   destroyAutomationClips() {
     return Ember.RSVP.all([
       this.destroyFromTrackAutomationClips(),
-      this.destroyToTrackAutomationClips()
+      this.destroyToTrackAutomationClips(),
+      this.destroyTempoClips()
     ]);
   },
 });

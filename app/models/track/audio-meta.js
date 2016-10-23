@@ -110,11 +110,11 @@ export default DS.Model.extend(
     duration: 'duration',
     bpm: 'bpm',
     timeSignature: 'timeSignature',
-    // TODO(MULTIGRID): make this use real thing
+    // TODO(TRACKMULTIGRID): make this use real thing
     barGridTime: 0,
   }),
 
-  // TODO(MULTIGRID): adapt for multiple grid markers. Piecewise-Scale? or a long domain/range?
+  // TODO(TRACKMULTIGRID): adapt for multiple grid markers. Piecewise-Scale? or a long domain/range?
   nudge(value) {
     Ember.assert('Cannot nudge AudioMeta.barGridTime without numeric value', isValidNumber(value));
 

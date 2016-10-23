@@ -29,6 +29,7 @@ export default Ember.Mixin.create(Ember.Evented, {
   session: Ember.inject.service(),
   fakeAudioContext: Ember.computed.reads('session.audioContext'),
   fakeMetronome: Ember.computed(function() {
+    // TODO(MULTIGRID) fix this
     return Metronome.create({
       arrangement: { bpm: 128 }
     });
@@ -53,12 +54,12 @@ export default Ember.Mixin.create(Ember.Evented, {
 
   // returns absolute start time of this clip from metronome's frame of reference
   getAbsoluteStartTime() {
-    return this.get('metronome').beatToTime(this.get('startBeat'));
+    return this.get('metronome').beatToAbsTime(this.get('startBeat'));
   },
 
   // returns absolute start time of this clip from metronome's frame of reference
   getAbsoluteEndTime() {
-    return this.get('metronome').beatToTime(this.get('endBeat'));
+    return this.get('metronome').beatToAbsTime(this.get('endBeat'));
   },
 
   // returns absolute time from metronome's frame of reference
@@ -67,9 +68,8 @@ export default Ember.Mixin.create(Ember.Evented, {
   },
 
   // duration of clip in [s]
-  // TODO(MULTIGRID)
-  duration: Ember.computed('metronome.bpm', 'startBeat', 'beatCount', function() {
-    return this.get('metronome').getDuration(this.get('startBeat'), this.get('beatCount'));
+  duration: Ember.computed('arrangement.beatGrid', 'startBeat', 'endBeat', function() {
+    return this.get('arrangement.beatGrid').getDuration(this.get('startBeat'), this.get('endBeat'));
   }),
 
   endBeat: add('startBeat', 'beatCount'),
@@ -97,7 +97,7 @@ export default Ember.Mixin.create(Ember.Evented, {
   // TODO(REFACTOR): turn isValid into validness mixin?
   isValid: Ember.computed.and('isValidStartBeat', 'isValidEndBeat', 'isValidBeatCount'),
 
-  clipScheduleDidChange: Ember.observer('isValid', 'isDisabled', 'startBeat', 'beatCount', 'duration', 'metronome.{absSeekTime,isPlaying,bpm}', function() {
+  clipScheduleDidChange: Ember.observer('isValid', 'isDisabled', 'startBeat', 'beatCount', 'duration', 'metronome.{absSeekTime,isPlaying}', 'arrangement.beatGrid', function() {
     this.set('isScheduled', this.get('metronome.isPlaying'));
     Ember.run.once(this, 'triggerScheduleEvents');
   }),
