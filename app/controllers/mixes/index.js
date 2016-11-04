@@ -7,8 +7,8 @@ export default Ember.Controller.extend({
 
   userSession: Ember.inject.service(),
 
-  sortedMixes: Ember.computed('mixes.@each.title', function() {
-    return this.get('mixes').sortBy('title');
+  sortedMixes: Ember.computed('mixes.@each.createdAt', function() {
+    return this.get('mixes').sortBy('createdAt').reverse();
   }),
 
   myMixes: Ember.computed('sortedMixes.@each.createdBy', 'userSession.currentUser.uid', function() {
