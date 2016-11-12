@@ -7,13 +7,13 @@ export default Ember.Controller.extend({
 
   userSession: Ember.inject.service(),
 
-  sortedMixes: Ember.computed('mixes.@each.createdAt', function() {
-    return this.get('mixes').sortBy('createdAt').reverse();
+  myMixes: Ember.computed('mixes.@each.createdBy', 'userSession.currentUser.uid', function() {
+    return this.get('mixes').filterBy('createdBy', this.get('userSession.currentUser.uid'));
   }),
+  sortedMyMixes: Ember.computed.sort('myMixes', 'myMixesSortOrder'),
+  myMixesSortOrder: ['createdAt:desc'],
 
-  myMixes: Ember.computed('sortedMixes.@each.createdBy', 'userSession.currentUser.uid', function() {
-    return this.get('sortedMixes').filterBy('createdBy', this.get('userSession.currentUser.uid'));
-  }),
-
-  otherMixes: Ember.computed.setDiff('sortedMixes', 'myMixes'),
+  otherMixes: Ember.computed.setDiff('mixes', 'myMixes'),
+  sortedOtherMixes: Ember.computed.sort('otherMixes', 'otherMixesSortOrder'),
+  otherMixesSortOrder: ['createdBy', 'createdAt:desc'],
 });
