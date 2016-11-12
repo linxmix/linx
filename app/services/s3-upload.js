@@ -12,7 +12,7 @@ export default Ember.Service.extend({
   uploadFileTask: task(function * (file) {
     Ember.assert('Cannot s3Upload.uploadFileTask without valid file.{name,type}', Ember.isPresent(file.name) && Ember.isPresent(file.type));
 
-    const fileName = `${getFileNameWithoutExtension(file.name)}-${Date.now()}.${getFileNameExtension(file.name)}`;
+    const fileName = `${getAlphanumericCharacters(getFileNameWithoutExtension(file.name))}-${Date.now()}.${getFileNameExtension(file.name)}`;
     const fileType = file.type;
     // console.log('uploadFile', fileName, fileType);
 
@@ -47,6 +47,10 @@ export default Ember.Service.extend({
     });
   },
 });
+
+function getAlphanumericCharacters(string = '') {
+  return string.replace(/[^a-z0-9 ]/gi, '');
+}
 
 function getFileNameWithoutExtension(fileName) {
   return fileName.replace(/\.[^/.]+$/, "");
