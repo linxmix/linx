@@ -328,6 +328,8 @@ export default Ember.Component.extend(
 
     selectTransition(transition) {
       this.sendAction('selectTransition', transition);
+
+      Ember.run.once(this, this._updateTransitionZoom, transition);
     },
 
     zoomToClip(...args) {
@@ -421,7 +423,7 @@ export default Ember.Component.extend(
     },
 
     onPageDrop(files) {
-      Ember.Logger.log("page drop", files);
+      Ember.Logger.log('page drop', files);
 
       const store = this.get('store');
       const mix = this.get('controller.mix');
@@ -453,10 +455,7 @@ export default Ember.Component.extend(
     // },
   },
 
-  // TODO(TECHDEBT): make this work with query param for sleected transition?
-  _selectedTransitionDidChange: Ember.observer('selectedTransition', function() {
-    const transition = this.get('selectedTransition');
-
+  _updateTransitionZoom(transition) {
     Ember.run.next(() => {
       if (transition) {
         this.send('zoomToClip', transition.get('transitionClip'), true);
@@ -464,7 +463,7 @@ export default Ember.Component.extend(
         this.send('resetZoom', true);
       }
     });
-  }).on('didInsertElement'),
+  },
 
   _quantizeBeat(beat, quantization) {
     const beatGrid = this.get('mix.beatGrid');
