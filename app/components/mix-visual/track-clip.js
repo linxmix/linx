@@ -9,7 +9,7 @@ import { constantTernary, propertyOrDefault } from 'linx/lib/computed/ternary';
 import { FROM_TRACK_COLOR, TO_TRACK_COLOR } from 'linx/components/mix-builder';
 import { isValidNumber } from 'linx/lib/utils';
 
-const MARKER_CLICK_WINDOW = 0.05; // [s] how close to a marker a click has to be
+const MARKER_CLICK_WINDOW = 0.1; // [s] how close to a marker a click has to be
 
 export default ArrangementVisualTrackClip.extend(
   MixVisualClipMixin, {
