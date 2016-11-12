@@ -28,6 +28,13 @@ export default Clip.extend(
       const oldValue = this.get('_dragStartValue');
       const oldBeat = this.get('_dragStartBeat');
       const height = this.get('height');
+      let dValue = (dHeight / height);
+
+      const isAltKeyHeld = Ember.get(d3, 'event.sourceEvent.altKey') || Ember.get(d3, 'event.altKey');
+      if (isAltKeyHeld) {
+        dBeats /= 15.0;
+        dValue /= 10.0;
+      }
 
       // calculate new beat and value
       const prevControlPoint = controlPoint.get('prevItem');
@@ -35,8 +42,9 @@ export default Clip.extend(
       const minBeat = prevControlPoint ? prevControlPoint.get('beat') : this.get('minControlPointBeat');
       const maxBeat = nextControlPoint ? nextControlPoint.get('beat') : this.get('maxControlPointBeat');
 
-      const beat = clamp(minBeat, oldBeat + dBeats, maxBeat);
-      const scaledValue = clamp(0, oldValue - (dHeight / height), 1);
+      const beat = clamp(minBeat, oldBeat + dBeats,
+        maxBeat);
+      const scaledValue = clamp(0, oldValue - dValue, 1);
 
       // Ember.Logger.log('onControlPointDrag', dBeats, dHeight / height, beat, scaledValue)
       if (this.get('canMoveSelectedControlPointBeat')) {
