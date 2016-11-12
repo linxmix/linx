@@ -103,7 +103,8 @@ export default Ember.Mixin.create(Ember.Evented, {
   }),
 
   triggerScheduleEvents() {
-    if (!this.get('isDeleted')) {
+    // TODO(TECHDEBT): isRemoved is a property of orderedHasManyItem and should not appear here
+    if (!this.get('isDeleted') && !this.get('mixItem.isRemoved')) {
       this.trigger('unschedule');
 
       if (this.get('isScheduled')) {
