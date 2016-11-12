@@ -42,7 +42,7 @@ function _createBandEqScale() {
   return d3.scale.linear().domain([-40, 40]).range([0, 1]);
 }
 function _createFilterQScale() {
-  return d3.scale.linear().domain([0.001, 10]).range([0, 1]);
+  return d3.scale.linear().domain([0.001, 30]).range([0, 1]);
 }
 
 // TODO(CLEANUP): nest under track-clip/controls/gain?
