@@ -24,7 +24,7 @@ export default AutomationClip.extend({
 
   _updateControlPoints() {
     const beatCount = this.get('beatCount');
-    Ember.Logger.log('_updateControlPoints', beatCount);
+    // Ember.Logger.log('_updateControlPoints', beatCount);
 
     if (isValidNumber(beatCount)) {
       const controlPoints = this.get('controlPoints');

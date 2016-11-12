@@ -3,7 +3,7 @@ import Ember from 'ember';
 import _ from 'npm:underscore';
 
 import RequireAttributes from 'linx/lib/require-attributes';
-import { beatToTime, timeToBeat, clamp, isNumber, isValidNumber } from 'linx/lib/utils';
+import { beatToTime, timeToBeat, clamp, isValidNumber } from 'linx/lib/utils';
 import Clock from 'linx/lib/clock';
 
 // Holds rhythym based on clock
@@ -81,7 +81,7 @@ export default Ember.Object.extend(
   },
 
   play(beat) {
-    beat = isNumber(beat) ? beat : this.getCurrentBeat();
+    beat = isValidNumber(beat) ? beat : this.getCurrentBeat();
     this.seekToBeat(beat);
 
     if (!this.get('isPlaying')) {
