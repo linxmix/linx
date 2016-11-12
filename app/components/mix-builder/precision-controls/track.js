@@ -17,13 +17,13 @@ const BEAT_JUMP_KEYBINDINGS = [
   },
   {
     key: 'KeyE',
-    beats: 16,
+    beats: 4,
     direction: -1,
     isFromTrackClip: true,
   },
   {
     key: 'shift+KeyE',
-    beats: 32,
+    beats: 16,
     direction: -1,
     isFromTrackClip: true,
   },
@@ -38,13 +38,13 @@ const BEAT_JUMP_KEYBINDINGS = [
   },
   {
     key: 'KeyR',
-    beats: 16,
+    beats: 4,
     direction: 1,
     isFromTrackClip: true,
   },
   {
     key: 'shift+KeyR',
-    beats: 32,
+    beats: 16,
     direction: 1,
     isFromTrackClip: true,
   },
@@ -58,12 +58,12 @@ const BEAT_JUMP_KEYBINDINGS = [
   },
   {
     key: 'KeyD',
-    beats: 16,
+    beats: 4,
     direction: -1,
   },
   {
     key: 'shift+KeyD',
-    beats: 32,
+    beats: 16,
     direction: -1,
   },
 
@@ -76,12 +76,12 @@ const BEAT_JUMP_KEYBINDINGS = [
   },
   {
     key: 'KeyF',
-    beats: 16,
+    beats: 4,
     direction: 1,
   },
   {
     key: 'shift+KeyF',
-    beats: 32,
+    beats: 16,
     direction: 1,
   },
 ];
