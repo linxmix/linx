@@ -190,11 +190,10 @@ export default Ember.Component.extend(
         const beat = this.get('clip.arrangement.metronome.seekBeat');
 
         if (this.get('isFromTrackClip')) {
-          clip.set('audioEndTime', clip.getAudioTimeFromArrangementBeat(beat));
+          const transitionBeatCount = this.get('clip.mixItem.transition.beatCount');
+          const time = clip.getAudioTimeFromArrangementBeat(beat + transitionBeatCount);
+          clip.set('audioEndTime', time);
         } else if (this.get('isToTrackClip')) {
-          // this code was to allow moving transition to end beat
-          // const transitionBeatCount = this.get('clip.mixItem.transition.beatCount');
-          // const time = clip.getAudioTimeFromArrangementBeat(beat - transitionBeatCount);
           clip.set('audioStartTime', clip.getAudioTimeFromArrangementBeat(beat));
         }
       });
