@@ -334,9 +334,14 @@ export default Ember.Component.extend(
     selectTransition(transition) {
       this.sendAction('selectTransition', transition);
 
-      this.send('pause');
       Ember.run.once(this, this._updateTransitionZoom, transition);
-      Ember.run.next(this, 'send', 'play');
+
+      // possibly pause while drawing transition
+      const wasPlaying = this.get('mix.isPlaying');
+      if (wasPlaying) {
+        this.send('pause');
+        Ember.run.next(this, 'send', 'play');
+      }
     },
 
     zoomToClip(...args) {
