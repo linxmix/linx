@@ -9,10 +9,12 @@ export default Ember.Component.extend({
   mix: null,
   mixSaveTask: null,
   mixRecordTask: null,
+  newTrackPosition: 0,
+
+  updateNewTrackPosition: Ember.K,
   saveMix: Ember.K,
   recordMix: Ember.K,
   stopRecord: Ember.K,
-  newTrackPosition: 0,
 
   actions: {
     saveMix() {

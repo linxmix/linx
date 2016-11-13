@@ -15,5 +15,5 @@ export default Ember.Controller.extend({
 
   otherMixes: Ember.computed.setDiff('mixes', 'myMixes'),
   sortedOtherMixes: Ember.computed.sort('otherMixes', 'otherMixesSortOrder'),
-  otherMixesSortOrder: ['createdBy', 'createdAt:desc'],
+  otherMixesSortOrder: ['createdBy:desc', 'createdAt:desc'],
 });

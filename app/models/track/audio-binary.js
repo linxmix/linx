@@ -11,8 +11,8 @@ import ReadinessMixin from 'linx/mixins/readiness';
 import Ajax from 'linx/lib/ajax';
 
 export default Ember.Object.extend(
-  ReadinessMixin('isArrayBufferLoadedAndDecoded'),
-  RequireAttributes('track'), {
+  new ReadinessMixin('isArrayBufferLoadedAndDecoded'),
+  new RequireAttributes('track'), {
 
   file: Ember.computed.reads('track.file'),
   isLoading: Ember.computed.or('arrayBuffer.isPending', 'decodedArrayBuffer.isPending'),
@@ -127,7 +127,14 @@ export default Ember.Object.extend(
   getPeaks({ startTime, endTime, length }) {
     // Ember.Logger.log('AudioBinary.getPeaks', startTime, endTime, length);
 
-    const cacheKey = `startTime:${startTime},endTime:${endTime},length:${length}`;
+    const audioBuffer = this.get('audioBuffer');
+    if (!audioBuffer) { return asResolvedPromise([]); }
+
+    Ember.assert('Cannot AudioBinary.getPeaks without length', isValidNumber(length));
+    startTime = isValidNumber(startTime) ? startTime : 0;
+    endTime = isValidNumber(endTime) ? endTime : 0;
+
+    const cacheKey = `startTime:${startTime},endTime:${endTime},length:${length},audioBufferDuration:${audioBuffer.duration}`;
     const peaksCache = this.get('_peaksCache');
     const cached = peaksCache.get(cacheKey);
 
@@ -135,13 +142,6 @@ export default Ember.Object.extend(
       // Ember.Logger.log('AudioBinary.getPeaks cache hit', startTime, endTime, length);
       return cached;
     }
-
-    const audioBuffer = this.get('audioBuffer');
-    if (!audioBuffer) { return asResolvedPromise([]); }
-
-    Ember.assert('Cannot AudioBinary.getPeaks without length', isValidNumber(length));
-    startTime = isValidNumber(startTime) ? startTime : 0;
-    endTime = isValidNumber(endTime) ? endTime : 0;
 
     // TODO(REFACTOR): update to use multiple channels
     const samples = audioBuffer.getChannelData(0);

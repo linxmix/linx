@@ -12,8 +12,8 @@
         New Mix
       </div>
 
-      {{#mixes-list mixes=myMixes}}
-        {{#each myMixes as |mix|}}
+      {{#mixes-list mixes=sortedMyMixes}}
+        {{#each sortedMyMixes as |mix|}}
           {{#link-to "mixes.mix" mix.id}}
             {{mixes-list-item
               mix=mix
@@ -34,8 +34,8 @@
     </div>
   </h2>
   <div class="row">
-    {{#mixes-list mixes=otherMixes}}
-      {{#each otherMixes as |mix|}}
+    {{#mixes-list mixes=sortedOtherMixes}}
+      {{#each sortedOtherMixes as |mix|}}
         {{#link-to "mixes.mix" mix.id}}
           {{mixes-list-item
             mix=mix

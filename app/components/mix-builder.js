@@ -52,9 +52,7 @@ export default Ember.Component.extend(
 
   followPlayhead: false,
   selectedAutomation: CONTROL_TYPE_VOLUME,
-  newTrackPosition: Ember.computed('mix.length', function() {
-    return this.get('mix.length') + 1;
-  }),
+  newTrackPosition: null,
 
   _playpauseMix: Ember.on(keyDown('Space'), makeKeybinding(function(e) {
     this.send('playpause');
@@ -155,15 +153,17 @@ export default Ember.Component.extend(
 
     console.log('recording started', { totalRecordDuration, totalBlobs });
 
+    function resolveAtEndOfMix(resolve) {
+      Ember.run.later(resolve, 1000 * Math.min(MAX_RECORD_SECONDS, mix.getRemainingDuration()));
+    }
+
     while ((this.get('outputBlobsCount') < totalBlobs)) {
 
       // record chunk
       recorderNode.clear();
       recorderNode.record();
       mix.play(mix.getCurrentBeat() - 1.75); // ensure slight overlap
-      yield new Ember.RSVP.Promise((resolve) => {
-        Ember.run.later(resolve, 1000 * Math.min(MAX_RECORD_SECONDS, mix.getRemainingDuration()));
-      });
+      yield new Ember.RSVP.Promise(resolveAtEndOfMix);
 
       if (didStopRecording) { return; }
 
@@ -256,6 +256,11 @@ export default Ember.Component.extend(
   beatDetection: Ember.inject.service(),
 
   actions: {
+    updateNewTrackPosition(newPosition) {
+      newPosition = parseInt(newPosition);
+      this.set('newTrackPosition', newPosition);
+    },
+
     jumpTrack(mixItem) {
       return this.get('jumpTrackTask').perform(mixItem);
     },
@@ -331,7 +336,7 @@ export default Ember.Component.extend(
 
       this.send('pause');
       Ember.run.once(this, this._updateTransitionZoom, transition);
-      Ember.run.next(this, 'send', 'play')
+      Ember.run.next(this, 'send', 'play');
     },
 
     zoomToClip(...args) {
@@ -381,9 +386,11 @@ export default Ember.Component.extend(
 
     addTrack(track) {
       track = track ? track : this.get('store').createRecord('track');
-
       const mix = this.get('mix');
-      const index = clamp(0, this.get('newTrackPosition') - 1, mix.get('length'));
+      let newTrackPosition = this.get('newTrackPosition');
+      newTrackPosition = isValidNumber(newTrackPosition) ? newTrackPosition : mix.get('length') + 1;
+
+      const index = clamp(0, newTrackPosition - 1, mix.get('length'));
       const endBeat = this._quantizeBeat(mix.get('endBeat'));
 
       mix.insertTrackAt(index, track).then((mixItem) => {
@@ -428,20 +435,34 @@ export default Ember.Component.extend(
       Ember.Logger.log('page drop', files);
 
       const store = this.get('store');
-      const mix = this.get('controller.mix');
+      const mix = this.get('mix');
 
-      // for each file, create track and add to mix
-      files.map((file) => {
+      const newTrackPosition = this.get('newTrackPosition');
+      const isFileSwap = isValidNumber(newTrackPosition);
+      const existingTrack = isFileSwap &&
+        (mix.get('tracks') || []).objectAt(newTrackPosition - 1);
 
-        const track = store.createRecord('track', {
-          title: file.name,
-          file,
+      // for each file, create new track and add to mix
+      if (!isFileSwap) {
+        files.map((file) => {
+
+          const track = store.createRecord('track', {
+            title: file.name,
+            file,
+          });
+
+          track.get('extractId3TagsTask').perform();
+          track.get('audioBinary.analyzeAudioTask').perform();
+          this.send('addTrack', track);
         });
 
-        track.get('extractId3TagsTask').perform();
-        track.get('audioBinary.analyzeAudioTask').perform();
-        this.send('addTrack', track);
-      });
+      // swap out file at given index
+      } else if (existingTrack && files[0]) {
+        existingTrack.set('file', files[0]);
+      } else {
+        Ember.Logger.warn('WARNING: onPageDrop with newTrackPosition but invalid existingTrack',
+          newTrackPosition, existingTrack);
+      }
     },
 
     // appendRandomTrack() {
