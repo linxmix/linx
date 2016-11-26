@@ -1,6 +1,6 @@
 {
   "name": "linx",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "TDAW",
   "private": true,
   "directories": {
@@ -40,10 +40,7 @@
     "ember-cli-app-version": "^1.0.0",
     "ember-cli-babel": "^5.1.6",
     "ember-cli-bourbon": "^1.2.2",
-
-    "ember-cli-d3": "// WARNING: updating to 1.1.6 breaks drawing multiple automations",
     "ember-cli-d3": "1.1.5",
-
     "ember-cli-dependency-checker": "^1.2.0",
     "ember-cli-dotenv": "^0.4.0",
     "ember-cli-htmlbars": "^1.0.3",
