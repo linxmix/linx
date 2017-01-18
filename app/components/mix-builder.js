@@ -114,7 +114,7 @@ export default Ember.Component.extend(
 
     // add extra buffer while recording
     // TODO(TECHDEBT): do not share state this way
-    window.BUFFER_SIZE = window.MAX_BUFFER_SIZE;
+    window.BUFFER_SIZE = window.MAX_BUFFER_SIZE / 2;
 
     let didStopRecording = false;
 

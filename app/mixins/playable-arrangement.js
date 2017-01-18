@@ -109,7 +109,7 @@ export default Ember.Mixin.create(
   }),
 
   gainNode: computedObject(GainNode, {
-    'value': 1.3,
+    'value': 1.1,
     'audioContext': 'audioContext',
     'outputNode': 'outputNode',
   }),

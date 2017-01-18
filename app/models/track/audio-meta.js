@@ -81,7 +81,8 @@ export const ECHONEST_MODES = {
 // Replay Gain algorithm to convert from db to gain and back
 // http://wiki.hydrogenaud.io/index.php?title=ReplayGain_2.0_specification
 export const TARGET_LOUDNESS = -14; // 14db headroom
-export const DEFAULT_GAIN = 0.8;
+// export const DEFAULT_GAIN = 0.8;
+export const DEFAULT_GAIN = 0.9;
 
 export function loudnessToGain(loudness) {
   // how far off we are from target loudness
