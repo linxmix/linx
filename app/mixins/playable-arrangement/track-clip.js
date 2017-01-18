@@ -77,13 +77,6 @@ const TrackHighBandControl = Ember.Object.extend(
   valueScale: Ember.computed(() => _createBandEqScale()),
 });
 
-const TrackPitchControl = Ember.Object.extend(
-  new AutomatableClipControlMixin('soundtouchNode.pitch'), {
-
-  type: CONTROL_TYPE_PITCH,
-  defaultValue: 0,
-});
-
 const TrackDelayWetControl = Ember.Object.extend(
   new AutomatableClipControlMixin('tunaDelayNode.wet.gain'), {
 
@@ -154,7 +147,6 @@ export default Ember.Mixin.create(
       TrackLowBandControl.create({ clip: this }),
       TrackMidBandControl.create({ clip: this }),
       TrackHighBandControl.create({ clip: this }),
-      TrackPitchControl.create({ clip: this }),
       TrackDelayWetControl.create({ clip: this }),
       TrackDelayCutoffControl.create({ clip: this }),
       TrackHighpassFilterCutoffControl.create({ clip: this }),
